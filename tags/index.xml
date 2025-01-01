@@ -6,6 +6,49 @@
     <description>Recent content in Tags on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.140.2</generator>
     <language>en-us</language>
+    <lastBuildDate>Wed, 01 Jan 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Arm</title>
+      <link>http://localhost:1313/tags/arm/</link>
+      <pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/arm/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Assmembly</title>
+      <link>http://localhost:1313/tags/assmembly/</link>
+      <pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/assmembly/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>From the Transistor</title>
+      <link>http://localhost:1313/tags/from-the-transistor/</link>
+      <pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/from-the-transistor/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Geohot</title>
+      <link>http://localhost:1313/tags/geohot/</link>
+      <pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/geohot/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>George Hotz</title>
+      <link>http://localhost:1313/tags/george-hotz/</link>
+      <pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/george-hotz/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Verilog</title>
+      <link>http://localhost:1313/tags/verilog/</link>
+      <pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/verilog/</guid>
+      <description></description>
+    </item>
   </channel>
 </rss>
