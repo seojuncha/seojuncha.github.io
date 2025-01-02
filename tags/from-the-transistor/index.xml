@@ -6,14 +6,14 @@
     <description>Recent content in From the Transistor on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.140.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 01 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 02 Jan 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/from-the-transistor/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Introduction to &#34;From the Transistor&#34;</title>
+      <title>[KOR] Introduction to &#34;From the Transistor&#34;</title>
       <link>http://localhost:1313/posts/from-the-transistor-intro/</link>
-      <pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 02 Jan 2025 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/from-the-transistor-intro/</guid>
-      <description>To be written!</description>
+      <description>In this post, I&amp;rsquo;ve written past, current, and future of &amp;lsquo;From the Transistor&amp;rsquo; project. Summarize each project secion with an expected output and what should I prepare to achieve the section goal. During about 3 weeks, I have made an ARM assembler and CPU, which is working now. There are numerous things what I have laerned for this period. It&amp;rsquo;s not perfect yet, but keep better.</description>
     </item>
   </channel>
 </rss>
