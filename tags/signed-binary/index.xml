@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Signed Binary on Seojun&#39;s Personal Site</title>
-    <link>http://localhost:1313/tags/signed-binary/</link>
+    <link>https://seojuncha.github.io/tags/signed-binary/</link>
     <description>Recent content in Signed Binary on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.140.2</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 08 Jan 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/signed-binary/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://seojuncha.github.io/tags/signed-binary/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기</title>
-      <link>http://localhost:1313/posts/signed-unsigned-binary-representation/</link>
+      <link>https://seojuncha.github.io/posts/signed-unsigned-binary-representation/</link>
       <pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/signed-unsigned-binary-representation/</guid>
+      <guid>https://seojuncha.github.io/posts/signed-unsigned-binary-representation/</guid>
       <description>In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two&amp;rsquo;s complement being the most widely used method in modern systems.</description>
     </item>
   </channel>

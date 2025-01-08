@@ -2,52 +2,52 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on Seojun&#39;s Personal Site</title>
-    <link>http://localhost:1313/tags/</link>
+    <link>https://seojuncha.github.io/tags/</link>
     <description>Recent content in Tags on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.140.2</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 08 Jan 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://seojuncha.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Binary Representation</title>
-      <link>http://localhost:1313/tags/binary-representation/</link>
+      <link>https://seojuncha.github.io/tags/binary-representation/</link>
       <pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/binary-representation/</guid>
+      <guid>https://seojuncha.github.io/tags/binary-representation/</guid>
       <description></description>
     </item>
     <item>
       <title>Signed Binary</title>
-      <link>http://localhost:1313/tags/signed-binary/</link>
+      <link>https://seojuncha.github.io/tags/signed-binary/</link>
       <pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/signed-binary/</guid>
+      <guid>https://seojuncha.github.io/tags/signed-binary/</guid>
       <description></description>
     </item>
     <item>
       <title>Unsigned Binary</title>
-      <link>http://localhost:1313/tags/unsigned-binary/</link>
+      <link>https://seojuncha.github.io/tags/unsigned-binary/</link>
       <pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/unsigned-binary/</guid>
+      <guid>https://seojuncha.github.io/tags/unsigned-binary/</guid>
       <description></description>
     </item>
     <item>
       <title>From the Transistor</title>
-      <link>http://localhost:1313/tags/from-the-transistor/</link>
+      <link>https://seojuncha.github.io/tags/from-the-transistor/</link>
       <pubDate>Thu, 02 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/from-the-transistor/</guid>
+      <guid>https://seojuncha.github.io/tags/from-the-transistor/</guid>
       <description></description>
     </item>
     <item>
       <title>Geohot</title>
-      <link>http://localhost:1313/tags/geohot/</link>
+      <link>https://seojuncha.github.io/tags/geohot/</link>
       <pubDate>Thu, 02 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/geohot/</guid>
+      <guid>https://seojuncha.github.io/tags/geohot/</guid>
       <description></description>
     </item>
     <item>
       <title>George Hotz</title>
-      <link>http://localhost:1313/tags/george-hotz/</link>
+      <link>https://seojuncha.github.io/tags/george-hotz/</link>
       <pubDate>Thu, 02 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/george-hotz/</guid>
+      <guid>https://seojuncha.github.io/tags/george-hotz/</guid>
       <description></description>
     </item>
   </channel>

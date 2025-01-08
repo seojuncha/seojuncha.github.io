@@ -2,70 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/tags/binary-representation/</loc>
+    <loc>https://seojuncha.github.io/tags/binary-representation/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/posts/</loc>
+    <loc>https://seojuncha.github.io/posts/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://seojuncha.github.io/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/tags/signed-binary/</loc>
+    <loc>https://seojuncha.github.io/tags/signed-binary/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/posts/signed-unsigned-binary-representation/</loc>
+    <loc>https://seojuncha.github.io/posts/signed-unsigned-binary-representation/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://seojuncha.github.io/tags/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/tags/unsigned-binary/</loc>
+    <loc>https://seojuncha.github.io/tags/unsigned-binary/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/posts/from-the-transistor-intro/</loc>
+    <loc>https://seojuncha.github.io/posts/from-the-transistor-intro/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/tags/from-the-transistor/</loc>
+    <loc>https://seojuncha.github.io/tags/from-the-transistor/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/tags/geohot/</loc>
+    <loc>https://seojuncha.github.io/tags/geohot/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/tags/george-hotz/</loc>
+    <loc>https://seojuncha.github.io/tags/george-hotz/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/archives/</loc>
+    <loc>https://seojuncha.github.io/archives/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://seojuncha.github.io/categories/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/search/</loc>
+    <loc>https://seojuncha.github.io/search/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
