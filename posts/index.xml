@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.140.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 02 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 08 Jan 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://seojuncha.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기</title>
+      <link>https://seojuncha.github.io/posts/signed-unsigned-binary-representation/</link>
+      <pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/signed-unsigned-binary-representation/</guid>
+      <description>In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two&amp;rsquo;s complement being the most widely used method in modern systems.</description>
+    </item>
     <item>
       <title>[KOR] Introduction to &#34;From the Transistor&#34;</title>
       <link>https://seojuncha.github.io/posts/from-the-transistor-intro/</link>
