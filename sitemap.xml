@@ -2,6 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://seojuncha.github.io/tags/arithmetic-operation/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/binary-arithmetic/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/binary-operation/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/carry/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>https://seojuncha.github.io/posts/</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -12,13 +32,13 @@
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://seojuncha.github.io/tags/binary-arithmetic/</loc>
-    <lastmod>2025-01-11T00:00:00+00:00</lastmod>
+    <loc>https://seojuncha.github.io/tags/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://seojuncha.github.io/tags/</loc>
-    <lastmod>2025-01-11T00:00:00+00:00</lastmod>
+    <loc>https://seojuncha.github.io/posts/binary-carry/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
