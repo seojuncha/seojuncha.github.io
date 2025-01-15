@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Carry on Seojun&#39;s Personal Site</title>
-    <link>https://seojuncha.github.io/tags/carry/</link>
-    <description>Recent content in Carry on Seojun&#39;s Personal Site</description>
+    <title>Overflow on Seojun&#39;s Personal Site</title>
+    <link>https://seojuncha.github.io/tags/overflow/</link>
+    <description>Recent content in Overflow on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.140.2</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 15 Jan 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://seojuncha.github.io/tags/carry/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://seojuncha.github.io/tags/overflow/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>[KR] What Is Overflow in Computer Arithmetic? Explained with Examples</title>
       <link>https://seojuncha.github.io/posts/carry-and-overflow-kr/</link>
@@ -20,14 +20,6 @@
 &lt;p&gt;이러한 결과는 프로그램의 논리 오류로 이어질 수 있습니다.
 또한, Overflow는 악용될 경우 보안 취약점으로 이어질 수 있습니다. 널리 알려져있는 버퍼 오버플로우(Buffer Overflow)와 같은 취약점은 공격자가 코드를 실행하거나 시스템을 제어할 수 있는 가능성을 제공합니다.&lt;/p&gt;
 &lt;p&gt;이 외에도 하드웨어 설계측면에서도 중요한 역할을 하며 프로그래머는 이런 산술 연산의 한계를 이해해야만 안전하고 정확한 연산 결과를 보장할 수 있습니다. 이번 포스팅에서는 &lt;strong&gt;Overflow&lt;/strong&gt;의 개념과 &lt;strong&gt;프로그래밍 예제를 통한 Overflow의 위험성&lt;/strong&gt;을 살펴보고 &lt;strong&gt;Overflow와 Carry를 비교&lt;/strong&gt;하여 서로의 차이점을 정확히 이해하는 것을 목표로 합니다.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Understanding Carry in Arithmetic: Binary Operations Simplified</title>
-      <link>https://seojuncha.github.io/posts/binary-carry/</link>
-      <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/posts/binary-carry/</guid>
-      <description>&lt;p&gt;Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore &lt;strong&gt;the definition and concept of Carry&lt;/strong&gt;, &lt;strong&gt;how it works in binary and decimal arithmetic&lt;/strong&gt;, and &lt;strong&gt;how programming languages handle Carry&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;Example: When unsigned int exceeds its maximum range:&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
