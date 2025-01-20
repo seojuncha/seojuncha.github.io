@@ -471,21 +471,21 @@ $$</p>
 $$</p>
 <h3 id="using-python-for-conversion">Using Python for Conversion<a hidden class="anchor" aria-hidden="true" href="#using-python-for-conversion">#</a></h3>
 <p>Using Python&rsquo;s REPL is often the simplest way to convert between binary, decimal, and hexadecimal. Note that the <code>bin</code> and <code>hex</code> functions return strings, not integers.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> bin(<span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;0b1&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> bin(<span style="color:#ae81ff">2</span>)
-</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;0b10&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> int(<span style="color:#ae81ff">0b11</span>)
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> int(<span style="color:#ae81ff">0b110</span>)
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">6</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> hex(<span style="color:#ae81ff">0b1</span>)
-</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;0x1&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> hex(<span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;0x1&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> int(<span style="color:#ae81ff">0xf</span>)
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>
-</span></span></code></pre></div><h1 id="signed-binary-representation-and-python-usage">Signed Binary: Representation and Python Usage<a hidden class="anchor" aria-hidden="true" href="#signed-binary-representation-and-python-usage">#</a></h1>
+<pre tabindex="0"><code class="language-python-repl" data-lang="python-repl">&gt;&gt;&gt; bin(1)
+&#39;0b1&#39;
+&gt;&gt;&gt; bin(2)
+&#39;0b10&#39;
+&gt;&gt;&gt; int(0b11)
+3
+&gt;&gt;&gt; int(0b110)
+6
+&gt;&gt;&gt; hex(0b1)
+&#39;0x1&#39;
+&gt;&gt;&gt; hex(1)
+&#39;0x1&#39;
+&gt;&gt;&gt; int(0xf)
+15
+</code></pre><h1 id="signed-binary-representation-and-python-usage">Signed Binary: Representation and Python Usage<a hidden class="anchor" aria-hidden="true" href="#signed-binary-representation-and-python-usage">#</a></h1>
 <p>Signed Binary represents signed integers in binary. Unlike unsigned binary, signed binary requires bit patterns to represent the sign. Although there are three methods to represent signed binary, modern computers primarily use the two&rsquo;s complement method.</p>
 <h2 id="representation-methods">Representation Methods<a hidden class="anchor" aria-hidden="true" href="#representation-methods">#</a></h2>
 <p>The basic principle for representing negative numbers is to <strong>allocate one bit (0 or 1) for the sign</strong>:</p>
@@ -696,14 +696,14 @@ $$</p>
   </tbody>
 </table>
 <h3 id="using-python-for-twos-complement-conversion">Using Python for Two&rsquo;s Complement Conversion<a hidden class="anchor" aria-hidden="true" href="#using-python-for-twos-complement-conversion">#</a></h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> int(<span style="color:#e6db74">&#34;-128&#34;</span>, <span style="color:#ae81ff">10</span>)<span style="color:#f92672">.</span>to_bytes(<span style="color:#ae81ff">1</span>, byteorder<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;little&#34;</span>, signed<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
-</span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x80</span><span style="color:#e6db74">&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> int(<span style="color:#e6db74">&#34;-3&#34;</span>, <span style="color:#ae81ff">10</span>)<span style="color:#f92672">.</span>to_bytes(<span style="color:#ae81ff">1</span>, byteorder<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;little&#34;</span>, signed<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
-</span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfd</span><span style="color:#e6db74">&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> bin(<span style="color:#ae81ff">0xfd</span>)
-</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;0b11111101&#39;</span>
-</span></span></code></pre></div><h1 id="signed-vs-unsigned-comparison">Signed vs Unsigned Comparison<a hidden class="anchor" aria-hidden="true" href="#signed-vs-unsigned-comparison">#</a></h1>
+<pre tabindex="0"><code class="language-python-repl" data-lang="python-repl">&gt;&gt;&gt; int(&#34;-128&#34;, 10).to_bytes(1, byteorder=&#34;little&#34;, signed=True)
+b&#39;\x80&#39;
+
+&gt;&gt;&gt; int(&#34;-3&#34;, 10).to_bytes(1, byteorder=&#34;little&#34;, signed=True)
+b&#39;\xfd&#39;
+&gt;&gt;&gt; bin(0xfd)
+&#39;0b11111101&#39;
+</code></pre><h1 id="signed-vs-unsigned-comparison">Signed vs Unsigned Comparison<a hidden class="anchor" aria-hidden="true" href="#signed-vs-unsigned-comparison">#</a></h1>
 <p>A summary of the key differences between signed and unsigned integers is as follows:</p>
 <table>
   <thead>

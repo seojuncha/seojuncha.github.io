@@ -6,13 +6,55 @@
     <description>Recent content in Tags on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.140.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 15 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 20 Jan 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://seojuncha.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Arm</title>
+      <link>https://seojuncha.github.io/tags/arm/</link>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/arm/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Arm Assembly</title>
+      <link>https://seojuncha.github.io/tags/arm-assembly/</link>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/arm-assembly/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Carry</title>
       <link>https://seojuncha.github.io/tags/carry/</link>
-      <pubDate>Wed, 15 Jan 2025 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
       <guid>https://seojuncha.github.io/tags/carry/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cpsr</title>
+      <link>https://seojuncha.github.io/tags/cpsr/</link>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/cpsr/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Gdb</title>
+      <link>https://seojuncha.github.io/tags/gdb/</link>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/gdb/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Overflow</title>
+      <link>https://seojuncha.github.io/tags/overflow/</link>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/overflow/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Qemu</title>
+      <link>https://seojuncha.github.io/tags/qemu/</link>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/qemu/</guid>
       <description></description>
     </item>
     <item>
@@ -20,13 +62,6 @@
       <link>https://seojuncha.github.io/tags/computer-arithmetic/</link>
       <pubDate>Wed, 15 Jan 2025 00:00:00 +0000</pubDate>
       <guid>https://seojuncha.github.io/tags/computer-arithmetic/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Overflow</title>
-      <link>https://seojuncha.github.io/tags/overflow/</link>
-      <pubDate>Wed, 15 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/overflow/</guid>
       <description></description>
     </item>
     <item>
