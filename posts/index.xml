@@ -25,6 +25,17 @@
 &lt;p&gt;위와 같은 다양한 장점을 제공합니다. 이번 포스팅에서는 ARM 프로세서에서 &lt;strong&gt;&lt;a href=&#34;carry-and-overflow-kr.md&#34;&gt;Carry와 Overflow&lt;/a&gt;를 처리하는 방법&lt;/strong&gt;을 알아보고 간단한 &lt;strong&gt;어셈블리(&lt;em&gt;Assembly&lt;/em&gt;) 예제&lt;/strong&gt;를 사용해 &lt;strong&gt;QEMU에서 디버깅&lt;/strong&gt; 해보겠습니다.&lt;/p&gt;</description>
     </item>
     <item>
+      <title>What Is Overflow in Computer Arithmetic? Explained with Examples</title>
+      <link>https://seojuncha.github.io/posts/carry-and-overflow/</link>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/carry-and-overflow/</guid>
+      <description>&lt;p&gt;Computers rely on finite-sized memory to represent numbers, which can lead to incorrect results if certain operations exceed the representable range. For example:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In an 8-bit integer, calculating 127 + 1, &lt;code&gt;127+1&lt;/code&gt; should result in &lt;code&gt;128&lt;/code&gt;. However, for signed integers, this causes an overflow, resulting in −128 instead.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Such results can lead to logical errors in programs. Moreover, overflow can be exploited to introduce security vulnerabilities. Well-known vulnerabilities like buffer overflow can allow attackers to execute code or gain control of the system.&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>[KR] What Is Overflow in Computer Arithmetic? Explained with Examples</title>
       <link>https://seojuncha.github.io/posts/carry-and-overflow-kr/</link>
       <pubDate>Wed, 15 Jan 2025 00:00:00 +0000</pubDate>

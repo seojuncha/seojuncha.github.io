@@ -335,13 +335,13 @@ overflow.c:5:16: warning: unsigned conversion from ‘int’ to ‘uint8_t’ {a
 </blockquote>
 <h2 id="integer-overflow-in-python">Integer Overflow in Python<a hidden class="anchor" aria-hidden="true" href="#integer-overflow-in-python">#</a></h2>
 <p>파이썬은 다른 언어와 달리 정수형 연산에서 데이터 크기에 제한이 없습니다. 이것은 무제한 정밀도(arbitrary-precision)를 사용하기 때문입니다.</p>
-<pre tabindex="0"><code class="language-python-repl" data-lang="python-repl">&gt;&gt;&gt; 2**63 - 1    # 64비트 정수형 최대값
-9223372036854775807
-&gt;&gt;&gt; 2**63
-9223372036854775808
-&gt;&gt;&gt; 2**66
-73786976294838206464
-</code></pre><p>따라서, 파이썬의 정수형 연산에서는 Overflow의 개념이 없습니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">**</span><span style="color:#ae81ff">63</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>    <span style="color:#75715e"># 64비트 정수형 최대값</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">9223372036854775807</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">**</span><span style="color:#ae81ff">63</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">9223372036854775808</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">**</span><span style="color:#ae81ff">66</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">73786976294838206464</span>
+</span></span></code></pre></div><p>따라서, 파이썬의 정수형 연산에서는 Overflow의 개념이 없습니다.</p>
 <blockquote>
 <p>하지만, 정수형 연산이 아닌 실수형 연산에서는 부동소수점(Floating-Point) 이슈가 발생할 수 있습니다.<br>
 또한, 컴퓨터가 할당할 수 있는 메모리를 넘어서는 경우에는 메모리 부족 이슈가 생기거나 성능 저하가 생길 수 있습니다.</p>
@@ -415,10 +415,10 @@ Overflow (O)
       <li><a href="https://seojuncha.github.io/tags/computer-arithmetic/">Computer Arithmetic</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware-kr/">
+  <a class="prev" href="https://seojuncha.github.io/posts/carry-and-overflow/">
     <span class="title">« Prev</span>
     <br>
-    <span>[KR] Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU</span>
+    <span>What Is Overflow in Computer Arithmetic? Explained with Examples</span>
   </a>
   <a class="next" href="https://seojuncha.github.io/posts/binary-carry/">
     <span class="title">Next »</span>
