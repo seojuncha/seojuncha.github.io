@@ -207,7 +207,7 @@ In this post, we will explore why two&rsquo;s complement is used, its advantages
 
 <article class="post-single">
   <header class="post-header">
-    
+    <div class="breadcrumbs"><a href="https://seojuncha.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://seojuncha.github.io/posts/">Posts</a></div>
     <h1 class="post-title entry-hint-parent">
       Two&#39;s Complement Explained: Benefits and Real-World Applications
     </h1>
@@ -377,10 +377,10 @@ In this post, we will explore why two&rsquo;s complement is used, its advantages
   </tbody>
 </table>
 <h2 id="implementing-twos-complement-in-python">Implementing Two&rsquo;s Complement in Python<a hidden class="anchor" aria-hidden="true" href="#implementing-twos-complement-in-python">#</a></h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">twos_complement</span>(value, bits):
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> value <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>:
-</span></span><span style="display:flex;"><span>    value <span style="color:#f92672">=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> bits) <span style="color:#f92672">+</span> value
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> bin(value)[<span style="color:#ae81ff">2</span>:]
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fc5fa3">def</span> <span style="color:#41a1c0">twos_complement</span>(value, bits):
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">if</span> value &lt; <span style="color:#d0bf69">0</span>:
+</span></span><span style="display:flex;"><span>    value = (<span style="color:#d0bf69">1</span> &lt;&lt; bits) + value
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">return</span> <span style="color:#d0a8ff">bin</span>(value)[<span style="color:#d0bf69">2</span>:]
 </span></span></code></pre></div><p>The formula <code>(1 &lt;&lt; bits) + value </code>works as follows:</p>
 <p>Example: <code>value = 5,</code> <code>bits = 4</code></p>
 <ol>
@@ -402,20 +402,20 @@ In this post, we will explore why two&rsquo;s complement is used, its advantages
 <h2 id="c-example-observing-twos-complement">C Example: Observing Two&rsquo;s Complement<a hidden class="anchor" aria-hidden="true" href="#c-example-observing-twos-complement">#</a></h2>
 <p>Below is a simple C program to observe how a signed integer is stored as two&rsquo;s complement.</p>
 <p><strong>main.c</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>;
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fd8f3f">#include</span> <span style="color:#fd8f3f">&lt;stdio.h&gt;</span><span style="color:#fd8f3f">
+</span></span></span><span style="display:flex;"><span><span style="color:#fd8f3f"></span>
+</span></span><span style="display:flex;"><span><span style="color:#fc5fa3">int</span> <span style="color:#41a1c0">main</span>(<span style="color:#fc5fa3">void</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">int</span> a = -<span style="color:#d0bf69">5</span>;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%X</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, a);
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%u</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, a);
+</span></span><span style="display:flex;"><span>  <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;%X</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>, a);
+</span></span><span style="display:flex;"><span>  <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;%u</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>, a);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">return</span> <span style="color:#d0bf69">0</span>;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><ol>
 <li>Declaring a Negative Variable</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>;
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fc5fa3">int</span> a = -<span style="color:#d0bf69">5</span>;
 </span></span></code></pre></div><p>In C, negative numbers are stored in memory using two&rsquo;s complement:</p>
 <ul>
 <li>Convert 5 to binary: <code>0000 0101</code></li>
@@ -425,9 +425,9 @@ In this post, we will explore why two&rsquo;s complement is used, its advantages
 <ol start="2">
 <li>Output Functions</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%X</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, a);
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;%X</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>, a);
 </span></span></code></pre></div><p>Outputs the hexadecimal representation of <code>a</code>. For <code>-5</code> in 32-bit representation, the result is FFFFFFFB.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%u</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, a);
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;%u</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>, a);
 </span></span></code></pre></div><p>Outputs the unsigned integer representation of a. The result is $2^{32} - 5 = 4,294,967,291$.</p>
 <p><strong>Output</strong></p>
 <pre tabindex="0"><code>FFFFFFFB
@@ -462,7 +462,7 @@ Python uses unlimited bit-length for integers, so negative numbers require addit
 </ol>
 <h1 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h1>
 <p>In this post, we explored the reasons why two&rsquo;s complement is the standard representation for negative numbers in modern computer systems. Its simplicity in arithmetic operations, unique zero representation, and hardware efficiency make it superior to other methods.</p>
-<p>In a future post, we will delve deeper into arithmetic operations with two&rsquo;s complement, including overflow handling and the role of carry bits.</p>
+<p>In a future post, we will delve deeper into arithmetic operations with two&rsquo;s complement, including <a href="/posts/carry-and-overflow/">overflow handling and the role of carry bits</a>.</p>
 <p>If you found this post helpful, consider subscribing to the blog or leaving a comment with your questions!</p>
 
 

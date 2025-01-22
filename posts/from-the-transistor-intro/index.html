@@ -143,7 +143,7 @@
 
 <article class="post-single">
   <header class="post-header">
-    
+    <div class="breadcrumbs"><a href="https://seojuncha.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://seojuncha.github.io/posts/">Posts</a></div>
     <h1 class="post-title entry-hint-parent">
       [KOR] Introduction to &#34;From the Transistor&#34;
     </h1>
@@ -491,21 +491,21 @@ Common LISP을 익히기 위한 과정은 <a href="https://github.com/seojuncha/
 </ol>
 <p>위 4단계를 Python 코드로 작성하여 실제 인코딩된 결과와 작업한 어셈블러의 결과와 비교한 결과를 알려주도록 했습니다.</p>
 <p><strong>branch.s</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-asm" data-lang="asm"><span style="display:flex;"><span><span style="color:#a6e22e">.section</span> <span style="color:#66d9ef">.text</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">.global</span> <span style="color:#66d9ef">_start</span>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-asm" data-lang="asm"><span style="display:flex;"><span>.section .text
+</span></span><span style="display:flex;"><span>.global _start
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>label1:
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">MOV</span> <span style="color:#66d9ef">r0</span>, <span style="color:#75715e">#1
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">MOV</span> <span style="color:#66d9ef">r0</span>, <span style="color:#75715e">#2
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">B</span> .
+</span></span><span style="display:flex;"><span>    <span style="color:#41a1c0">MOV</span> r0, <span style="color:#6c7986">#1
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>    <span style="color:#41a1c0">MOV</span> r0, <span style="color:#6c7986">#2
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>    <span style="color:#41a1c0">B</span> .
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>_start:
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">B</span> <span style="color:#66d9ef">label1</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">BL</span> <span style="color:#66d9ef">label2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#41a1c0">B</span> label1
+</span></span><span style="display:flex;"><span>    <span style="color:#41a1c0">BL</span> label2
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>label2:
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">MOV</span> <span style="color:#66d9ef">r1</span>, <span style="color:#75715e">#2
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">B</span> .
+</span></span><span style="display:flex;"><span>    <span style="color:#41a1c0">MOV</span> r1, <span style="color:#6c7986">#2
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>    <span style="color:#41a1c0">B</span> .
 </span></span></code></pre></div><p><img alt="assembler-verify-output-1" loading="lazy" src="/img/assembler-verify-output-1.png">
 <em>mov 와 b 명령의 인코딩 결과 비교</em></p>
 <p><img alt="assembler-verify-output-2" loading="lazy" src="/img/assembler-verify-output-2.png">
@@ -524,44 +524,44 @@ Common LISP을 익히기 위한 과정은 <a href="https://github.com/seojuncha/
 </ul>
 <p>최상위 CPU 모듈은 단순히 클럭과 리셋 포트 만을 가지며 테스트벤치의 DUT에서도 클럭과 리셋만 제어합니다.</p>
 <p><strong>cpu.v</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span><span style="color:#66d9ef">module</span> cpu (
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">input</span> clk,
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">input</span> n_reset
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span><span style="color:#fc5fa3">module</span> cpu (
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">input</span> clk,
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">input</span> n_reset
 </span></span><span style="display:flex;"><span>);
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/**
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   *   Do Something
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   */</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">endmodule</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6c7986">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986">   *   Do Something
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986">   */</span>
+</span></span><span style="display:flex;"><span><span style="color:#fc5fa3">endmodule</span>
 </span></span></code></pre></div><p>결국 CPU의 동작은 메모리의 데이터를 읽고 산술연산을 하고 다시 쓰는 것 뿐이므로 외부적으로 제어할 필요는 없기 때문입니다.
 따라서, 필요에 따라 Verilog에 작성된 메모리 모듈에 직접 데이터를 로드하는 방식으로 변수를 줄이며 구현하였습니다.</p>
 <p><strong>bram.v</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] memory [<span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">4</span>];
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">initial</span> <span style="color:#66d9ef">begin</span>
-</span></span><span style="display:flex;"><span>    $readmemb(<span style="color:#e6db74">&#34;little-endian-mov.bin&#34;</span>, memory);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">end</span>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] memory [<span style="color:#d0bf69">0</span>:<span style="color:#d0bf69">4</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">initial</span> <span style="color:#fc5fa3">begin</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#d0a8ff">$readmemb</span>(<span style="color:#fc6a5d">&#34;little-endian-mov.bin&#34;</span>, memory);
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">end</span>
 </span></span></code></pre></div><p>본래의 CPU와 동일하게 32비트 워드(Word) 크기의 레지스터들과 명령어 파이프 라인에서 Fetch된 명령어를 저장할 명렁어 레지스터(Instruction Register)등을 동일하게 구현하고,</p>
 <p><strong>cpu.v</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span>  <span style="color:#75715e">// registers
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] register [<span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">12</span>];
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] sp;  <span style="color:#75715e">// R13
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] lr;  <span style="color:#75715e">// R14
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pc;  <span style="color:#75715e">// R15
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// interal registers to communicate with ALU
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] alu_a;    <span style="color:#75715e">// operand 1
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] alu_b;    <span style="color:#75715e">// operand 2(shifter operand)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] alu_out;  <span style="color:#75715e">// result
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">reg</span> carry_in;
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span>  <span style="color:#6c7986">// registers
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] register [<span style="color:#d0bf69">0</span>:<span style="color:#d0bf69">12</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] sp;  <span style="color:#6c7986">// R13
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] lr;  <span style="color:#6c7986">// R14
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] pc;  <span style="color:#6c7986">// R15
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6c7986">// interal registers to communicate with ALU
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] alu_a;    <span style="color:#6c7986">// operand 1
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] alu_b;    <span style="color:#6c7986">// operand 2(shifter operand)
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] alu_out;  <span style="color:#6c7986">// result
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">reg</span> carry_in;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// b[31]: Negative, b[30]: Zero, b[29]: Carry, b[28]: oVerflow
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Other bits always SBZ
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] cpsr;
+</span></span><span style="display:flex;"><span>  <span style="color:#6c7986">// b[31]: Negative, b[30]: Zero, b[29]: Carry, b[28]: oVerflow
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#6c7986">// Other bits always SBZ
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] cpsr;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// instruction register
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">reg</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] ir;
+</span></span><span style="display:flex;"><span>  <span style="color:#6c7986">// instruction register
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">reg</span> [<span style="color:#d0bf69">31</span>:<span style="color:#d0bf69">0</span>] ir;
 </span></span></code></pre></div><p>역할 부담이 큰 모듈들(메모리, 쉬프터, ALU)등은 별도의 모듈로 생성하였습니다.</p>
 <p><strong>cpu.v</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span>  bram bram_inst (
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span>  bram bram_inst (
 </span></span><span style="display:flex;"><span>    .clk(clk),
 </span></span><span style="display:flex;"><span>    .enable(bram_enable),
 </span></span><span style="display:flex;"><span>    .address(bram_addr),
@@ -580,14 +580,14 @@ Common LISP을 익히기 위한 과정은 <a href="https://github.com/seojuncha/
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  alu alu_inst (
 </span></span><span style="display:flex;"><span>    .clk(clk),
-</span></span><span style="display:flex;"><span>    .opcode(ir[<span style="color:#ae81ff">24</span><span style="color:#f92672">:</span><span style="color:#ae81ff">21</span>]),
+</span></span><span style="display:flex;"><span>    .opcode(ir[<span style="color:#d0bf69">24</span>:<span style="color:#d0bf69">21</span>]),
 </span></span><span style="display:flex;"><span>    .operand1(alu_a),
 </span></span><span style="display:flex;"><span>    .operand2(alu_b),
 </span></span><span style="display:flex;"><span>    .carry_in(carry_in),
 </span></span><span style="display:flex;"><span>    .result(alu_out),
-</span></span><span style="display:flex;"><span>    .negative_flag(cpsr[<span style="color:#ae81ff">31</span>]),
-</span></span><span style="display:flex;"><span>    .zero_flag(cpsr[<span style="color:#ae81ff">30</span>]),
-</span></span><span style="display:flex;"><span>    .carry_out_flag(cpsr[<span style="color:#ae81ff">29</span>])
+</span></span><span style="display:flex;"><span>    .negative_flag(cpsr[<span style="color:#d0bf69">31</span>]),
+</span></span><span style="display:flex;"><span>    .zero_flag(cpsr[<span style="color:#d0bf69">30</span>]),
+</span></span><span style="display:flex;"><span>    .carry_out_flag(cpsr[<span style="color:#d0bf69">29</span>])
 </span></span><span style="display:flex;"><span>  );
 </span></span></code></pre></div><p><strong>구현 제외 목록</strong></p>
 <blockquote>

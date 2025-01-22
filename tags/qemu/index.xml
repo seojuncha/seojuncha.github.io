@@ -22,7 +22,7 @@
 &lt;li&gt;Implementation of multi-precision arithmetic&lt;/li&gt;
 &lt;li&gt;Conditional branching and code simplification&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;These advantages make mastering these concepts highly beneficial. In this post, we will explore how &lt;strong&gt;&lt;a href=&#34;carry-and-overflow.md&#34;&gt;Carry and Overflow&lt;/a&gt; are handled in ARM processors&lt;/strong&gt;, along with &lt;strong&gt;a simple assembly example&lt;/strong&gt; that we will &lt;strong&gt;debug using QEMU&lt;/strong&gt;.&lt;/p&gt;</description>
+&lt;p&gt;These advantages make mastering these concepts highly beneficial. In this post, we will explore how &lt;strong&gt;&lt;a href=&#34;https://seojuncha.github.io/posts/carry-and-overflow/&#34;&gt;Carry and Overflow&lt;/a&gt; are handled in ARM processors&lt;/strong&gt;, along with &lt;strong&gt;a simple assembly example&lt;/strong&gt; that we will &lt;strong&gt;debug using QEMU&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
