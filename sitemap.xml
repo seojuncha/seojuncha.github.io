@@ -4,149 +4,149 @@
   <url>
     <loc>https://seojuncha.github.io/tags/arm/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/arm-assembly/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/carry/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/cpsr/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/gdb/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/overflow/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/posts/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/qemu/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/computer-arithmetic/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/posts/carry-and-overflow/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/arithmetic-operation/</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/binary-arithmetic/</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/binary-operation/</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/posts/binary-carry/</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/twos-complement/</loc>
     <lastmod>2025-01-11T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/posts/why-twos-complement/</loc>
     <lastmod>2025-01-11T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/binary-representation/</loc>
     <lastmod>2025-01-09T22:24:49+09:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/posts/binary-representation/</loc>
     <lastmod>2025-01-09T22:24:49+09:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/signed-binary/</loc>
     <lastmod>2025-01-09T22:24:49+09:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/unsigned-binary/</loc>
     <lastmod>2025-01-09T22:24:49+09:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/posts/from-the-transistor-intro/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/from-the-transistor/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/geohot/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/tags/george-hotz/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/archives/</loc>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/categories/</loc>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://seojuncha.github.io/search/</loc>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
 </urlset>
