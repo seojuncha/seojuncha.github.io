@@ -2,6 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://seojuncha.github.io/posts/</loc>
+    <lastmod>2025-01-25T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/</loc>
+    <lastmod>2025-01-25T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>https://seojuncha.github.io/tags/arm/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
@@ -32,17 +42,7 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://seojuncha.github.io/posts/</loc>
-    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://seojuncha.github.io/tags/qemu/</loc>
-    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://seojuncha.github.io/</loc>
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
