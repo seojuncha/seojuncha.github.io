@@ -10,9 +10,9 @@
     <atom:link href="https://seojuncha.github.io/tags/hdl/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Introduction to Verilog from a Programmer&#39;s Perspective</title>
-      <link>https://seojuncha.github.io/posts/iintroduction-verilog-for-programmer/</link>
+      <link>https://seojuncha.github.io/posts/introduction-verilog-for-programmer/</link>
       <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/posts/iintroduction-verilog-for-programmer/</guid>
+      <guid>https://seojuncha.github.io/posts/introduction-verilog-for-programmer/</guid>
       <description>&lt;p&gt;To work on &lt;a href=&#34;https://github.com/seojuncha/fromthetransistor-fork&#34;&gt;From the Transistor&lt;/a&gt; project, I used a tool called &lt;em&gt;&lt;strong&gt;Verilog&lt;/strong&gt;&lt;/em&gt;.
 Verilog is one of the &lt;a href=&#34;https://en.wikipedia.org/wiki/Hardware_description_language&#34;&gt;HDLs(Hardware Description Languages)&lt;/a&gt; designed for programming &lt;a href=&#34;https://en.wikipedia.org/wiki/Field-programmable_gate_array&#34;&gt;FPGAs(Field Programmable Gate Arrays)&lt;/a&gt;. Simply put, it&amp;rsquo;s a language used for designing hardware circuits.&lt;/p&gt;
 &lt;p&gt;In this post, we&amp;rsquo;ll explore &lt;strong&gt;how Verilog differs from other programming language&lt;/strong&gt; from the perspective of a software programmer and understand &lt;strong&gt;how it can be helpful in various aspects&lt;/strong&gt;.&lt;/p&gt;
