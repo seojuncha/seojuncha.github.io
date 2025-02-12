@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU | Seojun&#39;s Personal Site</title>
+<meta name="keywords" content="carry, overflow, arm, arm assembly, cpsr, qemu, gdb">
+<meta name="description" content="Understanding the operation of the hardware Carry flag (C) and Overflow flag (V) in depth from a programmer&rsquo;s perspective offers significant advantages in various aspects. In particular, they play a crucial role in low-level system programming, embedded systems development, and performance optimization and debugging. For example,
+
+Accurate numerical computation
+High-performance low-level optimization
+Debugging and troubleshooting
+Error detection and improved stability
+Implementation of multi-precision arithmetic
+Conditional branching and code simplification
+
+These advantages make mastering these concepts highly beneficial. In this post, we will explore how Carry and Overflow are handled in ARM processors, along with a simple assembly example that we will debug using QEMU.">
+<meta name="author" content="">
+<link rel="canonical" href="https://seojuncha.github.io/en/posts/carry-and-overflow-in-hardware/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.069a38f8d4111aa2bec4abbbb39c1e9d33da344d8ef1eab2479d83d38fefef76.css" integrity="sha256-Bpo4&#43;NQRGqK&#43;xKu7s5wenTPaNE2O8eqyR52D04/v73Y=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://seojuncha.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://seojuncha.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://seojuncha.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://seojuncha.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://seojuncha.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="ko" href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/">
+<link rel="alternate" hreflang="en" href="https://seojuncha.github.io/en/posts/carry-and-overflow-in-hardware/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=G-ZG0WK2BMBK"
+></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+
+  gtag("config", "G-ZG0WK2BMBK");
+</script>
+
+
+<meta property="og:url" content="https://seojuncha.github.io/en/posts/carry-and-overflow-in-hardware/">
+  <meta property="og:site_name" content="Seojun&#39;s Personal Site">
+  <meta property="og:title" content="Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU">
+  <meta property="og:description" content="Understanding the operation of the hardware Carry flag (C) and Overflow flag (V) in depth from a programmer’s perspective offers significant advantages in various aspects. In particular, they play a crucial role in low-level system programming, embedded systems development, and performance optimization and debugging. For example,
+Accurate numerical computation High-performance low-level optimization Debugging and troubleshooting Error detection and improved stability Implementation of multi-precision arithmetic Conditional branching and code simplification These advantages make mastering these concepts highly beneficial. In this post, we will explore how Carry and Overflow are handled in ARM processors, along with a simple assembly example that we will debug using QEMU.">
+  <meta property="og:locale" content="en-US">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-01-22T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-01-22T00:00:00+00:00">
+    <meta property="article:tag" content="Carry">
+    <meta property="article:tag" content="Overflow">
+    <meta property="article:tag" content="Arm">
+    <meta property="article:tag" content="Arm Assembly">
+    <meta property="article:tag" content="Cpsr">
+    <meta property="article:tag" content="Qemu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU">
+<meta name="twitter:description" content="Understanding the operation of the hardware Carry flag (C) and Overflow flag (V) in depth from a programmer&rsquo;s perspective offers significant advantages in various aspects. In particular, they play a crucial role in low-level system programming, embedded systems development, and performance optimization and debugging. For example,
+
+Accurate numerical computation
+High-performance low-level optimization
+Debugging and troubleshooting
+Error detection and improved stability
+Implementation of multi-precision arithmetic
+Conditional branching and code simplification
+
+These advantages make mastering these concepts highly beneficial. In this post, we will explore how Carry and Overflow are handled in ARM processors, along with a simple assembly example that we will debug using QEMU.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://seojuncha.github.io/en/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU",
+      "item": "https://seojuncha.github.io/en/posts/carry-and-overflow-in-hardware/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU",
+  "name": "Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU",
+  "description": "Understanding the operation of the hardware Carry flag (C) and Overflow flag (V) in depth from a programmer\u0026rsquo;s perspective offers significant advantages in various aspects. In particular, they play a crucial role in low-level system programming, embedded systems development, and performance optimization and debugging. For example,\nAccurate numerical computation High-performance low-level optimization Debugging and troubleshooting Error detection and improved stability Implementation of multi-precision arithmetic Conditional branching and code simplification These advantages make mastering these concepts highly beneficial. In this post, we will explore how Carry and Overflow are handled in ARM processors, along with a simple assembly example that we will debug using QEMU.\n",
+  "keywords": [
+    "carry", "overflow", "arm", "arm assembly", "cpsr", "qemu", "gdb"
+  ],
+  "articleBody": "Understanding the operation of the hardware Carry flag (C) and Overflow flag (V) in depth from a programmer’s perspective offers significant advantages in various aspects. In particular, they play a crucial role in low-level system programming, embedded systems development, and performance optimization and debugging. For example,\nAccurate numerical computation High-performance low-level optimization Debugging and troubleshooting Error detection and improved stability Implementation of multi-precision arithmetic Conditional branching and code simplification These advantages make mastering these concepts highly beneficial. In this post, we will explore how Carry and Overflow are handled in ARM processors, along with a simple assembly example that we will debug using QEMU.\nThrough this process, we aim to gain a deeper understanding of how arithmetic operations in our code function at the hardware level, empowering us to write better code and solve problems more effectively.\n32-bit ARM Processor This post is based on the 32-bit ARM processor used in the ongoing From the Transistor project.\nA 32-bit processor signifies that both the data size it can process at once and the memory address size are 32 bits.\nKey characteristics of a 32-bit processor include:\nRegister size: 32 bits Data bus and memory bus size: 32 bits Memory alignment unit: 32 bits Word size: 32 bits CPSR: Current Program Status Register ARM processors have a special register called the CPSR (Current Program Status Register), which is used to store the current state of the program.\nCPSR Format\n32-bit CPSR +---+---+---+---+---+----------+---+---+---+----+----+----+----+----+ | N | Z | C | V | Q | DNM(RAZ) | I | F | T | M4 | M3 | M2 | M1 | M0 | +---+---+---+---+---+----------+---+---+---+----+----+----+----+----+ Condition Code Flags The upper 4 bits [31:28] of the CPSR are designated as the Condition Code Flags and are used to evaluate the program’s status. These bits include the following fields:\nN (Negative) Z (Zero) C (Carry) V (oVerflow) The Condition Code Flags are set to 1 when a specific condition is met and cleared to 0 when it is not. Each flag occupies a single bit in the CPSR.\nThe term flag typically refers to controlling two states: true (1) or false (0).\nSetting a flag to true is referred to as set, while changing it to false is called clear.\nN Flag Set: When the result is negative Clear: When the result is zero or positive Z Flag Set: When the result is zero Clear: When the result is not zero C Flag Set: When a carry occurs Clear: When no carry occurs V Flag Set: When an overflow occurs Clear: When no overflow occurs What conditions are being checked?\nThe CPU (e.g., ARM) is essentially a machine that executes binary-encoded instructions. The four flags set in the CPSR are all used to examine the result of executing an instruction.\nExample: If the result of an instruction’s operation is 0, Z Flag is Set\nCarry Flag \u0026 Overflow Flag The behavior of the Carry Flag and Overflow Flag varies slightly depending on the type of operation and CPU instruction.\nARM instructions can be broadly classified into the following three types:\nData-Processing Instructions Perform operations such as arithmetic, logical, and shift operations. Examples: ADD, MOV, AND, etc. Load and Store Instructions Transfer data between memory and registers. Examples: LDR, STR, etc. Branch Instructions Control the program’s flow of execution. Examples: B, BL, etc. Additional instruction types exist, but these three are sufficient to understand for now.\nA deeper dive into ARM assembly will be covered in future posts.\nARM Assembly with suffix ’s' However, not all data-processing instructions update the status flags. This design choice provides programmers with greater efficiency and flexibility. Updating the status flags involves hardware operations, and applying this to every instruction would lead to unnecessary power consumption and performance degradation.\nADD r0, r1, r2 @ Not update the status flags ADDS r0, r1, r2 @ Update the status flags Assembly Example: Compare “ADD” and “ADDS” Let’s explore the concepts discussed so far with an actual ARM assembly code example.\nThe reason for not using a C language example is that the generation of assembly code is compiler-dependent.\nConverting C code into assembly is entirely the compiler’s responsibility.\nDepending on the logic structure and optimization, the compiler may or may not use the S suffix.\nTherefore, to simplify the example, we will use assembly directly.\nEnvironment Ubuntu 22.04 arm-none-eabi-gcc 10.3.1 gdb-multiarch 12.1 Code Examples Here are two assembly codes, add.s and adds.s, along with the following test scenario:\nadd.s\n.section .text .global _start _start: mov r0, #0xffffffff add r1, r0, #2 adds.s\n.section .text .global _start _start: mov r0, #0xffffffff adds r1, r0, #2 Compile:\n$ arm-none-eabi-gcc -g -o add.elf add.s -nostdlib -specs=nosys.specs $ arm-none-eabi-gcc -g -o adds.elf adds.s -nostdlib -specs=nosys.specs Test Scenario Assign the 32-bit maximum value (0xFFFF_FFFF) to the r0 register. Add 2 to the value in the r0 register and store the result in the r1 register. Check the changes in the CPSR when using add. Check the changes in the CPSR when using adds. By comparing these two cases, we can observe the impact of the S suffix on the CPSR flags.\nRun on QEMU We will use the QEMU emulator to execute each file on a 32-bit ARM processor. This setup allows us to analyze how the instructions (add and adds) behave and how they affect the CPSR flags during execution.\n$ qemu-system-arm -M versatilepb -nographic -s -S -kernel add.elf $ qemu-system-arm -M versatilepb -nographic -s -S -kernel adds.elf A separate post on how to use QEMU will be created in the future.\nIf you have any questions, please refer to the QEMU official documentation.\nDebug with GDB We will use GDB to execute each instruction step-by-step and inspect the CPSR values after each operation.\nGDB Commands Used target remote localhost:1234 Connects to the local GDB server running on QEMU. si Executes a single CPU instruction step. i r r0 r1 cpsr Outputs the values of specified CPU registers: i r : Displays the values of all CPU registers. r0 r1 cpsr : Displays the values of r0, r1, and cpsr registers specifically. Use “ADD” instruction 1. Start GDB\n$ gdb-multiarch add.elf 2. Connect to the local GDB Server\n(gdb) target remote localhost:1234 _start () at add.s:5 5 mov r0, #0xffffffff The next instruction to be executed is displayed as mov r0, #0xffffffff\n3. Check Initial CPSR\n(gdb) i r r0 r1 cpsr r0 0x0 0 r1 0x0 0 cpsr 0x400001d3 1073742291 The CPSR value, 0x400001d3 in binary is 0100 0000 0000 0000 0000 0001 1101 0011.\nLooking at the upper 4 bits:\nN : 0 Z : 1 C : 0 V : 0 This indicates that only Z (Zero) flag is set due to register initialization.\n4. Exectute the mov instruction\n(gdb) si 6 add r1, r0, #2 The si command executes the current CPU instruction.\nThe mov r0, #0xffffffff instruction instruction is executed, and then the next instruction to be executed is add r1, r0, #2.\n5. Verify CPSR After mov Execution\n(gdb) i r r0 r1 cpsr r0 0xffffffff -1 r1 0x0 0 cpsr 0x400001d3 1073742291 The mov instruction assisngs 0xffffffff to the r0 register. However, since the s suffix is not used, the CPSR flags remain unchanged, even though the Z flag should have been cleared.\n6. Execute the add instruction\n(gdb) si 0x00008008 in ?? () The add r1, r0, #2 instruction is executed.\n7. Verify CPSR After add Execution\n(gdb) i r r0 r1 cpsr r0 0xffffffff -1 r1 0x1 1 cpsr 0x400001d3 1073742291 When add r1, r0, #2 is executed, the CPSR flags remain unchanged, as the s suffix is not used.\nUse “ADDS” instruction Following the same process, we will now examine the changes in register values when using ADDS.\n$ gdb-multiarch adds.elf (gdb) target remote localhost:1234 Remote debugging using localhost:1234 _start () at adds.s:5 5 mov r0, #0xffffffff (gdb) i r r0 r1 cpsr r0 0x0 0 r1 0x0 0 cpsr 0x400001d3 1073742291 (gdb) si 6 adds r1, r0, #2 (gdb) i r r0 r1 cpsr r0 0xffffffff -1 r1 0x0 0 cpsr 0x400001d3 1073742291 (gdb) si 0x00008008 in ?? () (gdb) i r r0 r1 cpsr r0 0xffffffff -1 r1 0x1 1 cpsr 0x200001d3 536871379 After following the same debugging process, the fianl CPSR flags is 0x200001d3.\nIn binary, 0x200001d3 is 0010 0000 0000 0000 0000 0001 1101 0011, and the upper 4 bits are as follows:\nN : 0 Z : 0 C : 1 V : 0 Since the result of add operation exceeds the 32-bit maximum value (0xffffffff), a Carry occurs. However, the addition result, 1 does not exceed the range of signed integers, so Overflow does not occur. As a result, the CPSR Carry Flag is set, while the Overflow Flag remains clear.\nConclusion In this post, we explored how Carry and Overflow are handled in ARM processors, using assembly code examples and verifying their behavior with QEMU and GDB. At the hardware level, the primary goal is to detect Carry and Overflow conditions, while handling them is the responsibility of the software. Therefore, understanding the detection conditions and methods is essential for programmers to write more efficient and robust code.\nUpcoming Posts\nHow are arithmetic operations processed in hardware? How are Carry and Overflow detection implemented? Utilizing ARM assembly with QEMU Feel free to share your questions or suggestions in the comments for more detailed explanations!\n",
+  "wordCount" : "1563",
+  "inLanguage": "en",
+  "datePublished": "2025-01-22T00:00:00Z",
+  "dateModified": "2025-01-22T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://seojuncha.github.io/en/posts/carry-and-overflow-in-hardware/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Seojun's Personal Site",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://seojuncha.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://seojuncha.github.io/en/" accesskey="h" title="Seojun&#39;s Personal Site (Alt + H)">Seojun&#39;s Personal Site</a>
+            <div class="logo-switches">
+                <ul class="lang-switch"><li>|</li>
+                    <li>
+                        <a href="https://seojuncha.github.io/" title="한국어"
+                            aria-label="한국어">Ko</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://seojuncha.github.io/en/search/" title="Search">
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://seojuncha.github.io/en/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://seojuncha.github.io/en/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://seojuncha.github.io/en/">Home</a>&nbsp;»&nbsp;<a href="https://seojuncha.github.io/en/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU
+    </h1>
+    <div class="post-meta"><span title='2025-01-22 00:00:00 +0000 UTC'>January 22, 2025</span>&nbsp;·&nbsp;8 min&nbsp;|&nbsp;Translations:
+<ul class="i18n_list">
+    <li>
+        <a href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/">Ko</a>
+    </li>
+</ul>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#32-bit-arm-processor" aria-label="32-bit ARM Processor">32-bit ARM Processor</a></li>
+                <li>
+                    <a href="#cpsr-current-program-status-register" aria-label="CPSR: Current Program Status Register">CPSR: Current Program Status Register</a><ul>
+                        
+                <li>
+                    <a href="#condition-code-flags" aria-label="Condition Code Flags">Condition Code Flags</a><ul>
+                        
+                <li>
+                    <a href="#n-flag" aria-label="N Flag">N Flag</a></li>
+                <li>
+                    <a href="#z-flag" aria-label="Z Flag">Z Flag</a></li>
+                <li>
+                    <a href="#c-flag" aria-label="C Flag">C Flag</a></li>
+                <li>
+                    <a href="#v-flag" aria-label="V Flag">V Flag</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#carry-flag--overflow-flag" aria-label="Carry Flag &amp; Overflow Flag">Carry Flag &amp; Overflow Flag</a><ul>
+                        
+                <li>
+                    <a href="#arm-assembly-with-suffix-s" aria-label="ARM Assembly with suffix &rsquo;s&#39;">ARM Assembly with suffix &rsquo;s'</a></li></ul>
+                </li>
+                <li>
+                    <a href="#assembly-example-compare-add-and-adds" aria-label="Assembly Example: Compare &ldquo;ADD&rdquo; and &ldquo;ADDS&rdquo;">Assembly Example: Compare &ldquo;ADD&rdquo; and &ldquo;ADDS&rdquo;</a><ul>
+                        
+                <li>
+                    <a href="#environment" aria-label="Environment">Environment</a></li>
+                <li>
+                    <a href="#code-examples" aria-label="Code Examples">Code Examples</a><ul>
+                        
+                <li>
+                    <a href="#test-scenario" aria-label="Test Scenario">Test Scenario</a></li></ul>
+                </li>
+                <li>
+                    <a href="#run-on-qemu" aria-label="Run on QEMU">Run on QEMU</a></li>
+                <li>
+                    <a href="#debug-with-gdb" aria-label="Debug with GDB">Debug with GDB</a><ul>
+                        
+                <li>
+                    <a href="#gdb-commandshttpsftpgnuorgold-gnumanualsgdbhtml_chaptergdb_4htmlsec12-used" aria-label="GDB Commands Used">GDB Commands Used</a></li>
+                <li>
+                    <a href="#use-add-instruction" aria-label="Use &ldquo;ADD&rdquo; instruction">Use &ldquo;ADD&rdquo; instruction</a></li>
+                <li>
+                    <a href="#use-adds-instruction" aria-label="Use &ldquo;ADDS&rdquo; instruction">Use &ldquo;ADDS&rdquo; instruction</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Understanding the operation of the hardware <em><strong>Carry flag</strong></em> (C) and <em><strong>Overflow flag</strong></em> (V) in depth from a programmer&rsquo;s perspective offers significant advantages in various aspects. In particular, they play a crucial role in <strong>low-level system programming</strong>, <strong>embedded systems development</strong>, and <strong>performance optimization and debugging</strong>. For example,</p>
+<ol>
+<li>Accurate numerical computation</li>
+<li>High-performance low-level optimization</li>
+<li>Debugging and troubleshooting</li>
+<li>Error detection and improved stability</li>
+<li>Implementation of multi-precision arithmetic</li>
+<li>Conditional branching and code simplification</li>
+</ol>
+<p>These advantages make mastering these concepts highly beneficial. In this post, we will explore how <strong><a href="/en/posts/carry-and-overflow/">Carry and Overflow</a> are handled in ARM processors</strong>, along with <strong>a simple assembly example</strong> that we will <strong>debug using QEMU</strong>.</p>
+<p>Through this process, we aim to gain a deeper understanding of how arithmetic operations in our code function at the hardware level, empowering us to write better code and solve problems more effectively.</p>
+<h1 id="32-bit-arm-processor">32-bit ARM Processor<a hidden class="anchor" aria-hidden="true" href="#32-bit-arm-processor">#</a></h1>
+<p>This post is based on the 32-bit ARM processor used in the ongoing <a href="https://github.com/seojuncha/fromthetransistor-fork">From the Transistor</a> project.</p>
+<p>A 32-bit processor signifies that both the data size it can process at once and the memory address size are 32 bits.</p>
+<p>Key characteristics of a 32-bit processor include:</p>
+<ul>
+<li>Register size: 32 bits</li>
+<li>Data bus and memory bus size: 32 bits</li>
+<li><a href="https://en.wikipedia.org/wiki/Data_structure_alignment">Memory alignment</a> unit: 32 bits</li>
+<li>Word size: 32 bits</li>
+</ul>
+<h1 id="cpsr-current-program-status-register">CPSR: Current Program Status Register<a hidden class="anchor" aria-hidden="true" href="#cpsr-current-program-status-register">#</a></h1>
+<p>ARM processors have a special register called the <em><strong>CPSR (Current Program Status Register)</strong></em>, which is used to <strong>store the current state of the program</strong>.</p>
+<p><strong>CPSR Format</strong></p>
+<pre tabindex="0"><code>32-bit CPSR
++---+---+---+---+---+----------+---+---+---+----+----+----+----+----+
+| N | Z | C | V | Q | DNM(RAZ) | I | F | T | M4 | M3 | M2 | M1 | M0 |
++---+---+---+---+---+----------+---+---+---+----+----+----+----+----+
+</code></pre><h2 id="condition-code-flags">Condition Code Flags<a hidden class="anchor" aria-hidden="true" href="#condition-code-flags">#</a></h2>
+<p>The upper 4 bits [31:28] of the CPSR are designated as the <em><strong>Condition Code Flags</strong></em> and are used to evaluate the program&rsquo;s status. These bits include the following fields:</p>
+<ul>
+<li>N (<em><strong>N</strong></em>egative)</li>
+<li>Z (<em><strong>Z</strong></em>ero)</li>
+<li>C (<em><strong>C</strong></em>arry)</li>
+<li>V (o<em><strong>V</strong></em>erflow)</li>
+</ul>
+<p>The Condition Code Flags are set to 1 when a specific condition is met and cleared to 0 when it is not. Each flag occupies a single bit in the CPSR.</p>
+<blockquote>
+<p>The term <em>flag</em> typically refers to controlling two states: true (1) or false (0).<br>
+Setting a flag to true is referred to as set, while changing it to false is called clear.</p>
+</blockquote>
+<h3 id="n-flag">N Flag<a hidden class="anchor" aria-hidden="true" href="#n-flag">#</a></h3>
+<ul>
+<li>Set: When the result is negative</li>
+<li>Clear: When the result is zero or positive</li>
+</ul>
+<h3 id="z-flag">Z Flag<a hidden class="anchor" aria-hidden="true" href="#z-flag">#</a></h3>
+<ul>
+<li>Set: When the result is zero</li>
+<li>Clear: When the result is not zero</li>
+</ul>
+<h3 id="c-flag">C Flag<a hidden class="anchor" aria-hidden="true" href="#c-flag">#</a></h3>
+<ul>
+<li>Set: When a carry occurs</li>
+<li>Clear: When no carry occurs</li>
+</ul>
+<h3 id="v-flag">V Flag<a hidden class="anchor" aria-hidden="true" href="#v-flag">#</a></h3>
+<ul>
+<li>Set: When an overflow occurs</li>
+<li>Clear: When no overflow occurs</li>
+</ul>
+<blockquote>
+<p><strong>What conditions are being checked?</strong><br>
+The CPU (e.g., ARM) is essentially a machine that executes <em>binary-encoded instructions</em>. The four flags set in the CPSR are all used to <strong>examine the result of executing an instruction</strong>.</p>
+<p>Example: If the result of an instruction&rsquo;s operation is 0, Z Flag is Set</p>
+</blockquote>
+<h1 id="carry-flag--overflow-flag">Carry Flag &amp; Overflow Flag<a hidden class="anchor" aria-hidden="true" href="#carry-flag--overflow-flag">#</a></h1>
+<p>The behavior of the Carry Flag and Overflow Flag varies slightly depending on the type of operation and CPU instruction.</p>
+<p>ARM instructions can be broadly classified into the following three types:</p>
+<ul>
+<li>Data-Processing Instructions
+<ul>
+<li>Perform operations such as arithmetic, logical, and shift operations.</li>
+<li>Examples: <code>ADD</code>, <code>MOV</code>, <code>AND</code>, etc.</li>
+</ul>
+</li>
+<li>Load and Store Instructions
+<ul>
+<li>Transfer data between memory and registers.</li>
+<li>Examples: <code>LDR</code>, <code>STR</code>, etc.</li>
+</ul>
+</li>
+<li>Branch Instructions
+<ul>
+<li>Control the program&rsquo;s flow of execution.</li>
+<li>Examples: <code>B</code>, <code>BL</code>, etc.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Additional instruction types exist, but these three are sufficient to understand for now.<br>
+A deeper dive into ARM assembly will be covered in future posts.</p>
+</blockquote>
+<h2 id="arm-assembly-with-suffix-s">ARM Assembly with suffix &rsquo;s'<a hidden class="anchor" aria-hidden="true" href="#arm-assembly-with-suffix-s">#</a></h2>
+<p>However, <strong>not all data-processing instructions update the status flags</strong>. This design choice provides programmers with greater efficiency and flexibility. Updating the status flags involves hardware operations, and applying this to every instruction would lead to unnecessary power consumption and performance degradation.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-armasm" data-lang="armasm"><span style="display:flex;"><span>ADD <span style="color:#5dd8ff">r0</span>, <span style="color:#5dd8ff">r1</span>, <span style="color:#5dd8ff">r2</span>   <span style="color:#6c7986">@ Not update the status flags
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>ADDS <span style="color:#5dd8ff">r0</span>, <span style="color:#5dd8ff">r1</span>, <span style="color:#5dd8ff">r2</span>  <span style="color:#6c7986">@ Update the status flags
+</span></span></span></code></pre></div><h1 id="assembly-example-compare-add-and-adds">Assembly Example: Compare &ldquo;ADD&rdquo; and &ldquo;ADDS&rdquo;<a hidden class="anchor" aria-hidden="true" href="#assembly-example-compare-add-and-adds">#</a></h1>
+<p>Let’s explore the concepts discussed so far with an actual ARM assembly code example.</p>
+<blockquote>
+<p>The reason for not using a C language example is that the generation of assembly code is compiler-dependent.<br>
+Converting C code into assembly is entirely the compiler’s responsibility.<br>
+Depending on the logic structure and optimization, the compiler may or may not use the S suffix.</p>
+<p>Therefore, to simplify the example, we will use assembly directly.</p>
+</blockquote>
+<h2 id="environment">Environment<a hidden class="anchor" aria-hidden="true" href="#environment">#</a></h2>
+<ul>
+<li>Ubuntu 22.04</li>
+<li><a href="https://launchpad.net/ubuntu/jammy/&#43;package/gcc-arm-none-eabi">arm-none-eabi-gcc</a> 10.3.1</li>
+<li><a href="https://installati.one/install-gdb-multiarch-ubuntu-22-04/">gdb-multiarch</a> 12.1</li>
+</ul>
+<h2 id="code-examples">Code Examples<a hidden class="anchor" aria-hidden="true" href="#code-examples">#</a></h2>
+<p>Here are two assembly codes, <code>add.s</code> and <code>adds.s</code>, along with the following test scenario:</p>
+<p><strong>add.s</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;display:grid;"><code class="language-armasm" data-lang="armasm"><span style="display:flex;"><span><span style="color:#fc5fa3">.section</span> <span style="color:#fc5fa3">.text</span>
+</span></span><span style="display:flex;"><span><span style="color:#fc5fa3">.global</span> _start
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>_start:
+</span></span><span style="display:flex;"><span>  mov <span style="color:#5dd8ff">r0</span>, #<span style="color:#d0bf69">0xffffffff</span>
+</span></span><span style="display:flex; background-color:#353539"><span>  add <span style="color:#5dd8ff">r1</span>, <span style="color:#5dd8ff">r0</span>, #<span style="color:#d0bf69">2</span>
+</span></span></code></pre></div><p><strong>adds.s</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;display:grid;"><code class="language-armasm" data-lang="armasm"><span style="display:flex;"><span><span style="color:#fc5fa3">.section</span> <span style="color:#fc5fa3">.text</span>
+</span></span><span style="display:flex;"><span><span style="color:#fc5fa3">.global</span> _start
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>_start:
+</span></span><span style="display:flex;"><span>  mov <span style="color:#5dd8ff">r0</span>, #<span style="color:#d0bf69">0xffffffff</span>
+</span></span><span style="display:flex; background-color:#353539"><span>  adds <span style="color:#5dd8ff">r1</span>, <span style="color:#5dd8ff">r0</span>, #<span style="color:#d0bf69">2</span>
+</span></span></code></pre></div><p><strong>Compile</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ arm-none-eabi-gcc -g -o add.elf add.s -nostdlib -specs=nosys.specs
+</span></span><span style="display:flex;"><span>$ arm-none-eabi-gcc -g -o adds.elf adds.s -nostdlib -specs=nosys.specs
+</span></span></code></pre></div><h3 id="test-scenario">Test Scenario<a hidden class="anchor" aria-hidden="true" href="#test-scenario">#</a></h3>
+<ol>
+<li>Assign the 32-bit maximum value (0xFFFF_FFFF) to the r0 register.</li>
+<li>Add 2 to the value in the r0 register and store the result in the r1 register.
+<ul>
+<li>Check the changes in the CPSR when using add.</li>
+<li>Check the changes in the CPSR when using adds.</li>
+</ul>
+</li>
+</ol>
+<p>By comparing these two cases, we can observe the impact of the S suffix on the <code>CPSR</code> flags.</p>
+<h2 id="run-on-qemu">Run on QEMU<a hidden class="anchor" aria-hidden="true" href="#run-on-qemu">#</a></h2>
+<p>We will use the QEMU emulator to execute each file on a 32-bit ARM processor. This setup allows us to analyze how the instructions (<code>add</code> and <code>adds</code>) behave and how they affect the <code>CPSR</code> flags during execution.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ qemu-system-arm -M versatilepb -nographic -s -S -kernel add.elf
+</span></span><span style="display:flex;"><span>$ qemu-system-arm -M versatilepb -nographic -s -S -kernel adds.elf
+</span></span></code></pre></div><blockquote>
+<p>A separate post on how to use QEMU will be created in the future.<br>
+If you have any questions, please refer to the <a href="https://www.qemu.org/docs/master/">QEMU official documentation</a>.</p>
+</blockquote>
+<h2 id="debug-with-gdb">Debug with GDB<a hidden class="anchor" aria-hidden="true" href="#debug-with-gdb">#</a></h2>
+<p>We will use <a href="https://man7.org/linux/man-pages/man1/gdb.1.html">GDB</a> to execute each instruction step-by-step and inspect the <code>CPSR</code> values after each operation.</p>
+<h3 id="gdb-commandshttpsftpgnuorgold-gnumanualsgdbhtml_chaptergdb_4htmlsec12-used"><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb/html_chapter/gdb_4.html#SEC12">GDB Commands</a> Used<a hidden class="anchor" aria-hidden="true" href="#gdb-commandshttpsftpgnuorgold-gnumanualsgdbhtml_chaptergdb_4htmlsec12-used">#</a></h3>
+<ul>
+<li><code>target remote localhost:1234</code>
+<ul>
+<li>Connects to the local GDB server running on QEMU.</li>
+</ul>
+</li>
+<li><code>si</code>
+<ul>
+<li>Executes a single CPU instruction step.</li>
+</ul>
+</li>
+<li><code>i r r0 r1 cpsr</code>
+<ul>
+<li>Outputs the values of specified CPU registers:</li>
+<li><code>i r</code> : Displays the values of all CPU registers.</li>
+<li><code>r0 r1 cpsr</code> : Displays the values of <code>r0</code>, <code>r1</code>, and <code>cpsr</code> registers specifically.</li>
+</ul>
+</li>
+</ul>
+<h3 id="use-add-instruction">Use &ldquo;ADD&rdquo; instruction<a hidden class="anchor" aria-hidden="true" href="#use-add-instruction">#</a></h3>
+<p><strong>1. Start GDB</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gdb-multiarch add.elf
+</span></span></code></pre></div><p><strong>2. Connect to the local GDB Server</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>(gdb) target remote localhost:1234
+</span></span><span style="display:flex;"><span>_start () at add.s:5
+</span></span><span style="display:flex;"><span><span style="color:#d0bf69">5</span>         mov r0, <span style="color:#6c7986">#0xffffffff</span>
+</span></span></code></pre></div><p>The next instruction to be executed is displayed as <code>mov r0, #0xffffffff</code></p>
+<p><strong>3. Check Initial CPSR</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>(gdb) i r r0 r1 cpsr
+</span></span><span style="display:flex;"><span>r0             0x0                 <span style="color:#d0bf69">0</span>
+</span></span><span style="display:flex;"><span>r1             0x0                 <span style="color:#d0bf69">0</span>
+</span></span><span style="display:flex;"><span>cpsr           0x400001d3          <span style="color:#d0bf69">1073742291</span>
+</span></span></code></pre></div><p>The CPSR value, <code>0x400001d3</code> in binary is <code>0100 0000 0000 0000 0000 0001 1101 0011</code>.<br>
+Looking at the upper 4 bits:</p>
+<ul>
+<li>N : 0</li>
+<li>Z : 1</li>
+<li>C : 0</li>
+<li>V : 0</li>
+</ul>
+<p>This indicates that only <strong>Z (Zero)</strong> flag is set due to register initialization.</p>
+<p><strong>4. Exectute the <code>mov</code> instruction</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>(gdb) si
+</span></span><span style="display:flex;"><span><span style="color:#d0bf69">6</span>         add r1, r0, <span style="color:#6c7986">#2</span>
+</span></span></code></pre></div><p>The <code>si</code> command executes the current CPU instruction.<br>
+The <code>mov r0, #0xffffffff</code> instruction instruction is executed, and then the next instruction to be executed is <code>add r1, r0, #2</code>.</p>
+<p><strong>5. Verify <code>CPSR</code> After <code>mov</code> Execution</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>(gdb) i r r0 r1 cpsr
+</span></span><span style="display:flex;"><span>r0             0xffffffff          -1
+</span></span><span style="display:flex;"><span>r1             0x0                 <span style="color:#d0bf69">0</span>
+</span></span><span style="display:flex;"><span>cpsr           0x400001d3          <span style="color:#d0bf69">1073742291</span>
+</span></span></code></pre></div><p>The <code>mov</code> instruction assisngs <code>0xffffffff</code> to the <code>r0</code> register. However, since the <code>s</code> suffix is not used, the <code>CPSR</code> flags remain unchanged, even though the Z flag should have been cleared.</p>
+<p><strong>6. Execute the <code>add</code> instruction</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>(gdb) si
+</span></span><span style="display:flex;"><span>0x00008008 in ?? ()
+</span></span></code></pre></div><p>The <code>add r1, r0, #2</code> instruction is executed.</p>
+<p><strong>7. Verify <code>CPSR</code> After <code>add</code> Execution</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>(gdb) i r r0 r1 cpsr
+</span></span><span style="display:flex;"><span>r0             0xffffffff          -1
+</span></span><span style="display:flex;"><span>r1             0x1                 <span style="color:#d0bf69">1</span>
+</span></span><span style="display:flex;"><span>cpsr           0x400001d3          <span style="color:#d0bf69">1073742291</span>
+</span></span></code></pre></div><p>When <code>add r1, r0, #2</code> is executed, the <code>CPSR</code> flags remain unchanged, as the <code>s</code> suffix is not used.</p>
+<h3 id="use-adds-instruction">Use &ldquo;ADDS&rdquo; instruction<a hidden class="anchor" aria-hidden="true" href="#use-adds-instruction">#</a></h3>
+<p>Following the same process, we will now examine the changes in register values when using <code>ADDS</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;display:grid;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gdb-multiarch adds.elf
+</span></span><span style="display:flex;"><span>(gdb) target remote localhost:1234
+</span></span><span style="display:flex;"><span>Remote debugging using localhost:1234
+</span></span><span style="display:flex;"><span>_start () at adds.s:5
+</span></span><span style="display:flex;"><span><span style="color:#d0bf69">5</span>         mov r0, <span style="color:#6c7986">#0xffffffff</span>
+</span></span><span style="display:flex;"><span>(gdb) i r r0 r1 cpsr
+</span></span><span style="display:flex;"><span>r0             0x0                 <span style="color:#d0bf69">0</span>
+</span></span><span style="display:flex;"><span>r1             0x0                 <span style="color:#d0bf69">0</span>
+</span></span><span style="display:flex;"><span>cpsr           0x400001d3          <span style="color:#d0bf69">1073742291</span>
+</span></span><span style="display:flex;"><span>(gdb) si
+</span></span><span style="display:flex; background-color:#353539"><span><span style="color:#d0bf69">6</span>         adds r1, r0, <span style="color:#6c7986">#2</span>
+</span></span><span style="display:flex;"><span>(gdb) i r r0 r1 cpsr
+</span></span><span style="display:flex;"><span>r0             0xffffffff          -1
+</span></span><span style="display:flex;"><span>r1             0x0                 <span style="color:#d0bf69">0</span>
+</span></span><span style="display:flex; background-color:#353539"><span>cpsr           0x400001d3          <span style="color:#d0bf69">1073742291</span>
+</span></span><span style="display:flex;"><span>(gdb) si
+</span></span><span style="display:flex;"><span>0x00008008 in ?? ()
+</span></span><span style="display:flex;"><span>(gdb) i r r0 r1 cpsr
+</span></span><span style="display:flex;"><span>r0             0xffffffff          -1
+</span></span><span style="display:flex;"><span>r1             0x1                 <span style="color:#d0bf69">1</span>
+</span></span><span style="display:flex; background-color:#353539"><span>cpsr           0x200001d3          <span style="color:#d0bf69">536871379</span>
+</span></span></code></pre></div><p>After following the same debugging process, the fianl <code>CPSR</code> flags is <code>0x200001d3</code>.<br>
+In binary, <code>0x200001d3</code> is <code>0010 0000 0000 0000 0000 0001 1101 0011</code>, and the upper 4 bits are as follows:</p>
+<ul>
+<li>N : 0</li>
+<li>Z : 0</li>
+<li><strong>C : 1</strong></li>
+<li>V : 0</li>
+</ul>
+<p>Since the result of <code>add</code> operation exceeds the 32-bit maximum value (<code>0xffffffff</code>), a <strong>Carry occurs</strong>. However, the addition result, <code>1</code> does not exceed the range of signed integers, so <strong>Overflow does not occur</strong>. As a result, the CPSR <strong>Carry Flag is set</strong>, while the <strong>Overflow Flag remains clear</strong>.</p>
+<h1 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h1>
+<p>In this post, we explored how <strong>Carry</strong> and <strong>Overflow</strong> are handled in ARM processors, using <strong>assembly code examples</strong> and <strong>verifying their behavior with QEMU and GDB</strong>. At the hardware level, the primary goal is to detect Carry and Overflow conditions, while handling them is the responsibility of the software. Therefore, understanding the detection conditions and methods is essential for programmers to write more efficient and robust code.</p>
+<p><strong>Upcoming Posts</strong></p>
+<ul>
+<li>How are arithmetic operations processed in hardware?</li>
+<li>How are Carry and Overflow detection implemented?</li>
+<li>Utilizing ARM assembly with QEMU</li>
+</ul>
+<p><strong>Feel free to share your questions or suggestions in the comments for more detailed explanations!</strong></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://seojuncha.github.io/en/tags/carry/">Carry</a></li>
+      <li><a href="https://seojuncha.github.io/en/tags/overflow/">Overflow</a></li>
+      <li><a href="https://seojuncha.github.io/en/tags/arm/">Arm</a></li>
+      <li><a href="https://seojuncha.github.io/en/tags/arm-assembly/">Arm Assembly</a></li>
+      <li><a href="https://seojuncha.github.io/en/tags/cpsr/">Cpsr</a></li>
+      <li><a href="https://seojuncha.github.io/en/tags/qemu/">Qemu</a></li>
+      <li><a href="https://seojuncha.github.io/en/tags/gdb/">Gdb</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://seojuncha.github.io/en/posts/introduction-verilog-for-programmer/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Introduction to Verilog from a Programmer&#39;s Perspective</span>
+  </a>
+  <a class="next" href="https://seojuncha.github.io/en/posts/carry-and-overflow/">
+    <span class="title">Next »</span>
+    <br>
+    <span>What Is Overflow in Computer Arithmetic? Explained with Examples</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU on x"
+            href="https://x.com/intent/tweet/?text=Understanding%20Carry%20and%20Overflow%20in%20ARM%20Processors%3a%20Debugging%20with%20Assembly%20and%20QEMU&amp;url=https%3a%2f%2fseojuncha.github.io%2fen%2fposts%2fcarry-and-overflow-in-hardware%2f&amp;hashtags=carry%2coverflow%2carm%2carmassembly%2ccpsr%2cqemu%2cgdb">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fseojuncha.github.io%2fen%2fposts%2fcarry-and-overflow-in-hardware%2f&amp;title=Understanding%20Carry%20and%20Overflow%20in%20ARM%20Processors%3a%20Debugging%20with%20Assembly%20and%20QEMU&amp;summary=Understanding%20Carry%20and%20Overflow%20in%20ARM%20Processors%3a%20Debugging%20with%20Assembly%20and%20QEMU&amp;source=https%3a%2f%2fseojuncha.github.io%2fen%2fposts%2fcarry-and-overflow-in-hardware%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU on reddit"
+            href="https://reddit.com/submit?url=https%3a%2f%2fseojuncha.github.io%2fen%2fposts%2fcarry-and-overflow-in-hardware%2f&title=Understanding%20Carry%20and%20Overflow%20in%20ARM%20Processors%3a%20Debugging%20with%20Assembly%20and%20QEMU">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fseojuncha.github.io%2fen%2fposts%2fcarry-and-overflow-in-hardware%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU on whatsapp"
+            href="https://api.whatsapp.com/send?text=Understanding%20Carry%20and%20Overflow%20in%20ARM%20Processors%3a%20Debugging%20with%20Assembly%20and%20QEMU%20-%20https%3a%2f%2fseojuncha.github.io%2fen%2fposts%2fcarry-and-overflow-in-hardware%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU on telegram"
+            href="https://telegram.me/share/url?text=Understanding%20Carry%20and%20Overflow%20in%20ARM%20Processors%3a%20Debugging%20with%20Assembly%20and%20QEMU&amp;url=https%3a%2f%2fseojuncha.github.io%2fen%2fposts%2fcarry-and-overflow-in-hardware%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Understanding%20Carry%20and%20Overflow%20in%20ARM%20Processors%3a%20Debugging%20with%20Assembly%20and%20QEMU&u=https%3a%2f%2fseojuncha.github.io%2fen%2fposts%2fcarry-and-overflow-in-hardware%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer><script src="https://utteranc.es/client.js"
+        repo="seojuncha/seojuncha.github.io"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://seojuncha.github.io/en/">Seojun&#39;s Personal Site</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+</body>
+
+</html>

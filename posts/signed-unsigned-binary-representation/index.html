@@ -1,24 +1,30 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="ko" dir="ltr">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
 <title>Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기 | Seojun&#39;s Personal Site</title>
 <meta name="keywords" content="signed binary, unsigned binary, binary representation">
-<meta name="description" content="In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two&rsquo;s complement being the most widely used method in modern systems.">
+<meta name="description" content="이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.
+사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.
+
+문자를 숫자로 표현하기 위한 ascii 테이블이 존재
+정수의 개념 (Integer Concept)
+컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/signed-unsigned-binary-representation/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.7f08297e217e897e8e389cc9ed4982a5a2795f565ca38ecb38b42ed646b7f8ae.css" integrity="sha256-fwgpfiF&#43;iX6OOJzJ7UmCpaJ5X1Zco47LOLQu1ka3&#43;K4=" rel="preload stylesheet" as="style">
-<link rel="icon" href="http://localhost:1313/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<link rel="canonical" href="https://seojuncha.github.io/posts/signed-unsigned-binary-representation/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.069a38f8d4111aa2bec4abbbb39c1e9d33da344d8ef1eab2479d83d38fefef76.css" integrity="sha256-Bpo4&#43;NQRGqK&#43;xKu7s5wenTPaNE2O8eqyR52D04/v73Y=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://seojuncha.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://seojuncha.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://seojuncha.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://seojuncha.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://seojuncha.github.io/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/signed-unsigned-binary-representation/">
+<link rel="alternate" hreflang="ko" href="https://seojuncha.github.io/posts/signed-unsigned-binary-representation/">
+<link rel="alternate" hreflang="en" href="https://seojuncha.github.io/en/posts/signed-unsigned-binary-representation/">
 <noscript>
     <style>
         #theme-toggle,
@@ -105,11 +111,14 @@
 ></script>
 
 
-<meta property="og:url" content="http://localhost:1313/posts/signed-unsigned-binary-representation/">
+<meta property="og:url" content="https://seojuncha.github.io/posts/signed-unsigned-binary-representation/">
   <meta property="og:site_name" content="Seojun&#39;s Personal Site">
   <meta property="og:title" content="Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기">
-  <meta property="og:description" content="In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two’s complement being the most widely used method in modern systems.">
-  <meta property="og:locale" content="en-us">
+  <meta property="og:description" content="이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.
+사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.
+문자를 숫자로 표현하기 위한 ascii 테이블이 존재
+정수의 개념 (Integer Concept) 컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.">
+  <meta property="og:locale" content="ko-KR">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
     <meta property="article:published_time" content="2025-01-08T00:00:00+00:00">
@@ -119,7 +128,12 @@
     <meta property="article:tag" content="Binary Representation">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기">
-<meta name="twitter:description" content="In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two&rsquo;s complement being the most widely used method in modern systems.">
+<meta name="twitter:description" content="이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.
+사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.
+
+문자를 숫자로 표현하기 위한 ascii 테이블이 존재
+정수의 개념 (Integer Concept)
+컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.">
 
 
 <script type="application/ld+json">
@@ -131,13 +145,13 @@
       "@type": "ListItem",
       "position":  1 ,
       "name": "Posts",
-      "item": "http://localhost:1313/posts/"
+      "item": "https://seojuncha.github.io/posts/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기",
-      "item": "http://localhost:1313/posts/signed-unsigned-binary-representation/"
+      "item": "https://seojuncha.github.io/posts/signed-unsigned-binary-representation/"
     }
   ]
 }
@@ -148,53 +162,59 @@
   "@type": "BlogPosting",
   "headline": "Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기",
   "name": "Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기",
-  "description": "In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two\u0026rsquo;s complement being the most widely used method in modern systems.",
+  "description": "이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.\n사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.\n문자를 숫자로 표현하기 위한 ascii 테이블이 존재\n정수의 개념 (Integer Concept) 컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.\n",
   "keywords": [
     "signed binary", "unsigned binary", "binary representation"
   ],
-  "articleBody": "소개 (Introduction) 이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.\n사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.\n문자를 숫자로 표현하기 위한 ascii 테이블이 존재\n정수의 개념 (Integer Concept) 컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.\n정수와 실수 (Integer and Real Number) 실수범위에 포함되는 정수의 정의. 양수,음수 그리고 0이 될 수 있다.\n컴퓨터에서 정수의 의미 모든 데이터는 2진수(Binary)형태로 컴퓨터 기억공간에 저장됩니다. 다시 말해, 정수 데이터가 컴퓨터 메모리에 저장된다는 것은 메모리의 특정 공간을 차지한다는 것 입니다. 우리가 일상적으로 사용하는 정수는 10진수 표현법으로 하나의 자릿수(예: 10의 자리, 100의 자리 등)에 0부터 9까지, 총 10개의 숫자를 표현할 수 있습니다. (그래서 10진수입니다.)\n기억공간?\n기억공간이라는 용어를 사용한 이유는 꼭 데이터가 메모리(Memory)에만 저장되지는 않기 때문 입니다. 가령 CPU 레지스터(Register)에도 데이터가 저장됩니다.\n편의를 위해 본 포스팅에서는 메모리라는 용어와 혼용하여 사용합니다.\n컴퓨터는 모두가 알다시피 0과 1로 이루어진 데이터를 처리합니다. 따라서, 숫자를 포함한 모든 데이터는 0과 1로 표현되어야 하기 때문에 2진수 표현법이 필요합니다. 하지만 이는, 표현방법의 차이일 뿐, 의미가 변하는 것은 아닙니다. 예를 들어 ‘5’라는 숫자는 10진수 표현이 5일 뿐, 2진수 표현으로는 ‘101’입니다.\n앞선 정수의 개념에서, 정수는 양수와 음수, 그리고 0으로 구성된다고 정의했습니다. 컴퓨터에서는 양수와 음수를 나타내기 위한 방법으로 부호 있는 정수(Signed Integer) 와 부호 없는 정수(Unsigned Integer) 로 나누어 표현합니다.\n부호 있는 정수라는 것은 +기호와 -기호를 포함하여 컴퓨터 메모리에 저장한다는 의미이고, 부호 없는 정수라는 것은 항상 양의 방향(+)을 가정하고 정수의 크기만을 컴퓨터 메모리에 저장한다는 의미입니다. 이것은 컴퓨터 시스템에서 매우 중요한 의미를 가지는데, 동일한 2진 데이터라고 하더라도 해당 데이터가 어떤 표현법을 나타내는냐에 따라 실제로 의미하는 값이 다르기 때문입니다.\nUnsigned Binary: 개념과 변환 방법 Unsigned Binary는 부호 없는 정수를 2진수로 표현한 데이터 입니다. 부호가 없는 경우, 부호를 나타낼 별도의 비트가 필요하지 않기 때문에 수학적인 2진수 $\\leftrightarrow$ 10진수 변환을 그대로 적용할 수 있습니다.\n자연수(Natural Number)\n부호 없는 정수는 자연수와 동일합니다.\n개념 예를 들어, 4비트 공간에서 부호 없는 정수의 2진수/10진수/16진수 표현은 아래와 같습니다.\n4비트 unsigned binary\n2진수(bin) 10진수(dec) 16진수(hex) 0000 0 0x0 0001 1 0x1 0010 2 0x2 0011 3 0x3 0100 4 0x4 0101 5 0x5 0110 6 0x6 0111 7 0x7 1000 8 0x8 1001 9 0x9 1010 10 0xA 1011 11 0xB 1100 12 0xC 1101 13 0xD 1110 14 0xE 1111 15 0xF 즉, 4비트 공간에서 부호 없는 정수의 10진수 정수의 표현 범위는 $0 \\leqq \\Z \\leqq 2^4-1$ 이고, 16진수로는 0부터 0xF까지 입니다.\n비트 크기 별 16진수 표현\n컴퓨터 시스템에서 숫자를 표현하기 위해 16진수 또한 굉장히 많이 사용됩니다. 따라서 비트 공간의 크기에 따라 최대 표현 가능한 16진수를 알고 있어야 합니다.\n4비트 = 0xF\n8비트 = 0xFF\n16비트 = 0xFFFF\n32비트 = 0xFFFF_FFFF\n변환 10진수를 2진수로 변환 2진수로 변환하기 위해서는 숫자가 구성되는 원리에 의해 나누기 연산(/)과 나머지 연산(%)을 사용할 수 있습니다.\n나누기(/) 나머지(%) 45 / 2 = 22 45 % 2 = 1 22 / 2 = 11 22 % 2 = 0 11 / 2 = 5 11 % 2 = 1 5 / 2 = 2 5 % 2 = 1 2 / 2 = 1 2 % 2 = 0 1 / 2 = 0 1 % 2 = 1 $$ \\begin{aligned} 45_{10} \u0026= 22 \\times 2 + 1 \\newline \u0026= (11 \\times 2 + 0) \\times 2 + 1 \\newline \u0026= ((5 \\times 2 + 1) \\times 2 + 0) \\times 2 + 1 \\newline \u0026= (((2 \\times 2 + 1) \\times 2 + 1) \\times 2 + 0) \\times 2 + 1 \\newline \u0026= ((((1 \\times 2 + 0) \\times 2 + 1) \\times 2 + 1) \\times 2 + 0) \\times 2 + 1 \\newline \u0026= (((((0 \\times 2 + 1) \\times 2 + 0) \\times 2 + 1) \\times 2 + 1) \\times 2 + 0) \\times 2 + 1 \\newline \u0026= 1 \\times 2^5 + 0 \\times 2^4 + 1 \\times 2^3 + 1 \\times 2^2 + 0 \\times 2^1 + 1 \\newline \u0026= 101101_2 \\end{aligned} $$\n2진수를 10진수로 변환 2진수 역시도 10진수의 표현원리와 동일하게 각 자릿수를 2의 거듭제곱으로 표현합니다.\n$$ \\begin{aligned} 101_2 \u0026= 1 \\times 2^2 + 0 \\times 2^1 + 1 \\times 2^0 \\newline \u0026= 1 \\times 4 + 0 \\times 2 + 1 \\times 1 \\newline \u0026= 5_{10} \\end{aligned} $$\n파이썬을 활용한 변환 사실 가장 간단한 방법은 일일히 계산하는 것보다 파이썬 REPL을 사용하는 것 입니다.\n단, 유의할 점은 bin이나 hex를 사용할 경우 반환값은 정수가 아닌 문자열입니다.\n\u003e\u003e\u003e bin(1) '0b1' \u003e\u003e\u003e bin(2) '0b10' \u003e\u003e\u003e int(0b11) 3 \u003e\u003e\u003e int(0b110) 6 \u003e\u003e\u003e hex(0b1) '0x1' \u003e\u003e\u003e hex(1) '0x1' \u003e\u003e\u003e int(0xf) 15 Signed Binary: 표현 방법과 파이썬 활용 Signed Binary는 부호 있는 정수를 2진수로 표현한 데이터 입니다. Unsigned Binary와 다르게 부호를 나타내기 위한 비트 패턴이 필요합니다. 아래에 3가지 방법을 소개하겠지만, 현대 컴퓨터에서는 주로 2의 보수 표현을 사용합니다.\n표현 방법 기본적인 음수 표현의 원리는 부호를 나타내기 위한 1비트(0 혹은 1)를 할당하는 것 입니다.\n0 : 양수 (Positive) 1 : 음수 (Negative) 방법1: 부호-크기 (Sign-Magnitude) 부호-크기 방법에서는 단순히 최상위 비트(MSB: Most Significant Bit)에 부호 비트를 추가합니다.\n예를 들어, 8비트 공간에서 양의 부호를 가진 정수 5와 음의 부호를 가진 정수 -5를 2진수로 표현하면 아래와 같습니다.\n+5 = 0000 0101 -5 = 1000 0101 0101이 숫자 5를 나타내고, 최상위 비트에 각각 0(양의 부호, +)과 1(음의 부호, -)을 사용했습니다.\n동일한 방식으로, 8비트 공간에서 부호 비트를 추가하는 방법을 사용할 때 나타낼 수 있는 수는 아래와 같이 정리할 수 있습니다.\n2진수 10진수 0000 0000 +0 0000 0001 +1 0000 0010 +2 … … 0111 1111 +127 1000 0000 -0 1000 0001 -1 … … 1111 1111 -127 따라서 표현할 수 있는 숫자는, +0부터 +127까지 127개와 -0부터 -127까지 127개, 총 254개의 숫자를 표현할 수 있습니다.\n방법2: 1의 보수 (One’s Complement) 1의 보수법은 부호 없는 정수의 2진 데이터 형태를 모든 거꾸로 뒤집는 것 입니다. 2진수는 0 혹은 1이라는 두개의 값만 가질 수 있고 거꾸로 뒤집는 다는 것은 0 은 1로, 1은 0으로 바꾸는 것 입니다.\n비트 뒤집기\n0 -\u003e 1 1 -\u003e 0 1의 보수 표현에 의한 8비트 $\\pm$ 5\n+5 = 0000 0101 -5 = 1111 1010 1의 보수 표현법에서 8비트 정수는 아래와 같이 정리할 수 있습니다.\n2진수 10진수 0000 0000 +0 0000 0001 +1 … … 0111 1110 +126 0111 1111 +127 1000 0000 -127 1000 0001 -126 … … 1111 1101 -2 1111 1110 -1 1111 1111 -0 방법3: 2의 보수 (Tow’s Complement) 2의 보수법은 1의 보수법과 같이 모든 비트를 거꾸로 만들고 1비트의 1을 더하는 방식으로 표현됩니다. 앞선 2가지 방법의 단점을 보완하기 때문에 현재 대부분의 컴퓨터에서 음수를 표현하기 위한 방법입니다.\n음의 정수를 2의 보수법에 의한 2진수로 표현하기 위해서는 다음의 순서를 따릅니다.\n부호 없는 정수의 1의 보수를 구한다. LSB에 1을 더한다. 2의 보수 표현에 의한 8비트 $\\pm$ 5\n+5 = 0000 0101 -5 = 1111 1010 (1의 보수 표현) + 1 ----------- = 1111 1011 2진수 10진수 변환(양수 표현 \u003e 1의 보수 \u003e +1) 0000 0000 +0 0000 0001 +1 0000 0010 +2 … … 0111 1110 +126 0111 1111 +127 1000 0000 -128 1000 0000 \u003e 0111 1111 \u003e 1000 0000 1000 0001 -127 0111 1111 \u003e 1000 0000 \u003e 1000 0001 1000 0010 -126 0111 1110 \u003e 1000 0001 \u003e 1000 0010 … … 1111 1101 -3 0000 0100 \u003e 1111 1011 \u003e 1111 1101 1111 1110 -2 0000 0010 \u003e 1111 1101 \u003e 1111 1110 1111 1111 -1 0000 0001 \u003e 1111 1110 \u003e 1111 1111 파이썬을 활용한 2의 보수 \u003c-\u003e 10진수 변환 \u003e\u003e\u003e int(\"-128\", 10).to_bytes(1, byteorder=\"little\", signed=True) b'\\x80' \u003e\u003e\u003e int(\"-3\", 10).to_bytes(1, byteorder=\"little\", signed=True) b'\\xfd' \u003e\u003e\u003e bin(0xfd) '0b11111101' Signed vs Unsigned 비교 지금까지 설명드린 부호 있는 정수와 부호 없는 정수를 비교 정리하면 아래와 같습니다.\n구분 부호 있음(Signed) 부호 없음(Unsigned) 값의 범위 음수,0,양수 0,양수 범위(8비트) -128 ~ 127 0~255 사용사례 센서,오프셋 등 메모리 주소, 카운터/타이머 등 부호비트 존재(MSB) 없음 2의 보수 표현에 따른 부호 있는 정수와 부호 없는 정수의 표현 가능한 범위는 아래와 같이 수식으로 정리할 수 있습니다.\n부호 없는 정수(Unsigned Integer) $$ 0 \\leqq \\Z \\leqq 2^{비트수}-1 $$\n부호 있는 정수(Signed Integer) $$ -2^{비트수-1} \\leqq \\Z \\leqq 2^{비트수-1} - 1 $$\n프로그래밍 주의사항 지금까지 살펴본 것 처럼 부호의 여부에 따라 컴퓨터가 해석하는 방법이 달라지기 때문에, 그 특성을 이해하고 프로그램을 작성할 때도 이점을 유의해야 합니다. 주로 사용하는 C언어에서 2가지 예제를 살펴보면서 조심해야할 부분을 확인해보겠습니다.\n예제1: signed int 와 unsigned int의 비교 실수하기 쉬운 첫번째는 서로 다른 부호 유형간의 비교입니다. 아래의 예제에서는 signed형 정수인 -1이 unsigned형으로 변환 해석 되어 1보다 큰 값으로 처리됩니다.\ncomp.c\n#include void main(void) { int a = -1; unsigned b = 1; if (a \u003c b) { printf(\"a is less than b\\n\"); } else { printf(\"a is greater than or equals to b\\n\"); } } 실행 결과\n$ gcc comp.c \u0026\u0026 ./a.out a is greater than or equals to b 우리가 직관적으로 생각하기에는 -1은 1보다 작으므로 “a is less than b\"가 출력되야할 것으로 보입니다.\n하지만 비교연산을 할 때, 부호 있는 정수인 a가 부호 없는 정수(unsigned)로 변환되기 때문에 b보다 큰 값으로 해석됩니다.\nint a = -1의 비트패턴\na = -1 = 0xFFFFFFFF (-1의 2의 보수 표현) = 4,294,967,295\n위와 같은 예제는 컴파일 시에 -W 옵션을 사용해서 예방할 수 있습니다.\n$ gcc -W comp.c comp.c: In function ‘main’: comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare] 8 | if (a \u003c b) { | ^ 예제2: 형 변환 (Type Casting) 다른 예제는 흔히 사용하는 형 변환 실수입니다. int형과 unsigned int형과의 상호 형 변환시에는 해당 변수가 나타내는 수의 의미가 달라지는 것을 알고 있어야 합니다.\nmain.c\n#include #include void main(void) { int8_t i8 = -5; // 1111 1011 uint8_t u8 = 5; // 0000 0101 uint8_t ui8 = (uint8_t)i8; // 1111 1011 printf(\"UINT8_MAX: %d\\n\", UINT8_MAX); printf(\"INT8_MAX: %d\\n\", INT8_MAX); printf(\"0x%02x [%d]\\n\", i8, i8); printf(\"0x%02x [%d]\\n\", u8, u8); printf(\"0x%02x [%d]\\n\", ui8, ui8); } 실행 결과\n$ gcc main.c \u0026\u0026 ./a.out UINT8_MAX: 255 INT8_MAX: 127 0xfffffffb [-5] # (1) 0x05 [5] # (2) 0xfb [251] # (3) 첫번째, int8_t형은 메모리 공간에서 8비트를 차지하는 변수입니다. 하지만 실제 변수가 가진 값이 int형보다 작은 메모리 공간을 차지하는 경우, printf문에서 포맷팅을 할때는 int형으로 승격되기 때문에 (1)의 결과는 0xFB가 아닌 0xFFFFFFFB가 되는 것 입니다.\n부호 있는 정수 -5는 2진수로 표현하면 $11111011_2$ 이고 16진수로는 0xFB입니다.\n부호 확장(Sign Extension)\n8비트 정수를 32비트 정수로 승격할 때, 부호 확장이란 것이 발생합니다.\n부호 확장은 말 그대로 정수의 부호 비트를 확장된 메모리 크기에 맞도록 확장시키는 것 입니다.\n위의 예시의 경우, 부호 비트가 음수를 나타내는 1이므로 최상위 비트(MSB)의 1을 나머지 상위비트에 채웁니다.\n두번째, 변수 ui8은 부호 있는 정수형 변수 i8을 부호 없는 정수형으로 형변환을 하여 할당했습니다. 하지만, 출력 결과 (3)에서 볼 수 있듯이 실제 메모리 패턴(0xFB)는 변하지 않고, 0xFB의 부호 없는 정수값, 251을 출력합니다.\nC언어의 형변환은 컴퓨터에 실제 저장되는 값을 변경하는 것이 아니라, 컴퓨터가 어떻게 해석할지를 알려주는 것 입니다.(형변환 뿐 아니라 타입시스템 자체가 그렇다고 봐야합니다.)\n결론 (Conclusion) 이번 글에서는 Signed와 Unsigned Binary의 차이점, 표현 방식, 프로그래밍 주의사항을 살펴보았습니다.\nSigned Binary: 음수와 양수를 모두 표현 (예: 센서 데이터, 오프셋) Unsigned Binary: 양수만 표현 (예: 메모리 주소, 타이머) 다음 포스팅:\n이진 데이터 산술 연산 (덧셈, 뺄셈) 2의 보수법이 다른 방법을 대체한 이유 이번 글이 도움이 되었나요? 궁금한 점이나 더 알고 싶은 부분이 있다면 댓글로 남겨주세요!\nSummary In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two’s complement being the most widely used method in modern systems.\n",
-  "wordCount" : "1862",
-  "inLanguage": "en",
+  "articleBody": "이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.\n사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.\n문자를 숫자로 표현하기 위한 ascii 테이블이 존재\n정수의 개념 (Integer Concept) 컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.\n정수와 실수 (Integer and Real Number) 실수범위에 포함되는 정수의 정의. 양수,음수 그리고 0이 될 수 있다.\n컴퓨터에서 정수의 의미 모든 데이터는 2진수(Binary)형태로 컴퓨터 기억공간에 저장됩니다. 다시 말해, 정수 데이터가 컴퓨터 메모리에 저장된다는 것은 메모리의 특정 공간을 차지한다는 것 입니다. 우리가 일상적으로 사용하는 정수는 10진수 표현법으로 하나의 자릿수(예: 10의 자리, 100의 자리 등)에 0부터 9까지, 총 10개의 숫자를 표현할 수 있습니다. (그래서 10진수입니다.)\n기억공간?\n기억공간이라는 용어를 사용한 이유는 꼭 데이터가 메모리(Memory)에만 저장되지는 않기 때문 입니다. 가령 CPU 레지스터(Register)에도 데이터가 저장됩니다.\n편의를 위해 본 포스팅에서는 메모리라는 용어와 혼용하여 사용합니다.\n컴퓨터는 모두가 알다시피 0과 1로 이루어진 데이터를 처리합니다. 따라서, 숫자를 포함한 모든 데이터는 0과 1로 표현되어야 하기 때문에 2진수 표현법이 필요합니다. 하지만 이는, 표현방법의 차이일 뿐, 의미가 변하는 것은 아닙니다. 예를 들어 ‘5’라는 숫자는 10진수 표현이 5일 뿐, 2진수 표현으로는 ‘101’입니다.\n앞선 정수의 개념에서, 정수는 양수와 음수, 그리고 0으로 구성된다고 정의했습니다. 컴퓨터에서는 양수와 음수를 나타내기 위한 방법으로 부호 있는 정수(Signed Integer) 와 부호 없는 정수(Unsigned Integer) 로 나누어 표현합니다.\n부호 있는 정수라는 것은 +기호와 -기호를 포함하여 컴퓨터 메모리에 저장한다는 의미이고, 부호 없는 정수라는 것은 항상 양의 방향(+)을 가정하고 정수의 크기만을 컴퓨터 메모리에 저장한다는 의미입니다. 이것은 컴퓨터 시스템에서 매우 중요한 의미를 가지는데, 동일한 2진 데이터라고 하더라도 해당 데이터가 어떤 표현법을 나타내는냐에 따라 실제로 의미하는 값이 다르기 때문입니다.\nUnsigned Binary: 개념과 변환 방법 Unsigned Binary는 부호 없는 정수를 2진수로 표현한 데이터 입니다. 부호가 없는 경우, 부호를 나타낼 별도의 비트가 필요하지 않기 때문에 수학적인 2진수 $\\leftrightarrow$ 10진수 변환을 그대로 적용할 수 있습니다.\n자연수(Natural Number)\n부호 없는 정수는 자연수와 동일합니다.\n개념 예를 들어, 4비트 공간에서 부호 없는 정수의 2진수/10진수/16진수 표현은 아래와 같습니다.\n4비트 unsigned binary\n2진수(bin) 10진수(dec) 16진수(hex) 0000 0 0x0 0001 1 0x1 0010 2 0x2 0011 3 0x3 0100 4 0x4 0101 5 0x5 0110 6 0x6 0111 7 0x7 1000 8 0x8 1001 9 0x9 1010 10 0xA 1011 11 0xB 1100 12 0xC 1101 13 0xD 1110 14 0xE 1111 15 0xF 즉, 4비트 공간에서 부호 없는 정수의 10진수 정수의 표현 범위는 $0 \\leqq \\Z \\leqq 2^4-1$ 이고, 16진수로는 0부터 0xF까지 입니다.\n비트 크기 별 16진수 표현\n컴퓨터 시스템에서 숫자를 표현하기 위해 16진수 또한 굉장히 많이 사용됩니다. 따라서 비트 공간의 크기에 따라 최대 표현 가능한 16진수를 알고 있어야 합니다.\n4비트 = 0xF\n8비트 = 0xFF\n16비트 = 0xFFFF\n32비트 = 0xFFFF_FFFF\n변환 10진수를 2진수로 변환 2진수로 변환하기 위해서는 숫자가 구성되는 원리에 의해 나누기 연산(/)과 나머지 연산(%)을 사용할 수 있습니다.\n나누기(/) 나머지(%) 45 / 2 = 22 45 % 2 = 1 22 / 2 = 11 22 % 2 = 0 11 / 2 = 5 11 % 2 = 1 5 / 2 = 2 5 % 2 = 1 2 / 2 = 1 2 % 2 = 0 1 / 2 = 0 1 % 2 = 1 $$ \\begin{aligned} 45_{10} \u0026= 22 \\times 2 + 1 \\newline \u0026= (11 \\times 2 + 0) \\times 2 + 1 \\newline \u0026= ((5 \\times 2 + 1) \\times 2 + 0) \\times 2 + 1 \\newline \u0026= (((2 \\times 2 + 1) \\times 2 + 1) \\times 2 + 0) \\times 2 + 1 \\newline \u0026= ((((1 \\times 2 + 0) \\times 2 + 1) \\times 2 + 1) \\times 2 + 0) \\times 2 + 1 \\newline \u0026= (((((0 \\times 2 + 1) \\times 2 + 0) \\times 2 + 1) \\times 2 + 1) \\times 2 + 0) \\times 2 + 1 \\newline \u0026= 1 \\times 2^5 + 0 \\times 2^4 + 1 \\times 2^3 + 1 \\times 2^2 + 0 \\times 2^1 + 1 \\newline \u0026= 101101_2 \\end{aligned} $$\n2진수를 10진수로 변환 2진수 역시도 10진수의 표현원리와 동일하게 각 자릿수를 2의 거듭제곱으로 표현합니다.\n$$ \\begin{aligned} 101_2 \u0026= 1 \\times 2^2 + 0 \\times 2^1 + 1 \\times 2^0 \\newline \u0026= 1 \\times 4 + 0 \\times 2 + 1 \\times 1 \\newline \u0026= 5_{10} \\end{aligned} $$\n파이썬을 활용한 변환 사실 가장 간단한 방법은 일일히 계산하는 것보다 파이썬 REPL을 사용하는 것 입니다.\n단, 유의할 점은 bin이나 hex를 사용할 경우 반환값은 정수가 아닌 문자열입니다.\n\u003e\u003e\u003e bin(1) '0b1' \u003e\u003e\u003e bin(2) '0b10' \u003e\u003e\u003e int(0b11) 3 \u003e\u003e\u003e int(0b110) 6 \u003e\u003e\u003e hex(0b1) '0x1' \u003e\u003e\u003e hex(1) '0x1' \u003e\u003e\u003e int(0xf) 15 Signed Binary: 표현 방법과 파이썬 활용 Signed Binary는 부호 있는 정수를 2진수로 표현한 데이터 입니다. Unsigned Binary와 다르게 부호를 나타내기 위한 비트 패턴이 필요합니다. 아래에 3가지 방법을 소개하겠지만, 현대 컴퓨터에서는 주로 2의 보수 표현을 사용합니다.\n표현 방법 기본적인 음수 표현의 원리는 부호를 나타내기 위한 1비트(0 혹은 1)를 할당하는 것 입니다.\n0 : 양수 (Positive) 1 : 음수 (Negative) 방법1: 부호-크기 (Sign-Magnitude) 부호-크기 방법에서는 단순히 최상위 비트(MSB: Most Significant Bit)에 부호 비트를 추가합니다.\n예를 들어, 8비트 공간에서 양의 부호를 가진 정수 5와 음의 부호를 가진 정수 -5를 2진수로 표현하면 아래와 같습니다.\n+5 = 0000 0101 -5 = 1000 0101 0101이 숫자 5를 나타내고, 최상위 비트에 각각 0(양의 부호, +)과 1(음의 부호, -)을 사용했습니다.\n동일한 방식으로, 8비트 공간에서 부호 비트를 추가하는 방법을 사용할 때 나타낼 수 있는 수는 아래와 같이 정리할 수 있습니다.\n2진수 10진수 0000 0000 +0 0000 0001 +1 0000 0010 +2 … … 0111 1111 +127 1000 0000 -0 1000 0001 -1 … … 1111 1111 -127 따라서 표현할 수 있는 숫자는, +0부터 +127까지 127개와 -0부터 -127까지 127개, 총 254개의 숫자를 표현할 수 있습니다.\n방법2: 1의 보수 (One’s Complement) 1의 보수법은 부호 없는 정수의 2진 데이터 형태를 모든 거꾸로 뒤집는 것 입니다. 2진수는 0 혹은 1이라는 두개의 값만 가질 수 있고 거꾸로 뒤집는 다는 것은 0 은 1로, 1은 0으로 바꾸는 것 입니다.\n비트 뒤집기\n0 -\u003e 1 1 -\u003e 0 1의 보수 표현에 의한 8비트 $\\pm$ 5\n+5 = 0000 0101 -5 = 1111 1010 1의 보수 표현법에서 8비트 정수는 아래와 같이 정리할 수 있습니다.\n2진수 10진수 0000 0000 +0 0000 0001 +1 … … 0111 1110 +126 0111 1111 +127 1000 0000 -127 1000 0001 -126 … … 1111 1101 -2 1111 1110 -1 1111 1111 -0 방법3: 2의 보수 (Tow’s Complement) 2의 보수법은 1의 보수법과 같이 모든 비트를 거꾸로 만들고 1비트의 1을 더하는 방식으로 표현됩니다. 앞선 2가지 방법의 단점을 보완하기 때문에 현재 대부분의 컴퓨터에서 음수를 표현하기 위한 방법입니다.\n음의 정수를 2의 보수법에 의한 2진수로 표현하기 위해서는 다음의 순서를 따릅니다.\n부호 없는 정수의 1의 보수를 구한다. LSB에 1을 더한다. 2의 보수 표현에 의한 8비트 $\\pm$ 5\n+5 = 0000 0101 -5 = 1111 1010 (1의 보수 표현) + 1 ----------- = 1111 1011 2진수 10진수 변환(양수 표현 \u003e 1의 보수 \u003e +1) 0000 0000 +0 0000 0001 +1 0000 0010 +2 … … 0111 1110 +126 0111 1111 +127 1000 0000 -128 1000 0000 \u003e 0111 1111 \u003e 1000 0000 1000 0001 -127 0111 1111 \u003e 1000 0000 \u003e 1000 0001 1000 0010 -126 0111 1110 \u003e 1000 0001 \u003e 1000 0010 … … 1111 1101 -3 0000 0100 \u003e 1111 1011 \u003e 1111 1101 1111 1110 -2 0000 0010 \u003e 1111 1101 \u003e 1111 1110 1111 1111 -1 0000 0001 \u003e 1111 1110 \u003e 1111 1111 파이썬을 활용한 2의 보수 \u003c-\u003e 10진수 변환 \u003e\u003e\u003e int(\"-128\", 10).to_bytes(1, byteorder=\"little\", signed=True) b'\\x80' \u003e\u003e\u003e int(\"-3\", 10).to_bytes(1, byteorder=\"little\", signed=True) b'\\xfd' \u003e\u003e\u003e bin(0xfd) '0b11111101' Signed vs Unsigned 비교 지금까지 설명드린 부호 있는 정수와 부호 없는 정수를 비교 정리하면 아래와 같습니다.\n구분 부호 있음(Signed) 부호 없음(Unsigned) 값의 범위 음수,0,양수 0,양수 범위(8비트) -128 ~ 127 0~255 사용사례 센서,오프셋 등 메모리 주소, 카운터/타이머 등 부호비트 존재(MSB) 없음 2의 보수 표현에 따른 부호 있는 정수와 부호 없는 정수의 표현 가능한 범위는 아래와 같이 수식으로 정리할 수 있습니다.\n부호 없는 정수(Unsigned Integer) $$ 0 \\leqq \\Z \\leqq 2^{비트수}-1 $$\n부호 있는 정수(Signed Integer) $$ -2^{비트수-1} \\leqq \\Z \\leqq 2^{비트수-1} - 1 $$\n프로그래밍 주의사항 지금까지 살펴본 것 처럼 부호의 여부에 따라 컴퓨터가 해석하는 방법이 달라지기 때문에, 그 특성을 이해하고 프로그램을 작성할 때도 이점을 유의해야 합니다. 주로 사용하는 C언어에서 2가지 예제를 살펴보면서 조심해야할 부분을 확인해보겠습니다.\n예제1: signed int 와 unsigned int의 비교 실수하기 쉬운 첫번째는 서로 다른 부호 유형간의 비교입니다. 아래의 예제에서는 signed형 정수인 -1이 unsigned형으로 변환 해석 되어 1보다 큰 값으로 처리됩니다.\ncomp.c\n#include void main(void) { int a = -1; unsigned b = 1; if (a \u003c b) { printf(\"a is less than b\\n\"); } else { printf(\"a is greater than or equals to b\\n\"); } } 실행 결과\n$ gcc comp.c \u0026\u0026 ./a.out a is greater than or equals to b 우리가 직관적으로 생각하기에는 -1은 1보다 작으므로 “a is less than b\"가 출력되야할 것으로 보입니다.\n하지만 비교연산을 할 때, 부호 있는 정수인 a가 부호 없는 정수(unsigned)로 변환되기 때문에 b보다 큰 값으로 해석됩니다.\nint a = -1의 비트패턴\na = -1 = 0xFFFFFFFF (-1의 2의 보수 표현) = 4,294,967,295\n위와 같은 예제는 컴파일 시에 -W 옵션을 사용해서 예방할 수 있습니다.\n$ gcc -W comp.c comp.c: In function ‘main’: comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare] 8 | if (a \u003c b) { | ^ 예제2: 형 변환 (Type Casting) 다른 예제는 흔히 사용하는 형 변환 실수입니다. int형과 unsigned int형과의 상호 형 변환시에는 해당 변수가 나타내는 수의 의미가 달라지는 것을 알고 있어야 합니다.\nmain.c\n#include #include void main(void) { int8_t i8 = -5; // 1111 1011 uint8_t u8 = 5; // 0000 0101 uint8_t ui8 = (uint8_t)i8; // 1111 1011 printf(\"UINT8_MAX: %d\\n\", UINT8_MAX); printf(\"INT8_MAX: %d\\n\", INT8_MAX); printf(\"0x%02x [%d]\\n\", i8, i8); printf(\"0x%02x [%d]\\n\", u8, u8); printf(\"0x%02x [%d]\\n\", ui8, ui8); } 실행 결과\n$ gcc main.c \u0026\u0026 ./a.out UINT8_MAX: 255 INT8_MAX: 127 0xfffffffb [-5] # (1) 0x05 [5] # (2) 0xfb [251] # (3) 첫번째, int8_t형은 메모리 공간에서 8비트를 차지하는 변수입니다. 하지만 실제 변수가 가진 값이 int형보다 작은 메모리 공간을 차지하는 경우, printf문에서 포맷팅을 할때는 int형으로 승격되기 때문에 (1)의 결과는 0xFB가 아닌 0xFFFFFFFB가 되는 것 입니다.\n부호 있는 정수 -5는 2진수로 표현하면 $11111011_2$ 이고 16진수로는 0xFB입니다.\n부호 확장(Sign Extension)\n8비트 정수를 32비트 정수로 승격할 때, 부호 확장이란 것이 발생합니다.\n부호 확장은 말 그대로 정수의 부호 비트를 확장된 메모리 크기에 맞도록 확장시키는 것 입니다.\n위의 예시의 경우, 부호 비트가 음수를 나타내는 1이므로 최상위 비트(MSB)의 1을 나머지 상위비트에 채웁니다.\n두번째, 변수 ui8은 부호 있는 정수형 변수 i8을 부호 없는 정수형으로 형변환을 하여 할당했습니다. 하지만, 출력 결과 (3)에서 볼 수 있듯이 실제 메모리 패턴(0xFB)는 변하지 않고, 0xFB의 부호 없는 정수값, 251을 출력합니다.\nC언어의 형변환은 컴퓨터에 실제 저장되는 값을 변경하는 것이 아니라, 컴퓨터가 어떻게 해석할지를 알려주는 것 입니다.(형변환 뿐 아니라 타입시스템 자체가 그렇다고 봐야합니다.)\n결론 (Conclusion) 이번 글에서는 Signed와 Unsigned Binary의 차이점, 표현 방식, 프로그래밍 주의사항을 살펴보았습니다.\nSigned Binary: 음수와 양수를 모두 표현 (예: 센서 데이터, 오프셋) Unsigned Binary: 양수만 표현 (예: 메모리 주소, 타이머) 다음 포스팅:\n이진 데이터 산술 연산 (덧셈, 뺄셈) 2의 보수법이 다른 방법을 대체한 이유 이번 글이 도움이 되었나요? 궁금한 점이나 더 알고 싶은 부분이 있다면 댓글로 남겨주세요!\nSummary In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two’s complement being the most widely used method in modern systems.\n",
+  "wordCount" : "1860",
+  "inLanguage": "ko",
   "datePublished": "2025-01-08T00:00:00Z",
   "dateModified": "2025-01-08T00:00:00Z",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "http://localhost:1313/posts/signed-unsigned-binary-representation/"
+    "@id": "https://seojuncha.github.io/posts/signed-unsigned-binary-representation/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Seojun's Personal Site",
     "logo": {
       "@type": "ImageObject",
-      "url": "http://localhost:1313/favicon.ico"
+      "url": "https://seojuncha.github.io/favicon.ico"
     }
   }
 }
 </script>
 </head>
 
-<body class=" dark" id="top">
+<body class="" id="top">
 
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="http://localhost:1313/" accesskey="h" title="Seojun&#39;s Personal Site (Alt + H)">Seojun&#39;s Personal Site</a>
+            <a href="https://seojuncha.github.io/" accesskey="h" title="Seojun&#39;s Personal Site (Alt + H)">Seojun&#39;s Personal Site</a>
             <div class="logo-switches">
+                <ul class="lang-switch"><li>|</li>
+                    <li>
+                        <a href="https://seojuncha.github.io/en/" title="English"
+                            aria-label="English">En</a>
+                    </li>
+                </ul>
             </div>
         </div>
         <ul id="menu">
             <li>
-                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                <a href="https://seojuncha.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
                     <span>Search</span>
                 </a>
             </li>
             <li>
-                <a href="http://localhost:1313/archives/" title="Archives">
+                <a href="https://seojuncha.github.io/archives/" title="Archives">
                     <span>Archives</span>
                 </a>
             </li>
             <li>
-                <a href="http://localhost:1313/tags/" title="Tags">
+                <a href="https://seojuncha.github.io/tags/" title="Tags">
                     <span>Tags</span>
                 </a>
             </li>
@@ -205,28 +225,25 @@
 
 <article class="post-single">
   <header class="post-header">
-    
+    <div class="breadcrumbs"><a href="https://seojuncha.github.io/">홈</a>&nbsp;»&nbsp;<a href="https://seojuncha.github.io/posts/">Posts</a></div>
     <h1 class="post-title entry-hint-parent">
       Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
     </h1>
-    <div class="post-meta"><span title='2025-01-08 00:00:00 +0000 UTC'>January 8, 2025</span>&nbsp;·&nbsp;9 min
+    <div class="post-meta"><span title='2025-01-08 00:00:00 +0000 UTC'>1월 8, 2025</span>&nbsp;·&nbsp;9 분&nbsp;|&nbsp;번역:
+<ul class="i18n_list">
+    <li>
+        <a href="https://seojuncha.github.io/en/posts/signed-unsigned-binary-representation/">En</a>
+    </li>
+</ul>
 
 </div>
   </header> <div class="toc">
     <details >
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">목차</span>
         </summary>
 
         <div class="inner"><ul>
-                <li>
-                    <a href="#%ec%86%8c%ea%b0%9c-introduction" aria-label="소개 (Introduction)">소개 (Introduction)</a></li>
                 <li>
                     <a href="#%ec%a0%95%ec%88%98%ec%9d%98-%ea%b0%9c%eb%85%90-integer-concept" aria-label="정수의 개념 (Integer Concept)">정수의 개념 (Integer Concept)</a><ul>
                         
@@ -287,8 +304,7 @@
     </details>
 </div>
 
-  <div class="post-content"><h1 id="소개-introduction">소개 (Introduction)<a hidden class="anchor" aria-hidden="true" href="#소개-introduction">#</a></h1>
-<p>이 글에서는 <strong>Signed Binary와 Unsigned Binary의 차이점</strong>, <strong>각각의 표현법</strong>, 그리고 <strong>C언어 프로그래밍 시의 주의사항</strong>을 알아보겠습니다.</p>
+  <div class="post-content"><p>이 글에서는 <strong>Signed Binary와 Unsigned Binary의 차이점</strong>, <strong>각각의 표현법</strong>, 그리고 <strong>C언어 프로그래밍 시의 주의사항</strong>을 알아보겠습니다.</p>
 <p>사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.</p>
 <p><img alt="ascii-table" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/b/b3/ASCII-Table.png">
 <em>문자를 숫자로 표현하기 위한 ascii 테이블이 존재</em></p>
@@ -762,17 +778,17 @@ $$</p>
 <h2 id="예제1-signed-int-와-unsigned-int의-비교">예제1: signed int 와 unsigned int의 비교<a hidden class="anchor" aria-hidden="true" href="#예제1-signed-int-와-unsigned-int의-비교">#</a></h2>
 <p>실수하기 쉬운 첫번째는 서로 다른 부호 유형간의 비교입니다. 아래의 예제에서는 signed형 정수인 -1이 unsigned형으로 변환 해석 되어 1보다 큰 값으로 처리됩니다.</p>
 <p><strong>comp.c</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>)
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;display:grid;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fd8f3f">#include</span> <span style="color:#fd8f3f">&lt;stdio.h&gt;</span><span style="color:#fd8f3f">
+</span></span></span><span style="display:flex;"><span><span style="color:#fd8f3f"></span>
+</span></span><span style="display:flex;"><span><span style="color:#fc5fa3">void</span> <span style="color:#41a1c0">main</span>(<span style="color:#fc5fa3">void</span>)
 </span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">unsigned</span> b <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">int</span> a = -<span style="color:#d0bf69">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">unsigned</span> b = <span style="color:#d0bf69">1</span>;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex; background-color:#3c3d38"><span>  <span style="color:#66d9ef">if</span> (a <span style="color:#f92672">&lt;</span> b) {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;a is less than b</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;a is greater than or equals to b</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex; background-color:#353539"><span>  <span style="color:#fc5fa3">if</span> (a &lt; b) {
+</span></span><span style="display:flex;"><span>    <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;a is less than b</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>);
+</span></span><span style="display:flex;"><span>  } <span style="color:#fc5fa3">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;a is greater than or equals to b</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>);
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p><strong>실행 결과</strong></p>
@@ -795,21 +811,21 @@ comp.c:8:9: warning: comparison of integer expressions of different signedness: 
 </code></pre><h2 id="예제2-형-변환-type-casting">예제2: 형 변환 (Type Casting)<a hidden class="anchor" aria-hidden="true" href="#예제2-형-변환-type-casting">#</a></h2>
 <p>다른 예제는 흔히 사용하는 형 변환 실수입니다. int형과 unsigned int형과의 상호 형 변환시에는 해당 변수가 나타내는 수의 의미가 달라지는 것을 알고 있어야 합니다.</p>
 <p><strong>main.c</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdint.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>)
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;display:grid;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fd8f3f">#include</span> <span style="color:#fd8f3f">&lt;stdio.h&gt;</span><span style="color:#fd8f3f">
+</span></span></span><span style="display:flex;"><span><span style="color:#fd8f3f">#include</span> <span style="color:#fd8f3f">&lt;stdint.h&gt;</span><span style="color:#fd8f3f">
+</span></span></span><span style="display:flex;"><span><span style="color:#fd8f3f"></span>
+</span></span><span style="display:flex;"><span><span style="color:#fc5fa3">void</span> <span style="color:#41a1c0">main</span>(<span style="color:#fc5fa3">void</span>)
 </span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int8_t</span> i8 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>;  <span style="color:#75715e">// 1111 1011
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">uint8_t</span> u8 <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>;  <span style="color:#75715e">// 0000 0101
-</span></span></span><span style="display:flex; background-color:#3c3d38"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">uint8_t</span> ui8 <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uint8_t</span>)i8;  <span style="color:#75715e">// 1111 1011
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;UINT8_MAX: %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, UINT8_MAX);
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;INT8_MAX: %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, INT8_MAX);
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">int8_t</span> i8 = -<span style="color:#d0bf69">5</span>;  <span style="color:#6c7986">// 1111 1011
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">uint8_t</span> u8 = <span style="color:#d0bf69">5</span>;  <span style="color:#6c7986">// 0000 0101
+</span></span></span><span style="display:flex; background-color:#353539"><span><span style="color:#6c7986"></span>  <span style="color:#fc5fa3">uint8_t</span> ui8 = (<span style="color:#fc5fa3">uint8_t</span>)i8;  <span style="color:#6c7986">// 1111 1011
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;UINT8_MAX: %d</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>, UINT8_MAX);
+</span></span><span style="display:flex;"><span>  <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;INT8_MAX: %d</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>, INT8_MAX);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;0x%02x [%d]</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, i8, i8);
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;0x%02x [%d]</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, u8, u8);
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;0x%02x [%d]</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, ui8, ui8);
+</span></span><span style="display:flex;"><span>  <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;0x%02x [%d]</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>, i8, i8);
+</span></span><span style="display:flex;"><span>  <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;0x%02x [%d]</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>, u8, u8);
+</span></span><span style="display:flex;"><span>  <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;0x%02x [%d]</span><span style="color:#fc6a5d">\n</span><span style="color:#fc6a5d">&#34;</span>, ui8, ui8);
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p><strong>실행 결과</strong></p>
 <pre tabindex="0"><code>$ gcc main.c &amp;&amp; ./a.out
@@ -850,20 +866,20 @@ INT8_MAX: 127
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="http://localhost:1313/tags/signed-binary/">Signed Binary</a></li>
-      <li><a href="http://localhost:1313/tags/unsigned-binary/">Unsigned Binary</a></li>
-      <li><a href="http://localhost:1313/tags/binary-representation/">Binary Representation</a></li>
+      <li><a href="https://seojuncha.github.io/tags/signed-binary/">Signed Binary</a></li>
+      <li><a href="https://seojuncha.github.io/tags/unsigned-binary/">Unsigned Binary</a></li>
+      <li><a href="https://seojuncha.github.io/tags/binary-representation/">Binary Representation</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="http://localhost:1313/posts/binary-representation/">
-    <span class="title">« Prev</span>
+  <a class="prev" href="https://seojuncha.github.io/posts/carry-and-overflow/">
+    <span class="title">« 이전 페이지</span>
     <br>
-    <span>Binary Representation: Signed vs Unsigned</span>
+    <span>예제로 알아보는 컴퓨터 연산의 Overflow</span>
   </a>
-  <a class="next" href="http://localhost:1313/posts/binary-arithmetic/">
-    <span class="title">Next »</span>
+  <a class="next" href="https://seojuncha.github.io/posts/from-the-transistor-intro/">
+    <span class="title">다음 페이지 »</span>
     <br>
-    <span>Binary Arithmetic: 이진수의 덧셈과 뺄셈 완벽 이해하기</span>
+    <span>From the Transistor 프로젝트 소개와 진행 상황</span>
   </a>
 </nav>
 
@@ -871,7 +887,7 @@ INT8_MAX: 127
 <ul class="share-buttons">
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기 on x"
-            href="https://x.com/intent/tweet/?text=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fsigned-unsigned-binary-representation%2f&amp;hashtags=signedbinary%2cunsignedbinary%2cbinaryrepresentation">
+            href="https://x.com/intent/tweet/?text=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fsigned-unsigned-binary-representation%2f&amp;hashtags=signedbinary%2cunsignedbinary%2cbinaryrepresentation">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
@@ -880,7 +896,7 @@ INT8_MAX: 127
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기 on linkedin"
-            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fsigned-unsigned-binary-representation%2f&amp;title=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&amp;summary=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fsigned-unsigned-binary-representation%2f">
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fsigned-unsigned-binary-representation%2f&amp;title=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&amp;summary=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&amp;source=https%3a%2f%2fseojuncha.github.io%2fposts%2fsigned-unsigned-binary-representation%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
@@ -889,7 +905,7 @@ INT8_MAX: 127
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기 on reddit"
-            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fsigned-unsigned-binary-representation%2f&title=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0">
+            href="https://reddit.com/submit?url=https%3a%2f%2fseojuncha.github.io%2fposts%2fsigned-unsigned-binary-representation%2f&title=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
@@ -898,7 +914,7 @@ INT8_MAX: 127
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기 on facebook"
-            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fsigned-unsigned-binary-representation%2f">
+            href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fseojuncha.github.io%2fposts%2fsigned-unsigned-binary-representation%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
@@ -907,7 +923,7 @@ INT8_MAX: 127
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기 on whatsapp"
-            href="https://api.whatsapp.com/send?text=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fsigned-unsigned-binary-representation%2f">
+            href="https://api.whatsapp.com/send?text=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0%20-%20https%3a%2f%2fseojuncha.github.io%2fposts%2fsigned-unsigned-binary-representation%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
@@ -916,7 +932,7 @@ INT8_MAX: 127
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기 on telegram"
-            href="https://telegram.me/share/url?text=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fsigned-unsigned-binary-representation%2f">
+            href="https://telegram.me/share/url?text=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fsigned-unsigned-binary-representation%2f">
             <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
@@ -925,7 +941,7 @@ INT8_MAX: 127
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기 on ycombinator"
-            href="https://news.ycombinator.com/submitlink?t=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fsigned-unsigned-binary-representation%2f">
+            href="https://news.ycombinator.com/submitlink?t=Signed%20vs%20Unsigned%20Binary%3a%20%ec%9d%b4%ec%a7%84%ec%88%98%20%ed%91%9c%ed%98%84%ec%9d%98%20%ec%b0%a8%ec%9d%b4%ec%a0%90%ea%b3%bc%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0&u=https%3a%2f%2fseojuncha.github.io%2fposts%2fsigned-unsigned-binary-representation%2f">
             <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
                 xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
                 <path
@@ -946,7 +962,7 @@ INT8_MAX: 127
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="http://localhost:1313/">Seojun&#39;s Personal Site</a></span> · 
+        <span>&copy; 2025 <a href="https://seojuncha.github.io/">Seojun&#39;s Personal Site</a></span> · 
 
     <span>
         Powered by

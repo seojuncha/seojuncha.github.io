@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="ko" dir="ltr">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,7 +19,8 @@
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <link rel="alternate" type="application/rss+xml" href="https://seojuncha.github.io/posts/index.xml">
-<link rel="alternate" hreflang="en" href="https://seojuncha.github.io/posts/">
+<link rel="alternate" hreflang="ko" href="https://seojuncha.github.io/posts/">
+<link rel="alternate" hreflang="en" href="https://seojuncha.github.io/en/posts/">
 <noscript>
     <style>
         #theme-toggle,
@@ -47,7 +48,7 @@
 <meta property="og:url" content="https://seojuncha.github.io/posts/">
   <meta property="og:site_name" content="Seojun&#39;s Personal Site">
   <meta property="og:title" content="Posts">
-  <meta property="og:locale" content="en-us">
+  <meta property="og:locale" content="ko-KR">
   <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Posts">
@@ -77,6 +78,12 @@
         <div class="logo">
             <a href="https://seojuncha.github.io/" accesskey="h" title="Seojun&#39;s Personal Site (Alt + H)">Seojun&#39;s Personal Site</a>
             <div class="logo-switches">
+                <ul class="lang-switch"><li>|</li>
+                    <li>
+                        <a href="https://seojuncha.github.io/en/" title="English"
+                            aria-label="English">En</a>
+                    </li>
+                </ul>
             </div>
         </div>
         <ul id="menu">
@@ -99,7 +106,7 @@
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="https://seojuncha.github.io/">Home</a></div>
+<header class="page-header"><div class="breadcrumbs"><a href="https://seojuncha.github.io/">홈</a></div>
   <h1>
     Posts
   </h1>
@@ -107,126 +114,90 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Understanding Variable Assignment in Common Lisp: A Practical Guide
+    <h2 class="entry-hint-parent">Common Lisp의 변수 할당에 대한 이해
     </h2>
   </header>
   <div class="entry-content">
-    <p>Learn how variable assignment works in Common Lisp, including global and local variables, setq, let, and defvar. This practical guide covers key differences from modern languages and best practices for efficient Lisp programming.
+    <p>변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.
+전역 변수의 생성: defvar, defparameter 가장 먼저 살펴볼 변수 할당 방법은 defvar과 defparameter를 사용한 전역 변수(Global Variable) 할당입니다. Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-02-12 00:00:00 +0000 UTC'>February 12, 2025</span>&nbsp;·&nbsp;7 min</footer>
-  <a class="entry-link" aria-label="post link to Understanding Variable Assignment in Common Lisp: A Practical Guide" href="https://seojuncha.github.io/posts/variable-assignment-in-common-lisp-en/"></a>
+  <footer class="entry-footer"><span title='2025-02-12 00:00:00 +0000 UTC'>2월 12, 2025</span>&nbsp;·&nbsp;5 분</footer>
+  <a class="entry-link" aria-label="post link to Common Lisp의 변수 할당에 대한 이해" href="https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Setting Up a Verilog Simulation and Test Environment: A Practical Guide
+    <h2 class="entry-hint-parent">테스트 벤치와 Verilog 개발 환경 설정: Icarus Verilog와 cocotb
     </h2>
   </header>
   <div class="entry-content">
-    <p>Like other software programming languages, Verilog code also requires a verification process to ensure it operates as intended.
-Verilog can be verified using two primary methods:
-Hardware-based verification Software-based verification The hardware-based verification method involves uploading the Verilog code to an actual hardware device and checking the output signals based on the given input signals.
-In contrast, the software-based verification method validates the functionality of the code purely through software, without requiring any hardware. Since hardware-based verification requires physical hardware and makes debugging signal transitions more challenging, software-based verification is typically performed first before uploading the code to hardware.
+    <p>다른 소프트웨어 프로그래밍 언어와 마찬가지로 Verilog로 작성한 코드 역시 의도한대로 동작하는지 검증하는 과정이 필요합니다. Verilog는 크게 두가지 방식으로 검증할 수 있습니다.
+하드웨어 기반 검증 소프트웨어 기반 검증 하드웨어 기반 검증 방식은 Verilog코드를 실제 하드웨어에 업로드하여 입력신호에 따른 출력신호를 확인하는 방법입니다. 이에 반해, 소프트웨어 기반 검증 방식은 별도의 하드웨어 없이 순수 소프트웨어만으로 코드의 동작을 검증하는 방법입니다. 하드웨어 기반의 검증방식은 하드웨어가 필요할 뿐아니라 신호 변화를 디버깅하기 어렵기 때문에 하드웨어 업로드 전에 소프트웨어 기반 검증 방식을 사용합니다. 이런 일련의 소프트웨어 기반 검증 과정을 수행하기 위한 코드를 ***테스트벤치(Testbench)***라고 하고 테스트 벤치를 실행하는 환경을 ***시뮬레이터(Simulator)***라고 합니다.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-02-06 00:00:00 +0000 UTC'>February 6, 2025</span>&nbsp;·&nbsp;6 min</footer>
-  <a class="entry-link" aria-label="post link to Setting Up a Verilog Simulation and Test Environment: A Practical Guide" href="https://seojuncha.github.io/posts/verilog-develop-environment-en/"></a>
+  <footer class="entry-footer"><span title='2025-02-06 00:00:00 +0000 UTC'>2월 6, 2025</span>&nbsp;·&nbsp;4 분</footer>
+  <a class="entry-link" aria-label="post link to 테스트 벤치와 Verilog 개발 환경 설정: Icarus Verilog와 cocotb" href="https://seojuncha.github.io/posts/verilog-develop-environment/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Introduction to Verilog from a Programmer&#39;s Perspective
+    <h2 class="entry-hint-parent">ARM프로세서의 Carry Flag와 Overflow Flag
     </h2>
   </header>
   <div class="entry-content">
-    <p>To work on From the Transistor project, I used a tool called Verilog. Verilog is one of the HDLs(Hardware Description Languages) designed for programming FPGAs(Field Programmable Gate Arrays). Simply put, it’s a language used for designing hardware circuits.
-In this post, we’ll explore how Verilog differs from other programming language from the perspective of a software programmer and understand how it can be helpful in various aspects.
-What is Verilog? If you’re interesting in the history of Verilog, you can check out resources like the Verilog wiki to avoid getting bogged down in details. From a programmer’s perspective, we typically use software programming language like Python to develop software. Programs written in these languages are eventually translated into binary code that the computer can understand, and this binary code is then executed by the computer’s hardware.
+    <p>하드웨어의 Carry 플래그(C)와 Overflow 플래그(V) 동작을 프로그래머 입장에서 깊이 이해하는 것은 다양한 측면에서 큰 장점을 제공합니다. 특히, 저수준 시스템 프로그래밍, 임베디드 시스템 개발, 그리고 성능 최적화와 디버깅에서 매우 중요한 역할을 합니다. 예를 들어,
+정확한 수치 연산 구현 고성능 저수준 최적화 디버깅과 문제 해결 오류 검출 및 안정성 향상 다중 정밀도 연산 구현 조건부 분기와 코드 단순화 위와 같은 다양한 장점을 제공합니다. 이번 포스팅에서는 ARM 프로세서에서 Carry와 Overflow를 처리하는 방법을 알아보고 간단한 어셈블리(Assembly) 예제를 사용해 QEMU에서 디버깅 해보겠습니다.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-01-24 00:00:00 +0000 UTC'>January 24, 2025</span>&nbsp;·&nbsp;5 min</footer>
-  <a class="entry-link" aria-label="post link to Introduction to Verilog from a Programmer&#39;s Perspective" href="https://seojuncha.github.io/posts/introduction-verilog-for-programmer/"></a>
+  <footer class="entry-footer"><span title='2025-01-20 00:00:00 +0000 UTC'>1월 20, 2025</span>&nbsp;·&nbsp;6 분</footer>
+  <a class="entry-link" aria-label="post link to ARM프로세서의 Carry Flag와 Overflow Flag" href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU
+    <h2 class="entry-hint-parent">예제로 알아보는 컴퓨터 연산의 Overflow
     </h2>
   </header>
   <div class="entry-content">
-    <p>Understanding the operation of the hardware Carry flag (C) and Overflow flag (V) in depth from a programmer’s perspective offers significant advantages in various aspects. In particular, they play a crucial role in low-level system programming, embedded systems development, and performance optimization and debugging. For example,
-Accurate numerical computation High-performance low-level optimization Debugging and troubleshooting Error detection and improved stability Implementation of multi-precision arithmetic Conditional branching and code simplification These advantages make mastering these concepts highly beneficial. In this post, we will explore how Carry and Overflow are handled in ARM processors, along with a simple assembly example that we will debug using QEMU.
+    <p>컴퓨터는 유한한 크기의 메모리를 사용하여 숫자를 표현합니다. 특정 연산이 표현범위를 초과하면 잘못된 결과를 초래할 수 있습니다. 예를들어:
+8비트 정수에서 127 &#43; 1을 계산하면 실제 결과는 128이지만, Signed Integer의 경우 Overflow로 인해 결과는 -128이 됩니다. 이러한 결과는 프로그램의 논리 오류로 이어질 수 있습니다. 또한, Overflow는 악용될 경우 보안 취약점으로 이어질 수 있습니다. 널리 알려져있는 버퍼 오버플로우(Buffer Overflow)와 같은 취약점은 공격자가 코드를 실행하거나 시스템을 제어할 수 있는 가능성을 제공합니다.
+이 외에도 하드웨어 설계측면에서도 중요한 역할을 하며 프로그래머는 이런 산술 연산의 한계를 이해해야만 안전하고 정확한 연산 결과를 보장할 수 있습니다. 이번 포스팅에서는 Overflow의 개념과 프로그래밍 예제를 통한 Overflow의 위험성을 살펴보고 Overflow와 Carry를 비교하여 서로의 차이점을 정확히 이해하는 것을 목표로 합니다.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-01-22 00:00:00 +0000 UTC'>January 22, 2025</span>&nbsp;·&nbsp;8 min</footer>
-  <a class="entry-link" aria-label="post link to Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU" href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/"></a>
+  <footer class="entry-footer"><span title='2025-01-15 00:00:00 +0000 UTC'>1월 15, 2025</span>&nbsp;·&nbsp;4 분</footer>
+  <a class="entry-link" aria-label="post link to 예제로 알아보는 컴퓨터 연산의 Overflow" href="https://seojuncha.github.io/posts/carry-and-overflow/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">What Is Overflow in Computer Arithmetic? Explained with Examples
+    <h2 class="entry-hint-parent">Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기
     </h2>
   </header>
   <div class="entry-content">
-    <p>Computers rely on finite-sized memory to represent numbers, which can lead to incorrect results if certain operations exceed the representable range. For example:
-In an 8-bit integer, calculating 127 &#43; 1, 127&#43;1 should result in 128. However, for signed integers, this causes an overflow, resulting in −128 instead. Such results can lead to logical errors in programs. Moreover, overflow can be exploited to introduce security vulnerabilities. Well-known vulnerabilities like buffer overflow can allow attackers to execute code or gain control of the system.
+    <p>이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.
+사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.
+문자를 숫자로 표현하기 위한 ascii 테이블이 존재
+정수의 개념 (Integer Concept) 컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-01-20 00:00:00 +0000 UTC'>January 20, 2025</span>&nbsp;·&nbsp;5 min</footer>
-  <a class="entry-link" aria-label="post link to What Is Overflow in Computer Arithmetic? Explained with Examples" href="https://seojuncha.github.io/posts/carry-and-overflow/"></a>
+  <footer class="entry-footer"><span title='2025-01-08 00:00:00 +0000 UTC'>1월 8, 2025</span>&nbsp;·&nbsp;9 분</footer>
+  <a class="entry-link" aria-label="post link to Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기" href="https://seojuncha.github.io/posts/signed-unsigned-binary-representation/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Understanding Carry in Arithmetic: Binary Operations Simplified
+    <h2 class="entry-hint-parent">From the Transistor 프로젝트 소개와 진행 상황
     </h2>
   </header>
   <div class="entry-content">
-    <p>Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore the definition and concept of Carry, how it works in binary and decimal arithmetic, and how programming languages handle Carry.
-Example: When unsigned int exceeds its maximum range:
+    <p>From the Transistor 프로젝트는 하드웨어에서 소프트웨어로 이어지는 기술의 모든 단계에 대한 이해를 목표로 시작되었습니다. 이 글에서는 프로젝트의 목적, 현재까지의 진행 상황, 그리고 앞으로의 계획을 공유하려고 합니다.
+저는 프로그래머로 약 10여년 정도를, 주로 C/C&#43;&#43;를 사용한 어플리케이션 영역의 소프트웨어를 개발하였지만 항상 저수준(low-level)시스템의 동작과 원리가 궁금했습니다. 또한 프로그래머는 근본적으로 컴퓨터 시스템에서 동작하는 소프트웨어를 작성합니다. 그래서 진정한 프로그래머라면, 해커라면, 저수준의 하드웨어 레벨부터의 기본 원리를 제대로 알고 있어야 하지 않겠냐는 생각도 있습니다.
+하드웨어부터 소프트웨어까지 알고 있는 프로그래머가 어떤 것들을 할 수 있을지 궁금하지 않으세요?!
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-01-14 00:00:00 +0000 UTC'>January 14, 2025</span>&nbsp;·&nbsp;6 min</footer>
-  <a class="entry-link" aria-label="post link to Understanding Carry in Arithmetic: Binary Operations Simplified" href="https://seojuncha.github.io/posts/binary-carry/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Two&#39;s Complement Explained: Benefits and Real-World Applications
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Two’s complement is the most widely used method for representing negative numbers in modern computer systems. Unlike the sign-magnitude or one’s complement representations discussed in a previous post, two’s complement avoids many of their drawbacks, making it the standard choice in most systems today.
-In this post, we will explore why two’s complement is used, its advantages, and how it simplifies arithmetic operations. We’ll also demonstrate its usage through C and Python code examples. By the end of this post, you will understand the critical role of two’s complement in system design and programming.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-01-11 00:00:00 +0000 UTC'>January 11, 2025</span>&nbsp;·&nbsp;4 min</footer>
-  <a class="entry-link" aria-label="post link to Two&#39;s Complement Explained: Benefits and Real-World Applications" href="https://seojuncha.github.io/posts/why-twos-complement/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Binary Representation: Signed vs Unsigned
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two’s complement being the most widely used method in modern systems.</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-01-09 22:24:49 +0900 KST'>January 9, 2025</span>&nbsp;·&nbsp;9 min</footer>
-  <a class="entry-link" aria-label="post link to Binary Representation: Signed vs Unsigned" href="https://seojuncha.github.io/posts/binary-representation/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">[KOR] Introduction to &#34;From the Transistor&#34;
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>In this post, I’ve written past, current, and future of ‘From the Transistor’ project. Summarize each project secion with an expected output and what should I prepare to achieve the section goal. During about 3 weeks, I have made an ARM assembler and CPU, which is working now. There are numerous things what I have laerned for this period. It’s not perfect yet, but keep better.</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-01-02 00:00:00 +0000 UTC'>January 2, 2025</span>&nbsp;·&nbsp;11 min</footer>
-  <a class="entry-link" aria-label="post link to [KOR] Introduction to &#34;From the Transistor&#34;" href="https://seojuncha.github.io/posts/from-the-transistor-intro/"></a>
+  <footer class="entry-footer"><span title='2025-01-02 00:00:00 +0000 UTC'>1월 2, 2025</span>&nbsp;·&nbsp;11 분</footer>
+  <a class="entry-link" aria-label="post link to From the Transistor 프로젝트 소개와 진행 상황" href="https://seojuncha.github.io/posts/from-the-transistor-intro/"></a>
 </article>
     </main>
     
