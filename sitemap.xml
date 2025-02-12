@@ -2,6 +2,56 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://seojuncha.github.io/posts/</loc>
+    <lastmod>2025-02-15T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/</loc>
+    <lastmod>2025-02-15T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/common-lisp/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/defparameter/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/defvar/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/let/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/setq/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/posts/variable-assignment-in-common-lisp-en/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/variable/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>https://seojuncha.github.io/tags/cocotb/</loc>
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
@@ -17,22 +67,7 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://seojuncha.github.io/posts/</loc>
-    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://seojuncha.github.io/</loc>
-    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://seojuncha.github.io/posts/verilog-develop-environment-en/</loc>
-    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://seojuncha.github.io/tags/</loc>
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>

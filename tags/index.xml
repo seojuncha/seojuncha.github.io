@@ -6,8 +6,50 @@
     <description>Recent content in Tags on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.140.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 06 Feb 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 12 Feb 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://seojuncha.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Common Lisp</title>
+      <link>https://seojuncha.github.io/tags/common-lisp/</link>
+      <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/common-lisp/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Defparameter</title>
+      <link>https://seojuncha.github.io/tags/defparameter/</link>
+      <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/defparameter/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Defvar</title>
+      <link>https://seojuncha.github.io/tags/defvar/</link>
+      <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/defvar/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Let</title>
+      <link>https://seojuncha.github.io/tags/let/</link>
+      <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/let/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Setq</title>
+      <link>https://seojuncha.github.io/tags/setq/</link>
+      <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/setq/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Variable</title>
+      <link>https://seojuncha.github.io/tags/variable/</link>
+      <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/variable/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Cocotb</title>
       <link>https://seojuncha.github.io/tags/cocotb/</link>
