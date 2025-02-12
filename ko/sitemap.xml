@@ -2,422 +2,418 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://seojuncha.github.io/posts/</loc>
-    <lastmod>2025-02-15T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/en/posts/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/posts/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/</loc>
-    <lastmod>2025-02-15T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/en/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/tags/common-lisp/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/common-lisp/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/common-lisp/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/common-lisp/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/common-lisp/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/</loc>
+    <loc>https://seojuncha.github.io/ko/posts/variable-assignment-in-common-lisp/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/posts/variable-assignment-in-common-lisp/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/variable-assignment-in-common-lisp/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/defparameter/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/defparameter/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/defparameter/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/defparameter/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/defparameter/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/defvar/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/defvar/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/defvar/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/defvar/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/defvar/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/let/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/let/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/let/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/let/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/let/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/setq/</loc>
+    <loc>https://seojuncha.github.io/ko/posts/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/setq/"
+                href="https://seojuncha.github.io/posts/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/ko/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/ko/tags/setq/</loc>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
                 href="https://seojuncha.github.io/tags/setq/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/setq/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/variable/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/variable/</loc>
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/variable/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/variable/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/variable/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/cocotb/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/cocotb/</loc>
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/cocotb/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/cocotb/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/cocotb/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/gtkwave/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/gtkwave/</loc>
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/gtkwave/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/gtkwave/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/gtkwave/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/icarus-verilog/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/icarus-verilog/</loc>
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/icarus-verilog/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/icarus-verilog/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/icarus-verilog/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/testbench/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/testbench/</loc>
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/testbench/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/testbench/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/testbench/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/verilog/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/verilog/</loc>
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/verilog/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/verilog/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/verilog/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/posts/verilog-develop-environment/</loc>
+    <loc>https://seojuncha.github.io/ko/posts/verilog-develop-environment/</loc>
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/posts/verilog-develop-environment/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/posts/verilog-develop-environment/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/verilog-develop-environment/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/arm/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/arm/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/arm/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/arm/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/arm/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/arm-assembly/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/arm-assembly/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/arm-assembly/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/arm-assembly/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/arm-assembly/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</loc>
+    <loc>https://seojuncha.github.io/ko/posts/carry-and-overflow-in-hardware/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/posts/carry-and-overflow-in-hardware/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/carry-and-overflow-in-hardware/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/carry/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/carry/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/carry/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/carry/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/carry/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/cpsr/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/cpsr/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/cpsr/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/cpsr/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/cpsr/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/gdb/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/gdb/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/gdb/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/gdb/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/gdb/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/overflow/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/overflow/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/overflow/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/overflow/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/overflow/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/qemu/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/qemu/</loc>
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/qemu/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/qemu/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/qemu/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/computer-arithmetic/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/computer-arithmetic/</loc>
     <lastmod>2025-01-15T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/computer-arithmetic/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/computer-arithmetic/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/computer-arithmetic/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/posts/carry-and-overflow/</loc>
+    <loc>https://seojuncha.github.io/ko/posts/carry-and-overflow/</loc>
     <lastmod>2025-01-15T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/posts/carry-and-overflow/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/posts/carry-and-overflow/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/carry-and-overflow/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/binary-representation/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/binary-representation/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/binary-representation/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/binary-representation/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/binary-representation/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/signed-binary/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/signed-binary/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/signed-binary/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/tags/signed-binary/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/signed-binary/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/posts/signed-unsigned-binary-representation/</loc>
+    <loc>https://seojuncha.github.io/ko/posts/signed-unsigned-binary-representation/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/posts/signed-unsigned-binary-representation/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
                 href="https://seojuncha.github.io/posts/signed-unsigned-binary-representation/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/signed-unsigned-binary-representation/"
+                />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/unsigned-binary/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/unsigned-binary/</loc>
     <lastmod>2025-01-08T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/tags/unsigned-binary/"
+                href="https://seojuncha.github.io/tags/unsigned-binary/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
-                href="https://seojuncha.github.io/tags/unsigned-binary/"
+                href="https://seojuncha.github.io/ko/tags/unsigned-binary/"
                 />
   </url><url>
-    <loc>https://seojuncha.github.io/tags/from-the-transistor/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/from-the-transistor/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://seojuncha.github.io/posts/from-the-transistor-intro/</loc>
+    <loc>https://seojuncha.github.io/ko/posts/from-the-transistor-intro/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://seojuncha.github.io/tags/geohot/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/geohot/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://seojuncha.github.io/tags/george-hotz/</loc>
+    <loc>https://seojuncha.github.io/ko/tags/george-hotz/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://seojuncha.github.io/archives/</loc>
-  </url><url>
-    <loc>https://seojuncha.github.io/categories/</loc>
+    <loc>https://seojuncha.github.io/ko/categories/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en-US"
-                href="https://seojuncha.github.io/en/categories/"
+                href="https://seojuncha.github.io/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
-                href="https://seojuncha.github.io/categories/"
+                href="https://seojuncha.github.io/ko/categories/"
                 />
-  </url><url>
-    <loc>https://seojuncha.github.io/search/</loc>
   </url>
 </urlset>

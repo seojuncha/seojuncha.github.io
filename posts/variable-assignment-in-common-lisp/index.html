@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html lang="ko" dir="ltr">
+<html lang="en" dir="ltr">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Common Lisp의 변수 할당에 대한 이해 | Seojun&#39;s Personal Site</title>
+<title>Understanding Variable Assignment in Common Lisp: A Practical Guide | Seojun&#39;s Personal Site</title>
 <meta name="keywords" content="common lisp, variable, setq, let, defparameter, defvar">
-<meta name="description" content="변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.
-전역 변수의 생성: defvar, defparameter
-가장 먼저 살펴볼 변수 할당 방법은 defvar과 defparameter를 사용한 전역 변수(Global Variable) 할당입니다.
-Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.">
+<meta name="description" content="Learn how variable assignment works in Common Lisp, including global and local variables, setq, let, and defvar. This practical guide covers key differences from modern languages and best practices for efficient Lisp programming.">
 <meta name="author" content="">
 <link rel="canonical" href="https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.069a38f8d4111aa2bec4abbbb39c1e9d33da344d8ef1eab2479d83d38fefef76.css" integrity="sha256-Bpo4&#43;NQRGqK&#43;xKu7s5wenTPaNE2O8eqyR52D04/v73Y=" rel="preload stylesheet" as="style">
@@ -21,8 +18,8 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
 <link rel="mask-icon" href="https://seojuncha.github.io/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="ko" href="https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/">
-<link rel="alternate" hreflang="en" href="https://seojuncha.github.io/en/posts/variable-assignment-in-common-lisp/">
+<link rel="alternate" hreflang="en" href="https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/">
+<link rel="alternate" hreflang="ko" href="https://seojuncha.github.io/ko/posts/variable-assignment-in-common-lisp/">
 <noscript>
     <style>
         #theme-toggle,
@@ -49,10 +46,9 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
 
 <meta property="og:url" content="https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/">
   <meta property="og:site_name" content="Seojun&#39;s Personal Site">
-  <meta property="og:title" content="Common Lisp의 변수 할당에 대한 이해">
-  <meta property="og:description" content="변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.
-전역 변수의 생성: defvar, defparameter 가장 먼저 살펴볼 변수 할당 방법은 defvar과 defparameter를 사용한 전역 변수(Global Variable) 할당입니다. Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.">
-  <meta property="og:locale" content="ko-KR">
+  <meta property="og:title" content="Understanding Variable Assignment in Common Lisp: A Practical Guide">
+  <meta property="og:description" content="Learn how variable assignment works in Common Lisp, including global and local variables, setq, let, and defvar. This practical guide covers key differences from modern languages and best practices for efficient Lisp programming.">
+  <meta property="og:locale" content="en-US">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
     <meta property="article:published_time" content="2025-02-12T00:00:00+00:00">
@@ -64,11 +60,8 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
     <meta property="article:tag" content="Defparameter">
     <meta property="article:tag" content="Defvar">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Common Lisp의 변수 할당에 대한 이해">
-<meta name="twitter:description" content="변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.
-전역 변수의 생성: defvar, defparameter
-가장 먼저 살펴볼 변수 할당 방법은 defvar과 defparameter를 사용한 전역 변수(Global Variable) 할당입니다.
-Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.">
+<meta name="twitter:title" content="Understanding Variable Assignment in Common Lisp: A Practical Guide">
+<meta name="twitter:description" content="Learn how variable assignment works in Common Lisp, including global and local variables, setq, let, and defvar. This practical guide covers key differences from modern languages and best practices for efficient Lisp programming.">
 
 
 <script type="application/ld+json">
@@ -85,7 +78,7 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
     {
       "@type": "ListItem",
       "position":  2 ,
-      "name": "Common Lisp의 변수 할당에 대한 이해",
+      "name": "Understanding Variable Assignment in Common Lisp: A Practical Guide",
       "item": "https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/"
     }
   ]
@@ -95,15 +88,15 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "Common Lisp의 변수 할당에 대한 이해",
-  "name": "Common Lisp의 변수 할당에 대한 이해",
-  "description": "변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.\n전역 변수의 생성: defvar, defparameter 가장 먼저 살펴볼 변수 할당 방법은 defvar과 defparameter를 사용한 전역 변수(Global Variable) 할당입니다. Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.\n",
+  "headline": "Understanding Variable Assignment in Common Lisp: A Practical Guide",
+  "name": "Understanding Variable Assignment in Common Lisp: A Practical Guide",
+  "description": "Learn how variable assignment works in Common Lisp, including global and local variables, setq, let, and defvar. This practical guide covers key differences from modern languages and best practices for efficient Lisp programming.\n",
   "keywords": [
     "common lisp", "variable", "setq", "let", "defparameter", "defvar"
   ],
-  "articleBody": "변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.\n전역 변수의 생성: defvar, defparameter 가장 먼저 살펴볼 변수 할당 방법은 defvar과 defparameter를 사용한 전역 변수(Global Variable) 할당입니다. Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.\n(defvar *a*) ; 값 할당 없이 변수 a 선언 (defvar *b* (list 1 2 3)) ; 변수 b 에 리스트 (1 2 3) 할당 (defvar *my-array* (make-array 2)) ; 변수 my-array에 2차원 배열 생성 defvar와 동일하게 defparameter를 사용할 수 있습니다.\n(defparameter *a*) ; 오류 발생 (defparameter *b* '(1 2 3)) (defparameter *c* nil) 다만 defparameter는 defvar와 다르게 변수 생성시 초기화 값이 필요합니다.\n예제 코드에서 볼 수 있듯이 Lisp에서 전역변수는 변수명 앞뒤에 *로 감싸서 작성합니다.\nLisp이 다른 언어와 구분되는 점 중 하나로써, 일반적인 C언어 기반의 프로그래밍 언어의 경우 코드의 문법적인 위치에 따라서 전역/지역 변수가 결정되지만 Lisp은 특정 키워드(예: defvar, let)를 사용해서 명시적으로 변수의 스코프를 결정합니다.\n지역 변수 생성: let 명시적으로 지역 변수(Local Variable) 또한 생성할 수 있습니다. 지역 변수는 다른 프로그래밍 언어에서와 같이, 특정 범위내에서만 유효한 변수입니다. Lisp에서는 let을 사용해서 특정 변수를 지역 범위를 가지도록 생성할 수 있습니다.\n(let ((a 1) ; 지역변수 a 를 1로 초기화 c) ; 지역변수 c 를 nil로 초기화 (format t \"~d~%\" a)) (format t \"~d~%\" a) ; 오류 발생, 변수 a는 let범위 내에서만 유효함 함수에서 let 사용하기 Lisp에서 함수 호출 시 전달하는 파라미터 역시 지역범위의 변수로 생성됩니다.\n(defun foo (number) ; foo 함수 파라미터 변수 number, 지역 범위 (incf number) (format t \"number: ~a~%\" number)) (foo 20) ; 함수 인자 20과 함께 foo함수 호출 (format t \"number: ~a~%\" number) ; 오류 발생 다른 프로그래밍 언어와 마찬가지로, 함수 호출시 전달되는 인자는 함수 내부에서만 사용가능한 파라미터 변수로 할당됩니다. 따라서, 함수 파라미터는 함수가 종료되면 함수 외부에서는 사용할 수가 없죠. 또한 내부에서 새로운 변수를 사용해야 할 때는 어떻게 해야할까요?: 함수 내부에서 let을 사용하면 됩니다.\n(defun foo (number) ; 함수 파라미터 number, 지역 범위 (let ((plus-one 0)) ; 지역변수 plus-one 생성 (setq plus-one (+ number 1)) ; plus-one에 number+1 할당 (format t \"plus: ~d~%\" plus-one))) (foo 20) ; foo 함수 호출 위와 같은 코드를 작성하면 함수 foo내부에서 새롭게 생성된 지역변수 plus-one을 활용할 수 있습니다.\n기존 변수와 let의 관계 let은 새로운 지역 변수를 생성하는 것이기 때문에 동일한 이름을 가진 다른 변수의 값을 가릴 수 있습니다.\n(defvar a 10) ; a = 10 바인딩 생성 (let ((a 5)) ; 새로운 a 지역변수 생성, a = 5 바인딩 생성 (format t \"~d~%\" a)) (format t \"~d~%\" a) ; let의 범위를 벗어나므로 10을 출력 (defvar a 10)으로 인해 변수 a에 숫자 객체 10으로 새로운 변수가 생성되었습니다. 이후에 let문을 사용하게 되면, 동일한 심볼(변수 이름)이더라도 완전히 새로운 변수가 생성되기 때문에, let문 안에서 사용하는 변수 a는 전역변수 a가 아닌 지역변수 a입니다.\n전역 변수의 변수명에 *를 사용하는 이유이기도 합니다.\n변수값 변경: setq 앞서 살펴본 defvar, defparameter, let은 새로운 변수를 생성하는 키워드 입니다. (좀 더 정확하게는 새로운 변수 바인딩을 생성하는 것 입니다.) 이렇게 새로 생성된 변수는 setq를 사용해 변수의 값을 변경할 수 있습니다.\n(defparameter *a* nil) (setq *a* 'a) setq는 let혹은 defvar, defparameter와 함께 사용할 것 setq는 새로운 변수를 생성하는 것이 아니라 기존에 생성된 변수의 값을 수정하는 용도입니다. 그렇기 때문에 단독 사용은 지양하고 let이나 defvar 혹은 defparameter와 같은 변수 생성 구문과 함께 사용하는 것이 좋습니다.\n(let ((num 10) ; 초기값이 있는 경우 (n nil)) ; 초기값이 없는 경우 (format t \"~d~%\" num) ; 10 출력 (setq num (+ num 2)) ; num = 12 (setq n (+ num 2)) ; n = 14 (format t \"~d ~d~%\" num n)) ; 12 14 출력 setq를 단독으로 사용하면?\n변수 생성 과정 없이 사용할 경우, setq는 해당 변수를 글로벌 변수로 할당합니다. 이것은 명시적으로 변수의 범위를 설정하는 Lisp문법에 위배되기도 하고, 프로그래머가 실수하기 쉽습니다. 그렇기 때문에, SBCL환경의 경우 경고 메세지를 출력합니다.\n상수의 생성: defconstant Lisp은 다른 프로그래밍 언어와 같이 상수(Constant) 변수 역시 생성할 수 있습니다.\n(defconstant +name+ \"seojun\") ; 문자열 상수 선언 (format t \"~a~%\" +name+) (setq +name+ \"who\") ; 오류 발생, 상수는 값 변경 불가능 상수는 변수 이름의 앞뒤에 +기호로 감싸서 작성합니다.\n객체와 심볼의 바인딩 Lisp에서 변수는 기본적으로 바인딩(Binding)의 개념을 따릅니다. 즉, 값 자체를 직접 저장하는게 아니라 객체에 대한 참조를 저장합니다. 참고로, Lisp에서는 숫자와 문자를 포함한 모든 요소를 객체 혹은 심볼로 다룹니다.\n객채와 심볼, s-expression과 같은 내용은 다른 포스팅에서 다룰 예정입니다.\n예를 들어, (defvar a 1) 를 사용하여 전역변수를 생성하는 경우 아래와 같은 변수-값 바인딩을 생성합니다.\n+---+ +---+ | 1 | \u003c--- | a | +---+ +---+ 객체 변수(심볼) 현대 프로그래밍 언어와의 차이점 지금까지 살펴본 바와 같이 Lisp은 Python이나 C와 같은 현대 언어에 비해 더욱 명확한 변수 할당 방식과 스코프를 지정할 수 있도록 하고 있습니다. Python과 C를 비롯한 대부분 현대의 프로그래밍 언어는 변수의 문맥적 위치에 따라서 자동으로 지역 범위인지 전역 범위인지 결정합니다.\nint a = 10; // 전역 변수 a void foo () { int a = 20; // 지역 변수 a printf(\"%d\", a); // 20 출력 } printf(\"%d\", a); //10 출력 a = 10 # 전역 변수 a def foo (): a = 20 print(a) # 20 출력 하지만, Lisp은 연산자와 매크로를 사용하여 변수의 할당방식을 명시적으로 지정하도록 하여 컴파일러 최적화 및 효율적인 디버깅 방식을 제공할 뿐아니라 다른 언어에서 제공하지 못하는 유연성을 확보할 수 있습니다.\n결론 최근 From the Transistor 프로젝트 진행으로 인하여 Common Lisp으로 컴파일러를 작성하고 있습니다. 기존에 익숙했던 언어와의 차이점 때문에 어려움을 겪었는데, 그 중 하나가 변수의 할당과 사용에 관한 것 이었습니다. 이번 포스팅에서는 어려운 내용은 제외하고 실제 프로그래밍시에 바로 활용할 수 있는 내용을 다루었습니다. 다음 포스팅에서는 프로그래밍 필수 구성 요소 중 하나인 조건문과 반복문을 살펴볼 예정입니다.\n",
-  "wordCount" : "907",
-  "inLanguage": "ko",
+  "articleBody": "Learn how variable assignment works in Common Lisp, including global and local variables, setq, let, and defvar. This practical guide covers key differences from modern languages and best practices for efficient Lisp programming.\nUsing variables is one of the most fundamental aspects of programming. However, Common Lisp differs from other languages in how it handles variable assignment. In this post, we will explore the various ways to assign variables in Common Lisp, examine real-world examples, and discuss important considerations for each method.\nDefining Global Variables: defvar and defparameter The first variable assignment methods we’ll explore are global variable declarations using defvar and defparameter. These are the easiest ways to create variables in a Lisp program, and both define variables with global scope.\n(defvar *a*) ; Declare variable *a* without assigning a value (defvar *b* (list 1 2 3)) ; Assign a list (1 2 3) to variable *b* (defvar *my-array* (make-array 2)) ; Create a 2D array and assign it to *my-array* You can use defparameter in a similar way:\n(defparameter *a*) ; Error: defparameter requires an initial value (defparameter *b* '(1 2 3)) (defparameter *c* nil) Unlike defvar, defparameter requires an initial value when defining a variable.\nAs shown in the example, Lisp conventionally surrounds global variable names with * (asterisks).\nOne of the key differences between Lisp and other languages like C-based languages is how variable scope is determined. In many languages, whether a variable is global or local depends on its syntactic position in the code. However, in Lisp, scope is explicitly controlled using specific keywords such as defvar and let.\nDefining Local Variables: let In addition to global variables, you can explicitly create local variables. As in other programming languages, local variables are only valid within a specific scope. In Lisp, you can use let to define variables with a local scope.\n(let ((a 1) ; Initialize local variable a with 1 c) ; Declare local variable c (initialized to nil) (format t \"~d~%\" a)) (format t \"~d~%\" a) ; Error: a is only valid within the let scope Here, a and c exist only inside the let block. Once execution leaves the block, these variables are no longer accessible. This ensures that local variables do not interfere with other parts of the program.\nUsing let Inside Functions In Lisp, function parameters are also created as local variables within the function’s scope.\n(defun foo (number) ; Function parameter number, scoped locally (incf number) (format t \"number: ~a~%\" number)) (foo 20) ; Call foo function with argument 20 (format t \"number: ~a~%\" number) ; Error: number is only valid inside the function Just like in other programming languages, function arguments are assigned as local variables within the function. This means that once the function execution is complete, these parameters cannot be accessed from outside the function.\nNow, what if you need to create additional local variables inside a function? In such cases, you can use let within the function.\n(defun foo (number) ; Function parameter number, scoped locally (let ((plus-one 0)) ; Declare local variable plus-one (setq plus-one (+ number 1)) ; Assign number + 1 to plus-one (format t \"plus: ~d~%\" plus-one))) (foo 20) ; Call foo function In this example, we define a new local variable plus-one inside the function foo using let. This allows us to use it exclusively within the function without affecting the global environment.\nRelationship Between Existing Variables and let Since let creates a new local variable, it can shadow (hide) an existing variable with the same name.\n(defvar a 10) ; Bind a to 10 globally (let ((a 5)) ; Create a new local variable a, bound to 5 (format t \"~d~%\" a)) (format t \"~d~%\" a) ; Outside let, prints 10 (global a) Here, (defvar a 10) defines a global variable a bound to the value 10. When we introduce let, a new local variable named a is created within the let block, but this is not the same as the global a. Instead, the local a exists only within the let block and temporarily shadows the global a.\nThis is one of the reasons why global variables in Lisp are conventionally named with surrounding * (e.g., *a*). This naming convention helps distinguish them from local variables and avoid unintended shadowing.\nModifying Variable Values: setq So far, we’ve explored defvar, defparameter, and let, which are used to create new variables. (More precisely, they create new bindings for variables.) Once a variable is created, you can modify its value using setq.\n(defparameter *a* nil) (setq *a* 'a) Here, defparameter initializes *a* with nil, and later, setq updates *a* to 'a. Unlike defvar and defparameter, setq does not create a new variable—it only assigns a new value to an existing one.\nAlways Use setq with let, defvar, or defparameter setq does not create a new variable—it only modifies the value of an existing one. For this reason, it’s best to use setq together with a variable declaration, such as let, defvar, or defparameter, rather than using it alone.\n(let ((num 10) ; Variable num initialized to 10 (n nil)) ; Variable n initialized to nil (format t \"~d~%\" num) ; Prints 10 (setq num (+ num 2)) ; num = 12 (setq n (+ num 2)) ; n = 14 (format t \"~d ~d~%\" num n)) ; Prints 12 14 What happens if you use setq alone?\nIf you use setq without first declaring the variable, Lisp automatically assigns it as a global variable.\nThis goes against Lisp’s explicit variable scoping rules and can easily lead to unintended mistakes. In fact, in SBCL (Steel Bank Common Lisp), using setq without a prior declaration will trigger a warning message.\nDefining Constants: defconstant Just like other programming languages, Lisp allows you to create constant variables that cannot be modified.\n(defconstant +name+ \"seojun\") ; Define a string constant (format t \"~a~%\" +name+) (setq +name+ \"who\") ; Error: Constants cannot be modified By convention, constant variable names are surrounded by + signs.\nUsing defconstant, you can declare a variable whose value cannot be changed after its initial assignment. If you attempt to modify a constant using setq, Lisp will raise an error.\nObject and Symbol Binding In Lisp, variables follow the concept of binding. Instead of directly storing values, variables store references to objects. In Lisp, everything, including numbers and characters, is treated as either an object or a symbol.\nConcepts like objects, symbols, and s-expressions will be covered in a separate post.\nFor example, when you declare a global variable using (defvar a 1), Lisp creates a variable-to-value binding as shown below:\n+---+ +---+ | 1 | \u003c--- | a | +---+ +---+ Object Variable(Symbol) Differences from Modern Programming Languages As we have explored so far, Lisp provides a more explicit approach to variable assignment and scope compared to modern languages like Python and C. In most modern programming languages, a variable’s scope (local or global) is automatically determined based on its contextual placement within the code.\nFor example, in C:\nint a = 10; // Global variable a void foo() { int a = 20; // Local variable a printf(\"%d\", a); // Prints 20 } printf(\"%d\", a); // Prints 10 And in Python:\na = 10 # Global variable a def foo(): a = 20 # Local variable a print(a) # Prints 20 However, Lisp explicitly specifies how variables are assigned and scoped using operators and macros, rather than relying on implicit scoping rules. This declarative approach allows for better compiler optimization, debugging efficiency, and enhanced flexibility—features that are not easily achievable in many modern languages.\nConclusion Recently, while working on the From the Transistor project, I’ve been writing a compiler using Common Lisp. Since Lisp differs significantly from the languages I’m more familiar with, I initially struggled with several concepts—one of the major challenges being variable assignment and usage.\nIn this post, I focused on practical aspects of variable handling in Lisp, leaving out more complex topics, so that you can apply these concepts immediately in real programming scenarios.\nIn the next post, we’ll dive into another essential part of programming: conditional statements and loops. Stay tuned!\nRelated Resources LispWorks HyperSpec defvar and defparameter let ",
+  "wordCount" : "1363",
+  "inLanguage": "en",
   "datePublished": "2025-02-12T00:00:00Z",
   "dateModified": "2025-02-12T00:00:00Z",
   "mainEntityOfPage": {
@@ -131,8 +124,8 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
             <div class="logo-switches">
                 <ul class="lang-switch"><li>|</li>
                     <li>
-                        <a href="https://seojuncha.github.io/en/" title="English"
-                            aria-label="English">En</a>
+                        <a href="https://seojuncha.github.io/ko/" title="한국어"
+                            aria-label="한국어">Ko</a>
                     </li>
                 </ul>
             </div>
@@ -160,14 +153,14 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://seojuncha.github.io/">홈</a>&nbsp;»&nbsp;<a href="https://seojuncha.github.io/posts/">Posts</a></div>
+    <div class="breadcrumbs"><a href="https://seojuncha.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://seojuncha.github.io/posts/">Posts</a></div>
     <h1 class="post-title entry-hint-parent">
-      Common Lisp의 변수 할당에 대한 이해
+      Understanding Variable Assignment in Common Lisp: A Practical Guide
     </h1>
-    <div class="post-meta"><span title='2025-02-12 00:00:00 +0000 UTC'>2월 12, 2025</span>&nbsp;·&nbsp;5 분&nbsp;|&nbsp;번역:
+    <div class="post-meta"><span title='2025-02-12 00:00:00 +0000 UTC'>February 12, 2025</span>&nbsp;·&nbsp;7 min&nbsp;|&nbsp;Translations:
 <ul class="i18n_list">
     <li>
-        <a href="https://seojuncha.github.io/en/posts/variable-assignment-in-common-lisp/">En</a>
+        <a href="https://seojuncha.github.io/ko/posts/variable-assignment-in-common-lisp/">Ko</a>
     </li>
 </ul>
 
@@ -175,142 +168,157 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
   </header> <div class="toc">
     <details >
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">목차</span>
+            <span class="details">Table of Contents</span>
         </summary>
 
         <div class="inner"><ul>
                 <li>
-                    <a href="#%ec%a0%84%ec%97%ad-%eb%b3%80%ec%88%98%ec%9d%98-%ec%83%9d%ec%84%b1-defvar-defparameter" aria-label="전역 변수의 생성: defvar, defparameter">전역 변수의 생성: defvar, defparameter</a></li>
+                    <a href="#defining-global-variables-defvar-and-defparameter" aria-label="Defining Global Variables: defvar and defparameter">Defining Global Variables: defvar and defparameter</a></li>
                 <li>
-                    <a href="#%ec%a7%80%ec%97%ad-%eb%b3%80%ec%88%98-%ec%83%9d%ec%84%b1-let" aria-label="지역 변수 생성: let">지역 변수 생성: let</a><ul>
+                    <a href="#defining-local-variables-let" aria-label="Defining Local Variables: let">Defining Local Variables: let</a><ul>
                         
                 <li>
-                    <a href="#%ed%95%a8%ec%88%98%ec%97%90%ec%84%9c-let-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0" aria-label="함수에서 let 사용하기">함수에서 let 사용하기</a></li>
+                    <a href="#using-let-inside-functions" aria-label="Using let Inside Functions">Using let Inside Functions</a></li>
                 <li>
-                    <a href="#%ea%b8%b0%ec%a1%b4-%eb%b3%80%ec%88%98%ec%99%80-let%ec%9d%98-%ea%b4%80%ea%b3%84" aria-label="기존 변수와 let의 관계">기존 변수와 let의 관계</a></li></ul>
+                    <a href="#relationship-between-existing-variables-and-let" aria-label="Relationship Between Existing Variables and let">Relationship Between Existing Variables and let</a></li></ul>
                 </li>
                 <li>
-                    <a href="#%eb%b3%80%ec%88%98%ea%b0%92-%eb%b3%80%ea%b2%bd-setq" aria-label="변수값 변경: setq">변수값 변경: setq</a><ul>
+                    <a href="#modifying-variable-values-setq" aria-label="Modifying Variable Values: setq">Modifying Variable Values: setq</a><ul>
                         
                 <li>
-                    <a href="#setq%eb%8a%94-let%ed%98%b9%ec%9d%80-defvar-defparameter%ec%99%80-%ed%95%a8%ea%bb%98-%ec%82%ac%ec%9a%a9%ed%95%a0-%ea%b2%83" aria-label="setq는 let혹은 defvar, defparameter와 함께 사용할 것">setq는 let혹은 defvar, defparameter와 함께 사용할 것</a></li></ul>
+                    <a href="#always-use-setq-with-let-defvar-or-defparameter" aria-label="Always Use setq with let, defvar, or defparameter">Always Use setq with let, defvar, or defparameter</a></li></ul>
                 </li>
                 <li>
-                    <a href="#%ec%83%81%ec%88%98%ec%9d%98-%ec%83%9d%ec%84%b1-defconstant" aria-label="상수의 생성: defconstant">상수의 생성: defconstant</a></li>
+                    <a href="#defining-constants-defconstant" aria-label="Defining Constants: defconstant">Defining Constants: defconstant</a></li>
                 <li>
-                    <a href="#%ea%b0%9d%ec%b2%b4%ec%99%80-%ec%8b%ac%eb%b3%bc%ec%9d%98-%eb%b0%94%ec%9d%b8%eb%94%a9" aria-label="객체와 심볼의 바인딩">객체와 심볼의 바인딩</a></li>
+                    <a href="#object-and-symbol-binding" aria-label="Object and Symbol Binding">Object and Symbol Binding</a></li>
                 <li>
-                    <a href="#%ed%98%84%eb%8c%80-%ed%94%84%eb%a1%9c%ea%b7%b8%eb%9e%98%eb%b0%8d-%ec%96%b8%ec%96%b4%ec%99%80%ec%9d%98-%ec%b0%a8%ec%9d%b4%ec%a0%90" aria-label="현대 프로그래밍 언어와의 차이점">현대 프로그래밍 언어와의 차이점</a></li>
+                    <a href="#differences-from-modern-programming-languages" aria-label="Differences from Modern Programming Languages">Differences from Modern Programming Languages</a></li>
                 <li>
-                    <a href="#%ea%b2%b0%eb%a1%a0" aria-label="결론">결론</a>
+                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a></li>
+                <li>
+                    <a href="#related-resources" aria-label="Related Resources">Related Resources</a>
                 </li>
             </ul>
         </div>
     </details>
 </div>
 
-  <div class="post-content"><p>변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.</p>
-<h1 id="전역-변수의-생성-defvar-defparameter">전역 변수의 생성: <code>defvar</code>, <code>defparameter</code><a hidden class="anchor" aria-hidden="true" href="#전역-변수의-생성-defvar-defparameter">#</a></h1>
-<p>가장 먼저 살펴볼 변수 할당 방법은 <code>defvar</code>과 <code>defparameter</code>를 사용한 <em><strong>전역 변수(Global Variable) 할당</strong></em>입니다.
-Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.</p>
-<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defvar</span> *a*)    <span style="color:#6c7986">; 값 할당 없이 변수 a 선언</span>
-</span></span><span style="display:flex;"><span>(<span style="color:#d0a8ff">defvar</span> *b* (<span style="color:#5dd8ff">list</span> <span style="color:#d0bf69">1</span> <span style="color:#d0bf69">2</span> <span style="color:#d0bf69">3</span>))  <span style="color:#6c7986">; 변수 b 에 리스트 (1 2 3) 할당</span>
-</span></span><span style="display:flex;"><span>(<span style="color:#d0a8ff">defvar</span> *my-array* (<span style="color:#41a1c0">make-array</span> <span style="color:#d0bf69">2</span>))  <span style="color:#6c7986">; 변수 my-array에 2차원 배열 생성</span>
-</span></span></code></pre></div><p><code>defvar</code>와 동일하게 <code>defparameter</code>를 사용할 수 있습니다.</p>
-<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defparameter</span> *a*)  <span style="color:#6c7986">; 오류 발생</span>
+  <div class="post-content"><p>Learn how variable assignment works in Common Lisp, including global and local variables, <code>setq</code>, <code>let</code>, and <code>defvar</code>. This practical guide covers key differences from modern languages and best practices for efficient Lisp programming.</p>
+<p>Using variables is one of the most fundamental aspects of programming. However, Common Lisp differs from other languages in how it handles variable assignment. In this post, we will explore the various ways to assign variables in Common Lisp, examine real-world examples, and discuss important considerations for each method.</p>
+<h1 id="defining-global-variables-defvar-and-defparameter">Defining Global Variables: <code>defvar</code> and <code>defparameter</code><a hidden class="anchor" aria-hidden="true" href="#defining-global-variables-defvar-and-defparameter">#</a></h1>
+<p>The first variable assignment methods we&rsquo;ll explore are <em><strong>global variable</strong></em> declarations using <code>defvar</code> and <code>defparameter</code>. These are the easiest ways to create variables in a Lisp program, and both define variables with global scope.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defvar</span> *a*)    <span style="color:#6c7986">; Declare variable *a* without assigning a value</span>
+</span></span><span style="display:flex;"><span>(<span style="color:#d0a8ff">defvar</span> *b* (<span style="color:#5dd8ff">list</span> <span style="color:#d0bf69">1</span> <span style="color:#d0bf69">2</span> <span style="color:#d0bf69">3</span>))  <span style="color:#6c7986">; Assign a list (1 2 3) to variable *b*</span>
+</span></span><span style="display:flex;"><span>(<span style="color:#d0a8ff">defvar</span> *my-array* (<span style="color:#41a1c0">make-array</span> <span style="color:#d0bf69">2</span>))  <span style="color:#6c7986">; Create a 2D array and assign it to *my-array*</span>
+</span></span></code></pre></div><p>You can use <code>defparameter</code> in a similar way:</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defparameter</span> *a*)  <span style="color:#6c7986">; Error: defparameter requires an initial value</span>
 </span></span><span style="display:flex;"><span>(<span style="color:#d0a8ff">defparameter</span> *b* &#39;(<span style="color:#d0bf69">1</span> <span style="color:#d0bf69">2</span> <span style="color:#d0bf69">3</span>))
 </span></span><span style="display:flex;"><span>(<span style="color:#d0a8ff">defparameter</span> *c* nil)
-</span></span></code></pre></div><p>다만 <code>defparameter</code>는 <code>defvar</code>와 다르게 <strong>변수 생성시 초기화 값이 필요</strong>합니다.</p>
+</span></span></code></pre></div><p>Unlike <code>defvar</code>, <code>defparameter</code> <strong>requires an initial value</strong> when defining a variable.</p>
 <blockquote>
-<p>예제 코드에서 볼 수 있듯이 Lisp에서 전역변수는 변수명 앞뒤에 <code>*</code>로 감싸서 작성합니다.</p>
+<p>As shown in the example, Lisp conventionally surrounds global variable names with <code>*</code> (asterisks).</p>
 </blockquote>
-<p>Lisp이 다른 언어와 구분되는 점 중 하나로써, 일반적인 C언어 기반의 프로그래밍 언어의 경우 코드의 문법적인 위치에 따라서 전역/지역 변수가 결정되지만 Lisp은 특정 키워드(예: <code>defvar</code>, <code>let</code>)를 사용해서 명시적으로 변수의 스코프를 결정합니다.</p>
-<h1 id="지역-변수-생성-let">지역 변수 생성: <code>let</code><a hidden class="anchor" aria-hidden="true" href="#지역-변수-생성-let">#</a></h1>
-<p>명시적으로 지역 변수(Local Variable) 또한 생성할 수 있습니다. 지역 변수는 다른 프로그래밍 언어에서와 같이, 특정 범위내에서만 유효한 변수입니다. Lisp에서는 <code>let</code>을 사용해서 특정 변수를 지역 범위를 가지도록 생성할 수 있습니다.</p>
-<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">a</span> <span style="color:#d0bf69">1</span>)   <span style="color:#6c7986">; 지역변수 a 를 1로 초기화</span>
-</span></span><span style="display:flex;"><span>       <span style="color:#41a1c0">c</span>)     <span style="color:#6c7986">; 지역변수 c 를 nil로 초기화</span>
+<p>One of the key differences between Lisp and other languages like C-based languages is how variable scope is determined. In many languages, whether a variable is global or local depends on its syntactic position in the code. However, in Lisp, scope is <strong>explicitly controlled</strong> using specific keywords such as <code>defvar</code> and <code>let</code>.</p>
+<h1 id="defining-local-variables-let">Defining Local Variables: <code>let</code><a hidden class="anchor" aria-hidden="true" href="#defining-local-variables-let">#</a></h1>
+<p>In addition to global variables, you can explicitly create <em><strong>local variables</strong></em>. As in other programming languages, local variables are only valid within a specific scope. In Lisp, you can use let to define variables with a local scope.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">a</span> <span style="color:#d0bf69">1</span>)   <span style="color:#6c7986">; Initialize local variable a with 1</span>
+</span></span><span style="display:flex;"><span>       <span style="color:#41a1c0">c</span>)     <span style="color:#6c7986">; Declare local variable c (initialized to nil)</span>
 </span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d~%&#34;</span> <span style="color:#41a1c0">a</span>))
-</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d~%&#34;</span> <span style="color:#41a1c0">a</span>)  <span style="color:#6c7986">; 오류 발생, 변수 a는 let범위 내에서만 유효함</span>
-</span></span></code></pre></div><h2 id="함수에서-let-사용하기">함수에서 <code>let</code> 사용하기<a hidden class="anchor" aria-hidden="true" href="#함수에서-let-사용하기">#</a></h2>
-<p>Lisp에서 함수 호출 시 전달하는 파라미터 역시 지역범위의 변수로 생성됩니다.</p>
-<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defun</span> <span style="color:#41a1c0">foo</span> (<span style="color:#5dd8ff">number</span>)   <span style="color:#6c7986">; foo 함수 파라미터 변수 number, 지역 범위</span>
+</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d~%&#34;</span> <span style="color:#41a1c0">a</span>)  <span style="color:#6c7986">; Error: a is only valid within the let scope</span>
+</span></span></code></pre></div><p>Here, <code>a</code> and <code>c</code> exist only inside the let block. Once execution leaves the block, these variables are no longer accessible. This ensures that local variables do not interfere with other parts of the program.</p>
+<h2 id="using-let-inside-functions">Using <code>let</code> Inside Functions<a hidden class="anchor" aria-hidden="true" href="#using-let-inside-functions">#</a></h2>
+<p>In Lisp, function parameters are also created as <em><strong>local variables</strong></em> within the function&rsquo;s scope.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defun</span> <span style="color:#41a1c0">foo</span> (<span style="color:#5dd8ff">number</span>)   <span style="color:#6c7986">; Function parameter number, scoped locally</span>
 </span></span><span style="display:flex;"><span>  (<span style="color:#d0a8ff">incf</span> <span style="color:#5dd8ff">number</span>)
 </span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;number: ~a~%&#34;</span> <span style="color:#5dd8ff">number</span>))
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">foo</span> <span style="color:#d0bf69">20</span>)  <span style="color:#6c7986">; 함수 인자 20과 함께 foo함수 호출</span>
-</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;number: ~a~%&#34;</span> <span style="color:#5dd8ff">number</span>)   <span style="color:#6c7986">; 오류 발생</span>
-</span></span></code></pre></div><p>다른 프로그래밍 언어와 마찬가지로, 함수 호출시 전달되는 인자는 함수 내부에서만 사용가능한 파라미터 변수로 할당됩니다.
-따라서, 함수 파라미터는 함수가 종료되면 함수 외부에서는 사용할 수가 없죠. 또한 내부에서 새로운 변수를 사용해야 할 때는 어떻게 해야할까요?: 함수 내부에서 <code>let</code>을 사용하면 됩니다.</p>
-<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defun</span> <span style="color:#41a1c0">foo</span> (<span style="color:#5dd8ff">number</span>)  <span style="color:#6c7986">; 함수 파라미터 number, 지역 범위</span>
-</span></span><span style="display:flex;"><span>  (<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">plus-one</span> <span style="color:#d0bf69">0</span>))   <span style="color:#6c7986">; 지역변수 plus-one 생성</span>
-</span></span><span style="display:flex;"><span>    (<span style="color:#fc5fa3">setq</span> <span style="color:#41a1c0">plus-one</span> (<span style="color:#41a1c0">+</span> <span style="color:#5dd8ff">number</span> <span style="color:#d0bf69">1</span>))  <span style="color:#6c7986">; plus-one에 number+1 할당</span>
+</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">foo</span> <span style="color:#d0bf69">20</span>)  <span style="color:#6c7986">; Call foo function with argument 20</span>
+</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;number: ~a~%&#34;</span> <span style="color:#5dd8ff">number</span>)   <span style="color:#6c7986">; Error: number is only valid inside the function</span>
+</span></span></code></pre></div><p>Just like in other programming languages, function arguments are assigned as local variables within the function. This means that once the function execution is complete, these parameters cannot be accessed from outside the function.</p>
+<p>Now, what if you need to create additional local variables inside a function? In such cases, you can use <code>let</code> within the function.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defun</span> <span style="color:#41a1c0">foo</span> (<span style="color:#5dd8ff">number</span>)  <span style="color:#6c7986">; Function parameter number, scoped locally</span>
+</span></span><span style="display:flex;"><span>  (<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">plus-one</span> <span style="color:#d0bf69">0</span>))   <span style="color:#6c7986">; Declare local variable plus-one</span>
+</span></span><span style="display:flex;"><span>    (<span style="color:#fc5fa3">setq</span> <span style="color:#41a1c0">plus-one</span> (<span style="color:#41a1c0">+</span> <span style="color:#5dd8ff">number</span> <span style="color:#d0bf69">1</span>))  <span style="color:#6c7986">; Assign number + 1 to plus-one</span>
 </span></span><span style="display:flex;"><span>    (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;plus: ~d~%&#34;</span> <span style="color:#41a1c0">plus-one</span>)))
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">foo</span> <span style="color:#d0bf69">20</span>)  <span style="color:#6c7986">; foo 함수 호출</span>
-</span></span></code></pre></div><p>위와 같은 코드를 작성하면 함수 <code>foo</code>내부에서 새롭게 생성된 지역변수 <code>plus-one</code>을 활용할 수 있습니다.</p>
-<h2 id="기존-변수와-let의-관계">기존 변수와 <code>let</code>의 관계<a hidden class="anchor" aria-hidden="true" href="#기존-변수와-let의-관계">#</a></h2>
-<p><code>let</code>은 새로운 지역 변수를 생성하는 것이기 때문에 동일한 이름을 가진 다른 변수의 값을 가릴 수 있습니다.</p>
-<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defvar</span> <span style="color:#41a1c0">a</span> <span style="color:#d0bf69">10</span>)   <span style="color:#6c7986">; a = 10 바인딩 생성</span>
-</span></span><span style="display:flex;"><span>(<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">a</span> <span style="color:#d0bf69">5</span>))    <span style="color:#6c7986">; 새로운 a 지역변수 생성, a = 5 바인딩 생성</span>
+</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">foo</span> <span style="color:#d0bf69">20</span>)  <span style="color:#6c7986">; Call foo function</span>
+</span></span></code></pre></div><p>In this example, we define a new local variable <code>plus-one</code> inside the function foo using <code>let</code>. This allows us to use it exclusively within the function without affecting the global environment.</p>
+<h2 id="relationship-between-existing-variables-and-let">Relationship Between Existing Variables and <code>let</code><a hidden class="anchor" aria-hidden="true" href="#relationship-between-existing-variables-and-let">#</a></h2>
+<p>Since let creates a new local variable, it can <strong>shadow (hide)</strong> an existing variable with the same name.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defvar</span> <span style="color:#41a1c0">a</span> <span style="color:#d0bf69">10</span>)   <span style="color:#6c7986">; Bind a to 10 globally</span>
+</span></span><span style="display:flex;"><span>(<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">a</span> <span style="color:#d0bf69">5</span>))    <span style="color:#6c7986">; Create a new local variable a, bound to 5</span>
 </span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d~%&#34;</span> <span style="color:#41a1c0">a</span>))
-</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d~%&#34;</span> <span style="color:#41a1c0">a</span>)  <span style="color:#6c7986">; let의 범위를 벗어나므로 10을 출력</span>
-</span></span></code></pre></div><p><code>(defvar a 10)</code>으로 인해 변수 <code>a</code>에 숫자 객체 <code>10</code>으로 새로운 변수가 생성되었습니다.
-이후에 <code>let</code>문을 사용하게 되면, 동일한 심볼(변수 이름)이더라도 완전히 새로운 변수가 생성되기 때문에, <code>let</code>문 안에서 사용하는 변수 <code>a</code>는 <code>전역변수 a</code>가 아닌 <code>지역변수 a</code>입니다.</p>
-<blockquote>
-<p>전역 변수의 변수명에 <code>*</code>를 사용하는 이유이기도 합니다.</p>
-</blockquote>
-<h1 id="변수값-변경-setq">변수값 변경: <code>setq</code><a hidden class="anchor" aria-hidden="true" href="#변수값-변경-setq">#</a></h1>
-<p>앞서 살펴본 <code>defvar</code>, <code>defparameter</code>, <code>let</code>은 새로운 변수를 생성하는 키워드 입니다. (좀 더 정확하게는 새로운 변수 바인딩을 생성하는 것 입니다.) 이렇게 새로 생성된 변수는 <code>setq</code>를 사용해 변수의 값을 변경할 수 있습니다.</p>
+</span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d~%&#34;</span> <span style="color:#41a1c0">a</span>)  <span style="color:#6c7986">; Outside let, prints 10 (global a)</span>
+</span></span></code></pre></div><p>Here, <code>(defvar a 10)</code> defines a global variable a bound to the value <code>10</code>. When we introduce <code>let</code>, a new local variable named a is created within the <code>let</code> block, but this is <em><strong>not</strong></em> the same as the global a. Instead, the local a exists only within the let block and temporarily <strong>shadows the global <code>a</code></strong>.</p>
+<p>This is one of the reasons why global variables in Lisp are conventionally named with surrounding <code>*</code> (e.g., <code>*a*</code>). This naming convention helps distinguish them from local variables and avoid unintended shadowing.</p>
+<h1 id="modifying-variable-values-setq">Modifying Variable Values: <code>setq</code><a hidden class="anchor" aria-hidden="true" href="#modifying-variable-values-setq">#</a></h1>
+<p>So far, we&rsquo;ve explored <code>defvar</code>, <code>defparameter</code>, and <code>let</code>, which are used to <strong>create</strong> new variables. (More precisely, they create new bindings for variables.) Once a variable is created, you can <strong>modify</strong> its value using <code>setq</code>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defparameter</span> *a* nil)
 </span></span><span style="display:flex;"><span>(<span style="color:#fc5fa3">setq</span> *a* <span style="color:#fc6a5d">&#39;a</span>)
-</span></span></code></pre></div><h2 id="setq는-let혹은-defvar-defparameter와-함께-사용할-것"><code>setq</code>는 <code>let</code>혹은 <code>defvar</code>, <code>defparameter</code>와 함께 사용할 것<a hidden class="anchor" aria-hidden="true" href="#setq는-let혹은-defvar-defparameter와-함께-사용할-것">#</a></h2>
-<p><code>setq</code>는 새로운 변수를 생성하는 것이 아니라 기존에 생성된 변수의 값을 수정하는 용도입니다. 그렇기 때문에 단독 사용은 지양하고 <code>let</code>이나 <code>defvar</code> 혹은 <code>defparameter</code>와 같은 변수 생성 구문과 함께 사용하는 것이 좋습니다.</p>
-<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">num</span> <span style="color:#d0bf69">10</span>)  <span style="color:#6c7986">; 초기값이 있는 경우</span>
-</span></span><span style="display:flex;"><span>      (<span style="color:#41a1c0">n</span> nil))  <span style="color:#6c7986">; 초기값이 없는 경우</span>
-</span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d~%&#34;</span> <span style="color:#41a1c0">num</span>)    <span style="color:#6c7986">; 10 출력</span>
+</span></span></code></pre></div><p>Here, <code>defparameter</code> initializes <code>*a*</code> with <code>nil</code>, and later, <code>setq</code> updates <code>*a*</code> to <code>'a</code>. Unlike <code>defvar</code> and <code>defparameter</code>, <code>setq</code> does <strong>not</strong> create a new variable—it only assigns a new value to an existing one.</p>
+<h2 id="always-use-setq-with-let-defvar-or-defparameter">Always Use <code>setq</code> with <code>let</code>, <code>defvar</code>, or <code>defparameter</code><a hidden class="anchor" aria-hidden="true" href="#always-use-setq-with-let-defvar-or-defparameter">#</a></h2>
+<p><code>setq</code> <strong>does not create a new variable</strong>—it only modifies the value of an existing one. For this reason, it’s best to use <code>setq</code> together with a variable declaration, such as <code>let</code>, <code>defvar</code>, or <code>defparameter</code>, rather than using it alone.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">num</span> <span style="color:#d0bf69">10</span>)  <span style="color:#6c7986">; Variable num initialized to 10</span>
+</span></span><span style="display:flex;"><span>      (<span style="color:#41a1c0">n</span> nil))  <span style="color:#6c7986">; Variable n initialized to nil</span>
+</span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d~%&#34;</span> <span style="color:#41a1c0">num</span>)    <span style="color:#6c7986">; Prints 10</span>
 </span></span><span style="display:flex;"><span>  (<span style="color:#fc5fa3">setq</span> <span style="color:#41a1c0">num</span> (<span style="color:#41a1c0">+</span> <span style="color:#41a1c0">num</span> <span style="color:#d0bf69">2</span>))     <span style="color:#6c7986">; num = 12</span>
 </span></span><span style="display:flex;"><span>  (<span style="color:#fc5fa3">setq</span> <span style="color:#41a1c0">n</span> (<span style="color:#41a1c0">+</span> <span style="color:#41a1c0">num</span> <span style="color:#d0bf69">2</span>))       <span style="color:#6c7986">; n = 14</span>
-</span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d ~d~%&#34;</span> <span style="color:#41a1c0">num</span> <span style="color:#41a1c0">n</span>))  <span style="color:#6c7986">; 12 14 출력</span>
+</span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~d ~d~%&#34;</span> <span style="color:#41a1c0">num</span> <span style="color:#41a1c0">n</span>))  <span style="color:#6c7986">; Prints 12 14</span>
 </span></span></code></pre></div><blockquote>
-<p><strong><code>setq</code>를 단독으로 사용하면?</strong></p>
-<p>변수 생성 과정 없이 사용할 경우, <code>setq</code>는 해당 변수를 글로벌 변수로 할당합니다. 이것은 명시적으로 변수의 범위를 설정하는 Lisp문법에 위배되기도 하고, 프로그래머가 실수하기 쉽습니다.
-그렇기 때문에, SBCL환경의 경우 경고 메세지를 출력합니다.</p>
+<p><strong>What happens if you use <code>setq</code> alone?</strong></p>
+<p>If you use <code>setq</code> without first declaring the variable, Lisp automatically assigns it as a <strong>global variable</strong>.<br>
+This goes against Lisp’s explicit variable scoping rules and can easily lead to unintended mistakes.
+In fact, in <a href="https://www.sbcl.org/">SBCL (Steel Bank Common Lisp)</a>, using <code>setq</code> without a prior declaration will trigger a warning message.</p>
 </blockquote>
-<h1 id="상수의-생성-defconstant">상수의 생성: <code>defconstant</code><a hidden class="anchor" aria-hidden="true" href="#상수의-생성-defconstant">#</a></h1>
-<p>Lisp은 다른 프로그래밍 언어와 같이 상수(Constant) 변수 역시 생성할 수 있습니다.</p>
-<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defconstant</span> <span style="color:#41a1c0">+name+</span> <span style="color:#fc6a5d">&#34;seojun&#34;</span>)   <span style="color:#6c7986">; 문자열 상수 선언</span>
+<h1 id="defining-constants-defconstant">Defining Constants: <code>defconstant</code><a hidden class="anchor" aria-hidden="true" href="#defining-constants-defconstant">#</a></h1>
+<p>Just like other programming languages, Lisp allows you to create <strong>constant variables</strong> that cannot be modified.</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defconstant</span> <span style="color:#41a1c0">+name+</span> <span style="color:#fc6a5d">&#34;seojun&#34;</span>)   <span style="color:#6c7986">; Define a string constant</span>
 </span></span><span style="display:flex;"><span>(<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;~a~%&#34;</span> <span style="color:#41a1c0">+name+</span>)
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>(<span style="color:#fc5fa3">setq</span> <span style="color:#41a1c0">+name+</span> <span style="color:#fc6a5d">&#34;who&#34;</span>)  <span style="color:#6c7986">; 오류 발생, 상수는 값 변경 불가능</span>
+</span></span><span style="display:flex;"><span>(<span style="color:#fc5fa3">setq</span> <span style="color:#41a1c0">+name+</span> <span style="color:#fc6a5d">&#34;who&#34;</span>)  <span style="color:#6c7986">; Error: Constants cannot be modified</span>
 </span></span></code></pre></div><blockquote>
-<p>상수는 변수 이름의 앞뒤에 <code>+</code>기호로 감싸서 작성합니다.</p>
+<p>By convention, constant variable names are surrounded by <code>+</code> signs.</p>
 </blockquote>
-<h1 id="객체와-심볼의-바인딩">객체와 심볼의 바인딩<a hidden class="anchor" aria-hidden="true" href="#객체와-심볼의-바인딩">#</a></h1>
-<p>Lisp에서 변수는 기본적으로 바인딩(Binding)의 개념을 따릅니다. 즉, 값 자체를 직접 저장하는게 아니라 객체에 대한 참조를 저장합니다. 참고로, Lisp에서는 숫자와 문자를 포함한 모든 요소를 객체 혹은 심볼로 다룹니다.</p>
+<p>Using <code>defconstant</code>, you can declare a variable whose value <strong>cannot be changed</strong> after its initial assignment. If you attempt to modify a constant using setq, Lisp will raise an error.</p>
+<h1 id="object-and-symbol-binding">Object and Symbol Binding<a hidden class="anchor" aria-hidden="true" href="#object-and-symbol-binding">#</a></h1>
+<p>In Lisp, variables follow the concept of <em><strong>binding</strong></em>. Instead of directly storing values, variables store <strong>references to objects</strong>. In Lisp, <strong>everything</strong>, including numbers and characters, is treated as either an <em>object</em> or a <em>symbol</em>.</p>
 <blockquote>
-<p>객채와 심볼, s-expression과 같은 내용은 다른 포스팅에서 다룰 예정입니다.</p>
+<p>Concepts like objects, symbols, and s-expressions will be covered in a separate post.</p>
 </blockquote>
-<p>예를 들어, <code>(defvar a 1)</code> 를 사용하여 전역변수를 생성하는 경우 아래와 같은 <strong>변수-값 바인딩</strong>을 생성합니다.</p>
+<p>For example, when you declare a global variable using <code>(defvar a 1)</code>, Lisp creates a <strong>variable-to-value binding</strong> as shown below:</p>
 <pre tabindex="0"><code> +---+      +---+
  | 1 | &lt;--- | a |
  +---+      +---+
-  객체     변수(심볼)
-</code></pre><h1 id="현대-프로그래밍-언어와의-차이점">현대 프로그래밍 언어와의 차이점<a hidden class="anchor" aria-hidden="true" href="#현대-프로그래밍-언어와의-차이점">#</a></h1>
-<p>지금까지 살펴본 바와 같이 Lisp은 Python이나 C와 같은 현대 언어에 비해 더욱 명확한 변수 할당 방식과 스코프를 지정할 수 있도록 하고 있습니다. Python과 C를 비롯한 대부분 현대의 프로그래밍 언어는 변수의 문맥적 위치에 따라서 자동으로 지역 범위인지 전역 범위인지 결정합니다.</p>
-<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fc5fa3">int</span> a = <span style="color:#d0bf69">10</span>;     <span style="color:#6c7986">// 전역 변수 a
-</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span><span style="color:#fc5fa3">void</span> <span style="color:#41a1c0">foo</span> () {
-</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">int</span> a = <span style="color:#d0bf69">20</span>;   <span style="color:#6c7986">// 지역 변수 a
-</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;%d&#34;</span>, a);  <span style="color:#6c7986">// 20 출력
+Object     Variable(Symbol)
+</code></pre><h1 id="differences-from-modern-programming-languages">Differences from Modern Programming Languages<a hidden class="anchor" aria-hidden="true" href="#differences-from-modern-programming-languages">#</a></h1>
+<p>As we have explored so far, Lisp provides a more <strong>explicit approach</strong> to variable assignment and scope compared to modern languages like Python and C. In most modern programming languages, a variable&rsquo;s scope (local or global) is automatically determined based on its <strong>contextual placement</strong> within the code.</p>
+<p>For example, in C:</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fc5fa3">int</span> a = <span style="color:#d0bf69">10</span>;     <span style="color:#6c7986">// Global variable a
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span><span style="color:#fc5fa3">void</span> <span style="color:#41a1c0">foo</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#fc5fa3">int</span> a = <span style="color:#d0bf69">20</span>;   <span style="color:#6c7986">// Local variable a
+</span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>  <span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;%d&#34;</span>, a);  <span style="color:#6c7986">// Prints 20
 </span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>}
-</span></span><span style="display:flex;"><span><span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;%d&#34;</span>, a);  <span style="color:#6c7986">//10 출력
-</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>a = <span style="color:#d0bf69">10</span>    <span style="color:#6c7986"># 전역 변수 a</span>
-</span></span><span style="display:flex;"><span><span style="color:#fc5fa3">def</span> <span style="color:#41a1c0">foo</span> ():
-</span></span><span style="display:flex;"><span>  a = <span style="color:#d0bf69">20</span>
-</span></span><span style="display:flex;"><span><span style="color:#d0a8ff">print</span>(a)  <span style="color:#6c7986"># 20 출력</span>
-</span></span></code></pre></div><p>하지만, Lisp은 연산자와 매크로를 사용하여 변수의 할당방식을 명시적으로 지정하도록 하여 컴파일러 최적화 및 효율적인 디버깅 방식을 제공할 뿐아니라 다른 언어에서 제공하지 못하는 유연성을 확보할 수 있습니다.</p>
-<h1 id="결론">결론<a hidden class="anchor" aria-hidden="true" href="#결론">#</a></h1>
-<p>최근 From the Transistor 프로젝트 진행으로 인하여 Common Lisp으로 컴파일러를 작성하고 있습니다. 기존에 익숙했던 언어와의 차이점 때문에 어려움을 겪었는데, 그 중 하나가 변수의 할당과 사용에 관한 것 이었습니다. 이번 포스팅에서는 어려운 내용은 제외하고 실제 프로그래밍시에 바로 활용할 수 있는 내용을 다루었습니다. 다음 포스팅에서는 프로그래밍 필수 구성 요소 중 하나인 조건문과 반복문을 살펴볼 예정입니다.</p>
-
+</span></span><span style="display:flex;"><span><span style="color:#41a1c0">printf</span>(<span style="color:#fc6a5d">&#34;%d&#34;</span>, a);  <span style="color:#6c7986">// Prints 10
+</span></span></span></code></pre></div><p>And in Python:</p>
+<div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>a = <span style="color:#d0bf69">10</span>    <span style="color:#6c7986"># Global variable a</span>
+</span></span><span style="display:flex;"><span><span style="color:#fc5fa3">def</span> <span style="color:#41a1c0">foo</span>():
+</span></span><span style="display:flex;"><span>  a = <span style="color:#d0bf69">20</span>  <span style="color:#6c7986"># Local variable a</span>
+</span></span><span style="display:flex;"><span><span style="color:#d0a8ff">print</span>(a)  <span style="color:#6c7986"># Prints 20</span>
+</span></span></code></pre></div><p>However, Lisp explicitly specifies how variables are assigned and scoped using <strong>operators and macros</strong>, rather than relying on implicit scoping rules. This <strong>declarative approach</strong> allows for better <strong>compiler optimization</strong>, <strong>debugging efficiency</strong>, and <strong>enhanced flexibility—features</strong> that are not easily achievable in many modern languages.</p>
+<h1 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h1>
+<p>Recently, while working on the <a href="https://github.com/seojuncha/fromthetransistor-fork"><em>From the Transistor</em></a> project, I’ve been writing a compiler using Common Lisp. Since Lisp differs significantly from the languages I’m more familiar with, I initially struggled with several concepts—one of the major challenges being variable assignment and usage.</p>
+<p>In this post, I focused on <strong>practical aspects</strong> of variable handling in Lisp, leaving out more complex topics, so that you can apply these concepts immediately in real programming scenarios.</p>
+<p>In the next post, we’ll dive into another essential part of programming: <strong>conditional statements</strong> and <strong>loops</strong>. Stay tuned!</p>
+<h1 id="related-resources">Related Resources<a hidden class="anchor" aria-hidden="true" href="#related-resources">#</a></h1>
+<ul>
+<li><strong>LispWorks HyperSpec</strong>
+<ul>
+<li><a href="https://www.lispworks.com/documentation/HyperSpec/Body/m_defpar.htm">defvar and defparameter</a></li>
+<li><a href="https://www.lispworks.com/documentation/HyperSpec/Body/s_let_l.htm#let">let</a></li>
+</ul>
+</li>
+</ul>
 
   </div>
 
@@ -325,17 +333,17 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
     </ul>
 <nav class="paginav">
   <a class="next" href="https://seojuncha.github.io/posts/verilog-develop-environment/">
-    <span class="title">다음 페이지 »</span>
+    <span class="title">Next »</span>
     <br>
-    <span>테스트 벤치와 Verilog 개발 환경 설정: Icarus Verilog와 cocotb</span>
+    <span>Setting Up a Verilog Simulation and Test Environment: A Practical Guide</span>
   </a>
 </nav>
 
 
 <ul class="share-buttons">
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Common Lisp의 변수 할당에 대한 이해 on x"
-            href="https://x.com/intent/tweet/?text=Common%20Lisp%ec%9d%98%20%eb%b3%80%ec%88%98%20%ed%95%a0%eb%8b%b9%ec%97%90%20%eb%8c%80%ed%95%9c%20%ec%9d%b4%ed%95%b4&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f&amp;hashtags=commonlisp%2cvariable%2csetq%2clet%2cdefparameter%2cdefvar">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Variable Assignment in Common Lisp: A Practical Guide on x"
+            href="https://x.com/intent/tweet/?text=Understanding%20Variable%20Assignment%20in%20Common%20Lisp%3a%20A%20Practical%20Guide&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f&amp;hashtags=commonlisp%2cvariable%2csetq%2clet%2cdefparameter%2cdefvar">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
@@ -343,8 +351,8 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Common Lisp의 변수 할당에 대한 이해 on linkedin"
-            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f&amp;title=Common%20Lisp%ec%9d%98%20%eb%b3%80%ec%88%98%20%ed%95%a0%eb%8b%b9%ec%97%90%20%eb%8c%80%ed%95%9c%20%ec%9d%b4%ed%95%b4&amp;summary=Common%20Lisp%ec%9d%98%20%eb%b3%80%ec%88%98%20%ed%95%a0%eb%8b%b9%ec%97%90%20%eb%8c%80%ed%95%9c%20%ec%9d%b4%ed%95%b4&amp;source=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Variable Assignment in Common Lisp: A Practical Guide on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f&amp;title=Understanding%20Variable%20Assignment%20in%20Common%20Lisp%3a%20A%20Practical%20Guide&amp;summary=Understanding%20Variable%20Assignment%20in%20Common%20Lisp%3a%20A%20Practical%20Guide&amp;source=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
@@ -352,8 +360,8 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Common Lisp의 변수 할당에 대한 이해 on reddit"
-            href="https://reddit.com/submit?url=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f&title=Common%20Lisp%ec%9d%98%20%eb%b3%80%ec%88%98%20%ed%95%a0%eb%8b%b9%ec%97%90%20%eb%8c%80%ed%95%9c%20%ec%9d%b4%ed%95%b4">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Variable Assignment in Common Lisp: A Practical Guide on reddit"
+            href="https://reddit.com/submit?url=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f&title=Understanding%20Variable%20Assignment%20in%20Common%20Lisp%3a%20A%20Practical%20Guide">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
@@ -361,7 +369,7 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Common Lisp의 변수 할당에 대한 이해 on facebook"
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Variable Assignment in Common Lisp: A Practical Guide on facebook"
             href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
@@ -370,8 +378,8 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Common Lisp의 변수 할당에 대한 이해 on whatsapp"
-            href="https://api.whatsapp.com/send?text=Common%20Lisp%ec%9d%98%20%eb%b3%80%ec%88%98%20%ed%95%a0%eb%8b%b9%ec%97%90%20%eb%8c%80%ed%95%9c%20%ec%9d%b4%ed%95%b4%20-%20https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Variable Assignment in Common Lisp: A Practical Guide on whatsapp"
+            href="https://api.whatsapp.com/send?text=Understanding%20Variable%20Assignment%20in%20Common%20Lisp%3a%20A%20Practical%20Guide%20-%20https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
@@ -379,8 +387,8 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Common Lisp의 변수 할당에 대한 이해 on telegram"
-            href="https://telegram.me/share/url?text=Common%20Lisp%ec%9d%98%20%eb%b3%80%ec%88%98%20%ed%95%a0%eb%8b%b9%ec%97%90%20%eb%8c%80%ed%95%9c%20%ec%9d%b4%ed%95%b4&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Variable Assignment in Common Lisp: A Practical Guide on telegram"
+            href="https://telegram.me/share/url?text=Understanding%20Variable%20Assignment%20in%20Common%20Lisp%3a%20A%20Practical%20Guide&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f">
             <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
@@ -388,8 +396,8 @@ Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 �
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Common Lisp의 변수 할당에 대한 이해 on ycombinator"
-            href="https://news.ycombinator.com/submitlink?t=Common%20Lisp%ec%9d%98%20%eb%b3%80%ec%88%98%20%ed%95%a0%eb%8b%b9%ec%97%90%20%eb%8c%80%ed%95%9c%20%ec%9d%b4%ed%95%b4&u=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Understanding Variable Assignment in Common Lisp: A Practical Guide on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Understanding%20Variable%20Assignment%20in%20Common%20Lisp%3a%20A%20Practical%20Guide&u=https%3a%2f%2fseojuncha.github.io%2fposts%2fvariable-assignment-in-common-lisp%2f">
             <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
                 xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
                 <path

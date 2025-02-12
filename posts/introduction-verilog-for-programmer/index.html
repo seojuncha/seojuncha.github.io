@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="en" dir="ltr">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -55,7 +55,7 @@ Programs written in these languages are eventually translated into binary code t
   <meta property="og:description" content="To work on From the Transistor project, I used a tool called Verilog. Verilog is one of the HDLs(Hardware Description Languages) designed for programming FPGAs(Field Programmable Gate Arrays). Simply put, it’s a language used for designing hardware circuits.
 In this post, we’ll explore how Verilog differs from other programming language from the perspective of a software programmer and understand how it can be helpful in various aspects.
 What is Verilog? If you’re interesting in the history of Verilog, you can check out resources like the Verilog wiki to avoid getting bogged down in details. From a programmer’s perspective, we typically use software programming language like Python to develop software. Programs written in these languages are eventually translated into binary code that the computer can understand, and this binary code is then executed by the computer’s hardware.">
-  <meta property="og:locale" content="en-us">
+  <meta property="og:locale" content="en-US">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
     <meta property="article:published_time" content="2025-01-24T00:00:00+00:00">
@@ -131,6 +131,12 @@ Programs written in these languages are eventually translated into binary code t
         <div class="logo">
             <a href="https://seojuncha.github.io/" accesskey="h" title="Seojun&#39;s Personal Site (Alt + H)">Seojun&#39;s Personal Site</a>
             <div class="logo-switches">
+                <ul class="lang-switch"><li>|</li>
+                    <li>
+                        <a href="https://seojuncha.github.io/ko/" title="한국어"
+                            aria-label="한국어">Ko</a>
+                    </li>
+                </ul>
             </div>
         </div>
         <ul id="menu">
@@ -242,7 +248,7 @@ However, <strong>individual threads still execute instructions sequentially</str
 <p>However, since Verilog is a language designed to describe hardware behavior, its data types represent <strong>hardware components</strong>.</p>
 <p>For instance, <code>reg</code> and <code>wire</code> represent basic hardware components, but their usage depends on the context.</p>
 <ul>
-<li><code>reg</code>: Models storage elements such as <a href="https://en.wikipedia.org/wiki/Flip-flop_(electronics)">flip-flops or latches</a>.</li>
+<li><code>reg</code>: Models storage elements such as <a href="https://en.wikipedia.org/wiki/Flip-flop_%28electronics%29">flip-flops or latches</a>.</li>
 <li><code>wire</code>: Models a single wire.</li>
 </ul>
 <h2 id="blocking-vs-non-blocking-assignment">Blocking vs Non-Blocking Assignment<a hidden class="anchor" aria-hidden="true" href="#blocking-vs-non-blocking-assignment">#</a></h2>
@@ -301,7 +307,7 @@ For example, when assigning <code>b</code>, it does not use the expected result 
       <li><a href="https://seojuncha.github.io/tags/hdl/">Hdl</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://seojuncha.github.io/posts/verilog-develop-environment-en/">
+  <a class="prev" href="https://seojuncha.github.io/posts/verilog-develop-environment/">
     <span class="title">« Prev</span>
     <br>
     <span>Setting Up a Verilog Simulation and Test Environment: A Practical Guide</span>

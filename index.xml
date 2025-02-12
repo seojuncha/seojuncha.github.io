@@ -5,85 +5,84 @@
     <link>https://seojuncha.github.io/</link>
     <description>Recent content on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.140.2</generator>
-    <language>ko-KR</language>
+    <language>en-US</language>
     <lastBuildDate>Wed, 12 Feb 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://seojuncha.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Common Lisp의 변수 할당에 대한 이해</title>
+      <title>Understanding Variable Assignment in Common Lisp: A Practical Guide</title>
       <link>https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/</link>
       <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
       <guid>https://seojuncha.github.io/posts/variable-assignment-in-common-lisp/</guid>
-      <description>&lt;p&gt;변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.&lt;/p&gt;
-&lt;h1 id=&#34;전역-변수의-생성-defvar-defparameter&#34;&gt;전역 변수의 생성: &lt;code&gt;defvar&lt;/code&gt;, &lt;code&gt;defparameter&lt;/code&gt;&lt;/h1&gt;
-&lt;p&gt;가장 먼저 살펴볼 변수 할당 방법은 &lt;code&gt;defvar&lt;/code&gt;과 &lt;code&gt;defparameter&lt;/code&gt;를 사용한 &lt;em&gt;&lt;strong&gt;전역 변수(Global Variable) 할당&lt;/strong&gt;&lt;/em&gt;입니다.
-Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Learn how variable assignment works in Common Lisp, including global and local variables, &lt;code&gt;setq&lt;/code&gt;, &lt;code&gt;let&lt;/code&gt;, and &lt;code&gt;defvar&lt;/code&gt;. This practical guide covers key differences from modern languages and best practices for efficient Lisp programming.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>테스트 벤치와 Verilog 개발 환경 설정: Icarus Verilog와 cocotb</title>
+      <title>Setting Up a Verilog Simulation and Test Environment: A Practical Guide</title>
       <link>https://seojuncha.github.io/posts/verilog-develop-environment/</link>
       <pubDate>Thu, 06 Feb 2025 00:00:00 +0000</pubDate>
       <guid>https://seojuncha.github.io/posts/verilog-develop-environment/</guid>
-      <description>&lt;p&gt;다른 소프트웨어 프로그래밍 언어와 마찬가지로 Verilog로 작성한 코드 역시 의도한대로 동작하는지 검증하는 과정이 필요합니다.
-Verilog는 크게 두가지 방식으로 검증할 수 있습니다.&lt;/p&gt;
+      <description>&lt;p&gt;Like other software programming languages, Verilog code also requires a verification process to ensure it operates as intended.&lt;/p&gt;
+&lt;p&gt;Verilog can be verified using two primary methods:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;하드웨어 기반 검증&lt;/li&gt;
-&lt;li&gt;소프트웨어 기반 검증&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Hardware-based verification&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Software-based verification&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;하드웨어 기반 검증 방식은 Verilog코드를 실제 하드웨어에 업로드하여 입력신호에 따른 출력신호를 확인하는 방법입니다.
-이에 반해, 소프트웨어 기반 검증 방식은 별도의 하드웨어 없이 순수 소프트웨어만으로 코드의 동작을 검증하는 방법입니다.
-하드웨어 기반의 검증방식은 하드웨어가 필요할 뿐아니라 신호 변화를 디버깅하기 어렵기 때문에 하드웨어 업로드 전에 소프트웨어 기반 검증 방식을 사용합니다.
-이런 일련의 소프트웨어 기반 검증 과정을 수행하기 위한 코드를 ***테스트벤치(Testbench)***라고 하고 테스트 벤치를 실행하는 환경을 ***시뮬레이터(Simulator)***라고 합니다.&lt;/p&gt;</description>
+&lt;p&gt;The hardware-based verification method involves uploading the Verilog code to an actual hardware device and checking the output signals based on the given input signals.&lt;/p&gt;
+&lt;p&gt;In contrast, the software-based verification method validates the functionality of the code purely through software, without requiring any hardware. Since hardware-based verification requires physical hardware and makes debugging signal transitions more challenging, software-based verification is typically performed first before uploading the code to hardware.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>ARM프로세서의 Carry Flag와 Overflow Flag</title>
+      <title>Introduction to Verilog from a Programmer&#39;s Perspective</title>
+      <link>https://seojuncha.github.io/posts/introduction-verilog-for-programmer/</link>
+      <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/introduction-verilog-for-programmer/</guid>
+      <description>&lt;p&gt;To work on &lt;a href=&#34;https://github.com/seojuncha/fromthetransistor-fork&#34;&gt;From the Transistor&lt;/a&gt; project, I used a tool called &lt;em&gt;&lt;strong&gt;Verilog&lt;/strong&gt;&lt;/em&gt;.
+Verilog is one of the &lt;a href=&#34;https://en.wikipedia.org/wiki/Hardware_description_language&#34;&gt;HDLs(Hardware Description Languages)&lt;/a&gt; designed for programming &lt;a href=&#34;https://en.wikipedia.org/wiki/Field-programmable_gate_array&#34;&gt;FPGAs(Field Programmable Gate Arrays)&lt;/a&gt;. Simply put, it&amp;rsquo;s a language used for designing hardware circuits.&lt;/p&gt;
+&lt;p&gt;In this post, we&amp;rsquo;ll explore &lt;strong&gt;how Verilog differs from other programming language&lt;/strong&gt; from the perspective of a software programmer and understand &lt;strong&gt;how it can be helpful in various aspects&lt;/strong&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;what-is-verilog&#34;&gt;What is Verilog?&lt;/h1&gt;
+&lt;p&gt;If you&amp;rsquo;re interesting in the history of Verilog, you can check out resources like the &lt;a href=&#34;&#34;&gt;Verilog wiki&lt;/a&gt; to avoid getting bogged down in details.
+From a programmer&amp;rsquo;s perspective, we typically use software programming language like Python to develop software.
+Programs written in these languages are eventually translated into binary code that the computer can understand, and this binary code is then executed by the computer&amp;rsquo;s hardware.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU</title>
       <link>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</link>
-      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 22 Jan 2025 00:00:00 +0000</pubDate>
       <guid>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</guid>
-      <description>&lt;p&gt;하드웨어의 &lt;strong&gt;Carry&lt;/strong&gt; 플래그(C)와 &lt;strong&gt;Overflow&lt;/strong&gt; 플래그(V) 동작을 프로그래머 입장에서 깊이 이해하는 것은 다양한 측면에서 큰 장점을 제공합니다. 특히, &lt;strong&gt;저수준 시스템 프로그래밍, 임베디드 시스템 개발, 그리고 성능 최적화와 디버깅에서 매우 중요한 역할&lt;/strong&gt;을 합니다. 예를 들어,&lt;/p&gt;
+      <description>&lt;p&gt;Understanding the operation of the hardware &lt;em&gt;&lt;strong&gt;Carry flag&lt;/strong&gt;&lt;/em&gt; (C) and &lt;em&gt;&lt;strong&gt;Overflow flag&lt;/strong&gt;&lt;/em&gt; (V) in depth from a programmer&amp;rsquo;s perspective offers significant advantages in various aspects. In particular, they play a crucial role in &lt;strong&gt;low-level system programming&lt;/strong&gt;, &lt;strong&gt;embedded systems development&lt;/strong&gt;, and &lt;strong&gt;performance optimization and debugging&lt;/strong&gt;. For example,&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;정확한 수치 연산 구현&lt;/li&gt;
-&lt;li&gt;고성능 저수준 최적화&lt;/li&gt;
-&lt;li&gt;디버깅과 문제 해결&lt;/li&gt;
-&lt;li&gt;오류 검출 및 안정성 향상&lt;/li&gt;
-&lt;li&gt;다중 정밀도 연산 구현&lt;/li&gt;
-&lt;li&gt;조건부 분기와 코드 단순화&lt;/li&gt;
+&lt;li&gt;Accurate numerical computation&lt;/li&gt;
+&lt;li&gt;High-performance low-level optimization&lt;/li&gt;
+&lt;li&gt;Debugging and troubleshooting&lt;/li&gt;
+&lt;li&gt;Error detection and improved stability&lt;/li&gt;
+&lt;li&gt;Implementation of multi-precision arithmetic&lt;/li&gt;
+&lt;li&gt;Conditional branching and code simplification&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;위와 같은 다양한 장점을 제공합니다. 이번 포스팅에서는 ARM 프로세서에서 &lt;strong&gt;&lt;a href=&#34;carry-and-overflow-kr.md&#34;&gt;Carry와 Overflow&lt;/a&gt;를 처리하는 방법&lt;/strong&gt;을 알아보고 간단한 &lt;strong&gt;어셈블리(&lt;em&gt;Assembly&lt;/em&gt;) 예제&lt;/strong&gt;를 사용해 &lt;strong&gt;QEMU에서 디버깅&lt;/strong&gt; 해보겠습니다.&lt;/p&gt;</description>
+&lt;p&gt;These advantages make mastering these concepts highly beneficial. In this post, we will explore how &lt;strong&gt;&lt;a href=&#34;https://seojuncha.github.io/posts/carry-and-overflow/&#34;&gt;Carry and Overflow&lt;/a&gt; are handled in ARM processors&lt;/strong&gt;, along with &lt;strong&gt;a simple assembly example&lt;/strong&gt; that we will &lt;strong&gt;debug using QEMU&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>예제로 알아보는 컴퓨터 연산의 Overflow</title>
+      <title>What Is Overflow in Computer Arithmetic? Explained with Examples</title>
       <link>https://seojuncha.github.io/posts/carry-and-overflow/</link>
-      <pubDate>Wed, 15 Jan 2025 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
       <guid>https://seojuncha.github.io/posts/carry-and-overflow/</guid>
-      <description>&lt;p&gt;컴퓨터는 유한한 크기의 메모리를 사용하여 숫자를 표현합니다. 특정 연산이 표현범위를 초과하면 잘못된 결과를 초래할 수 있습니다. 예를들어:&lt;/p&gt;
+      <description>&lt;p&gt;Computers rely on finite-sized memory to represent numbers, which can lead to incorrect results if certain operations exceed the representable range. For example:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;8비트 정수에서 127 + 1을 계산하면 실제 결과는 128이지만, Signed Integer의 경우 Overflow로 인해 결과는 -128이 됩니다.&lt;/li&gt;
+&lt;li&gt;In an 8-bit integer, calculating 127 + 1, &lt;code&gt;127+1&lt;/code&gt; should result in &lt;code&gt;128&lt;/code&gt;. However, for signed integers, this causes an overflow, resulting in −128 instead.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;이러한 결과는 프로그램의 논리 오류로 이어질 수 있습니다.
-또한, Overflow는 악용될 경우 보안 취약점으로 이어질 수 있습니다. 널리 알려져있는 버퍼 오버플로우(Buffer Overflow)와 같은 취약점은 공격자가 코드를 실행하거나 시스템을 제어할 수 있는 가능성을 제공합니다.&lt;/p&gt;
-&lt;p&gt;이 외에도 하드웨어 설계측면에서도 중요한 역할을 하며 프로그래머는 이런 산술 연산의 한계를 이해해야만 안전하고 정확한 연산 결과를 보장할 수 있습니다. 이번 포스팅에서는 &lt;strong&gt;Overflow&lt;/strong&gt;의 개념과 &lt;strong&gt;프로그래밍 예제를 통한 Overflow의 위험성&lt;/strong&gt;을 살펴보고 &lt;strong&gt;Overflow와 Carry를 비교&lt;/strong&gt;하여 서로의 차이점을 정확히 이해하는 것을 목표로 합니다.&lt;/p&gt;</description>
+&lt;p&gt;Such results can lead to logical errors in programs. Moreover, overflow can be exploited to introduce security vulnerabilities. Well-known vulnerabilities like buffer overflow can allow attackers to execute code or gain control of the system.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기</title>
+      <title>Understanding Carry in Arithmetic: Binary Operations Simplified</title>
+      <link>https://seojuncha.github.io/posts/binary-carry/</link>
+      <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/binary-carry/</guid>
+      <description>&lt;p&gt;Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore &lt;strong&gt;the definition and concept of Carry&lt;/strong&gt;, &lt;strong&gt;how it works in binary and decimal arithmetic&lt;/strong&gt;, and &lt;strong&gt;how programming languages handle Carry&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Example: When unsigned int exceeds its maximum range:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Binary Representation: Signed vs Unsigned</title>
       <link>https://seojuncha.github.io/posts/signed-unsigned-binary-representation/</link>
-      <pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 09 Jan 2025 22:24:49 +0900</pubDate>
       <guid>https://seojuncha.github.io/posts/signed-unsigned-binary-representation/</guid>
-      <description>&lt;p&gt;이 글에서는 &lt;strong&gt;Signed Binary와 Unsigned Binary의 차이점&lt;/strong&gt;, &lt;strong&gt;각각의 표현법&lt;/strong&gt;, 그리고 &lt;strong&gt;C언어 프로그래밍 시의 주의사항&lt;/strong&gt;을 알아보겠습니다.&lt;/p&gt;
-&lt;p&gt;사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.&lt;/p&gt;
-&lt;p&gt;&lt;img alt=&#34;ascii-table&#34; loading=&#34;lazy&#34; src=&#34;https://upload.wikimedia.org/wikipedia/commons/b/b3/ASCII-Table.png&#34;&gt;
-&lt;em&gt;문자를 숫자로 표현하기 위한 ascii 테이블이 존재&lt;/em&gt;&lt;/p&gt;
-&lt;h1 id=&#34;정수의-개념-integer-concept&#34;&gt;정수의 개념 (Integer Concept)&lt;/h1&gt;
-&lt;p&gt;컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>From the Transistor 프로젝트 소개와 진행 상황</title>
-      <link>https://seojuncha.github.io/posts/from-the-transistor-intro/</link>
-      <pubDate>Thu, 02 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/posts/from-the-transistor-intro/</guid>
-      <description>&lt;p&gt;From the Transistor 프로젝트는 하드웨어에서 소프트웨어로 이어지는 기술의 모든 단계에 대한 이해를 목표로 시작되었습니다. 이 글에서는 &lt;strong&gt;프로젝트의 목적, 현재까지의 진행 상황, 그리고 앞으로의 계획을 공유&lt;/strong&gt;하려고 합니다.&lt;/p&gt;
-&lt;p&gt;저는 프로그래머로 약 10여년 정도를, 주로 C/C++를 사용한 어플리케이션 영역의 소프트웨어를 개발하였지만 항상 저수준(low-level)시스템의 동작과 원리가 궁금했습니다. 또한 프로그래머는 근본적으로 컴퓨터 시스템에서 동작하는 소프트웨어를 작성합니다. 그래서 진정한 프로그래머라면, 해커라면, 저수준의 하드웨어 레벨부터의 기본 원리를 제대로 알고 있어야 하지 않겠냐는 생각도 있습니다.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;하드웨어부터 소프트웨어까지 알고 있는 프로그래머가 어떤 것들을 할 수 있을지 궁금하지 않으세요?!&lt;/p&gt;</description>
+      <description>In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two&amp;rsquo;s complement being the most widely used method in modern systems.</description>
     </item>
   </channel>
 </rss>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" dir="ltr">
+<html lang="en" dir="ltr">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,8 +19,8 @@
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <link rel="alternate" type="application/rss+xml" href="https://seojuncha.github.io/tags/carry/index.xml">
-<link rel="alternate" hreflang="ko" href="https://seojuncha.github.io/tags/carry/">
-<link rel="alternate" hreflang="en" href="https://seojuncha.github.io/en/tags/carry/">
+<link rel="alternate" hreflang="en" href="https://seojuncha.github.io/tags/carry/">
+<link rel="alternate" hreflang="ko" href="https://seojuncha.github.io/ko/tags/carry/">
 <noscript>
     <style>
         #theme-toggle,
@@ -48,7 +48,7 @@
 <meta property="og:url" content="https://seojuncha.github.io/tags/carry/">
   <meta property="og:site_name" content="Seojun&#39;s Personal Site">
   <meta property="og:title" content="Carry">
-  <meta property="og:locale" content="ko-KR">
+  <meta property="og:locale" content="en-US">
   <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Carry">
@@ -65,8 +65,8 @@
             <div class="logo-switches">
                 <ul class="lang-switch"><li>|</li>
                     <li>
-                        <a href="https://seojuncha.github.io/en/" title="English"
-                            aria-label="English">En</a>
+                        <a href="https://seojuncha.github.io/ko/" title="한국어"
+                            aria-label="한국어">Ko</a>
                     </li>
                 </ul>
             </div>
@@ -91,7 +91,7 @@
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="https://seojuncha.github.io/">홈</a>&nbsp;»&nbsp;<a href="https://seojuncha.github.io/tags/">Tags</a></div>
+<header class="page-header"><div class="breadcrumbs"><a href="https://seojuncha.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://seojuncha.github.io/tags/">Tags</a></div>
   <h1>
     Carry
   </h1>
@@ -99,31 +99,44 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">ARM프로세서의 Carry Flag와 Overflow Flag
+    <h2 class="entry-hint-parent">Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU
     </h2>
   </header>
   <div class="entry-content">
-    <p>하드웨어의 Carry 플래그(C)와 Overflow 플래그(V) 동작을 프로그래머 입장에서 깊이 이해하는 것은 다양한 측면에서 큰 장점을 제공합니다. 특히, 저수준 시스템 프로그래밍, 임베디드 시스템 개발, 그리고 성능 최적화와 디버깅에서 매우 중요한 역할을 합니다. 예를 들어,
-정확한 수치 연산 구현 고성능 저수준 최적화 디버깅과 문제 해결 오류 검출 및 안정성 향상 다중 정밀도 연산 구현 조건부 분기와 코드 단순화 위와 같은 다양한 장점을 제공합니다. 이번 포스팅에서는 ARM 프로세서에서 Carry와 Overflow를 처리하는 방법을 알아보고 간단한 어셈블리(Assembly) 예제를 사용해 QEMU에서 디버깅 해보겠습니다.
+    <p>Understanding the operation of the hardware Carry flag (C) and Overflow flag (V) in depth from a programmer’s perspective offers significant advantages in various aspects. In particular, they play a crucial role in low-level system programming, embedded systems development, and performance optimization and debugging. For example,
+Accurate numerical computation High-performance low-level optimization Debugging and troubleshooting Error detection and improved stability Implementation of multi-precision arithmetic Conditional branching and code simplification These advantages make mastering these concepts highly beneficial. In this post, we will explore how Carry and Overflow are handled in ARM processors, along with a simple assembly example that we will debug using QEMU.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-01-20 00:00:00 +0000 UTC'>1월 20, 2025</span>&nbsp;·&nbsp;6 분</footer>
-  <a class="entry-link" aria-label="post link to ARM프로세서의 Carry Flag와 Overflow Flag" href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/"></a>
+  <footer class="entry-footer"><span title='2025-01-22 00:00:00 +0000 UTC'>January 22, 2025</span>&nbsp;·&nbsp;8 min</footer>
+  <a class="entry-link" aria-label="post link to Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU" href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">예제로 알아보는 컴퓨터 연산의 Overflow
+    <h2 class="entry-hint-parent">What Is Overflow in Computer Arithmetic? Explained with Examples
     </h2>
   </header>
   <div class="entry-content">
-    <p>컴퓨터는 유한한 크기의 메모리를 사용하여 숫자를 표현합니다. 특정 연산이 표현범위를 초과하면 잘못된 결과를 초래할 수 있습니다. 예를들어:
-8비트 정수에서 127 &#43; 1을 계산하면 실제 결과는 128이지만, Signed Integer의 경우 Overflow로 인해 결과는 -128이 됩니다. 이러한 결과는 프로그램의 논리 오류로 이어질 수 있습니다. 또한, Overflow는 악용될 경우 보안 취약점으로 이어질 수 있습니다. 널리 알려져있는 버퍼 오버플로우(Buffer Overflow)와 같은 취약점은 공격자가 코드를 실행하거나 시스템을 제어할 수 있는 가능성을 제공합니다.
-이 외에도 하드웨어 설계측면에서도 중요한 역할을 하며 프로그래머는 이런 산술 연산의 한계를 이해해야만 안전하고 정확한 연산 결과를 보장할 수 있습니다. 이번 포스팅에서는 Overflow의 개념과 프로그래밍 예제를 통한 Overflow의 위험성을 살펴보고 Overflow와 Carry를 비교하여 서로의 차이점을 정확히 이해하는 것을 목표로 합니다.
+    <p>Computers rely on finite-sized memory to represent numbers, which can lead to incorrect results if certain operations exceed the representable range. For example:
+In an 8-bit integer, calculating 127 &#43; 1, 127&#43;1 should result in 128. However, for signed integers, this causes an overflow, resulting in −128 instead. Such results can lead to logical errors in programs. Moreover, overflow can be exploited to introduce security vulnerabilities. Well-known vulnerabilities like buffer overflow can allow attackers to execute code or gain control of the system.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-01-15 00:00:00 +0000 UTC'>1월 15, 2025</span>&nbsp;·&nbsp;4 분</footer>
-  <a class="entry-link" aria-label="post link to 예제로 알아보는 컴퓨터 연산의 Overflow" href="https://seojuncha.github.io/posts/carry-and-overflow/"></a>
+  <footer class="entry-footer"><span title='2025-01-20 00:00:00 +0000 UTC'>January 20, 2025</span>&nbsp;·&nbsp;5 min</footer>
+  <a class="entry-link" aria-label="post link to What Is Overflow in Computer Arithmetic? Explained with Examples" href="https://seojuncha.github.io/posts/carry-and-overflow/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Understanding Carry in Arithmetic: Binary Operations Simplified
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore the definition and concept of Carry, how it works in binary and decimal arithmetic, and how programming languages handle Carry.
+Example: When unsigned int exceeds its maximum range:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-01-14 00:00:00 +0000 UTC'>January 14, 2025</span>&nbsp;·&nbsp;6 min</footer>
+  <a class="entry-link" aria-label="post link to Understanding Carry in Arithmetic: Binary Operations Simplified" href="https://seojuncha.github.io/posts/binary-carry/"></a>
 </article>
     </main>
     
