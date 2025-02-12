@@ -3,7 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://seojuncha.github.io/en/tags/common-lisp/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -16,7 +16,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/defparameter/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -29,7 +29,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/defvar/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -42,7 +42,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/let/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -55,7 +55,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/posts/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -68,7 +68,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -81,7 +81,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/setq/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -94,7 +94,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -107,7 +107,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/posts/variable-assignment-in-common-lisp/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -120,7 +120,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/variable/</loc>
-    <lastmod>2025-02-12</lastmod>
+    <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -133,7 +133,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/cocotb/</loc>
-    <lastmod>2025-02-06</lastmod>
+    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -146,7 +146,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/gtkwave/</loc>
-    <lastmod>2025-02-06</lastmod>
+    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -159,7 +159,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/icarus-verilog/</loc>
-    <lastmod>2025-02-06</lastmod>
+    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -172,7 +172,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/posts/verilog-develop-environment/</loc>
-    <lastmod>2025-02-06</lastmod>
+    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -185,7 +185,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/testbench/</loc>
-    <lastmod>2025-02-06</lastmod>
+    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -198,7 +198,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/verilog/</loc>
-    <lastmod>2025-02-06</lastmod>
+    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -211,13 +211,13 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/hdl/</loc>
-    <lastmod>2025-01-24</lastmod>
+    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://seojuncha.github.io/en/posts/introduction-verilog-for-programmer/</loc>
-    <lastmod>2025-01-24</lastmod>
+    <lastmod>2025-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/arm/</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -230,7 +230,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/arm-assembly/</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -243,7 +243,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/carry/</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -256,7 +256,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/cpsr/</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -269,7 +269,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/gdb/</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -282,7 +282,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/overflow/</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -295,7 +295,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/qemu/</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -308,7 +308,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/posts/carry-and-overflow-in-hardware/</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -321,7 +321,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/computer-arithmetic/</loc>
-    <lastmod>2025-01-20</lastmod>
+    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -334,7 +334,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/posts/carry-and-overflow/</loc>
-    <lastmod>2025-01-20</lastmod>
+    <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -347,19 +347,19 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/arithmetic-operation/</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/binary-arithmetic/</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/binary-operation/</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://seojuncha.github.io/en/posts/binary-carry/</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/binary-representation/</loc>
-    <lastmod>2025-01-09</lastmod>
+    <lastmod>2025-01-09T22:24:49+09:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -372,7 +372,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/posts/signed-unsigned-binary-representation/</loc>
-    <lastmod>2025-01-09</lastmod>
+    <lastmod>2025-01-09T22:24:49+09:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -385,7 +385,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/signed-binary/</loc>
-    <lastmod>2025-01-09</lastmod>
+    <lastmod>2025-01-09T22:24:49+09:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -398,7 +398,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/en/tags/unsigned-binary/</loc>
-    <lastmod>2025-01-09</lastmod>
+    <lastmod>2025-01-09T22:24:49+09:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
