@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Cond on Seojun&#39;s Personal Site</title>
+    <link>https://seojuncha.github.io/ko/tags/cond/</link>
+    <description>Recent content in Cond on Seojun&#39;s Personal Site</description>
+    <generator>Hugo -- 0.140.2</generator>
+    <language>ko-KR</language>
+    <lastBuildDate>Thu, 13 Feb 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://seojuncha.github.io/ko/tags/cond/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Common Lisp 조건문 완벽 가이드: when, unless, if, cond 활용법</title>
+      <link>https://seojuncha.github.io/ko/posts/how-to-make-decision-in-common-lisp/</link>
+      <pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/how-to-make-decision-in-common-lisp/</guid>
+      <description>Lisp에서 조건문을 활용하는 방법을 알아봅니다. when, unless, if, cond 등의 분기문을 사용하여 논리 흐름을 제어하고, 반환 값을 활용하는 방식까지 자세히 설명합니다. 이를 통해 가독성 높은 코드 작성과 오류 방지를 위한 최적의 조건문 사용법을 익혀보세요.</description>
+    </item>
+  </channel>
+</rss>
