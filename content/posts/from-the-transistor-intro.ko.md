@@ -1,0 +1,337 @@
++++
+date = '2025-01-02'
+title = 'From the Transistor 프로젝트 소개와 진행 상황'
+draft = false
+tags =["from the transistor", "geohot", "george hotz"]
++++
+
+From the Transistor 프로젝트는 하드웨어에서 소프트웨어로 이어지는 기술의 모든 단계에 대한 이해를 목표로 시작되었습니다. 이 글에서는 **프로젝트의 목적, 현재까지의 진행 상황, 그리고 앞으로의 계획을 공유**하려고 합니다.
+
+저는 프로그래머로 약 10여년 정도를, 주로 C/C++를 사용한 어플리케이션 영역의 소프트웨어를 개발하였지만 항상 저수준(low-level)시스템의 동작과 원리가 궁금했습니다. 또한 프로그래머는 근본적으로 컴퓨터 시스템에서 동작하는 소프트웨어를 작성합니다. 그래서 진정한 프로그래머라면, 해커라면, 저수준의 하드웨어 레벨부터의 기본 원리를 제대로 알고 있어야 하지 않겠냐는 생각도 있습니다.  
+
+> 하드웨어부터 소프트웨어까지 알고 있는 프로그래머가 어떤 것들을 할 수 있을지 궁금하지 않으세요?!
+
+이런 흥미를 따라가던 중, 약 1~2년 전에 George Hotz에 의해 소개된 [From the Transistor to the Web Browser](https://github.com/geohot/fromthetransistor)라는 프로젝트를 알게 되었습니다. 예전부터 관심이 있던 프로젝트이기 때문에 그 동안 몇 번의 도전을 해봤지만 완성하기 전에 포기하고 말았습니다. 하지만, 문득 다시 도전해보고 싶다는 욕구가 생겼고, 프로젝트가 소개된지 수 년이 지난 지금까지도 온라인상에 제대로 완성된 프로젝트를 찾을 수가 없다는 점 또한 도전의식을 타오르게 했습니다.  
+
+## 참고: George Hotz는 누구인가? (Who is George Hotz?)
+[George Hotz](https://en.wikipedia.org/wiki/George_Hotz)는 미국의 프로그래머 입니다. Apple의 아이폰 Jailbraking과 Sony의 PS3해킹으로 유명한 해커이기도 하죠. geohot이라는 별명으로도 알려져 있고, 저는 주로 [Youtube](https://www.youtube.com/@geohotarchive) 영상을 통해 접하고 있습니다. geohot의 Youtube 채널에는 Twitch에서 송출하는 라이브방송의 녹화영상이 업로드 되기 때문에 영상의 시간이 주로 3~5시간 정도로 꽤 긴편입니다. 하지만, 영상을 보며 문제를 어떻게 접근하고 해결하는지에 대한 통찰을 얻을 수 있고, 개인적인 동기부여 측면에서도 도움이 됩니다. 
+
+## 2가지 실패 요소 (Two Factors of Failure)
+From the Transistor프로젝트를 **완성하지 못했던 가장 큰 2가지 이유**는 아래와 같습니다.  
+
+1. 추상적이고 모호한 설명 
+2. 어려운 프로젝트 난이도
+
+첫번째, 각 프로젝트 섹션마다 상세한 설명을 작성하지 않았기 때문에, 기반 지식이나 경험이 없는 상태에서는 프로젝트의 범위를 정하기가 쉽지 않습니다. 생소한 용어도 많고, 각 개념들을 실습 프로그램에 어떻게 적용되어야 하는지 알기 어렵습니다. 
+
+![geohot's building an UART comment](img/building-uart-comments-geohot.png)
+
+*UART 모듈을 Verilog로 작성하는 프로젝트. MMIO개념의 적용은 구현/검증 방식에 따라 다르다. 그런데, semihosting은 또 뭔가?*
+
+두번째, 프로젝트 난이도는 주관적인 요소이지만, 그럼에도 불구하고 어려운 난이도인 것에 동의할지 모르겠습니다.
+비교적 근접한 영역을 다루는 임베디드 프로그래머라도 컴파일러와 OS를 만들고 TCP 스택을 구현하는 것은 쉽지 않아 보입니다.
+
+> Verilog도 다루지 않는 것으로 알고있습니다. 
+
+두번째 이유에서 파생되는 프로젝트 기간도 일반적으로 실행하기 어렵습니다. 세계에서 가장 유명한 해커 중 한명인 geohot도 풀타임 작업으로 12주의 계획입니다. 12주면 약 3달의 기간이고, 프로젝트 난이도를 생각했을 때, 일반적인 직장인이나 프리랜서가 시간을 내서 3달 안에 완성하려는 것은 우리를 지치게 만들고 포기하게 만듭니다.
+
+## 멈추지 않기 위해 (Don't Quit!)
+이전 실패를 경험삼은 가장 최우선 목표는 **완벽하지 않다고 생각하더라도 중단하지 않고 프로젝트를 완료하는 것** 입니다.  
+다만, 원래의 프로젝트 범위에서는 벗어나지 않아야 합니다. 물론 정확한 프로젝트 해석이 없기 때문에 프로젝트의 범위는 스스로 설정하기 나름입니다.
+
+예를 들어, 현재 진행 중인 assembler와 CPU 구현 같은 경우 ISA(Instruction Set Architecture)를 스스로 정의하고 데이터 크기를 줄이는 방향도 가능하지만, 이런 경우 제대로된 검증을 하기가 어렵습니다. 그렇기 때문에 단순화를 위한 기능적 축소는 포함하지만, 크게 동작범위에서 벗어나지 않도록 진행합니다.  ARM7기반 CPU구현도 마찬가지 입니다. 실제 ARM CPU에 포함되는 디버깅 관련 포트나 사용자 모드 제어와 같은 기능들은 제외하고 명령어 파이프라인의 동작에 중점을 두고 진행합니다.
+
+물론, 저는 FPGA 프로그래머가 아니므로 Verilog 프로그램이 정상적으로 합성(synthesize)되는지, FPGA보드에서는 정상 동작하는지, 성능이 어떤지 등은 현 시점에서는 크게 고려하지 않을 예정입니다. 프로젝트가 어느 정도 진행되고 기본 지식 및 윤곽이 잡히면 이후에 도전해볼 생각입니다.
+
+
+# 프로젝트 소개 (Project Overview)
+이 프로젝트는 하드웨어와 소프트웨어의 연결 고리를 단계별로 이해하고 실습하는 것을 목표로 합니다. Verilog를 사용해서 하드웨어 동작을 이해하고 소프트웨어 시뮬레이터를 사용하여 하드웨어를 테스트합니다. 이렇게 직접 구현된 하드웨어 스택 위에 소프트웨어를 한 단계씩 구현하며 하드웨어부터 소프트웨어 까지의 전반적인 동작을 이해할 수 있습니다. 
+
+활용할 수 있는 프로그램들이 명시되어 있긴 하지만, 프로젝트 목적을 달성할 수 있다면 너무 얽매이지 않는 것도 좋을 것 같습니다. 예를 들어, 제가 Verilog 시뮬레이션을 위해 사용하고 있는 cocotb는 Verilog 시뮬레이터로 Verilator가 아닌 icarus verilog를 사용하도록 설정하였습니다. Verilator가 성능 측면에서 더 우수하다고 알려져 있지만 현재 단계에서는 특별히 뛰어난 성능이 필요하지 않고, Verilator는 cocotb와 연동이 불안정했기 때문입니다.
+
+각 섹션에서는 완전히 동작하는 프로그램을 구현해야 하고 각 단계는 이전 단계에서 완료된 결과물을 사용하거나 응용하는 방식으로 이루어 지기 때문에 중간에 건너뛸 수 없습니다.
+
+## 목표 (Goal)
+하지만 각 세션을 완벽히 구현하고 검증하겠다는 생각보다는, 기본적인 것들이 완료된 시점에 다음 섹션으로 넘어가서 전체적인 윤곽을 먼저 확인할 예정입니다. 예를 들어 Verilog로 작성한 UART 컨트롤러의 경우, 시뮬레이터(예: cocotb, verilator)를 사용해서는 정확한 동작을 확인하기 어렵습니다. 
+
+가장 중점적으로 다룰 것은 기존 시스템을 해킹하고 이를 활용해 구현된 시스템을 검증하는 것입니다.  
+
+## 섹션 별 주요 기술 스택과 예상 결과 (Primary Tech Stack & Expected Output)
+다시 말해, 프로젝트에 명시된 각 섹션들은 완전히 동작하는 프로그램 혹은 코드가 필요합니다.  
+
+Verilog로 작성된 모듈은 cocotb를 사용하여 시뮬레이션 합니다. 따라서 테스트벤치는 Python으로 작성되며 실행 가능한 유형입니다.
+3번째 섹션이 완료되고 컴파일러가 작성된 시점 이후부터는 C로 작성된 실행 프로그램 이라고 하더라도 사용자 입장에서의 실행은 cocotb를 사용하여 시작합니다.(혹은 QEMU를 통해서 실행합니다.) 
+
+UART, 이더넷, SD카드 제어 모듈의 경우 Verilog로 작성되고 cocotb로 시뮬레이션을 할 수 있지만, 이런 유형의 외부 장치(peripheral)들은 정확한 하드웨어 동작을 시뮬레이션 할 수 없습니다. 가장 유사하게 검증할 수 있는 방법은 QEMU에 사용자 정의 UART 디바이스를 추가하는 방법이지만 프로젝트 완료 측면에선 중요하지 않은 사항이기 때문에 간소화하여 진행합니다.
+
+**주의!**
+> 사실, 전체적인 구성 및 입출력 동작이 아직 확실하지 않습니다.  
+> 아마 프로젝트가 완료된 시점에는 더 명확한 설명을 제공할 수 있을 것 같습니다.  
+> 조금만 기다려 주세요!
+
+아래에는 각 단계마다 사용하는 언어와 동작 방법, 참고사항등을 정리하였습니다.
+
+### Section 2. Bringup: What language is hardware coded in?
+|결과물|언어|결과 유형|입력|출력|
+|:-:|:-:|:-:|:-:|:-:|
+|UART Controller|Verilog|cocotb testbench|stdin|stdout|
+
+
+### Section 3: Processor: What is a processor anyway?
+|결과물|언어|결과 유형|입력|출력|
+|:-:|:-:|:-:|:-:|:-:|
+|ARM Assembler|Python|실행 프로그램|어셈블리 파일|바이너리 파일|
+|32-bit ARM CPU|Verilog|cocotb testbench|stdin|stdout|
+|BootROM|Assembler|cocotb testbench|stdin|stdout|
+
+CPU는 Verilog로 구현되지만 동작은 cocotb를 사용합니다. 따라서 우리가 말하는 컴퓨터를 켜는 동작은 CPU동작을 시뮬레이션 하는 cocotb 파이썬 코드를 실행하는 것과 동일합니다. 
+
+BootROM은 시리얼 통신을 통해 메모리에 적재되어야 합니다. 먼저 분리된 CPU모듈과 UART모듈을 연결하는 작업이 필요하고, 이후에는 BootROM 바이너리 파일을 cocotb를 사용해서 메모리로 전송할 수 있습니다.
+
+### Section 4: Compiler: A “high” level language 
+|결과물|언어|결과 유형|입력|출력|
+|:-:|:-:|:-:|:-:|:-:|
+|Compiler|CLISP|실행 프로그램|C 소스 파일|바이너리 파일|
+|Linker|Python|실행 프로그램|바이너리 파일|ELF 바이너리 파일|
+|libc+malloc|C|라이브러리|-|-|
+|Ethernet Controller|Verilog|cocotb testbench or QEMU|stdin|stdout|
+|Bootloader|C|실행 프로그램|-|-|
+
+컴파일러는 하스켈(Haskell)로 작성하도록 되어 있지만 저는 Common LISP을 사용할 예정입니다. 
+
+**왜 Haskell이 아닌 Common LISP을 선택했나?**  
+> 단순히 개인적인 선호도의 차이입니다.  
+> LISP은 인공지능 분야에 관심이 있을 때 부터 배우고 싶은 언어였고 틈틈히 학습하였기에 진입장벽이 낮은 것을 뿐 아니라 유사한 프로그래밍 패러다임을 가지기 때문입니다.  
+> Common LISP을 익히기 위한 과정은 [이곳](https://github.com/seojuncha/lisp-beginner)에서 확인할 수 있습니다.
+
+### Section 5: Operating System: Software we take for granted
+|결과물|언어|결과 유형|
+|:-:|:-:|:-:|
+|MMU|Verilog|cocotb testbench|
+|OS|C|?|
+|SD Card Controller|Verilog|cocotb testbench or QEMU|
+|FAT File System|C|?|
+|init, shell, download, cat, ls, rm|C|실행 프로그램|
+
+### Section 6: Browser: Coming online
+|결과물|언어|결과 유형|
+|:-:|:-:|:-:|
+|TCP Stack|C|?|
+|Telnetd|C|실행 프로그램|
+|Dynamic Linking|C|?|
+|Web Browser|C|실행 프로그램|
+
+# 현재 진행 상황 (Current Progress)
+Github 프로젝트를 포크(fork)하고 시작한 시점은 2024년 12월 10일 입니다. 현재 날짜 기준으로 대략 3주 정도가 되었는데, 아직까지는 본래 프로젝트 진도와 비슷하게 나가고 있습니다.
+
+[github 저장소](https://github.com/seojuncha/fromthetransistor-fork)에 (거의)매일 작업내용을 커밋하고 있으니 진행 내용이 궁금하신 분들은 github에서 확인해보실 수 있습니다.
+
+> 저장소의 README파일에도 내용을 정리하겠지만, 자세한 이론적/기술적 설명들은 별도의 포스팅이나 Youtube영상으로 제작될 예정입니다!
+
+## 완료 (Complete: UART Controller)
+Verilog로 작성된 모듈의 경우 모두 cocotb 를 사용해서 시뮬레이션 하고, 타이밍 다이어그램을 분석하여 검증할 수 있습니다. 완료된 UART 제어 모듈 또한 cocotb를 사용해서 1바이트 문자를 전송하고 그대로 수신 받을 수 있는지를 확인했습니다.
+
+**UART Controller 구현 참고 사항**
+> Transmitter와 Receiver를 별도로 구분 하진 않았고 하나의 모듈에서 처리하고 있습니다.  
+> 또한 실제 UART컨트롤러에서 사용하는 FIFO 버퍼도 제외하였습니다.  
+> 이 후 단계에서 활용하기 위해선 두 가지 요소가 추가되어야 합니다.
+> 1. CPU와 통신할 데이터 버스
+> 2. BootROM 구현을 할 때, 개발 호스트와 연결할 인터페이스
+
+## 진행 중 (In Progress: Assembler, CPU)
+본 포스팅을 작성하는 시점에서는 assembler 는 거의 완성되었고 CPU를 구현 중 입니다. assembler의 경우 1차 목표한 대부분의 mnemonic들은 바이너리 인코딩 결과를 실제 오브젝트 파일과 교차 검증하였습니다.
+
+### Assembler
+현재 구현된 assembler는 아래의 과정으로 검증합니다.  
+
+1. ARM assembly 코드를 작성
+2. ARM 툴체인 어셈블러를 사용해서 오브젝트 파일(.o) 생성
+3. 오브젝트 파일의 내용 확인
+   - objdump, readelf, objcopy 사용
+   - Python 라이브러리(elftools, capstone) 사용
+4. 각 명령어 라인의 바이너리 인코딩 결과가 일치하는지 비교
+
+위 4단계를 Python 코드로 작성하여 실제 인코딩된 결과와 작업한 어셈블러의 결과와 비교한 결과를 알려주도록 했습니다.
+
+**branch.s**
+```asm
+.section .text
+.global _start
+
+label1:
+    MOV r0, #1
+    MOV r0, #2
+    B .
+
+_start:
+    B label1
+    BL label2
+
+label2:
+    MOV r1, #2
+    B .
+
+```
+
+![assembler-verify-output-1](img/assembler-verify-output-1.png)
+*mov 와 b 명령의 인코딩 결과 비교*
+
+![assembler-verify-output-2](img/assembler-verify-output-2.png)
+*미구현되거나 지원하지 않는 명령어*
+
+
+### CPU
+Top-Down방식과 Bottom-Up방식을 병행하며 진행하고 있습니다. Top-Down방식을 통해 각 CPU 내부 모듈간의 인터페이스를 설계하고, Bottom-Up방식을 통해 개별 모듈에 대한 테스트벤치를 작성하여 검증합니다.  
+
+여기서 본래 프로젝트에 명시된 것처럼 어셈블러 작성과 병행하는 것이 좋습니다. 구현된 CPU 모듈을 검증하기 위해선 바이너리 인코딩된 명령어 셋(Instruction Set)이 필요합니다. 32비트 크기의 바이너리 코드를 하나씩 작성하여 테스트 데이터로 사용하는 것은 실수하기 쉽고 소모적인 일이기 때문에 기존에 구현된 Python 어셈블러의 일부 모듈/클래스를 사용하여 어셈블리 코드를 바이너리 데이터로 변환 후, 테스트 데이터로 사용하는 것이 효율적입니다.
+
+또한, 모든 어셈블리 코드가 인코딩되도록 구현하지 않았기 때문에 CPU에서도 이에 맞추어 필요한 기능들을 구현할 수 있습니다.
+
+이에 따라 아래와 같은 주요 항목들로 나눌 수 있습니다.
+- 주소/데이터 버스
+- ALU & Barrel Shifter
+- 메모리 인터페이스
+- 명령어 파이프라인
+- 그 외 제어 시그널
+
+최상위 CPU 모듈은 단순히 클럭과 리셋 포트 만을 가지며 테스트벤치의 DUT에서도 클럭과 리셋만 제어합니다.
+
+**cpu.v**
+```verilog
+module cpu (
+  input clk,
+  input n_reset
+);
+  /**
+   *   Do Something
+   */
+endmodule
+```
+결국 CPU의 동작은 메모리의 데이터를 읽고 산술연산을 하고 다시 쓰는 것 뿐이므로 외부적으로 제어할 필요는 없기 때문입니다.
+따라서, 필요에 따라 Verilog에 작성된 메모리 모듈에 직접 데이터를 로드하는 방식으로 변수를 줄이며 구현하였습니다.
+
+**bram.v**
+```verilog
+  reg [31:0] memory [0:4];
+  initial begin
+    $readmemb("little-endian-mov.bin", memory);
+  end
+```
+
+본래의 CPU와 동일하게 32비트 워드(Word) 크기의 레지스터들과 명령어 파이프 라인에서 Fetch된 명령어를 저장할 명렁어 레지스터(Instruction Register)등을 동일하게 구현하고,
+
+**cpu.v**
+```verilog
+  // registers
+  reg [31:0] register [0:12];
+  reg [31:0] sp;  // R13
+  reg [31:0] lr;  // R14
+  reg [31:0] pc;  // R15
+
+  // interal registers to communicate with ALU
+  reg [31:0] alu_a;    // operand 1
+  reg [31:0] alu_b;    // operand 2(shifter operand)
+  reg [31:0] alu_out;  // result
+  reg carry_in;
+
+  // b[31]: Negative, b[30]: Zero, b[29]: Carry, b[28]: oVerflow
+  // Other bits always SBZ
+  reg [31:0] cpsr;
+
+  // instruction register
+  reg [31:0] ir;
+```
+역할 부담이 큰 모듈들(메모리, 쉬프터, ALU)등은 별도의 모듈로 생성하였습니다.
+
+**cpu.v**
+```verilog
+  bram bram_inst (
+    .clk(clk),
+    .enable(bram_enable),
+    .address(bram_addr),
+    .data_out(data_in)
+  );
+
+  barrel_shifter barrel_shifter_inst(
+    .clk(clk),
+    .shift_in(shift_value),
+    .shift_type(shift_type),
+    .shift_imm(shift_amt),
+    .cary_in(carry_in),
+    .shifter_operand(alu_b),
+    .shift_carry_out(shifter_carry_out)
+  );
+
+  alu alu_inst (
+    .clk(clk),
+    .opcode(ir[24:21]),
+    .operand1(alu_a),
+    .operand2(alu_b),
+    .carry_in(carry_in),
+    .result(alu_out),
+    .negative_flag(cpsr[31]),
+    .zero_flag(cpsr[30]),
+    .carry_out_flag(cpsr[29])
+  );
+
+```
+
+**구현 제외 목록**
+> 프로젝트 목표에 따라 제외된 기능은 아래와 같습니다.
+> - 디버깅 포트, 바운더리 체크
+> - 시스템 모드 제어
+> - Thumb 모드
+
+ARM CPU 구현은 실제 프로세서의 동작과 비교하기가 어렵습니다. 명령어 파이프라인의 동작이 실제 클럭 사이클과 일치하는지를 직접 눈으로 확인하고 싶지만 현재는 레퍼런스 문서에 명시된 항목만을 참고할 예정입니다.
+
+아직 진행중인 항목이기 때문에 전체적인 **CPU내부 동작과 시그널 인터페이스들이 정상적으로 구현된 것 인지는 확신할 수 없는 상태**입니다. 다만, 논리적/기능적으로 정상임을 판단할 수 있는 시점에서 다음 단계로 넘어갈 것 이고, 이후에 과정들을 진행하며 지속적으로 개선될 예정입니다.
+
+
+## 주요 어려움 (Challenges)
+기본적인 CS(Computer Science)지식은 이미 알고 있는 상태였지만 실제로 구현하는 것은 다른 얘기였습니다. 아마 알고 있다고 착각하고 있었을 지도 모릅니다. 
+
+
+### Verilog
+프로그래밍 경험이 있다면 Verilog의 문법 자체는 어렵지 않습니다. Verilog언어의 사용법이 아니라 Verilog로 구현된 결과물이 하드웨어의 어떤 측면을 나타내는지 이해하는 것이 중요했습니다. 클럭 엣지 상태에 따른 동작의 전환이라던가, wire타입을 사용해야 하는지 reg타입을 사용해야 하는지, 논-블로킹 할당은 어떻게 동작하는지, 디버깅은 어떻게 해야 하는지 등등 하드웨어 레벨에서는 많은 것들이 생소했습니다. 
+
+### 하드웨어 시뮬레이션
+프로젝트의 첫번째 목표는 별도의 FPGA 개발 보드를 사용하지 않고, 하드웨어부터 소프트웨어까지의 모든 스택을 온전히 소프트웨어 만으로 동작할 수 있도록 하는 것입니다. 이 목표를 달성하기 위해 필연적으로 Verilog로 작성된 하드웨어 모듈을 시뮬레이션 할 수 있는 방법이 필요했습니다.  
+
+특히 첫번째 Verilog 프로그램인 UART컨트롤러는 정상동작 여부를 검증하기 위한 방법을 찾기가 어려웠습니다. cocotb나 verilator와 같은 시뮬레이터를 사용한다고 해도 시뮬레이터를 동작시키는 호스트 PC와의 시리얼 통신을 완벽히 재현할 수 가 없습니다. 생각했던 가능한 방법중 하나는 QEMU에 사용자 정의 UART장치를 추가하고, 기존에 동작하는 QEMU 보드 혹은 CPU장치와 연결시키는 방법이 가능할 것 같았지만, 전체 프로젝트를 우선 완성한다는 측면에서 시간과 에너지 소모가 크다고 판단하여 보류하였습니다.
+
+### CPU 동작과 명령어 셋 인코딩의 검증
+프로젝트에 명시된 ARM7 like CPU 는 ARMv4t 명령어 셋을 기반으로 합니다. 임베디드 프로그래머라면 익숙할 수 있지만, 저와 같이 주로 애플리케이션 소프트웨어를 개발한 입장에서는 생소한 개념일 수 있습니다. 도서나 온라인 자료들을 바탕으로 대략적인 윤곽을 이해할 수 있지만, 내가 이해한 것이 진실인지, 정말 이대로 동작하는건지 의문이었습니다. 
+
+> 자체 명령어 집합을 설계하지 않도록 결정한 이유입니다.  
+> 주로 예제 프로젝트가 포함된 도서 같은 경우, 이론적인 설명과 함께 간소화된 어셈블리 코드, 간소화된 명령어 인코딩을 제공합니다. 
+> 이렇게 진행할 경우 정확한 검증이 이루어 질 수 없습니다.
+
+## 참고 자료 (References)
+- 도서
+  - "Computer Architercture with Python and ARM" by Clements, Alan
+  - "Computer Organization and Design ARM Edition" by Patterson, Hennessy
+- 온라인 매뉴얼
+  - Verilog & 시뮬레이션
+    - [Verilog 튜토리얼](https://www.chipverify.com/tutorials/verilog)
+    - [cocotb 매뉴얼](https://docs.cocotb.org/en/stable/)
+    - [verilator 매뉴얼](https://verilator.org/guide/latest/)
+  - ARM Assembly & CPU
+    - ARM7TDMI Techinal Reference Manual
+    - ARM reference manual
+- 그리고 ChatGPT
+
+
+# 다음 계획 (Next Step)
+할게 많습니다! 우선은 프로젝트를 순조로운 페이스로 진행하여 하드웨어 브링업을 제외한 모든 섹션을 완료하는게 첫번째 목표입니다. 진행 과정 중에 자세한 설명이 필요한 부분이나 도움이 될 만한 내용들 또한 블로그(혹은 유튜브)에 작성될 예정입니다.
+
+어느정도 완성되면 QEMU의 모듈로 사용할 수 있을 것 같습니다. Verilog 로 작성된 하드웨어 모듈은 QEMU의 API를 활용하여 장치(Device)로 추가되고 어느 호스트 PC에서도 동작할 수 있도록 하는 것이 현 프로젝트의 잠정적인 최종 결과물 입니다. 이후엔 실제 FPGA보드와 함께 하드웨어 적인 측면을 좀 더 고려한 구현과 검증이 이루어질 것이고, 그 다음엔 추가적인 소프트웨어 스택을 만들어 갈 수 도 있습니다.
+
+# 결론 (Conclusion)
+약 3주간 진행한 From the Transistor 프로젝트의 진행 결과와 전반적인 내용들을 이 포스팅으로 공유할 수 있게 되어 기쁩니다. 아직 프로젝트 완성 전이지만, 이미 많은 것들을 배워 나가고 있음에 감사합니다. 
+
+매주 정기적으로 작성할 기술적인 내용의 포스팅은 프로젝트를 진행하며 어려웠던 개념과 개념을 소프트웨어 적으로 검증하는 방법들을 포함할 예정입니다. 다른 누군가에게 설명할 수 없는 것은 제대로 알고 있지 못한 것이라고 합니다. 여러분의 피드백으로 더 나은 품질의 포스팅이 될 수 있도록 도와주세요.
+
+앞으로의 여정도 기대해주세요!
+
+# Summary
+In this post, I've written past, current, and future of "From the Transistor" project. Summarize each project secion with an expected output and what should I prepare to achieve the section goal. During about 3 weeks, I have made an ARM assembler and CPU, which is working now. There are numerous things what I have laerned for this period. It's not perfect yet, but keep better.
