@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on Seojun&#39;s Personal Site</title>
+    <link>https://seojuncha.github.io/en/posts/</link>
+    <description>Recent content in Posts on Seojun&#39;s Personal Site</description>
+    <generator>Hugo -- 0.140.2</generator>
+    <language>en-US</language>
+    <lastBuildDate>Wed, 12 Feb 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://seojuncha.github.io/en/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding Variable Assignment in Common Lisp: A Practical Guide</title>
+      <link>https://seojuncha.github.io/en/posts/variable-assignment-in-common-lisp/</link>
+      <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/en/posts/variable-assignment-in-common-lisp/</guid>
+      <description>&lt;p&gt;Learn how variable assignment works in Common Lisp, including global and local variables, &lt;code&gt;setq&lt;/code&gt;, &lt;code&gt;let&lt;/code&gt;, and &lt;code&gt;defvar&lt;/code&gt;. This practical guide covers key differences from modern languages and best practices for efficient Lisp programming.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Setting Up a Verilog Simulation and Test Environment: A Practical Guide</title>
+      <link>https://seojuncha.github.io/en/posts/verilog-develop-environment/</link>
+      <pubDate>Thu, 06 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/en/posts/verilog-develop-environment/</guid>
+      <description>&lt;p&gt;Like other software programming languages, Verilog code also requires a verification process to ensure it operates as intended.&lt;/p&gt;
+&lt;p&gt;Verilog can be verified using two primary methods:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Hardware-based verification&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Software-based verification&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The hardware-based verification method involves uploading the Verilog code to an actual hardware device and checking the output signals based on the given input signals.&lt;/p&gt;
+&lt;p&gt;In contrast, the software-based verification method validates the functionality of the code purely through software, without requiring any hardware. Since hardware-based verification requires physical hardware and makes debugging signal transitions more challenging, software-based verification is typically performed first before uploading the code to hardware.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Introduction to Verilog from a Programmer&#39;s Perspective</title>
+      <link>https://seojuncha.github.io/en/posts/introduction-verilog-for-programmer/</link>
+      <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/en/posts/introduction-verilog-for-programmer/</guid>
+      <description>&lt;p&gt;To work on &lt;a href=&#34;https://github.com/seojuncha/fromthetransistor-fork&#34;&gt;From the Transistor&lt;/a&gt; project, I used a tool called &lt;em&gt;&lt;strong&gt;Verilog&lt;/strong&gt;&lt;/em&gt;.
+Verilog is one of the &lt;a href=&#34;https://en.wikipedia.org/wiki/Hardware_description_language&#34;&gt;HDLs(Hardware Description Languages)&lt;/a&gt; designed for programming &lt;a href=&#34;https://en.wikipedia.org/wiki/Field-programmable_gate_array&#34;&gt;FPGAs(Field Programmable Gate Arrays)&lt;/a&gt;. Simply put, it&amp;rsquo;s a language used for designing hardware circuits.&lt;/p&gt;
+&lt;p&gt;In this post, we&amp;rsquo;ll explore &lt;strong&gt;how Verilog differs from other programming language&lt;/strong&gt; from the perspective of a software programmer and understand &lt;strong&gt;how it can be helpful in various aspects&lt;/strong&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;what-is-verilog&#34;&gt;What is Verilog?&lt;/h1&gt;
+&lt;p&gt;If you&amp;rsquo;re interesting in the history of Verilog, you can check out resources like the &lt;a href=&#34;&#34;&gt;Verilog wiki&lt;/a&gt; to avoid getting bogged down in details.
+From a programmer&amp;rsquo;s perspective, we typically use software programming language like Python to develop software.
+Programs written in these languages are eventually translated into binary code that the computer can understand, and this binary code is then executed by the computer&amp;rsquo;s hardware.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU</title>
+      <link>https://seojuncha.github.io/en/posts/carry-and-overflow-in-hardware/</link>
+      <pubDate>Wed, 22 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/en/posts/carry-and-overflow-in-hardware/</guid>
+      <description>&lt;p&gt;Understanding the operation of the hardware &lt;em&gt;&lt;strong&gt;Carry flag&lt;/strong&gt;&lt;/em&gt; (C) and &lt;em&gt;&lt;strong&gt;Overflow flag&lt;/strong&gt;&lt;/em&gt; (V) in depth from a programmer&amp;rsquo;s perspective offers significant advantages in various aspects. In particular, they play a crucial role in &lt;strong&gt;low-level system programming&lt;/strong&gt;, &lt;strong&gt;embedded systems development&lt;/strong&gt;, and &lt;strong&gt;performance optimization and debugging&lt;/strong&gt;. For example,&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Accurate numerical computation&lt;/li&gt;
+&lt;li&gt;High-performance low-level optimization&lt;/li&gt;
+&lt;li&gt;Debugging and troubleshooting&lt;/li&gt;
+&lt;li&gt;Error detection and improved stability&lt;/li&gt;
+&lt;li&gt;Implementation of multi-precision arithmetic&lt;/li&gt;
+&lt;li&gt;Conditional branching and code simplification&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;These advantages make mastering these concepts highly beneficial. In this post, we will explore how &lt;strong&gt;&lt;a href=&#34;https://seojuncha.github.io/en/posts/carry-and-overflow/&#34;&gt;Carry and Overflow&lt;/a&gt; are handled in ARM processors&lt;/strong&gt;, along with &lt;strong&gt;a simple assembly example&lt;/strong&gt; that we will &lt;strong&gt;debug using QEMU&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>What Is Overflow in Computer Arithmetic? Explained with Examples</title>
+      <link>https://seojuncha.github.io/en/posts/carry-and-overflow/</link>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/en/posts/carry-and-overflow/</guid>
+      <description>&lt;p&gt;Computers rely on finite-sized memory to represent numbers, which can lead to incorrect results if certain operations exceed the representable range. For example:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In an 8-bit integer, calculating 127 + 1, &lt;code&gt;127+1&lt;/code&gt; should result in &lt;code&gt;128&lt;/code&gt;. However, for signed integers, this causes an overflow, resulting in −128 instead.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Such results can lead to logical errors in programs. Moreover, overflow can be exploited to introduce security vulnerabilities. Well-known vulnerabilities like buffer overflow can allow attackers to execute code or gain control of the system.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Understanding Carry in Arithmetic: Binary Operations Simplified</title>
+      <link>https://seojuncha.github.io/en/posts/binary-carry/</link>
+      <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/en/posts/binary-carry/</guid>
+      <description>&lt;p&gt;Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore &lt;strong&gt;the definition and concept of Carry&lt;/strong&gt;, &lt;strong&gt;how it works in binary and decimal arithmetic&lt;/strong&gt;, and &lt;strong&gt;how programming languages handle Carry&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Example: When unsigned int exceeds its maximum range:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Binary Representation: Signed vs Unsigned</title>
+      <link>https://seojuncha.github.io/en/posts/signed-unsigned-binary-representation/</link>
+      <pubDate>Thu, 09 Jan 2025 22:24:49 +0900</pubDate>
+      <guid>https://seojuncha.github.io/en/posts/signed-unsigned-binary-representation/</guid>
+      <description>In this post, we explore difference between signed and unsigned integer with binary representation within computer systems. Signed integers can represent positive number, zero, and negative number while unsigned integer can represent only positive numbers. There are three primary methods to represent signed binary numbers, wiht two&amp;rsquo;s complement being the most widely used method in modern systems.</description>
+    </item>
+  </channel>
+</rss>

@@ -2,5 +2,4 @@
 conf
 logs
 sbin
-.hugo_build.lock
-public
+

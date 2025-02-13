@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Binary Arithmetic on Seojun&#39;s Personal Site</title>
+    <link>https://seojuncha.github.io/en/tags/binary-arithmetic/</link>
+    <description>Recent content in Binary Arithmetic on Seojun&#39;s Personal Site</description>
+    <generator>Hugo -- 0.140.2</generator>
+    <language>en-US</language>
+    <lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://seojuncha.github.io/en/tags/binary-arithmetic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding Carry in Arithmetic: Binary Operations Simplified</title>
+      <link>https://seojuncha.github.io/en/posts/binary-carry/</link>
+      <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/en/posts/binary-carry/</guid>
+      <description>&lt;p&gt;Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore &lt;strong&gt;the definition and concept of Carry&lt;/strong&gt;, &lt;strong&gt;how it works in binary and decimal arithmetic&lt;/strong&gt;, and &lt;strong&gt;how programming languages handle Carry&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Example: When unsigned int exceeds its maximum range:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

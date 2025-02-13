@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Arm Assembly on Seojun&#39;s Personal Site</title>
+    <link>https://seojuncha.github.io/tags/arm-assembly/</link>
+    <description>Recent content in Arm Assembly on Seojun&#39;s Personal Site</description>
+    <generator>Hugo -- 0.140.2</generator>
+    <language>en-US</language>
+    <lastBuildDate>Wed, 22 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://seojuncha.github.io/tags/arm-assembly/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU</title>
+      <link>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</link>
+      <pubDate>Wed, 22 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</guid>
+      <description>&lt;p&gt;Understanding the operation of the hardware &lt;em&gt;&lt;strong&gt;Carry flag&lt;/strong&gt;&lt;/em&gt; (C) and &lt;em&gt;&lt;strong&gt;Overflow flag&lt;/strong&gt;&lt;/em&gt; (V) in depth from a programmer&amp;rsquo;s perspective offers significant advantages in various aspects. In particular, they play a crucial role in &lt;strong&gt;low-level system programming&lt;/strong&gt;, &lt;strong&gt;embedded systems development&lt;/strong&gt;, and &lt;strong&gt;performance optimization and debugging&lt;/strong&gt;. For example,&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Accurate numerical computation&lt;/li&gt;
+&lt;li&gt;High-performance low-level optimization&lt;/li&gt;
+&lt;li&gt;Debugging and troubleshooting&lt;/li&gt;
+&lt;li&gt;Error detection and improved stability&lt;/li&gt;
+&lt;li&gt;Implementation of multi-precision arithmetic&lt;/li&gt;
+&lt;li&gt;Conditional branching and code simplification&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;These advantages make mastering these concepts highly beneficial. In this post, we will explore how &lt;strong&gt;&lt;a href=&#34;https://seojuncha.github.io/posts/carry-and-overflow/&#34;&gt;Carry and Overflow&lt;/a&gt; are handled in ARM processors&lt;/strong&gt;, along with &lt;strong&gt;a simple assembly example&lt;/strong&gt; that we will &lt;strong&gt;debug using QEMU&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

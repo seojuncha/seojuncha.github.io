@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Two&#39;s Complement on Seojun&#39;s Personal Site</title>
+    <link>https://seojuncha.github.io/tags/twos-complement/</link>
+    <description>Recent content in Two&#39;s Complement on Seojun&#39;s Personal Site</description>
+    <generator>Hugo -- 0.140.2</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sat, 11 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://seojuncha.github.io/tags/twos-complement/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Two&#39;s Complement Explained: Benefits and Real-World Applications</title>
+      <link>https://seojuncha.github.io/posts/why-twos-complement/</link>
+      <pubDate>Sat, 11 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/why-twos-complement/</guid>
+      <description>&lt;p&gt;Two&amp;rsquo;s complement is the most widely used method for representing negative numbers in modern computer systems. Unlike the sign-magnitude or one&amp;rsquo;s complement representations discussed in a previous post, two&amp;rsquo;s complement avoids many of their drawbacks, making it the standard choice in most systems today.&lt;/p&gt;
+&lt;p&gt;In this post, we will explore why two&amp;rsquo;s complement is used, its advantages, and how it simplifies arithmetic operations. We&amp;rsquo;ll also demonstrate its usage through C and Python code examples. By the end of this post, you will understand the critical role of two&amp;rsquo;s complement in system design and programming.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

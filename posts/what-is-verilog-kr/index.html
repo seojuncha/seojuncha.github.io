@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>[KR] Verilog as a programers perspective | Seojun&#39;s Personal Site</title>
+<meta name="keywords" content="carry, overflow, arm, verilog, cpsr, cocotb">
+<meta name="description" content="From the transitor 프로젝트를 진행하기 위해 Verilog라는 것을 사용했습니다. Verilog는 HDL(Hardware Description Lnguage) 중 하나로써 FPGA(Field Programmable Gate Array)를 프로그래밍 하기 위한 언어입니다. 간단히는, 하드웨어 회로를 설계하기 위한 언어라고 이해하면 편할 것 같습니다.
+이번 포스팅에서는 소프트웨어 프로그래머 관점에서 Verilog가 다른 프로그래밍 언어와 차이점은 무엇인지, 어떤 부분에 도움을 줄 수 있는지 알아보겠습니다.
+What is Verilog?
+Verilog의 역사와 같은 지루한 내용들은 Verilog wiki를 참고하면 될 것 같습니다. 프로그래머 관점에서 살펴보면, 우리는 소프트웨어를 개발하기 위해 파이썬과 같은 소프트웨어 프로그래밍 언어를 사용합니다. 이런 언어로 작성된 프로그램은 컴퓨터가 이해할 수 있는 이진수형태로 컴퓨터 하드웨어에서 실행되는 순서죠.">
+<meta name="author" content="">
+<link rel="canonical" href="https://seojuncha.github.io/posts/what-is-verilog-kr/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7f08297e217e897e8e389cc9ed4982a5a2795f565ca38ecb38b42ed646b7f8ae.css" integrity="sha256-fwgpfiF&#43;iX6OOJzJ7UmCpaJ5X1Zco47LOLQu1ka3&#43;K4=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://seojuncha.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://seojuncha.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://seojuncha.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://seojuncha.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://seojuncha.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://seojuncha.github.io/posts/what-is-verilog-kr/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=G-ZG0WK2BMBK"
+></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+
+  gtag("config", "G-ZG0WK2BMBK");
+</script>
+
+
+<meta property="og:url" content="https://seojuncha.github.io/posts/what-is-verilog-kr/">
+  <meta property="og:site_name" content="Seojun&#39;s Personal Site">
+  <meta property="og:title" content="[KR] Verilog as a programers perspective">
+  <meta property="og:description" content="From the transitor 프로젝트를 진행하기 위해 Verilog라는 것을 사용했습니다. Verilog는 HDL(Hardware Description Lnguage) 중 하나로써 FPGA(Field Programmable Gate Array)를 프로그래밍 하기 위한 언어입니다. 간단히는, 하드웨어 회로를 설계하기 위한 언어라고 이해하면 편할 것 같습니다.
+이번 포스팅에서는 소프트웨어 프로그래머 관점에서 Verilog가 다른 프로그래밍 언어와 차이점은 무엇인지, 어떤 부분에 도움을 줄 수 있는지 알아보겠습니다.
+What is Verilog? Verilog의 역사와 같은 지루한 내용들은 Verilog wiki를 참고하면 될 것 같습니다. 프로그래머 관점에서 살펴보면, 우리는 소프트웨어를 개발하기 위해 파이썬과 같은 소프트웨어 프로그래밍 언어를 사용합니다. 이런 언어로 작성된 프로그램은 컴퓨터가 이해할 수 있는 이진수형태로 컴퓨터 하드웨어에서 실행되는 순서죠.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-01-20T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-01-20T00:00:00+00:00">
+    <meta property="article:tag" content="Carry">
+    <meta property="article:tag" content="Overflow">
+    <meta property="article:tag" content="Arm">
+    <meta property="article:tag" content="Verilog">
+    <meta property="article:tag" content="Cpsr">
+    <meta property="article:tag" content="Cocotb">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[KR] Verilog as a programers perspective">
+<meta name="twitter:description" content="From the transitor 프로젝트를 진행하기 위해 Verilog라는 것을 사용했습니다. Verilog는 HDL(Hardware Description Lnguage) 중 하나로써 FPGA(Field Programmable Gate Array)를 프로그래밍 하기 위한 언어입니다. 간단히는, 하드웨어 회로를 설계하기 위한 언어라고 이해하면 편할 것 같습니다.
+이번 포스팅에서는 소프트웨어 프로그래머 관점에서 Verilog가 다른 프로그래밍 언어와 차이점은 무엇인지, 어떤 부분에 도움을 줄 수 있는지 알아보겠습니다.
+What is Verilog?
+Verilog의 역사와 같은 지루한 내용들은 Verilog wiki를 참고하면 될 것 같습니다. 프로그래머 관점에서 살펴보면, 우리는 소프트웨어를 개발하기 위해 파이썬과 같은 소프트웨어 프로그래밍 언어를 사용합니다. 이런 언어로 작성된 프로그램은 컴퓨터가 이해할 수 있는 이진수형태로 컴퓨터 하드웨어에서 실행되는 순서죠.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://seojuncha.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "[KR] Verilog as a programers perspective",
+      "item": "https://seojuncha.github.io/posts/what-is-verilog-kr/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "[KR] Verilog as a programers perspective",
+  "name": "[KR] Verilog as a programers perspective",
+  "description": "From the transitor 프로젝트를 진행하기 위해 Verilog라는 것을 사용했습니다. Verilog는 HDL(Hardware Description Lnguage) 중 하나로써 FPGA(Field Programmable Gate Array)를 프로그래밍 하기 위한 언어입니다. 간단히는, 하드웨어 회로를 설계하기 위한 언어라고 이해하면 편할 것 같습니다.\n이번 포스팅에서는 소프트웨어 프로그래머 관점에서 Verilog가 다른 프로그래밍 언어와 차이점은 무엇인지, 어떤 부분에 도움을 줄 수 있는지 알아보겠습니다.\nWhat is Verilog? Verilog의 역사와 같은 지루한 내용들은 Verilog wiki를 참고하면 될 것 같습니다. 프로그래머 관점에서 살펴보면, 우리는 소프트웨어를 개발하기 위해 파이썬과 같은 소프트웨어 프로그래밍 언어를 사용합니다. 이런 언어로 작성된 프로그램은 컴퓨터가 이해할 수 있는 이진수형태로 컴퓨터 하드웨어에서 실행되는 순서죠.\n",
+  "keywords": [
+    "carry", "overflow", "arm", "verilog", "cpsr", "cocotb"
+  ],
+  "articleBody": "From the transitor 프로젝트를 진행하기 위해 Verilog라는 것을 사용했습니다. Verilog는 HDL(Hardware Description Lnguage) 중 하나로써 FPGA(Field Programmable Gate Array)를 프로그래밍 하기 위한 언어입니다. 간단히는, 하드웨어 회로를 설계하기 위한 언어라고 이해하면 편할 것 같습니다.\n이번 포스팅에서는 소프트웨어 프로그래머 관점에서 Verilog가 다른 프로그래밍 언어와 차이점은 무엇인지, 어떤 부분에 도움을 줄 수 있는지 알아보겠습니다.\nWhat is Verilog? Verilog의 역사와 같은 지루한 내용들은 Verilog wiki를 참고하면 될 것 같습니다. 프로그래머 관점에서 살펴보면, 우리는 소프트웨어를 개발하기 위해 파이썬과 같은 소프트웨어 프로그래밍 언어를 사용합니다. 이런 언어로 작성된 프로그램은 컴퓨터가 이해할 수 있는 이진수형태로 컴퓨터 하드웨어에서 실행되는 순서죠.\n하지만, Verilog는 소프트웨어가 아닌 하드웨어를 위한 언어입니다. 파이썬과 같은 프로그래밍 언어가 이미 존재하는 하드웨어에서 동작하는 프로그램을 만든다면, Verilog는 소프트웨어가 동작하는 하드웨어 자체를 만들 수 있습니다.\nWhy programmers have to know Verilog? 사실 모든 프로그래머가 Verilog와 같은 HDL을 알아야 하는 것은 아닙니다. 특히나 고수준(High-Level)언어를 다루는 프로그래머 일수록 더욱 접할 기회가 없는 것 같습니다. 하지만, 프로그래머는, 어떤 종류이던, 결국 컴퓨터 하드웨어 에서 동작하는 소프트웨어를 만드는 사람입니다.\n소프트웨어 프로그래머가 Verilog를 익힘으로써,\n하드웨어와 소프트웨어의 차이와 연결점을 이해할 수 있습니다. 소프트웨어 최적화를 위한 하드웨어를 설계할 수 있습니다. 사고방식의 확장을 할 수 있습니다. 통합 설계 능력을 기를 수 있습니다. Software Programming Language vs Verilog 일반적인 프로그래밍 언어와 Verilog는 주요한 몇가지 차이점이 있습니다.\n습관화된 프로그래머의 사고방식이 Verilog를 사용하는데 어려움을 만드는 것을 몸소 경험했습니다.\nSequential Logic vs Parallel Logic 소프트웨어 프로그래밍 언어는 순차적으로 동작합니다. 이건 어떠한 언어를 사용하더라도 동일합니다. 프로그램은 결국 CPU명령으로 변환된 뒤에 명령어 단위로 순차적으로 실행됩니다. 하지만, Verilog는 본질적으로 하드웨어 동작의 병렬성을 모델링합니다.\n다중 스레드 프로그래밍은 병렬실행이지 않은가?\n멀티코어 CPU에서 명령어들을 병렬실행할 수 있지만, 개별 명령어의 실행은 여전히 순차적입니다.\n다음 실행할 명령어의 주소를 저장하는 PC(Program Counter)는 하나의 값만을 저장할 수 있다는 것을 생각해봅시다.\nData Type 소프트웨어 프로그래밍 언어에서 데이터 타입은 논리적인 구분입니다.\n정수(Integer) 문자열(String) 객체(Object) 논리적인 구분이란 것은 컴퓨터가 이해하는 요소가 아닌 사람이 이해하기 위한 요소입니다.\n컴퓨터가 숫자, 문자, 객체를 구분할 수 없습니다. 컴퓨터는 0과 1만 이해할 수 있습니다.\n하지만, Verilog는 하드웨어 동작을 기술하기 위한 언어이므로 하드웨어 구성 요소로 이루어져 있습니다.\n예를 들어, reg와 wire는 하드웨어를 구성하는 기본 요소를 표현하는 Verilog 데이터 타입입니다.\nreg : 플립플롭(Flip-Flop)이나 래치(Latch)와 같은 저장소를 모델링 wire : 단일 연결 선을 모델링 Data Assignment 프로그래밍 언어에서는 일반적으로 변수할당은 곧 특정 메모리 공간에 어떤 값을 저장하는 것 입니다. 그리고 이 동작 또한 순차적으로 이루어 지기 때문에 하나의 메모리 공간에 두 개의 값을 동시에 저장하는 것은 불가능합니다.\n아래와 같은 파이썬 코드에서,\n# Sequential assignment in Python a = 3 b = a + 2 c = a * b c값을 계산하기 위해선 a와 b가 확정적이어야 합니다. 그렇기 때문에 어떤 변수를 사용하기 위해선 이전에 해당 변수에 값이 할당되어 있어야 하죠.\n다중 스레드 프로그래밍에서는?\n다중 스레드에서 동작한다고 하더라도 동일합니다.\n임계영역(Critical Section)을 가지는 경우에도 문제가 되는 것은 베타성일 뿐, 각 스레드는 한번에 한개씩만 메모리에 접근할 수 있습니다.\n하지만, Verilog는 두 가지 할당방식을 지원합니다.\nBlocking Assignment in Verilog 일반적인 프로그래밍 언어에서의 할당과 동일한 순차적인 할당을 의미합니다.\nreg a, b, c; always @(*) begin a = 3; b = a + 2; c = a * b; end 각 변수, a, b, 와 c는 순차적으로 할당되어 c=15가 됩니다.\n하드웨어에서는 AND/OR게이트, 멀티플렉서와 같은 **조합 논리(Combinational Logic)**의 설계에 주로 사용됩니다.\nNon-Blocking Assignment in Verilog \u003c=기호를 사용한 Non-Blocking 할당은 값 할당이 동시에 이루어 집니다.\nreg a, b, c; always @(posedge clk) begin a \u003c= 5; b \u003c= a + 2; c \u003c= a * b; end 변수 a, b, c는 현재 구문에서의 값에 의존적이지 않습니다. 변수 b를 할당할 때, 이전 문장인 a \u003c= 5의 결과로 예상되는 5 + 2의 결과를 사용하는 것이 아니라, a의 이전 상태 값을 사용합니다.\n지금은 이해가 어렵겠지만, 추후 포스팅되는 Verilog 프로그래밍 예제를 통해 이해를 도울 수 있을 것 같습니다.\n즉, Non-blocking은 기본적으로 상태기반의 동작입니다.\n하드웨어에서는 클럭(Clock)을 사용한 **순차 논리(Sequential Logic)**의 설계에 주로 사용됩니다.\nConclusion 소프트웨어 프로그래머 관점에서 Verilog를 사용해보는 것은 하드웨어를 이해하는데 큰 도움을 줄 수 있습니다.\n다음 포스팅\nVerilog 개발 환경 설정 Verilog 시뮬레이터와 Waveform의 활용 Verilog 프로그래밍 ",
+  "wordCount" : "622",
+  "inLanguage": "en",
+  "datePublished": "2025-01-20T00:00:00Z",
+  "dateModified": "2025-01-20T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://seojuncha.github.io/posts/what-is-verilog-kr/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Seojun's Personal Site",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://seojuncha.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://seojuncha.github.io/" accesskey="h" title="Seojun&#39;s Personal Site (Alt + H)">Seojun&#39;s Personal Site</a>
+            <div class="logo-switches">
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://seojuncha.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://seojuncha.github.io/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://seojuncha.github.io/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      [KR] Verilog as a programers perspective
+    </h1>
+    <div class="post-meta"><span title='2025-01-20 00:00:00 +0000 UTC'>January 20, 2025</span>&nbsp;·&nbsp;3 min
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#what-is-verilog" aria-label="What is Verilog?">What is Verilog?</a></li>
+                <li>
+                    <a href="#why-programmers-have-to-know-verilog" aria-label="Why programmers have to know Verilog?">Why programmers have to know Verilog?</a></li>
+                <li>
+                    <a href="#software-programming-language-vs-verilog" aria-label="Software Programming Language vs Verilog">Software Programming Language vs Verilog</a><ul>
+                        
+                <li>
+                    <a href="#sequential-logic-vs-parallel-logic" aria-label="Sequential Logic vs Parallel Logic">Sequential Logic vs Parallel Logic</a></li>
+                <li>
+                    <a href="#data-type" aria-label="Data Type">Data Type</a></li>
+                <li>
+                    <a href="#data-assignment" aria-label="Data Assignment">Data Assignment</a><ul>
+                        
+                <li>
+                    <a href="#blocking-assignment-in-verilog" aria-label="Blocking Assignment in Verilog">Blocking Assignment in Verilog</a></li>
+                <li>
+                    <a href="#non-blocking-assignment-in-verilog" aria-label="Non-Blocking Assignment in Verilog">Non-Blocking Assignment in Verilog</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><a href="https://github.com/seojuncha/fromthetransistor-fork">From the transitor</a> 프로젝트를 진행하기 위해 <em><strong>Verilog</strong></em>라는 것을 사용했습니다. <em>Verilog</em>는 HDL(Hardware Description Lnguage) 중 하나로써 FPGA(Field Programmable Gate Array)를 프로그래밍 하기 위한 언어입니다. 간단히는, 하드웨어 회로를 설계하기 위한 언어라고 이해하면 편할 것 같습니다.</p>
+<p>이번 포스팅에서는 <strong>소프트웨어 프로그래머 관점</strong>에서 Verilog가 <strong>다른 프로그래밍 언어와 차이점은 무엇</strong>인지, 어떤 부분에 도움을 줄 수 있는지 알아보겠습니다.</p>
+<h1 id="what-is-verilog">What is Verilog?<a hidden class="anchor" aria-hidden="true" href="#what-is-verilog">#</a></h1>
+<p>Verilog의 역사와 같은 지루한 내용들은 <a href="https://en.wikipedia.org/wiki/Verilog">Verilog wiki</a>를 참고하면 될 것 같습니다. 프로그래머 관점에서 살펴보면, 우리는 소프트웨어를 개발하기 위해 파이썬과 같은 소프트웨어 프로그래밍 언어를 사용합니다. 이런 언어로 작성된 프로그램은 컴퓨터가 이해할 수 있는 이진수형태로 컴퓨터 하드웨어에서 실행되는 순서죠.</p>
+<p>하지만, Verilog는 소프트웨어가 아닌 하드웨어를 위한 언어입니다. 파이썬과 같은 프로그래밍 언어가 <strong>이미 존재하는 하드웨어</strong>에서 동작하는 프로그램을 만든다면, Verilog는 소프트웨어가 동작하는 <strong>하드웨어 자체</strong>를 만들 수 있습니다.</p>
+<h1 id="why-programmers-have-to-know-verilog">Why programmers have to know Verilog?<a hidden class="anchor" aria-hidden="true" href="#why-programmers-have-to-know-verilog">#</a></h1>
+<p>사실 모든 프로그래머가 Verilog와 같은 HDL을 알아야 하는 것은 아닙니다. 특히나 고수준(High-Level)언어를 다루는 프로그래머 일수록 더욱 접할 기회가 없는 것 같습니다. 하지만, 프로그래머는, 어떤 종류이던, 결국 컴퓨터 하드웨어 에서 동작하는 소프트웨어를 만드는 사람입니다.</p>
+<p>소프트웨어 프로그래머가 Verilog를 익힘으로써,</p>
+<ul>
+<li>하드웨어와 소프트웨어의 차이와 연결점을 이해할 수 있습니다.</li>
+<li>소프트웨어 최적화를 위한 하드웨어를 설계할 수 있습니다.</li>
+<li>사고방식의 확장을 할 수 있습니다.</li>
+<li>통합 설계 능력을 기를 수 있습니다.</li>
+</ul>
+<h1 id="software-programming-language-vs-verilog">Software Programming Language vs Verilog<a hidden class="anchor" aria-hidden="true" href="#software-programming-language-vs-verilog">#</a></h1>
+<p>일반적인 프로그래밍 언어와 Verilog는 주요한 몇가지 차이점이 있습니다.</p>
+<blockquote>
+<p>습관화된 프로그래머의 사고방식이 Verilog를 사용하는데 어려움을 만드는 것을 몸소 경험했습니다.</p>
+</blockquote>
+<h2 id="sequential-logic-vs-parallel-logic">Sequential Logic vs Parallel Logic<a hidden class="anchor" aria-hidden="true" href="#sequential-logic-vs-parallel-logic">#</a></h2>
+<p>소프트웨어 프로그래밍 언어는 순차적으로 동작합니다. 이건 어떠한 언어를 사용하더라도 동일합니다. 프로그램은 결국 CPU명령으로 변환된 뒤에 명령어 단위로 순차적으로 실행됩니다. 하지만, Verilog는 본질적으로 하드웨어 동작의 병렬성을 모델링합니다.</p>
+<blockquote>
+<p><strong>다중 스레드 프로그래밍은 병렬실행이지 않은가?</strong><br>
+멀티코어 CPU에서 명령어들을 병렬실행할 수 있지만, 개별 명령어의 실행은 여전히 순차적입니다.<br>
+다음 실행할 명령어의 주소를 저장하는 PC(Program Counter)는 하나의 값만을 저장할 수 있다는 것을 생각해봅시다.</p>
+</blockquote>
+<h2 id="data-type">Data Type<a hidden class="anchor" aria-hidden="true" href="#data-type">#</a></h2>
+<p>소프트웨어 프로그래밍 언어에서 데이터 타입은 논리적인 구분입니다.</p>
+<ul>
+<li>정수(Integer)</li>
+<li>문자열(String)</li>
+<li>객체(Object)</li>
+</ul>
+<p>논리적인 구분이란 것은 컴퓨터가 이해하는 요소가 아닌 <strong>사람이 이해하기 위한 요소</strong>입니다.</p>
+<blockquote>
+<p>컴퓨터가 숫자, 문자, 객체를 구분할 수 없습니다. 컴퓨터는 0과 1만 이해할 수 있습니다.</p>
+</blockquote>
+<p>하지만, Verilog는 하드웨어 동작을 기술하기 위한 언어이므로 <strong>하드웨어 구성 요소</strong>로 이루어져 있습니다.</p>
+<p>예를 들어, <code>reg</code>와 <code>wire</code>는 하드웨어를 구성하는 기본 요소를 표현하는 Verilog 데이터 타입입니다.</p>
+<ul>
+<li><em><strong>reg</strong></em> : 플립플롭(Flip-Flop)이나 래치(Latch)와 같은 저장소를 모델링</li>
+<li><em><strong>wire</strong></em> : 단일 연결 선을 모델링</li>
+</ul>
+<h2 id="data-assignment">Data Assignment<a hidden class="anchor" aria-hidden="true" href="#data-assignment">#</a></h2>
+<p>프로그래밍 언어에서는 일반적으로 변수할당은 곧 특정 메모리 공간에 어떤 값을 저장하는 것 입니다. 그리고 이 동작 또한 순차적으로 이루어 지기 때문에 하나의 메모리 공간에 두 개의 값을 동시에 저장하는 것은 불가능합니다.</p>
+<p>아래와 같은 파이썬 코드에서,</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Sequential assignment in Python</span>
+</span></span><span style="display:flex;"><span>a <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>b <span style="color:#f92672">=</span> a <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>c <span style="color:#f92672">=</span> a <span style="color:#f92672">*</span> b
+</span></span></code></pre></div><p><code>c</code>값을 계산하기 위해선 <code>a</code>와 <code>b</code>가 확정적이어야 합니다.
+그렇기 때문에 어떤 변수를 사용하기 위해선 이전에 해당 변수에 값이 할당되어 있어야 하죠.</p>
+<blockquote>
+<p><strong>다중 스레드 프로그래밍에서는?</strong><br>
+다중 스레드에서 동작한다고 하더라도 동일합니다.<br>
+임계영역(Critical Section)을 가지는 경우에도 문제가 되는 것은 베타성일 뿐, 각 스레드는 한번에 한개씩만 메모리에 접근할 수 있습니다.</p>
+</blockquote>
+<p>하지만, Verilog는 <strong>두 가지 할당방식</strong>을 지원합니다.</p>
+<h3 id="blocking-assignment-in-verilog">Blocking Assignment in Verilog<a hidden class="anchor" aria-hidden="true" href="#blocking-assignment-in-verilog">#</a></h3>
+<p>일반적인 프로그래밍 언어에서의 할당과 동일한 순차적인 할당을 의미합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span><span style="color:#66d9ef">reg</span> a, b, c;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">always</span> @(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">begin</span>
+</span></span><span style="display:flex;"><span>  a <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+</span></span><span style="display:flex;"><span>  b <span style="color:#f92672">=</span> a <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>  c <span style="color:#f92672">=</span> a <span style="color:#f92672">*</span> b;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>각 변수, <code>a</code>, <code>b</code>, 와 <code>c</code>는 순차적으로 할당되어 <code>c=15</code>가 됩니다.</p>
+<p>하드웨어에서는 AND/OR게이트, 멀티플렉서와 같은 **조합 논리(Combinational Logic)**의 설계에 주로 사용됩니다.</p>
+<h3 id="non-blocking-assignment-in-verilog">Non-Blocking Assignment in Verilog<a hidden class="anchor" aria-hidden="true" href="#non-blocking-assignment-in-verilog">#</a></h3>
+<p><code>&lt;=</code>기호를 사용한 Non-Blocking 할당은 값 할당이 동시에 이루어 집니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span><span style="color:#66d9ef">reg</span> a, b, c;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">always</span> @(<span style="color:#66d9ef">posedge</span> clk) <span style="color:#66d9ef">begin</span>
+</span></span><span style="display:flex;"><span>  a <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">5</span>;
+</span></span><span style="display:flex;"><span>  b <span style="color:#f92672">&lt;=</span> a <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>  c <span style="color:#f92672">&lt;=</span> a <span style="color:#f92672">*</span> b;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>변수 <code>a</code>, <code>b</code>, <code>c</code>는 현재 구문에서의 값에 의존적이지 않습니다. 변수 <code>b</code>를 할당할 때, 이전 문장인 <code>a &lt;= 5</code>의 결과로 예상되는 <code>5 + 2</code>의 결과를 사용하는 것이 아니라, <code>a</code>의 <strong>이전 상태 값을 사용</strong>합니다.</p>
+<blockquote>
+<p>지금은 이해가 어렵겠지만, 추후 포스팅되는 Verilog 프로그래밍 예제를 통해 이해를 도울 수 있을 것 같습니다.</p>
+</blockquote>
+<p>즉, Non-blocking은 기본적으로 <strong>상태기반의 동작</strong>입니다.</p>
+<p>하드웨어에서는 클럭(Clock)을 사용한 **순차 논리(Sequential Logic)**의 설계에 주로 사용됩니다.</p>
+<h1 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h1>
+<p>소프트웨어 프로그래머 관점에서 Verilog를 사용해보는 것은 하드웨어를 이해하는데 큰 도움을 줄 수 있습니다.</p>
+<p>다음 포스팅</p>
+<ul>
+<li>Verilog 개발 환경 설정</li>
+<li>Verilog 시뮬레이터와 Waveform의 활용</li>
+<li>Verilog 프로그래밍</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://seojuncha.github.io/tags/carry/">Carry</a></li>
+      <li><a href="https://seojuncha.github.io/tags/overflow/">Overflow</a></li>
+      <li><a href="https://seojuncha.github.io/tags/arm/">Arm</a></li>
+      <li><a href="https://seojuncha.github.io/tags/verilog/">Verilog</a></li>
+      <li><a href="https://seojuncha.github.io/tags/cpsr/">Cpsr</a></li>
+      <li><a href="https://seojuncha.github.io/tags/cocotb/">Cocotb</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://seojuncha.github.io/posts/find-carry-and-overflow-in-hardware/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>[KR] Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU</span>
+  </a>
+  <a class="next" href="https://seojuncha.github.io/posts/carry-and-overflow/">
+    <span class="title">Next »</span>
+    <br>
+    <span>What Is Overflow in Computer Arithmetic? Explained with Examples</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [KR] Verilog as a programers perspective on x"
+            href="https://x.com/intent/tweet/?text=%5bKR%5d%20Verilog%20as%20a%20programers%20perspective&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fwhat-is-verilog-kr%2f&amp;hashtags=carry%2coverflow%2carm%2cverilog%2ccpsr%2ccocotb">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [KR] Verilog as a programers perspective on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fwhat-is-verilog-kr%2f&amp;title=%5bKR%5d%20Verilog%20as%20a%20programers%20perspective&amp;summary=%5bKR%5d%20Verilog%20as%20a%20programers%20perspective&amp;source=https%3a%2f%2fseojuncha.github.io%2fposts%2fwhat-is-verilog-kr%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [KR] Verilog as a programers perspective on reddit"
+            href="https://reddit.com/submit?url=https%3a%2f%2fseojuncha.github.io%2fposts%2fwhat-is-verilog-kr%2f&title=%5bKR%5d%20Verilog%20as%20a%20programers%20perspective">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [KR] Verilog as a programers perspective on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fseojuncha.github.io%2fposts%2fwhat-is-verilog-kr%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [KR] Verilog as a programers perspective on whatsapp"
+            href="https://api.whatsapp.com/send?text=%5bKR%5d%20Verilog%20as%20a%20programers%20perspective%20-%20https%3a%2f%2fseojuncha.github.io%2fposts%2fwhat-is-verilog-kr%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [KR] Verilog as a programers perspective on telegram"
+            href="https://telegram.me/share/url?text=%5bKR%5d%20Verilog%20as%20a%20programers%20perspective&amp;url=https%3a%2f%2fseojuncha.github.io%2fposts%2fwhat-is-verilog-kr%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share [KR] Verilog as a programers perspective on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%5bKR%5d%20Verilog%20as%20a%20programers%20perspective&u=https%3a%2f%2fseojuncha.github.io%2fposts%2fwhat-is-verilog-kr%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer><script src="https://utteranc.es/client.js"
+        repo="seojuncha/seojuncha.github.io"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://seojuncha.github.io/">Seojun&#39;s Personal Site</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+</body>
+
+</html>

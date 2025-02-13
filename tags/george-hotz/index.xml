@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>George Hotz on Seojun&#39;s Personal Site</title>
+    <link>https://seojuncha.github.io/tags/george-hotz/</link>
+    <description>Recent content in George Hotz on Seojun&#39;s Personal Site</description>
+    <generator>Hugo -- 0.140.2</generator>
+    <language>ko-KR</language>
+    <lastBuildDate>Thu, 02 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://seojuncha.github.io/tags/george-hotz/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>From the Transistor 프로젝트 소개와 진행 상황</title>
+      <link>https://seojuncha.github.io/posts/from-the-transistor-intro/</link>
+      <pubDate>Thu, 02 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/from-the-transistor-intro/</guid>
+      <description>&lt;p&gt;From the Transistor 프로젝트는 하드웨어에서 소프트웨어로 이어지는 기술의 모든 단계에 대한 이해를 목표로 시작되었습니다. 이 글에서는 &lt;strong&gt;프로젝트의 목적, 현재까지의 진행 상황, 그리고 앞으로의 계획을 공유&lt;/strong&gt;하려고 합니다.&lt;/p&gt;
+&lt;p&gt;저는 프로그래머로 약 10여년 정도를, 주로 C/C++를 사용한 어플리케이션 영역의 소프트웨어를 개발하였지만 항상 저수준(low-level)시스템의 동작과 원리가 궁금했습니다. 또한 프로그래머는 근본적으로 컴퓨터 시스템에서 동작하는 소프트웨어를 작성합니다. 그래서 진정한 프로그래머라면, 해커라면, 저수준의 하드웨어 레벨부터의 기본 원리를 제대로 알고 있어야 하지 않겠냐는 생각도 있습니다.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;하드웨어부터 소프트웨어까지 알고 있는 프로그래머가 어떤 것들을 할 수 있을지 궁금하지 않으세요?!&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
