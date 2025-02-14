@@ -160,6 +160,11 @@ Verilog는 크게 두가지 방식으로 검증할 수 있습니다.
                 </a>
             </li>
             <li>
+                <a href="https://seojuncha.github.io/ko/posts/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
                 <a href="https://seojuncha.github.io/ko/archives/" title="Archives">
                     <span>Archives</span>
                 </a>
@@ -196,8 +201,7 @@ Verilog는 크게 두가지 방식으로 검증할 수 있습니다.
 
         <div class="inner"><ul>
                 <li>
-                    <a href="#%ed%85%8c%ec%8a%a4%ed%8a%b8%eb%b2%a4%ec%b9%98%ec%9d%98-%ea%b0%9c%eb%85%90%ea%b3%bc-%ed%95%84%ec%9a%94%ec%84%b1-%ea%b7%b8%eb%a6%ac%ea%b3%a0-%ec%86%8c%ed%94%84%ed%8a%b8%ec%9b%a8%ec%96%b4-%ed%85%8c%ec%8a%a4%ed%8a%b8-%eb%b0%a9%ec%8b%9d%ea%b3%bc%ec%9d%98-%eb%b9%84%ea%b5%90" aria-label="테스트벤치의 개념과 필요성, 그리고 소프트웨어 테스트 방식과의 비교">테스트벤치의 개념과 필요성, 그리고 소프트웨어 테스트 방식과의 비교</a><ul>
-                        
+                    <a href="#%ed%85%8c%ec%8a%a4%ed%8a%b8%eb%b2%a4%ec%b9%98%ec%9d%98-%ea%b0%9c%eb%85%90%ea%b3%bc-%ed%95%84%ec%9a%94%ec%84%b1-%ea%b7%b8%eb%a6%ac%ea%b3%a0-%ec%86%8c%ed%94%84%ed%8a%b8%ec%9b%a8%ec%96%b4-%ed%85%8c%ec%8a%a4%ed%8a%b8-%eb%b0%a9%ec%8b%9d%ea%b3%bc%ec%9d%98-%eb%b9%84%ea%b5%90" aria-label="테스트벤치의 개념과 필요성, 그리고 소프트웨어 테스트 방식과의 비교">테스트벤치의 개념과 필요성, 그리고 소프트웨어 테스트 방식과의 비교</a></li>
                 <li>
                     <a href="#verilog-%ec%8b%9c%eb%ae%ac%eb%a0%88%ec%9d%b4%ed%84%b0-%ec%86%8c%ea%b0%9c" aria-label="Verilog 시뮬레이터 소개">Verilog 시뮬레이터 소개</a><ul>
                         
@@ -240,8 +244,6 @@ Verilog는 크게 두가지 방식으로 검증할 수 있습니다.
                     <a href="#%ec%97%b0%ea%b4%80-%ec%a3%bc%ec%a0%9c" aria-label="연관 주제">연관 주제</a>
                 </li>
             </ul>
-            </li>
-            </ul>
         </div>
     </details>
 </div>
@@ -258,7 +260,7 @@ Verilog는 크게 두가지 방식으로 검증할 수 있습니다.</p>
 이런 일련의 소프트웨어 기반 검증 과정을 수행하기 위한 코드를 ***테스트벤치(Testbench)***라고 하고 테스트 벤치를 실행하는 환경을 ***시뮬레이터(Simulator)***라고 합니다.</p>
 <p>이번 포스팅에서 <strong>Verilog 테스트벤치 개념</strong>과 Ubuntu와 MacOS에서 <strong>시뮬레이션 환경 설정</strong>에 관해 알아보겠습니다.
 각자의 개발환경에 맞는 시뮬레이터를 설정하고 테스트벤치를 작성해야 하는 이유를 이해하여야만 앞으로 진행할 Verilog 프로그래밍 관련 포스팅을 원활히 따라갈 수 있습니다.</p>
-<h1 id="테스트벤치의-개념과-필요성-그리고-소프트웨어-테스트-방식과의-비교">테스트벤치의 개념과 필요성, 그리고 소프트웨어 테스트 방식과의 비교<a hidden class="anchor" aria-hidden="true" href="#테스트벤치의-개념과-필요성-그리고-소프트웨어-테스트-방식과의-비교">#</a></h1>
+<h2 id="테스트벤치의-개념과-필요성-그리고-소프트웨어-테스트-방식과의-비교">테스트벤치의 개념과 필요성, 그리고 소프트웨어 테스트 방식과의 비교<a hidden class="anchor" aria-hidden="true" href="#테스트벤치의-개념과-필요성-그리고-소프트웨어-테스트-방식과의-비교">#</a></h2>
 <p>테스트벤치는 Verilog로 작성된 회로를 실제 하드웨어로 구현하지 않고도 검증할 수 있도록 지원하는 환경입니다. 이를 통해 설계한 회로의 동작을 시뮬레이션하고, 입력을 제공하며, 출력을 확인할 수 있습니다.</p>
 <p>예상할 수 있듯이 테스트 벤치의 작성은 <strong>소프트웨어 기반 검증</strong> 방식입니다.</p>
 <p>소프트웨어 개발에서는 출력 값을 확인하거나 디버깅 도구를 사용하여 프로그램의 실행 흐름을 분석할 수 있습니다. 하지만 하드웨어 설계에서는 일반적인 프로그래밍 방식으로 값을 출력하거나 직접 중단점(Breakpoint)을 설정할 수 없습니다.</p>

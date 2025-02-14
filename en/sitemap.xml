@@ -262,19 +262,6 @@
                 href="https://seojuncha.github.io/tags/icarus-verilog/"
                 />
   </url><url>
-    <loc>https://seojuncha.github.io/posts/verilog-develop-environment/</loc>
-    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/posts/verilog-develop-environment/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/posts/verilog-develop-environment/"
-                />
-  </url><url>
     <loc>https://seojuncha.github.io/tags/testbench/</loc>
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
@@ -299,6 +286,19 @@
                 rel="alternate"
                 hreflang="en-US"
                 href="https://seojuncha.github.io/tags/verilog/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/posts/verilog-develop-environment/</loc>
+    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/verilog-develop-environment/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/posts/verilog-develop-environment/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/hdl/</loc>
@@ -344,6 +344,19 @@
                 rel="alternate"
                 hreflang="en-US"
                 href="https://seojuncha.github.io/tags/carry/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</loc>
+    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/carry-and-overflow-in-hardware/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/cpsr/</loc>
@@ -396,19 +409,6 @@
                 rel="alternate"
                 hreflang="en-US"
                 href="https://seojuncha.github.io/tags/qemu/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</loc>
-    <lastmod>2025-01-22T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/posts/carry-and-overflow-in-hardware/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/computer-arithmetic/</loc>

@@ -9,7 +9,7 @@
     <lastBuildDate>Wed, 22 Jan 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://seojuncha.github.io/tags/arm/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Understanding Carry and Overflow in ARM Processors: Debugging with Assembly and QEMU</title>
+      <title>Carry &amp; Overflow in ARM: Debugging with Assembly &amp; QEMU</title>
       <link>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</link>
       <pubDate>Wed, 22 Jan 2025 00:00:00 +0000</pubDate>
       <guid>https://seojuncha.github.io/posts/carry-and-overflow-in-hardware/</guid>
