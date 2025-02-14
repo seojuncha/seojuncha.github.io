@@ -1,3 +1,2 @@
 User-agent: *
-Disallow:
 Sitemap: https://seojuncha.github.io/sitemap.xml
