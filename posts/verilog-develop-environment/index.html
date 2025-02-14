@@ -289,8 +289,7 @@ In contrast, the software-based verification method validates the functionality 
 <h2 id="introduction-to-verilog-simulators">Introduction to Verilog Simulators<a hidden class="anchor" aria-hidden="true" href="#introduction-to-verilog-simulators">#</a></h2>
 <p>A Verilog testbench is essentially code written to simulate hardware behavior, and it requires an execution environment. This environment is known as a simulator. While the language used to write a testbench may vary depending on the simulator, the primary goal remains the same: <em><strong>to analyze input and output signals at specific points in time</strong></em>.</p>
 <blockquote>
-<p>Note: A testbench is purely for testing purposes and is not synthesized into actual hardware.</p>
-</blockquote>
+<p>Note: A testbench is purely for testing purposes and is not synthesized into actual hardware.</p></blockquote>
 <p>Some of the most commonly used Verilog simulators include:</p>
 <ul>
 <li><code>Icarus Verilog</code></li>
@@ -305,8 +304,7 @@ In contrast, the software-based verification method validates the functionality 
 <p>As I will cover in a future post, it is possible to write and execute a testbench using only Verilog code without relying on a simulator. However, as designs become more complex, this approach quickly reaches its limitations.</p>
 <p><em><strong>The core of hardware verification lies in signal and timing analysis.</strong></em></p>
 <p>In software, execution is sequential, so you can trace variable values and function calls to analyze changes over time. However, in hardware, execution can be parallel, meaning that rather than analyzing the execution sequence alone, you need to inspect how signals change at specific points in time.</p>
-<p>Due to this characteristic, traditional software debugging methods are less effective for hardware verification. Instead, waveform analysis using a waveform viewer is often required.</p>
-</blockquote>
+<p>Due to this characteristic, traditional software debugging methods are less effective for hardware verification. Instead, waveform analysis using a waveform viewer is often required.</p></blockquote>
 <h3 id="simulation-installation-environment">Simulation Installation Environment<a hidden class="anchor" aria-hidden="true" href="#simulation-installation-environment">#</a></h3>
 <p>The installation guide provided below has been tested on the following environments:</p>
 <h4 id="ubuntu">Ubuntu<a hidden class="anchor" aria-hidden="true" href="#ubuntu">#</a></h4>

@@ -3,3 +3,4 @@ conf
 logs
 sbin
 .hugo_build.lock
+robots.txt

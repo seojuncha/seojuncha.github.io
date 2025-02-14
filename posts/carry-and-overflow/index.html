@@ -343,8 +343,7 @@ overflow.c:5:16: warning: unsigned conversion from ‘int’ to ‘uint8_t’ {a
 <p><strong>Why does the warning occur only in <code>uint8_t ui = UINT8_MAX + 1;</code>?</strong><br>
 <code>UINT8_MAX</code> and <code>INT8_MAX</code> are constant values that are treated as int in C. Therefore, <code>UINT8_MAX + 1</code> and <code>INT8_MAX + 1</code> are processed as int operations and stored in a 32-bit space</p>
 <p>Therefore, the compiler generates a warning about data loss when converting a 32-bit signed value to an 8-bit unsigned value.</p>
-<p>However, since the <strong><a href="https://www.gnu.org/software/c-intro-and-ref/manual/html_node/Signed-Overflow.html">C standard defines signed integer overflow as undefined behavior</a></strong>, the compiler does not treat it as a warning.</p>
-</blockquote>
+<p>However, since the <strong><a href="https://www.gnu.org/software/c-intro-and-ref/manual/html_node/Signed-Overflow.html">C standard defines signed integer overflow as undefined behavior</a></strong>, the compiler does not treat it as a warning.</p></blockquote>
 <h3 id="integer-overflow-in-python">Integer Overflow in Python<a hidden class="anchor" aria-hidden="true" href="#integer-overflow-in-python">#</a></h3>
 <p>Unlike other languages, Python does not impose a limit on the size of integers in arithmetic operations. This is because it uses <em><strong><a href="https://peps.python.org/pep-0237/">arbitrary-precision</a></strong></em>.</p>
 <pre tabindex="0"><code class="language-python-repl" data-lang="python-repl">&gt;&gt;&gt; 2**63 - 1    # Maximum value for a 64-bit signed integer.
@@ -356,8 +355,7 @@ overflow.c:5:16: warning: unsigned conversion from ‘int’ to ‘uint8_t’ {a
 </code></pre><p>Therefore, the concept of overflow does not exist in Python&rsquo;s integer arithmetic.</p>
 <blockquote>
 <p>However, in floating-point operations rather than integer operations, floating-point issues may occur.
-Additionally, if operations <a href="https://docs.python.org/3/library/exceptions.html#MemoryError">exceed the memory</a> that the computer can allocate, memory shortage issues or performance degradation may occur.</p>
-</blockquote>
+Additionally, if operations <a href="https://docs.python.org/3/library/exceptions.html#MemoryError">exceed the memory</a> that the computer can allocate, memory shortage issues or performance degradation may occur.</p></blockquote>
 <h2 id="carry-vs-overflow">Carry vs Overflow<a hidden class="anchor" aria-hidden="true" href="#carry-vs-overflow">#</a></h2>
 <p>Carry and Overflow may seem similar, but they are distinct concepts.</p>
 <ul>
@@ -406,8 +404,7 @@ Overflow (O)
 </code></pre><blockquote>
 <p><strong><code>-5</code> falls within the 4-bit signed integer range of <code>-8</code> to <code>7</code>.</strong><br>
 That&rsquo;s correct. <code>-5</code> is within the representable range but is treated as overflow in hardware.<br>
-This is because the sum of two positive numbers, <code>11</code>, exceeds the representable range for positive numbers.</p>
-</blockquote>
+This is because the sum of two positive numbers, <code>11</code>, exceeds the representable range for positive numbers.</p></blockquote>
 <h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
 <p>In this post, we explored the concept of overflow, its causes, and how it is handled in programming languages. It is important to understand carry and overflow from the perspective of how integers are stored in memory. Depending on the type of integer being represented, carry and overflow may occur simultaneously or independently.</p>
 <p><strong>Next Post Topics</strong>:</p>

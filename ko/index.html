@@ -2,7 +2,7 @@
 <html lang="ko" dir="ltr">
 
 <head>
-	<meta name="generator" content="Hugo 0.140.2"><meta charset="utf-8">
+	<meta name="generator" content="Hugo 0.143.1"><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
@@ -110,18 +110,14 @@
         </ul>
     </nav>
 </header>
-<main class="main"> 
-<article class="first-entry home-info">
-    <header class="entry-header">
-        <h1></h1>
-    </header>
-    <div class="entry-content">
-        <p>Exploring the intersection between hardware and software, diving deep into how technology operates at every level. From ARM Assembly and QEMU simulation to programming, system analysis, and beyond, I&rsquo;ll uncover how hardware and software interact seamlessly through hands-on examples and real-world projects.</p>
-<p>NOTE: I&rsquo;m not a native English speaker, but I&rsquo;ll do my best to share what I know!</p>
-
-    </div>
-    <footer class="entry-footer">
-        <div class="social-icons" >
+<main class="main"><div class="profile">
+    <div class="profile_inner">
+        <h1><p>Welcome!</p>
+<p>I am Cha Seojun.</p>
+</h1>
+        <span><p>💻 Freelancer Programmer</p>
+<p>🛠️ Low-Level | 🎨 Qt/QML | 🎥 Multimedia</p>
+</span><div class="social-icons" >
     <a href="https://github.com/seojuncha" target="_blank" rel="noopener noreferrer me"
         title="Github">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -160,111 +156,21 @@
     </a>
 </div>
 
-    </footer>
-</article>
+        <div class="buttons">
+            <a class="button" href="/posts" rel="noopener" title="Blog">
+                <span class="button-inner">
+                    Blog
+                </span>
+            </a>
+            <a class="button" href="/tags" rel="noopener" title="Tags">
+                <span class="button-inner">
+                    Tags
+                </span>
+            </a>
+        </div>
+    </div>
+</div>
 
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Common Lisp 조건문 완벽 가이드: when, unless, if, cond 활용법
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>오늘은 프로그래밍 논리 흐름을 제어하기 위한 분기문의 사용법을 알아보겠습니다. 분기문(Branch Statements)은 특정 조건의 참 혹은 거짓 여부를 판단하여 다음 행동을 결정합니다. Common Lisp(이하, Lisp)에서도 조건(Condition)검사를 위한 다양한 방식을 제공하고 있기 때문에, 각각의 활용법을 익히고 적절하게 사용하면 코드 가독성 향상과 오류를 최소화하는데 도움이 됩니다.
-참(True) 혹은 거짓(False): t &amp; nil 대부분의 프로그래밍 언어와 같이, 조건 검사는 참/거짓을 판단하는 것 입니다.
-예를 들어, 파이썬은 아래와 같이 True 혹은 False를 사용하여 참/거짓을 구분합니다.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-02-13 00:00:00 +0000 UTC'>2월 13, 2025</span>&nbsp;·&nbsp;5 분</footer>
-  <a class="entry-link" aria-label="post link to Common Lisp 조건문 완벽 가이드: when, unless, if, cond 활용법" href="https://seojuncha.github.io/ko/posts/how-to-make-decision-in-common-lisp/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Common Lisp의 변수 할당에 대한 이해
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.
-전역 변수의 생성: defvar, defparameter 가장 먼저 살펴볼 변수 할당 방법은 defvar과 defparameter를 사용한 전역 변수(Global Variable) 할당입니다. Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-02-12 00:00:00 +0000 UTC'>2월 12, 2025</span>&nbsp;·&nbsp;5 분</footer>
-  <a class="entry-link" aria-label="post link to Common Lisp의 변수 할당에 대한 이해" href="https://seojuncha.github.io/ko/posts/variable-assignment-in-common-lisp/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">테스트 벤치와 Verilog 개발 환경 설정: Icarus Verilog와 cocotb
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>다른 소프트웨어 프로그래밍 언어와 마찬가지로 Verilog로 작성한 코드 역시 의도한대로 동작하는지 검증하는 과정이 필요합니다. Verilog는 크게 두가지 방식으로 검증할 수 있습니다.
-하드웨어 기반 검증 소프트웨어 기반 검증 하드웨어 기반 검증 방식은 Verilog코드를 실제 하드웨어에 업로드하여 입력신호에 따른 출력신호를 확인하는 방법입니다. 이에 반해, 소프트웨어 기반 검증 방식은 별도의 하드웨어 없이 순수 소프트웨어만으로 코드의 동작을 검증하는 방법입니다. 하드웨어 기반의 검증방식은 하드웨어가 필요할 뿐아니라 신호 변화를 디버깅하기 어렵기 때문에 하드웨어 업로드 전에 소프트웨어 기반 검증 방식을 사용합니다. 이런 일련의 소프트웨어 기반 검증 과정을 수행하기 위한 코드를 ***테스트벤치(Testbench)***라고 하고 테스트 벤치를 실행하는 환경을 ***시뮬레이터(Simulator)***라고 합니다.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-02-06 00:00:00 +0000 UTC'>2월 6, 2025</span>&nbsp;·&nbsp;4 분</footer>
-  <a class="entry-link" aria-label="post link to 테스트 벤치와 Verilog 개발 환경 설정: Icarus Verilog와 cocotb" href="https://seojuncha.github.io/ko/posts/verilog-develop-environment/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">ARM프로세서의 Carry Flag와 Overflow Flag
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>하드웨어의 Carry 플래그(C)와 Overflow 플래그(V) 동작을 프로그래머 입장에서 깊이 이해하는 것은 다양한 측면에서 큰 장점을 제공합니다. 특히, 저수준 시스템 프로그래밍, 임베디드 시스템 개발, 그리고 성능 최적화와 디버깅에서 매우 중요한 역할을 합니다. 예를 들어,
-정확한 수치 연산 구현 고성능 저수준 최적화 디버깅과 문제 해결 오류 검출 및 안정성 향상 다중 정밀도 연산 구현 조건부 분기와 코드 단순화 위와 같은 다양한 장점을 제공합니다. 이번 포스팅에서는 ARM 프로세서에서 Carry와 Overflow를 처리하는 방법을 알아보고 간단한 어셈블리(Assembly) 예제를 사용해 QEMU에서 디버깅 해보겠습니다.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-01-20 00:00:00 +0000 UTC'>1월 20, 2025</span>&nbsp;·&nbsp;6 분</footer>
-  <a class="entry-link" aria-label="post link to ARM프로세서의 Carry Flag와 Overflow Flag" href="https://seojuncha.github.io/ko/posts/carry-and-overflow-in-hardware/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">예제로 알아보는 컴퓨터 연산의 Overflow
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>컴퓨터는 유한한 크기의 메모리를 사용하여 숫자를 표현합니다. 특정 연산이 표현범위를 초과하면 잘못된 결과를 초래할 수 있습니다. 예를들어:
-8비트 정수에서 127 &#43; 1을 계산하면 실제 결과는 128이지만, Signed Integer의 경우 Overflow로 인해 결과는 -128이 됩니다. 이러한 결과는 프로그램의 논리 오류로 이어질 수 있습니다. 또한, Overflow는 악용될 경우 보안 취약점으로 이어질 수 있습니다. 널리 알려져있는 버퍼 오버플로우(Buffer Overflow)와 같은 취약점은 공격자가 코드를 실행하거나 시스템을 제어할 수 있는 가능성을 제공합니다.
-이 외에도 하드웨어 설계측면에서도 중요한 역할을 하며 프로그래머는 이런 산술 연산의 한계를 이해해야만 안전하고 정확한 연산 결과를 보장할 수 있습니다. 이번 포스팅에서는 Overflow의 개념과 프로그래밍 예제를 통한 Overflow의 위험성을 살펴보고 Overflow와 Carry를 비교하여 서로의 차이점을 정확히 이해하는 것을 목표로 합니다.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-01-15 00:00:00 +0000 UTC'>1월 15, 2025</span>&nbsp;·&nbsp;4 분</footer>
-  <a class="entry-link" aria-label="post link to 예제로 알아보는 컴퓨터 연산의 Overflow" href="https://seojuncha.github.io/ko/posts/carry-and-overflow/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.
-사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.
-문자를 숫자로 표현하기 위한 ascii 테이블이 존재
-정수의 개념 (Integer Concept) 컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-01-08 00:00:00 +0000 UTC'>1월 8, 2025</span>&nbsp;·&nbsp;9 분</footer>
-  <a class="entry-link" aria-label="post link to Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기" href="https://seojuncha.github.io/ko/posts/signed-unsigned-binary-representation/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">From the Transistor 프로젝트 소개와 진행 상황
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>From the Transistor 프로젝트는 하드웨어에서 소프트웨어로 이어지는 기술의 모든 단계에 대한 이해를 목표로 시작되었습니다. 이 글에서는 프로젝트의 목적, 현재까지의 진행 상황, 그리고 앞으로의 계획을 공유하려고 합니다.
-저는 프로그래머로 약 10여년 정도를, 주로 C/C&#43;&#43;를 사용한 어플리케이션 영역의 소프트웨어를 개발하였지만 항상 저수준(low-level)시스템의 동작과 원리가 궁금했습니다. 또한 프로그래머는 근본적으로 컴퓨터 시스템에서 동작하는 소프트웨어를 작성합니다. 그래서 진정한 프로그래머라면, 해커라면, 저수준의 하드웨어 레벨부터의 기본 원리를 제대로 알고 있어야 하지 않겠냐는 생각도 있습니다.
-하드웨어부터 소프트웨어까지 알고 있는 프로그래머가 어떤 것들을 할 수 있을지 궁금하지 않으세요?!
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-01-02 00:00:00 +0000 UTC'>1월 2, 2025</span>&nbsp;·&nbsp;11 분</footer>
-  <a class="entry-link" aria-label="post link to From the Transistor 프로젝트 소개와 진행 상황" href="https://seojuncha.github.io/ko/posts/from-the-transistor-intro/"></a>
-</article>
     </main>
     
 <footer class="footer">

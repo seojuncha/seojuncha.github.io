@@ -321,8 +321,7 @@
 <blockquote>
 <p><strong>기억공간?</strong><br>
 기억공간이라는 용어를 사용한 이유는 꼭 데이터가 메모리(Memory)에만 저장되지는 않기 때문 입니다. 가령 CPU 레지스터(Register)에도 데이터가 저장됩니다.<br>
-편의를 위해 본 포스팅에서는 메모리라는 용어와 혼용하여 사용합니다.</p>
-</blockquote>
+편의를 위해 본 포스팅에서는 메모리라는 용어와 혼용하여 사용합니다.</p></blockquote>
 <p>컴퓨터는 모두가 알다시피 0과 1로 이루어진 데이터를 처리합니다. 따라서, 숫자를 포함한 모든 데이터는 0과 1로 표현되어야 하기 때문에 2진수 표현법이 필요합니다.
 하지만 이는, 표현방법의 차이일 뿐, 의미가 변하는 것은 아닙니다. 예를 들어 &lsquo;5&rsquo;라는 숫자는 10진수 표현이 5일 뿐, 2진수 표현으로는 &lsquo;101&rsquo;입니다.</p>
 <p>앞선 정수의 개념에서, 정수는 양수와 음수, 그리고 0으로 구성된다고 정의했습니다. 컴퓨터에서는 양수와 음수를 나타내기 위한 방법으로 <strong>부호 있는 정수(Signed Integer)</strong> 와 <strong>부호 없는 정수(Unsigned Integer)</strong> 로 나누어 표현합니다.</p>
@@ -331,8 +330,7 @@
 <p>Unsigned Binary는 부호 없는 정수를 2진수로 표현한 데이터 입니다. 부호가 없는 경우, 부호를 나타낼 별도의 비트가 필요하지 않기 때문에 수학적인 2진수 $\leftrightarrow$ 10진수 변환을 그대로 적용할 수 있습니다.</p>
 <p><strong>자연수(Natural Number)</strong></p>
 <blockquote>
-<p>부호 없는 정수는 자연수와 동일합니다.</p>
-</blockquote>
+<p>부호 없는 정수는 자연수와 동일합니다.</p></blockquote>
 <h3 id="개념">개념<a hidden class="anchor" aria-hidden="true" href="#개념">#</a></h3>
 <p>예를 들어, 4비트 공간에서 부호 없는 정수의 2진수/10진수/16진수 표현은 아래와 같습니다.</p>
 <p><strong>4비트 unsigned binary</strong></p>
@@ -434,8 +432,7 @@
 4비트  = 0xF<br>
 8비트  = 0xFF<br>
 16비트 = 0xFFFF<br>
-32비트 = 0xFFFF_FFFF</p>
-</blockquote>
+32비트 = 0xFFFF_FFFF</p></blockquote>
 <h3 id="변환">변환<a hidden class="anchor" aria-hidden="true" href="#변환">#</a></h3>
 <h4 id="10진수를-2진수로-변환">10진수를 2진수로 변환<a hidden class="anchor" aria-hidden="true" href="#10진수를-2진수로-변환">#</a></h4>
 <p>2진수로 변환하기 위해서는 숫자가 구성되는 원리에 의해 나누기 연산(/)과 나머지 연산(%)을 사용할 수 있습니다.</p>
@@ -801,11 +798,9 @@ a is greater than or equals to b
 하지만 비교연산을 할 때, <em><strong>부호 있는 정수인 <em><strong>a</strong></em>가 부호 없는 정수(unsigned)로 변환되기 때문에 b보다 큰 값으로 해석</strong></em>됩니다.</p>
 <blockquote>
 <p><strong>int a = -1의 비트패턴</strong><br>
-a = -1 = 0xFFFFFFFF (-1의 2의 보수 표현) = 4,294,967,295</p>
-</blockquote>
+a = -1 = 0xFFFFFFFF (-1의 2의 보수 표현) = 4,294,967,295</p></blockquote>
 <blockquote>
-<p>위와 같은 예제는 컴파일 시에 -W 옵션을 사용해서 예방할 수 있습니다.</p>
-</blockquote>
+<p>위와 같은 예제는 컴파일 시에 -W 옵션을 사용해서 예방할 수 있습니다.</p></blockquote>
 <pre tabindex="0"><code>$ gcc -W comp.c
 comp.c: In function ‘main’:
 comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
@@ -839,14 +834,12 @@ INT8_MAX: 127
 0xfb [251]          # (3)
 </code></pre><p>첫번째, int8_t형은 메모리 공간에서 8비트를 차지하는 변수입니다. 하지만 실제 변수가 가진 값이 int형보다 작은 메모리 공간을 차지하는 경우, <em><strong>printf문에서 포맷팅을 할때는 int형으로 승격되기 때문</strong></em>에 (1)의 결과는 0xFB가 아닌 0xFFFFFFFB가 되는 것 입니다.</p>
 <blockquote>
-<p>부호 있는 정수 -5는 2진수로 표현하면 $11111011_2$ 이고 16진수로는 0xFB입니다.</p>
-</blockquote>
+<p>부호 있는 정수 -5는 2진수로 표현하면 $11111011_2$ 이고 16진수로는 0xFB입니다.</p></blockquote>
 <blockquote>
 <p><strong>부호 확장(Sign Extension)</strong><br>
 8비트 정수를 32비트 정수로 승격할 때, 부호 확장이란 것이 발생합니다.<br>
 부호 확장은 말 그대로 정수의 부호 비트를 확장된 메모리 크기에 맞도록 확장시키는 것 입니다.<br>
-위의 예시의 경우, 부호 비트가 음수를 나타내는 1이므로 최상위 비트(MSB)의 1을 나머지 상위비트에 채웁니다.</p>
-</blockquote>
+위의 예시의 경우, 부호 비트가 음수를 나타내는 1이므로 최상위 비트(MSB)의 1을 나머지 상위비트에 채웁니다.</p></blockquote>
 <p>두번째, 변수 ui8은 부호 있는 정수형 변수 i8을 부호 없는 정수형으로 형변환을 하여 할당했습니다. 하지만, 출력 결과 (3)에서 볼 수 있듯이 실제 메모리 패턴(0xFB)는 변하지 않고, 0xFB의 부호 없는 정수값, 251을 출력합니다.</p>
 <p>C언어의 형변환은 컴퓨터에 <em><strong>실제 저장되는 값을 변경하는 것이 아니라, 컴퓨터가 어떻게 해석할지를 알려주는 것</strong></em> 입니다.(형변환 뿐 아니라 타입시스템 자체가 그렇다고 봐야합니다.)</p>
 <h2 id="결론-conclusion">결론 (Conclusion)<a hidden class="anchor" aria-hidden="true" href="#결론-conclusion">#</a></h2>

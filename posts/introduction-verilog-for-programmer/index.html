@@ -237,8 +237,7 @@ In contrast, <strong>Verilog inherently models the parallel nature of hardware o
 <blockquote>
 <p><strong>&ldquo;Isn&rsquo;t multithreaded programming parallel execution?&rdquo;</strong><br>
 In multithreaded programming, each thread has its own program counter, which allows for independent instruction execution across threads.
-However, <strong>individual threads still execute instructions sequentially</strong>.</p>
-</blockquote>
+However, <strong>individual threads still execute instructions sequentially</strong>.</p></blockquote>
 <h3 id="data-type-for-hardware-components">Data type for Hardware Components<a hidden class="anchor" aria-hidden="true" href="#data-type-for-hardware-components">#</a></h3>
 <p>In software programming languages, data types are logical distinctions. For example:</p>
 <ul>
@@ -248,8 +247,7 @@ However, <strong>individual threads still execute instructions sequentially</str
 </ul>
 <p>These distinctions are <strong>logical constructs for human understanding</strong>, not something the computer inherently recognizes.</p>
 <blockquote>
-<p>Computers cannot differentiate between numbers, characters, or objects - they only understand 0s and 1s</p>
-</blockquote>
+<p>Computers cannot differentiate between numbers, characters, or objects - they only understand 0s and 1s</p></blockquote>
 <p>However, since Verilog is a language designed to describe hardware behavior, its data types represent <strong>hardware components</strong>.</p>
 <p>For instance, <code>reg</code> and <code>wire</code> represent basic hardware components, but their usage depends on the context.</p>
 <ul>
@@ -269,8 +267,7 @@ As a result, a variable must already have a value assigned to it before it can b
 <blockquote>
 <p><strong>&ldquo;What about multithreaded programming?&rdquo;</strong><br>
 Even in multithreaded programming, the same principle applies.
-Even when dealing with critical sections, the issue lies in contention, not parallelism - each thread can only access memory one operation at a time.</p>
-</blockquote>
+Even when dealing with critical sections, the issue lies in contention, not parallelism - each thread can only access memory one operation at a time.</p></blockquote>
 <p>However, Verilog supports <strong>two types of assignment</strong> mechanisms.</p>
 <h4 id="sequential-assignment-blocking">Sequential Assignment: Blocking<a hidden class="anchor" aria-hidden="true" href="#sequential-assignment-blocking">#</a></h4>
 <p>Sequential assignment using the <code>=</code> symbol behaves the same as in traditional programming languages.</p>

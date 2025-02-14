@@ -291,8 +291,7 @@ These advantages make mastering these concepts highly beneficial. In this post, 
 <p>The Condition Code Flags are set to 1 when a specific condition is met and cleared to 0 when it is not. Each flag occupies a single bit in the CPSR.</p>
 <blockquote>
 <p>The term <em>flag</em> typically refers to controlling two states: true (1) or false (0).<br>
-Setting a flag to true is referred to as set, while changing it to false is called clear.</p>
-</blockquote>
+Setting a flag to true is referred to as set, while changing it to false is called clear.</p></blockquote>
 <h4 id="n-flag">N Flag<a hidden class="anchor" aria-hidden="true" href="#n-flag">#</a></h4>
 <ul>
 <li>Set: When the result is negative</li>
@@ -316,8 +315,7 @@ Setting a flag to true is referred to as set, while changing it to false is call
 <blockquote>
 <p><strong>What conditions are being checked?</strong><br>
 The CPU (e.g., ARM) is essentially a machine that executes <em>binary-encoded instructions</em>. The four flags set in the CPSR are all used to <strong>examine the result of executing an instruction</strong>.</p>
-<p>Example: If the result of an instruction&rsquo;s operation is 0, Z Flag is Set</p>
-</blockquote>
+<p>Example: If the result of an instruction&rsquo;s operation is 0, Z Flag is Set</p></blockquote>
 <h2 id="carry-flag--overflow-flag">Carry Flag &amp; Overflow Flag<a hidden class="anchor" aria-hidden="true" href="#carry-flag--overflow-flag">#</a></h2>
 <p>The behavior of the Carry Flag and Overflow Flag varies slightly depending on the type of operation and CPU instruction.</p>
 <p>ARM instructions can be broadly classified into the following three types:</p>
@@ -343,8 +341,7 @@ The CPU (e.g., ARM) is essentially a machine that executes <em>binary-encoded in
 </ul>
 <blockquote>
 <p>Additional instruction types exist, but these three are sufficient to understand for now.<br>
-A deeper dive into ARM assembly will be covered in future posts.</p>
-</blockquote>
+A deeper dive into ARM assembly will be covered in future posts.</p></blockquote>
 <h3 id="arm-assembly-with-suffix-s">ARM Assembly with suffix &rsquo;s'<a hidden class="anchor" aria-hidden="true" href="#arm-assembly-with-suffix-s">#</a></h3>
 <p>However, <strong>not all data-processing instructions update the status flags</strong>. This design choice provides programmers with greater efficiency and flexibility. Updating the status flags involves hardware operations, and applying this to every instruction would lead to unnecessary power consumption and performance degradation.</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-armasm" data-lang="armasm"><span style="display:flex;"><span>ADD <span style="color:#5dd8ff">r0</span>, <span style="color:#5dd8ff">r1</span>, <span style="color:#5dd8ff">r2</span>   <span style="color:#6c7986">@ Not update the status flags
@@ -355,8 +352,7 @@ A deeper dive into ARM assembly will be covered in future posts.</p>
 <p>The reason for not using a C language example is that the generation of assembly code is compiler-dependent.<br>
 Converting C code into assembly is entirely the compiler’s responsibility.<br>
 Depending on the logic structure and optimization, the compiler may or may not use the S suffix.</p>
-<p>Therefore, to simplify the example, we will use assembly directly.</p>
-</blockquote>
+<p>Therefore, to simplify the example, we will use assembly directly.</p></blockquote>
 <h3 id="environment">Environment<a hidden class="anchor" aria-hidden="true" href="#environment">#</a></h3>
 <ul>
 <li>Ubuntu 22.04</li>
@@ -399,8 +395,7 @@ Depending on the logic structure and optimization, the compiler may or may not u
 </span></span><span style="display:flex;"><span>$ qemu-system-arm -M versatilepb -nographic -s -S -kernel adds.elf
 </span></span></code></pre></div><blockquote>
 <p>A separate post on how to use QEMU will be created in the future.<br>
-If you have any questions, please refer to the <a href="https://www.qemu.org/docs/master/">QEMU official documentation</a>.</p>
-</blockquote>
+If you have any questions, please refer to the <a href="https://www.qemu.org/docs/master/">QEMU official documentation</a>.</p></blockquote>
 <h3 id="debug-with-gdb">Debug with GDB<a hidden class="anchor" aria-hidden="true" href="#debug-with-gdb">#</a></h3>
 <p>We will use <a href="https://man7.org/linux/man-pages/man1/gdb.1.html">GDB</a> to execute each instruction step-by-step and inspect the <code>CPSR</code> values after each operation.</p>
 <h4 id="gdb-commandshttpsftpgnuorgold-gnumanualsgdbhtml_chaptergdb_4htmlsec12-used"><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb/html_chapter/gdb_4.html#SEC12">GDB Commands</a> Used<a hidden class="anchor" aria-hidden="true" href="#gdb-commandshttpsftpgnuorgold-gnumanualsgdbhtml_chaptergdb_4htmlsec12-used">#</a></h4>

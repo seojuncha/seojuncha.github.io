@@ -281,8 +281,7 @@ In this post, we will explore why two&rsquo;s complement is used, its advantages
  10000 0010 (Carry ignored, result: 2)
 </code></pre><p>With one&rsquo;s complement, an additional step of adding the carry is required to obtain the correct result. In contrast, two&rsquo;s complement automatically yields the correct result, even if the carry is ignored. This simplicity makes two&rsquo;s complement far more efficient for hardware design and arithmetic processing.</p>
 <blockquote>
-<p>A future post will cover carry bits that arise when exceeding the bit range.</p>
-</blockquote>
+<p>A future post will cover carry bits that arise when exceeding the bit range.</p></blockquote>
 <h3 id="a-single-representation-for-zero">A Single Representation for Zero<a hidden class="anchor" aria-hidden="true" href="#a-single-representation-for-zero">#</a></h3>
 <p>In both sign-magnitude and one&rsquo;s complement, zero can have two representations: +0 and –0. This inconsistency requires additional hardware to handle. In contrast, two&rsquo;s complement has only one representation for zero: a number with all bits set to 0.</p>
 <p><strong>Zero in One&rsquo;s Complement</strong></p>
@@ -463,8 +462,7 @@ In this post, we will explore why two&rsquo;s complement is used, its advantages
 Python uses unlimited bit-length for integers, so negative numbers require additional bits for proper representation. For example:</p>
 <ul>
 <li>-6 is represented as <code>111...1010</code> (infinite bits).</li>
-</ul>
-</blockquote>
+</ul></blockquote>
 <p>The relationship: <code>~n = -(n + 1)</code>.</p>
 <p><strong>Verifying the Two&rsquo;s Complement Representation of <code>-6</code></strong></p>
 <ol>
