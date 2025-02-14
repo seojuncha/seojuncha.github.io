@@ -495,6 +495,18 @@
     <loc>https://seojuncha.github.io/ko/tags/george-hotz/</loc>
     <lastmod>2025-01-02T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://seojuncha.github.io/ko/archives/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/archives/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/archives/"
+                />
+  </url><url>
     <loc>https://seojuncha.github.io/ko/categories/</loc>
     <xhtml:link
                 rel="alternate"
@@ -505,6 +517,18 @@
                 rel="alternate"
                 hreflang="ko-KR"
                 href="https://seojuncha.github.io/ko/categories/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/ko/search/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/search/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/search/"
                 />
   </url>
 </urlset>

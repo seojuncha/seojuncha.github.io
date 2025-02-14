@@ -508,6 +508,16 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/archives/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/archives/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/archives/"
+                />
   </url><url>
     <loc>https://seojuncha.github.io/categories/</loc>
     <xhtml:link
@@ -522,5 +532,15 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/search/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/search/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/search/"
+                />
   </url>
 </urlset>
