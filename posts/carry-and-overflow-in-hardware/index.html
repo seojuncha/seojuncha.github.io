@@ -263,7 +263,7 @@ These advantages make mastering these concepts highly beneficial. In this post, 
 </ol>
 <p>These advantages make mastering these concepts highly beneficial. In this post, we will explore how <strong><a href="/posts/carry-and-overflow/">Carry and Overflow</a> are handled in ARM processors</strong>, along with <strong>a simple assembly example</strong> that we will <strong>debug using QEMU</strong>.</p>
 <p>Through this process, we aim to gain a deeper understanding of how arithmetic operations in our code function at the hardware level, empowering us to write better code and solve problems more effectively.</p>
-<h1 id="32-bit-arm-processor">32-bit ARM Processor<a hidden class="anchor" aria-hidden="true" href="#32-bit-arm-processor">#</a></h1>
+<h2 id="32-bit-arm-processor">32-bit ARM Processor<a hidden class="anchor" aria-hidden="true" href="#32-bit-arm-processor">#</a></h2>
 <p>This post is based on the 32-bit ARM processor used in the ongoing <a href="https://github.com/seojuncha/fromthetransistor-fork">From the Transistor</a> project.</p>
 <p>A 32-bit processor signifies that both the data size it can process at once and the memory address size are 32 bits.</p>
 <p>Key characteristics of a 32-bit processor include:</p>
@@ -273,14 +273,14 @@ These advantages make mastering these concepts highly beneficial. In this post, 
 <li><a href="https://en.wikipedia.org/wiki/Data_structure_alignment">Memory alignment</a> unit: 32 bits</li>
 <li>Word size: 32 bits</li>
 </ul>
-<h1 id="cpsr-current-program-status-register">CPSR: Current Program Status Register<a hidden class="anchor" aria-hidden="true" href="#cpsr-current-program-status-register">#</a></h1>
+<h2 id="cpsr-current-program-status-register">CPSR: Current Program Status Register<a hidden class="anchor" aria-hidden="true" href="#cpsr-current-program-status-register">#</a></h2>
 <p>ARM processors have a special register called the <em><strong>CPSR (Current Program Status Register)</strong></em>, which is used to <strong>store the current state of the program</strong>.</p>
 <p><strong>CPSR Format</strong></p>
 <pre tabindex="0"><code>32-bit CPSR
 +---+---+---+---+---+----------+---+---+---+----+----+----+----+----+
 | N | Z | C | V | Q | DNM(RAZ) | I | F | T | M4 | M3 | M2 | M1 | M0 |
 +---+---+---+---+---+----------+---+---+---+----+----+----+----+----+
-</code></pre><h2 id="condition-code-flags">Condition Code Flags<a hidden class="anchor" aria-hidden="true" href="#condition-code-flags">#</a></h2>
+</code></pre><h3 id="condition-code-flags">Condition Code Flags<a hidden class="anchor" aria-hidden="true" href="#condition-code-flags">#</a></h3>
 <p>The upper 4 bits [31:28] of the CPSR are designated as the <em><strong>Condition Code Flags</strong></em> and are used to evaluate the program&rsquo;s status. These bits include the following fields:</p>
 <ul>
 <li>N (<em><strong>N</strong></em>egative)</li>
@@ -293,22 +293,22 @@ These advantages make mastering these concepts highly beneficial. In this post, 
 <p>The term <em>flag</em> typically refers to controlling two states: true (1) or false (0).<br>
 Setting a flag to true is referred to as set, while changing it to false is called clear.</p>
 </blockquote>
-<h3 id="n-flag">N Flag<a hidden class="anchor" aria-hidden="true" href="#n-flag">#</a></h3>
+<h4 id="n-flag">N Flag<a hidden class="anchor" aria-hidden="true" href="#n-flag">#</a></h4>
 <ul>
 <li>Set: When the result is negative</li>
 <li>Clear: When the result is zero or positive</li>
 </ul>
-<h3 id="z-flag">Z Flag<a hidden class="anchor" aria-hidden="true" href="#z-flag">#</a></h3>
+<h4 id="z-flag">Z Flag<a hidden class="anchor" aria-hidden="true" href="#z-flag">#</a></h4>
 <ul>
 <li>Set: When the result is zero</li>
 <li>Clear: When the result is not zero</li>
 </ul>
-<h3 id="c-flag">C Flag<a hidden class="anchor" aria-hidden="true" href="#c-flag">#</a></h3>
+<h4 id="c-flag">C Flag<a hidden class="anchor" aria-hidden="true" href="#c-flag">#</a></h4>
 <ul>
 <li>Set: When a carry occurs</li>
 <li>Clear: When no carry occurs</li>
 </ul>
-<h3 id="v-flag">V Flag<a hidden class="anchor" aria-hidden="true" href="#v-flag">#</a></h3>
+<h4 id="v-flag">V Flag<a hidden class="anchor" aria-hidden="true" href="#v-flag">#</a></h4>
 <ul>
 <li>Set: When an overflow occurs</li>
 <li>Clear: When no overflow occurs</li>
@@ -318,7 +318,7 @@ Setting a flag to true is referred to as set, while changing it to false is call
 The CPU (e.g., ARM) is essentially a machine that executes <em>binary-encoded instructions</em>. The four flags set in the CPSR are all used to <strong>examine the result of executing an instruction</strong>.</p>
 <p>Example: If the result of an instruction&rsquo;s operation is 0, Z Flag is Set</p>
 </blockquote>
-<h1 id="carry-flag--overflow-flag">Carry Flag &amp; Overflow Flag<a hidden class="anchor" aria-hidden="true" href="#carry-flag--overflow-flag">#</a></h1>
+<h2 id="carry-flag--overflow-flag">Carry Flag &amp; Overflow Flag<a hidden class="anchor" aria-hidden="true" href="#carry-flag--overflow-flag">#</a></h2>
 <p>The behavior of the Carry Flag and Overflow Flag varies slightly depending on the type of operation and CPU instruction.</p>
 <p>ARM instructions can be broadly classified into the following three types:</p>
 <ul>
@@ -345,11 +345,11 @@ The CPU (e.g., ARM) is essentially a machine that executes <em>binary-encoded in
 <p>Additional instruction types exist, but these three are sufficient to understand for now.<br>
 A deeper dive into ARM assembly will be covered in future posts.</p>
 </blockquote>
-<h2 id="arm-assembly-with-suffix-s">ARM Assembly with suffix &rsquo;s'<a hidden class="anchor" aria-hidden="true" href="#arm-assembly-with-suffix-s">#</a></h2>
+<h3 id="arm-assembly-with-suffix-s">ARM Assembly with suffix &rsquo;s'<a hidden class="anchor" aria-hidden="true" href="#arm-assembly-with-suffix-s">#</a></h3>
 <p>However, <strong>not all data-processing instructions update the status flags</strong>. This design choice provides programmers with greater efficiency and flexibility. Updating the status flags involves hardware operations, and applying this to every instruction would lead to unnecessary power consumption and performance degradation.</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-armasm" data-lang="armasm"><span style="display:flex;"><span>ADD <span style="color:#5dd8ff">r0</span>, <span style="color:#5dd8ff">r1</span>, <span style="color:#5dd8ff">r2</span>   <span style="color:#6c7986">@ Not update the status flags
 </span></span></span><span style="display:flex;"><span><span style="color:#6c7986"></span>ADDS <span style="color:#5dd8ff">r0</span>, <span style="color:#5dd8ff">r1</span>, <span style="color:#5dd8ff">r2</span>  <span style="color:#6c7986">@ Update the status flags
-</span></span></span></code></pre></div><h1 id="assembly-example-compare-add-and-adds">Assembly Example: Compare &ldquo;ADD&rdquo; and &ldquo;ADDS&rdquo;<a hidden class="anchor" aria-hidden="true" href="#assembly-example-compare-add-and-adds">#</a></h1>
+</span></span></span></code></pre></div><h2 id="assembly-example-compare-add-and-adds">Assembly Example: Compare &ldquo;ADD&rdquo; and &ldquo;ADDS&rdquo;<a hidden class="anchor" aria-hidden="true" href="#assembly-example-compare-add-and-adds">#</a></h2>
 <p>Let’s explore the concepts discussed so far with an actual ARM assembly code example.</p>
 <blockquote>
 <p>The reason for not using a C language example is that the generation of assembly code is compiler-dependent.<br>
@@ -357,13 +357,13 @@ Converting C code into assembly is entirely the compiler’s responsibility.<br>
 Depending on the logic structure and optimization, the compiler may or may not use the S suffix.</p>
 <p>Therefore, to simplify the example, we will use assembly directly.</p>
 </blockquote>
-<h2 id="environment">Environment<a hidden class="anchor" aria-hidden="true" href="#environment">#</a></h2>
+<h3 id="environment">Environment<a hidden class="anchor" aria-hidden="true" href="#environment">#</a></h3>
 <ul>
 <li>Ubuntu 22.04</li>
 <li><a href="https://launchpad.net/ubuntu/jammy/&#43;package/gcc-arm-none-eabi">arm-none-eabi-gcc</a> 10.3.1</li>
 <li><a href="https://installati.one/install-gdb-multiarch-ubuntu-22-04/">gdb-multiarch</a> 12.1</li>
 </ul>
-<h2 id="code-examples">Code Examples<a hidden class="anchor" aria-hidden="true" href="#code-examples">#</a></h2>
+<h3 id="code-examples">Code Examples<a hidden class="anchor" aria-hidden="true" href="#code-examples">#</a></h3>
 <p>Here are two assembly codes, <code>add.s</code> and <code>adds.s</code>, along with the following test scenario:</p>
 <p><strong>add.s</strong></p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;display:grid;"><code class="language-armasm" data-lang="armasm"><span style="display:flex;"><span><span style="color:#fc5fa3">.section</span> <span style="color:#fc5fa3">.text</span>
@@ -382,7 +382,7 @@ Depending on the logic structure and optimization, the compiler may or may not u
 </span></span></code></pre></div><p><strong>Compile</strong>:</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ arm-none-eabi-gcc -g -o add.elf add.s -nostdlib -specs=nosys.specs
 </span></span><span style="display:flex;"><span>$ arm-none-eabi-gcc -g -o adds.elf adds.s -nostdlib -specs=nosys.specs
-</span></span></code></pre></div><h3 id="test-scenario">Test Scenario<a hidden class="anchor" aria-hidden="true" href="#test-scenario">#</a></h3>
+</span></span></code></pre></div><h4 id="test-scenario">Test Scenario<a hidden class="anchor" aria-hidden="true" href="#test-scenario">#</a></h4>
 <ol>
 <li>Assign the 32-bit maximum value (0xFFFF_FFFF) to the r0 register.</li>
 <li>Add 2 to the value in the r0 register and store the result in the r1 register.
@@ -393,7 +393,7 @@ Depending on the logic structure and optimization, the compiler may or may not u
 </li>
 </ol>
 <p>By comparing these two cases, we can observe the impact of the S suffix on the <code>CPSR</code> flags.</p>
-<h2 id="run-on-qemu">Run on QEMU<a hidden class="anchor" aria-hidden="true" href="#run-on-qemu">#</a></h2>
+<h3 id="run-on-qemu">Run on QEMU<a hidden class="anchor" aria-hidden="true" href="#run-on-qemu">#</a></h3>
 <p>We will use the QEMU emulator to execute each file on a 32-bit ARM processor. This setup allows us to analyze how the instructions (<code>add</code> and <code>adds</code>) behave and how they affect the <code>CPSR</code> flags during execution.</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ qemu-system-arm -M versatilepb -nographic -s -S -kernel add.elf
 </span></span><span style="display:flex;"><span>$ qemu-system-arm -M versatilepb -nographic -s -S -kernel adds.elf
@@ -401,9 +401,9 @@ Depending on the logic structure and optimization, the compiler may or may not u
 <p>A separate post on how to use QEMU will be created in the future.<br>
 If you have any questions, please refer to the <a href="https://www.qemu.org/docs/master/">QEMU official documentation</a>.</p>
 </blockquote>
-<h2 id="debug-with-gdb">Debug with GDB<a hidden class="anchor" aria-hidden="true" href="#debug-with-gdb">#</a></h2>
+<h3 id="debug-with-gdb">Debug with GDB<a hidden class="anchor" aria-hidden="true" href="#debug-with-gdb">#</a></h3>
 <p>We will use <a href="https://man7.org/linux/man-pages/man1/gdb.1.html">GDB</a> to execute each instruction step-by-step and inspect the <code>CPSR</code> values after each operation.</p>
-<h3 id="gdb-commandshttpsftpgnuorgold-gnumanualsgdbhtml_chaptergdb_4htmlsec12-used"><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb/html_chapter/gdb_4.html#SEC12">GDB Commands</a> Used<a hidden class="anchor" aria-hidden="true" href="#gdb-commandshttpsftpgnuorgold-gnumanualsgdbhtml_chaptergdb_4htmlsec12-used">#</a></h3>
+<h4 id="gdb-commandshttpsftpgnuorgold-gnumanualsgdbhtml_chaptergdb_4htmlsec12-used"><a href="https://ftp.gnu.org/old-gnu/Manuals/gdb/html_chapter/gdb_4.html#SEC12">GDB Commands</a> Used<a hidden class="anchor" aria-hidden="true" href="#gdb-commandshttpsftpgnuorgold-gnumanualsgdbhtml_chaptergdb_4htmlsec12-used">#</a></h4>
 <ul>
 <li><code>target remote localhost:1234</code>
 <ul>
@@ -423,7 +423,7 @@ If you have any questions, please refer to the <a href="https://www.qemu.org/doc
 </ul>
 </li>
 </ul>
-<h3 id="use-add-instruction">Use &ldquo;ADD&rdquo; instruction<a hidden class="anchor" aria-hidden="true" href="#use-add-instruction">#</a></h3>
+<h4 id="use-add-instruction">Use &ldquo;ADD&rdquo; instruction<a hidden class="anchor" aria-hidden="true" href="#use-add-instruction">#</a></h4>
 <p><strong>1. Start GDB</strong></p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gdb-multiarch add.elf
 </span></span></code></pre></div><p><strong>2. Connect to the local GDB Server</strong></p>
@@ -466,7 +466,7 @@ The <code>mov r0, #0xffffffff</code> instruction instruction is executed, and th
 </span></span><span style="display:flex;"><span>r1             0x1                 <span style="color:#d0bf69">1</span>
 </span></span><span style="display:flex;"><span>cpsr           0x400001d3          <span style="color:#d0bf69">1073742291</span>
 </span></span></code></pre></div><p>When <code>add r1, r0, #2</code> is executed, the <code>CPSR</code> flags remain unchanged, as the <code>s</code> suffix is not used.</p>
-<h3 id="use-adds-instruction">Use &ldquo;ADDS&rdquo; instruction<a hidden class="anchor" aria-hidden="true" href="#use-adds-instruction">#</a></h3>
+<h4 id="use-adds-instruction">Use &ldquo;ADDS&rdquo; instruction<a hidden class="anchor" aria-hidden="true" href="#use-adds-instruction">#</a></h4>
 <p>Following the same process, we will now examine the changes in register values when using <code>ADDS</code>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;display:grid;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gdb-multiarch adds.elf
 </span></span><span style="display:flex;"><span>(gdb) target remote localhost:1234
@@ -498,7 +498,7 @@ In binary, <code>0x200001d3</code> is <code>0010 0000 0000 0000 0000 0001 1101 0
 <li>V : 0</li>
 </ul>
 <p>Since the result of <code>add</code> operation exceeds the 32-bit maximum value (<code>0xffffffff</code>), a <strong>Carry occurs</strong>. However, the addition result, <code>1</code> does not exceed the range of signed integers, so <strong>Overflow does not occur</strong>. As a result, the CPSR <strong>Carry Flag is set</strong>, while the <strong>Overflow Flag remains clear</strong>.</p>
-<h1 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h1>
+<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
 <p>In this post, we explored how <strong>Carry</strong> and <strong>Overflow</strong> are handled in ARM processors, using <strong>assembly code examples</strong> and <strong>verifying their behavior with QEMU and GDB</strong>. At the hardware level, the primary goal is to detect Carry and Overflow conditions, while handling them is the responsibility of the software. Therefore, understanding the detection conditions and methods is essential for programmers to write more efficient and robust code.</p>
 <p><strong>Upcoming Posts</strong></p>
 <ul>
@@ -525,12 +525,12 @@ In binary, <code>0x200001d3</code> is <code>0010 0000 0000 0000 0000 0001 1101 0
   <a class="prev" href="https://seojuncha.github.io/posts/introduction-verilog-for-programmer/">
     <span class="title">« Prev</span>
     <br>
-    <span>Introduction to Verilog from a Programmer&#39;s Perspective</span>
+    <span>Verilog for Programmers: An Introduction</span>
   </a>
   <a class="next" href="https://seojuncha.github.io/posts/carry-and-overflow/">
     <span class="title">Next »</span>
     <br>
-    <span>What Is Overflow in Computer Arithmetic? Explained with Examples</span>
+    <span>Overflow in Computer Arithmetic: Examples &amp; Explanation</span>
   </a>
 </nav>
 

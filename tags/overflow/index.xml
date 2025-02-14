@@ -25,7 +25,7 @@
 &lt;p&gt;These advantages make mastering these concepts highly beneficial. In this post, we will explore how &lt;strong&gt;&lt;a href=&#34;https://seojuncha.github.io/posts/carry-and-overflow/&#34;&gt;Carry and Overflow&lt;/a&gt; are handled in ARM processors&lt;/strong&gt;, along with &lt;strong&gt;a simple assembly example&lt;/strong&gt; that we will &lt;strong&gt;debug using QEMU&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>What Is Overflow in Computer Arithmetic? Explained with Examples</title>
+      <title>Overflow in Computer Arithmetic: Examples &amp; Explanation</title>
       <link>https://seojuncha.github.io/posts/carry-and-overflow/</link>
       <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
       <guid>https://seojuncha.github.io/posts/carry-and-overflow/</guid>

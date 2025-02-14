@@ -205,7 +205,7 @@
 </div>
 
   <div class="post-content"><p>Today, we&rsquo;ll explore how to use <strong>branching statements</strong> to control program logic flow. A <strong>branch statement</strong> determines the next action based on whether a given condition is <strong>true or false</strong>. Common Lisp (hereafter, Lisp) provides various ways to perform condition checks, and understanding these approaches will help you <strong>write more readable code</strong> while <strong>minimizing errors</strong>.</p>
-<h1 id="true-t-or-false-nil-boolean-logic-in-lisp">True (<code>t</code>) or False (<code>nil</code>): Boolean Logic in Lisp<a hidden class="anchor" aria-hidden="true" href="#true-t-or-false-nil-boolean-logic-in-lisp">#</a></h1>
+<h2 id="true-t-or-false-nil-boolean-logic-in-lisp">True (<code>t</code>) or False (<code>nil</code>): Boolean Logic in Lisp<a hidden class="anchor" aria-hidden="true" href="#true-t-or-false-nil-boolean-logic-in-lisp">#</a></h2>
 <p>Like most programming languages, Lisp evaluates conditions to determine <strong>truth or falsity</strong>.
 For example, in Python, we use <code>True</code> and <code>False</code> to represent boolean values:</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>is_true = <span style="color:#fc5fa3">True</span>
@@ -217,7 +217,7 @@ For example, in Python, we use <code>True</code> and <code>False</code> to repre
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defparameter</span> *is-true* t)
 </span></span><span style="display:flex;"><span>(<span style="color:#d0a8ff">defconstant</span> <span style="color:#41a1c0">+empty+</span> nil)
-</span></span></code></pre></div><h1 id="checking-a-single-condition-when-and-unless">Checking a Single Condition: <code>when</code> and <code>unless</code><a hidden class="anchor" aria-hidden="true" href="#checking-a-single-condition-when-and-unless">#</a></h1>
+</span></span></code></pre></div><h2 id="checking-a-single-condition-when-and-unless">Checking a Single Condition: <code>when</code> and <code>unless</code><a hidden class="anchor" aria-hidden="true" href="#checking-a-single-condition-when-and-unless">#</a></h2>
 <p>To check a single condition, Lisp provides the <code>when</code> and <code>unless</code> macros:</p>
 <ul>
 <li>
@@ -257,7 +257,7 @@ For example, in Python, we use <code>True</code> and <code>False</code> to repre
 </span></span><span style="display:flex;"><span>my_value = <span style="color:#d0bf69">3</span>
 </span></span><span style="display:flex;"><span><span style="color:#fc5fa3">if</span> not pi == my_value:
 </span></span><span style="display:flex;"><span>  <span style="color:#d0a8ff">print</span>(<span style="color:#fc6a5d">&#34;my_value is not PI!&#34;</span>)
-</span></span></code></pre></div><h2 id="numeric-comparison-operators------">Numeric Comparison Operators: <code>=</code>, <code>/=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code><a hidden class="anchor" aria-hidden="true" href="#numeric-comparison-operators------">#</a></h2>
+</span></span></code></pre></div><h3 id="numeric-comparison-operators------">Numeric Comparison Operators: <code>=</code>, <code>/=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code><a hidden class="anchor" aria-hidden="true" href="#numeric-comparison-operators------">#</a></h3>
 <p>Before moving on, let&rsquo;s briefly cover numeric comparison operators in Lisp.
 Lisp provides six standard comparison operators:</p>
 <ul>
@@ -285,7 +285,7 @@ Lisp provides six standard comparison operators:</p>
 </span></span></code></pre></div><blockquote>
 <p>We&rsquo;ll cover <code>eql</code>, <code>equalp</code>, and string comparison operators in a future post.</p>
 </blockquote>
-<h1 id="checking-both-true-and-false-cases-if">Checking Both True and False Cases: <code>if</code><a hidden class="anchor" aria-hidden="true" href="#checking-both-true-and-false-cases-if">#</a></h1>
+<h2 id="checking-both-true-and-false-cases-if">Checking Both True and False Cases: <code>if</code><a hidden class="anchor" aria-hidden="true" href="#checking-both-true-and-false-cases-if">#</a></h2>
 <p>The <code>if</code> expression in Lisp works like <code>if-else</code> in Python.</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>num = <span style="color:#d0bf69">10</span>
 </span></span><span style="display:flex;"><span><span style="color:#fc5fa3">if</span> num &lt; <span style="color:#d0bf69">10</span>:
@@ -299,7 +299,7 @@ Lisp provides six standard comparison operators:</p>
 </span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;num is greater than or equal to 10~%&#34;</span>))  <span style="color:#6c7986">; Executes if condition is false</span>
 </span></span></code></pre></div><p>If you don’t need an <code>else</code> branch, you can omit it:</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#fc5fa3">if</span> t (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;true&#34;</span>))
-</span></span></code></pre></div><h1 id="checking-evenodd-evenp--oddp">Checking Even/Odd: <code>evenp</code> &amp; <code>oddp</code><a hidden class="anchor" aria-hidden="true" href="#checking-evenodd-evenp--oddp">#</a></h1>
+</span></span></code></pre></div><h2 id="checking-evenodd-evenp--oddp">Checking Even/Odd: <code>evenp</code> &amp; <code>oddp</code><a hidden class="anchor" aria-hidden="true" href="#checking-evenodd-evenp--oddp">#</a></h2>
 <p>Lisp provides built-in predicates to check whether a number is even or odd:</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">is-even</span> (<span style="color:#41a1c0">evenp</span> <span style="color:#d0bf69">4</span>))   <span style="color:#6c7986">; Returns t</span>
 </span></span><span style="display:flex;"><span>      (<span style="color:#41a1c0">is-odd</span> (<span style="color:#41a1c0">oddp</span> <span style="color:#d0bf69">7</span>)))    <span style="color:#6c7986">; Returns t</span>
@@ -307,7 +307,7 @@ Lisp provides six standard comparison operators:</p>
 </span></span></code></pre></div><blockquote>
 <p>The <code>p</code> at the end of <code>evenp</code> and <code>oddp</code> follows Lisp’s convention for predicate functions.</p>
 </blockquote>
-<h1 id="checking-multiple-conditions-cond">Checking Multiple Conditions: <code>cond</code><a hidden class="anchor" aria-hidden="true" href="#checking-multiple-conditions-cond">#</a></h1>
+<h2 id="checking-multiple-conditions-cond">Checking Multiple Conditions: <code>cond</code><a hidden class="anchor" aria-hidden="true" href="#checking-multiple-conditions-cond">#</a></h2>
 <p><code>cond</code> is similar to Python&rsquo;s <code>if-elif-else</code> structure.</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>number = <span style="color:#d0bf69">8</span>
 </span></span><span style="display:flex;"><span>
@@ -327,7 +327,7 @@ Lisp provides six standard comparison operators:</p>
 </span></span><span style="display:flex;"><span>    (t  <span style="color:#6c7986">; Always executes if no previous condition is met</span>
 </span></span><span style="display:flex;"><span>      (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;is greater than 10~%&#34;</span>))))
 </span></span></code></pre></div><p><code>cond</code>&rsquo;s final <code>(t ...)</code> clause acts like an <code>else</code> statement, executing only if none of the previous conditions are met.</p>
-<h1 id="all-conditionals-return-a-value">All Conditionals Return a Value<a hidden class="anchor" aria-hidden="true" href="#all-conditionals-return-a-value">#</a></h1>
+<h2 id="all-conditionals-return-a-value">All Conditionals Return a Value<a hidden class="anchor" aria-hidden="true" href="#all-conditionals-return-a-value">#</a></h2>
 <p>All conditionals in Lisp return the last evaluated expression.</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">when</span> t
 </span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;Hello, World!~%&#34;</span>)
@@ -336,7 +336,7 @@ Lisp provides six standard comparison operators:</p>
 <div class="highlight"><pre tabindex="0" style="color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-lisp" data-lang="lisp"><span style="display:flex;"><span>(<span style="color:#d0a8ff">defparameter</span> *is-set* t)
 </span></span><span style="display:flex;"><span>(<span style="color:#fc5fa3">let</span> ((<span style="color:#41a1c0">check-set</span> (<span style="color:#d0a8ff">when</span> *is-set* <span style="color:#d0bf69">99</span>)))  <span style="color:#6c7986">; Assigns 99 if *is-set* is true</span>
 </span></span><span style="display:flex;"><span>  (<span style="color:#41a1c0">format</span> t <span style="color:#fc6a5d">&#34;check-set: ~a~%&#34;</span> <span style="color:#41a1c0">check-set</span>))
-</span></span></code></pre></div><h1 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h1>
+</span></span></code></pre></div><h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
 <p>We&rsquo;ve explored various conditional structures in Lisp. <code>when</code> and <code>unless</code> simplify single-condition checks, <code>if</code> provides two-way branching, and <code>cond</code> offers a structured way to handle multiple conditions.</p>
 <p>By combining these conditionals effectively, you can write cleaner, more readable Lisp code. Since Lisp uses <code>t</code> and <code>nil</code> as truth values, understanding this behavior is crucial for writing robust conditionals.</p>
 <p>Stay tuned for our next post on <code>case</code> and equality comparison functions like <code>eql</code>, <code>equal</code>, and <code>equalp</code>!</p>
