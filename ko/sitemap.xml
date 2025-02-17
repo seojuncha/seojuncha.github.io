@@ -2,6 +2,67 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://seojuncha.github.io/ko/posts/</loc>
+    <lastmod>2025-02-20T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/posts/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/ko/</loc>
+    <lastmod>2025-02-20T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/ko/tags/common-lisp/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/tags/common-lisp/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/common-lisp/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/ko/tags/common-lisp-character/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://seojuncha.github.io/ko/tags/common-lisp-string/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://seojuncha.github.io/ko/posts/common-lisp-string-and-char/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://seojuncha.github.io/ko/tags/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/"
+                />
+  </url><url>
     <loc>https://seojuncha.github.io/ko/tags/case/</loc>
     <lastmod>2025-02-13T00:00:00+00:00</lastmod>
     <xhtml:link
@@ -13,19 +74,6 @@
                 rel="alternate"
                 hreflang="ko-KR"
                 href="https://seojuncha.github.io/ko/tags/case/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/ko/tags/common-lisp/</loc>
-    <lastmod>2025-02-13T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/tags/common-lisp/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/tags/common-lisp/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/ko/posts/how-to-make-decision-in-common-lisp/</loc>
@@ -78,45 +126,6 @@
                 rel="alternate"
                 hreflang="ko-KR"
                 href="https://seojuncha.github.io/ko/tags/if-else/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/ko/posts/</loc>
-    <lastmod>2025-02-13T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/posts/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/posts/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/ko/</loc>
-    <lastmod>2025-02-13T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/ko/tags/</loc>
-    <lastmod>2025-02-13T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/tags/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/ko/tags/unless/</loc>

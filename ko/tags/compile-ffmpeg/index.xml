@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Compile Ffmpeg on Seojun&#39;s Personal Site</title>
+    <link>https://seojuncha.github.io/ko/tags/compile-ffmpeg/</link>
+    <description>Recent content in Compile Ffmpeg on Seojun&#39;s Personal Site</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>ko-KR</language>
+    <atom:link href="https://seojuncha.github.io/ko/tags/compile-ffmpeg/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>https://seojuncha.github.io/ko/posts/compile-ffmpeg-library-on-macos/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/compile-ffmpeg-library-on-macos/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

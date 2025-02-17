@@ -93,17 +93,17 @@
         </div>
         <ul id="menu">
             <li>
-                <a href="https://seojuncha.github.io/ko/search/" title="Search (Alt &#43; /)" accesskey=/>
+                <a href="https://seojuncha.github.io/ko/search/" title="검색 (Alt &#43; /)" accesskey=/>
                     <span>Search</span>
                 </a>
             </li>
             <li>
-                <a href="https://seojuncha.github.io/ko/posts/" title="Blog">
+                <a href="https://seojuncha.github.io/ko/posts/" title="Posts">
                     <span class="active">Blog</span>
                 </a>
             </li>
             <li>
-                <a href="https://seojuncha.github.io/ko/archives/" title="Archives">
+                <a href="https://seojuncha.github.io/ko/archives/" title="Archive">
                     <span>Archives</span>
                 </a>
             </li>
@@ -121,6 +121,20 @@
     Posts
   </h1>
 </header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Common Lisp 문자와 문자열 완벽 가이드 – 문자 비교, 변환, 문자열 조작 방법 정리
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Common Lisp에서 문자는 #\ 접두사를 사용하여 표현되며, ASCII 및 유니코드 문자 집합을 포함하여 다양한 문자를 다룰 수 있습니다. 문자는 self-evaluating 객체이므로 quote 없이도 사용 가능하며, 공백(#\space)과 줄바꿈(#\newline) 같은 특수 문자도 제공합니다. 문자 비교를 위한 다양한 함수가 제공되며, 대소문자 구분 여부에 따라 char=와 char-equal을 선택할 수 있습니다. 또한, 문자를 ASCII 코드로 변환하거나, 반대로 숫자를 문자로 변환하는 기능도 지원합니다.
+문자열은 단순히 문자의 배열로, 큰따옴표(&#34; “)로 감싸서 표현됩니다. 문자열 비교는 문자 비교와 유사한 방식으로 이루어지며, 대소문자 구분 여부에 따라 적절한 함수를 선택해야 합니다. 문자열을 다루기 위한 다양한 함수(length, subseq, concatenate, string-upcase, string-downcase, search 등)가 제공되며, coerce를 활용하여 문자열과 리스트 간 변환도 가능합니다. 또한, parse-integer를 사용하여 문자열을 숫자로 변환하거나, princ-to-string을 사용하여 숫자를 문자열로 변환할 수 있습니다.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-17 00:00:00 +0000 UTC'>2월 17, 2025</span>&nbsp;·&nbsp;7 분</footer>
+  <a class="entry-link" aria-label="post link to Common Lisp 문자와 문자열 완벽 가이드 – 문자 비교, 변환, 문자열 조작 방법 정리" href="https://seojuncha.github.io/ko/posts/common-lisp-string-and-char/"></a>
+</article>
 
 <article class="post-entry"> 
   <header class="entry-header">
