@@ -28,6 +28,71 @@
                 href="https://seojuncha.github.io/"
                 />
   </url><url>
+    <loc>https://seojuncha.github.io/tags/common-lisp/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/common-lisp/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/tags/common-lisp/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/common-lisp-character/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/common-lisp-character/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/tags/common-lisp-character/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/posts/common-lisp-string-and-char/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/common-lisp-string-and-char/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/posts/common-lisp-string-and-char/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/common-lisp-string/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/common-lisp-string/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/tags/common-lisp-string/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/</loc>
+    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/tags/"
+                />
+  </url><url>
     <loc>https://seojuncha.github.io/tags/case/</loc>
     <lastmod>2025-02-13T00:00:00+00:00</lastmod>
     <xhtml:link
@@ -39,19 +104,6 @@
                 rel="alternate"
                 hreflang="en-US"
                 href="https://seojuncha.github.io/tags/case/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/tags/common-lisp/</loc>
-    <lastmod>2025-02-13T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/tags/common-lisp/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/tags/common-lisp/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/cond/</loc>
@@ -104,19 +156,6 @@
                 rel="alternate"
                 hreflang="en-US"
                 href="https://seojuncha.github.io/posts/how-to-make-decision-in-common-lisp/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/tags/</loc>
-    <lastmod>2025-02-13T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/tags/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/unless/</loc>
