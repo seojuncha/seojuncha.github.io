@@ -10,9 +10,9 @@
     <atom:link href="https://seojuncha.github.io/tags/gtkwave/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Verilog Simulation &amp; Test Environment Setup Guide</title>
-      <link>https://seojuncha.github.io/posts/verilog-develop-environment/</link>
+      <link>https://seojuncha.github.io/posts/low-level-programming/verilog-develop-environment/</link>
       <pubDate>Thu, 06 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/posts/verilog-develop-environment/</guid>
+      <guid>https://seojuncha.github.io/posts/low-level-programming/verilog-develop-environment/</guid>
       <description>&lt;p&gt;Like other software programming languages, Verilog code also requires a verification process to ensure it operates as intended.&lt;/p&gt;
 &lt;p&gt;Verilog can be verified using two primary methods:&lt;/p&gt;
 &lt;ul&gt;

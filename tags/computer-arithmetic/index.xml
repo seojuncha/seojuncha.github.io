@@ -10,9 +10,9 @@
     <atom:link href="https://seojuncha.github.io/tags/computer-arithmetic/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Overflow in Computer Arithmetic: Examples &amp; Explanation</title>
-      <link>https://seojuncha.github.io/posts/carry-and-overflow/</link>
+      <link>https://seojuncha.github.io/posts/low-level-programming/carry-and-overflow/</link>
       <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/posts/carry-and-overflow/</guid>
+      <guid>https://seojuncha.github.io/posts/low-level-programming/carry-and-overflow/</guid>
       <description>&lt;p&gt;Computers rely on finite-sized memory to represent numbers, which can lead to incorrect results if certain operations exceed the representable range. For example:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;In an 8-bit integer, calculating 127 + 1, &lt;code&gt;127+1&lt;/code&gt; should result in &lt;code&gt;128&lt;/code&gt;. However, for signed integers, this causes an overflow, resulting in −128 instead.&lt;/li&gt;

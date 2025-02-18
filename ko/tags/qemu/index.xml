@@ -10,9 +10,9 @@
     <atom:link href="https://seojuncha.github.io/ko/tags/qemu/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ARM프로세서의 Carry Flag와 Overflow Flag</title>
-      <link>https://seojuncha.github.io/ko/posts/carry-and-overflow-in-hardware/</link>
+      <link>https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow-in-hardware/</link>
       <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/ko/posts/carry-and-overflow-in-hardware/</guid>
+      <guid>https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow-in-hardware/</guid>
       <description>&lt;p&gt;하드웨어의 &lt;strong&gt;Carry&lt;/strong&gt; 플래그(C)와 &lt;strong&gt;Overflow&lt;/strong&gt; 플래그(V) 동작을 프로그래머 입장에서 깊이 이해하는 것은 다양한 측면에서 큰 장점을 제공합니다. 특히, &lt;strong&gt;저수준 시스템 프로그래밍, 임베디드 시스템 개발, 그리고 성능 최적화와 디버깅에서 매우 중요한 역할&lt;/strong&gt;을 합니다. 예를 들어,&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;정확한 수치 연산 구현&lt;/li&gt;

@@ -10,9 +10,9 @@
     <atom:link href="https://seojuncha.github.io/ko/tags/defparameter/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Common Lisp의 변수 할당에 대한 이해</title>
-      <link>https://seojuncha.github.io/ko/posts/variable-assignment-in-common-lisp/</link>
+      <link>https://seojuncha.github.io/ko/posts/common-lisp/variable-assignment-in-common-lisp/</link>
       <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/ko/posts/variable-assignment-in-common-lisp/</guid>
+      <guid>https://seojuncha.github.io/ko/posts/common-lisp/variable-assignment-in-common-lisp/</guid>
       <description>&lt;p&gt;변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.&lt;/p&gt;
 &lt;h2 id=&#34;전역-변수의-생성-defvar-defparameter&#34;&gt;전역 변수의 생성: &lt;code&gt;defvar&lt;/code&gt;, &lt;code&gt;defparameter&lt;/code&gt;&lt;/h2&gt;
 &lt;p&gt;가장 먼저 살펴볼 변수 할당 방법은 &lt;code&gt;defvar&lt;/code&gt;과 &lt;code&gt;defparameter&lt;/code&gt;를 사용한 &lt;em&gt;&lt;strong&gt;전역 변수(Global Variable) 할당&lt;/strong&gt;&lt;/em&gt;입니다.

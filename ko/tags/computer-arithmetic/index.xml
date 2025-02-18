@@ -10,9 +10,9 @@
     <atom:link href="https://seojuncha.github.io/ko/tags/computer-arithmetic/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>예제로 알아보는 컴퓨터 연산의 Overflow</title>
-      <link>https://seojuncha.github.io/ko/posts/carry-and-overflow/</link>
+      <link>https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow/</link>
       <pubDate>Wed, 15 Jan 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/ko/posts/carry-and-overflow/</guid>
+      <guid>https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow/</guid>
       <description>&lt;p&gt;컴퓨터는 유한한 크기의 메모리를 사용하여 숫자를 표현합니다. 특정 연산이 표현범위를 초과하면 잘못된 결과를 초래할 수 있습니다. 예를들어:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;8비트 정수에서 127 + 1을 계산하면 실제 결과는 128이지만, Signed Integer의 경우 Overflow로 인해 결과는 -128이 됩니다.&lt;/li&gt;
