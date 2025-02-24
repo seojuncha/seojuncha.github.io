@@ -6,8 +6,15 @@
     <description>Recent content in Common Lisp on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.143.1</generator>
     <language>ko-KR</language>
-    <lastBuildDate>Mon, 17 Feb 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 24 Feb 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://seojuncha.github.io/ko/tags/common-lisp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Common Lisp의 기초적인 loop 활용</title>
+      <link>https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-loop/</link>
+      <pubDate>Mon, 24 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-loop/</guid>
+      <description>Common Lisp에서 loop 문을 활용하여 반복문을 쉽게 구현하는 방법을 알아봅니다. 기본적인 사용법부터 리스트 순회, 범위 지정, 조건문과 함께 사용하는 방법까지 다양한 예제를 통해 익혀보세요.</description>
+    </item>
     <item>
       <title>Common Lisp 문자와 문자열 완벽 가이드 – 문자 비교, 변환, 문자열 조작 방법 정리</title>
       <link>https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-string-and-char/</link>

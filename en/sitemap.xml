@@ -3,7 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://seojuncha.github.io/posts/</loc>
-    <lastmod>2025-02-20T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-24T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -79,7 +79,7 @@
                 />
   </url><url>
     <loc>https://seojuncha.github.io/posts/common-lisp/</loc>
-    <lastmod>2025-02-20T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-24T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -91,8 +91,53 @@
                 href="https://seojuncha.github.io/posts/common-lisp/"
                 />
   </url><url>
+    <loc>https://seojuncha.github.io/tags/common-lisp/</loc>
+    <lastmod>2025-02-24T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/common-lisp/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/tags/common-lisp/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/common-lisp-loop/</loc>
+    <lastmod>2025-02-24T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/common-lisp-loop/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/tags/common-lisp-loop/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/lisp-iteration/</loc>
+    <lastmod>2025-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/lisp-programming/</loc>
+    <lastmod>2025-02-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://seojuncha.github.io/posts/common-lisp/common-lisp-loop/</loc>
+    <lastmod>2025-02-24T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-loop/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/posts/common-lisp/common-lisp-loop/"
+                />
+  </url><url>
     <loc>https://seojuncha.github.io/</loc>
-    <lastmod>2025-02-20T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-24T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="ko-KR"
@@ -102,6 +147,19 @@
                 rel="alternate"
                 hreflang="en-US"
                 href="https://seojuncha.github.io/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/tags/</loc>
+    <lastmod>2025-02-24T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko-KR"
+                href="https://seojuncha.github.io/ko/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en-US"
+                href="https://seojuncha.github.io/tags/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/from-the-transistor/</loc>
@@ -154,32 +212,6 @@
                 rel="alternate"
                 hreflang="en-US"
                 href="https://seojuncha.github.io/projects/from-the-transistor/from-the-transistor-intro/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/tags/</loc>
-    <lastmod>2025-02-18T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/tags/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/tags/common-lisp/</loc>
-    <lastmod>2025-02-17T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/tags/common-lisp/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/tags/common-lisp/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/common-lisp-character/</loc>
