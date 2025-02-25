@@ -6,13 +6,20 @@
     <description>Recent content in Tags on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.143.1</generator>
     <language>en-US</language>
-    <lastBuildDate>Mon, 24 Feb 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 25 Feb 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://seojuncha.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Common Lisp</title>
       <link>https://seojuncha.github.io/tags/common-lisp/</link>
-      <pubDate>Mon, 24 Feb 2025 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 25 Feb 2025 00:00:00 +0000</pubDate>
       <guid>https://seojuncha.github.io/tags/common-lisp/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Common Lisp Equality</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-equality/</link>
+      <pubDate>Tue, 25 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/tags/common-lisp-equality/</guid>
       <description></description>
     </item>
     <item>
@@ -72,80 +79,73 @@
       <description></description>
     </item>
     <item>
-      <title>Case</title>
-      <link>https://seojuncha.github.io/tags/case/</link>
+      <title>Common Lisp Cond</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-cond/</link>
       <pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/case/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-cond/</guid>
       <description></description>
     </item>
     <item>
-      <title>Cond</title>
-      <link>https://seojuncha.github.io/tags/cond/</link>
+      <title>Common Lisp If</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-if/</link>
       <pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/cond/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-if/</guid>
       <description></description>
     </item>
     <item>
-      <title>If</title>
-      <link>https://seojuncha.github.io/tags/if/</link>
+      <title>Common Lisp If-Else</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-if-else/</link>
       <pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/if/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-if-else/</guid>
       <description></description>
     </item>
     <item>
-      <title>If-Else</title>
-      <link>https://seojuncha.github.io/tags/if-else/</link>
+      <title>Common Lisp Unless</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-unless/</link>
       <pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/if-else/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-unless/</guid>
       <description></description>
     </item>
     <item>
-      <title>Unless</title>
-      <link>https://seojuncha.github.io/tags/unless/</link>
+      <title>Common Lisp When</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-when/</link>
       <pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/unless/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-when/</guid>
       <description></description>
     </item>
     <item>
-      <title>When</title>
-      <link>https://seojuncha.github.io/tags/when/</link>
-      <pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/when/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Defparameter</title>
-      <link>https://seojuncha.github.io/tags/defparameter/</link>
+      <title>Common Lisp Defparameter</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-defparameter/</link>
       <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/defparameter/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-defparameter/</guid>
       <description></description>
     </item>
     <item>
-      <title>Defvar</title>
-      <link>https://seojuncha.github.io/tags/defvar/</link>
+      <title>Common Lisp Defvar</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-defvar/</link>
       <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/defvar/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-defvar/</guid>
       <description></description>
     </item>
     <item>
-      <title>Let</title>
-      <link>https://seojuncha.github.io/tags/let/</link>
+      <title>Common Lisp Let</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-let/</link>
       <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/let/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-let/</guid>
       <description></description>
     </item>
     <item>
-      <title>Setq</title>
-      <link>https://seojuncha.github.io/tags/setq/</link>
+      <title>Common Lisp Setq</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-setq/</link>
       <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/setq/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-setq/</guid>
       <description></description>
     </item>
     <item>
-      <title>Variable</title>
-      <link>https://seojuncha.github.io/tags/variable/</link>
+      <title>Common Lisp Variable</title>
+      <link>https://seojuncha.github.io/tags/common-lisp-variable/</link>
       <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
-      <guid>https://seojuncha.github.io/tags/variable/</guid>
+      <guid>https://seojuncha.github.io/tags/common-lisp-variable/</guid>
       <description></description>
     </item>
     <item>
