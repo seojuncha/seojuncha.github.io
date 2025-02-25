@@ -3,13 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://seojuncha.github.io/posts/</loc>
+    <lastmod>2025-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://seojuncha.github.io/</loc>
+    <lastmod>2025-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://seojuncha.github.io/posts/test-sitemap/</loc>
+    <lastmod>2025-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://seojuncha.github.io/categories/</loc>
   </url><url>
-    <loc>https://seojuncha.github.io/</loc>
-  </url><url>
     <loc>https://seojuncha.github.io/tags/</loc>
-  </url><url>
-    <loc>https://seojuncha.github.io/posts/test-sitemap/</loc>
   </url>
 </urlset>
