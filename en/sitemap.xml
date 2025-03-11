@@ -3,28 +3,41 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://seojuncha.github.io/posts/</loc>
-    <lastmod>2025-02-25T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/posts/low-level-programming/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko"
+                href="https://seojuncha.github.io/ko/posts/low-level-programming/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://seojuncha.github.io/posts/low-level-programming/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/projects/from-the-transistor/</loc>
     <lastmod>2025-02-18T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/projects/from-the-transistor/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/projects/from-the-transistor/"
                 />
   </url><url>
@@ -32,49 +45,36 @@
     <lastmod>2025-02-18T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/projects/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/projects/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/posts/low-level-programming/</loc>
-    <lastmod>2025-02-06T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/posts/low-level-programming/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/posts/low-level-programming/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/posts/media/</loc>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/media/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/media/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/posts/qt-qml/</loc>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/qt-qml/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/qt-qml/"
                 />
   </url><url>
@@ -82,25 +82,38 @@
     <lastmod>2025-02-25T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/common-lisp/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/common-lisp/"
+                />
+  </url><url>
+    <loc>https://seojuncha.github.io/</loc>
+    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ko"
+                href="https://seojuncha.github.io/ko/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://seojuncha.github.io/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/common-lisp/</loc>
     <lastmod>2025-02-25T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp/"
                 />
   </url><url>
@@ -108,38 +121,25 @@
     <lastmod>2025-02-25T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-equality/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-equality/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/</loc>
-    <lastmod>2025-02-25T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko-KR"
-                href="https://seojuncha.github.io/ko/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-US"
-                href="https://seojuncha.github.io/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/</loc>
     <lastmod>2025-02-25T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/"
                 />
   </url><url>
@@ -147,12 +147,12 @@
     <lastmod>2025-02-25T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/common-lisp/equality-predicate-in-common-lisp/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/common-lisp/equality-predicate-in-common-lisp/"
                 />
   </url><url>
@@ -160,12 +160,12 @@
     <lastmod>2025-02-24T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-loop/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-loop/"
                 />
   </url><url>
@@ -179,12 +179,12 @@
     <lastmod>2025-02-24T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-loop/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/common-lisp/common-lisp-loop/"
                 />
   </url><url>
@@ -192,12 +192,12 @@
     <lastmod>2025-02-18T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/from-the-transistor/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/from-the-transistor/"
                 />
   </url><url>
@@ -205,12 +205,12 @@
     <lastmod>2025-02-18T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/geohot/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/geohot/"
                 />
   </url><url>
@@ -218,12 +218,12 @@
     <lastmod>2025-02-18T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/george-hotz/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/george-hotz/"
                 />
   </url><url>
@@ -231,12 +231,12 @@
     <lastmod>2025-02-18T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/projects/from-the-transistor/from-the-transistor-intro/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/projects/from-the-transistor/from-the-transistor-intro/"
                 />
   </url><url>
@@ -244,12 +244,12 @@
     <lastmod>2025-02-17T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-character/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-character/"
                 />
   </url><url>
@@ -257,12 +257,12 @@
     <lastmod>2025-02-17T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-string-and-char/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/common-lisp/common-lisp-string-and-char/"
                 />
   </url><url>
@@ -270,12 +270,12 @@
     <lastmod>2025-02-17T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-string/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-string/"
                 />
   </url><url>
@@ -283,12 +283,12 @@
     <lastmod>2025-02-13T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-cond/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-cond/"
                 />
   </url><url>
@@ -296,12 +296,12 @@
     <lastmod>2025-02-13T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-if/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-if/"
                 />
   </url><url>
@@ -309,12 +309,12 @@
     <lastmod>2025-02-13T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-if-else/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-if-else/"
                 />
   </url><url>
@@ -322,12 +322,12 @@
     <lastmod>2025-02-13T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-unless/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-unless/"
                 />
   </url><url>
@@ -335,12 +335,12 @@
     <lastmod>2025-02-13T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-when/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-when/"
                 />
   </url><url>
@@ -348,12 +348,12 @@
     <lastmod>2025-02-13T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/common-lisp/how-to-make-decision-in-common-lisp/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/common-lisp/how-to-make-decision-in-common-lisp/"
                 />
   </url><url>
@@ -361,12 +361,12 @@
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-defparameter/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-defparameter/"
                 />
   </url><url>
@@ -374,12 +374,12 @@
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-defvar/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-defvar/"
                 />
   </url><url>
@@ -387,12 +387,12 @@
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-let/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-let/"
                 />
   </url><url>
@@ -400,12 +400,12 @@
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-setq/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-setq/"
                 />
   </url><url>
@@ -413,12 +413,12 @@
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/common-lisp-variable/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/common-lisp-variable/"
                 />
   </url><url>
@@ -426,12 +426,12 @@
     <lastmod>2025-02-12T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/common-lisp/variable-assignment-in-common-lisp/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/common-lisp/variable-assignment-in-common-lisp/"
                 />
   </url><url>
@@ -439,12 +439,12 @@
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/cocotb/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/cocotb/"
                 />
   </url><url>
@@ -452,12 +452,12 @@
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/gtkwave/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/gtkwave/"
                 />
   </url><url>
@@ -465,12 +465,12 @@
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/icarus-verilog/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/icarus-verilog/"
                 />
   </url><url>
@@ -478,12 +478,12 @@
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/testbench/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/testbench/"
                 />
   </url><url>
@@ -491,12 +491,12 @@
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/verilog/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/verilog/"
                 />
   </url><url>
@@ -504,12 +504,12 @@
     <lastmod>2025-02-06T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/low-level-programming/verilog-develop-environment/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/low-level-programming/verilog-develop-environment/"
                 />
   </url><url>
@@ -523,12 +523,12 @@
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/arm/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/arm/"
                 />
   </url><url>
@@ -536,12 +536,12 @@
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/arm-assembly/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/arm-assembly/"
                 />
   </url><url>
@@ -549,12 +549,12 @@
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/carry/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/carry/"
                 />
   </url><url>
@@ -562,12 +562,12 @@
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow-in-hardware/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/low-level-programming/carry-and-overflow-in-hardware/"
                 />
   </url><url>
@@ -575,12 +575,12 @@
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/cpsr/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/cpsr/"
                 />
   </url><url>
@@ -588,12 +588,12 @@
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/gdb/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/gdb/"
                 />
   </url><url>
@@ -601,12 +601,12 @@
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/overflow/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/overflow/"
                 />
   </url><url>
@@ -614,12 +614,12 @@
     <lastmod>2025-01-22T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/qemu/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/qemu/"
                 />
   </url><url>
@@ -627,12 +627,12 @@
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/computer-arithmetic/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/computer-arithmetic/"
                 />
   </url><url>
@@ -640,12 +640,12 @@
     <lastmod>2025-01-20T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/low-level-programming/carry-and-overflow/"
                 />
   </url><url>
@@ -671,12 +671,12 @@
     <lastmod>2025-01-09T22:24:49+09:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/binary-representation/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/binary-representation/"
                 />
   </url><url>
@@ -684,12 +684,12 @@
     <lastmod>2025-01-09T22:24:49+09:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/posts/low-level-programming/signed-unsigned-binary-representation/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/posts/low-level-programming/signed-unsigned-binary-representation/"
                 />
   </url><url>
@@ -697,12 +697,12 @@
     <lastmod>2025-01-09T22:24:49+09:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/signed-binary/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/signed-binary/"
                 />
   </url><url>
@@ -710,48 +710,48 @@
     <lastmod>2025-01-09T22:24:49+09:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/tags/unsigned-binary/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/tags/unsigned-binary/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/archives/</loc>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/archives/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/archives/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/categories/</loc>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/categories/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/categories/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/search/</loc>
     <xhtml:link
                 rel="alternate"
-                hreflang="ko-KR"
+                hreflang="ko"
                 href="https://seojuncha.github.io/ko/search/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-US"
+                hreflang="en"
                 href="https://seojuncha.github.io/search/"
                 />
   </url>
