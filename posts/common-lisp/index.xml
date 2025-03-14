@@ -6,8 +6,18 @@
     <description>Recent content in Common Lisp on Seojun&#39;s Personal Site</description>
     <generator>Hugo -- 0.143.1</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 25 Feb 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 14 Mar 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://seojuncha.github.io/posts/common-lisp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding Hash Tables in Common Lisp</title>
+      <link>https://seojuncha.github.io/posts/common-lisp/common-lisp-hash-table/</link>
+      <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/common-lisp/common-lisp-hash-table/</guid>
+      <description>&lt;p&gt;Recently, while working on the &amp;ldquo;From the Transistor&amp;rdquo; project and building a compiler, I encountered a need for a &lt;a href=&#34;https://en.wikipedia.org/wiki/Hash_table&#34;&gt;&lt;strong&gt;hash table&lt;/strong&gt;&lt;/a&gt; to store keywords in C. In Common Lisp, a &lt;strong&gt;hash table is an efficient data structure for storing key-value pairs&lt;/strong&gt;. Unlike arrays or lists, hash tables are designed for &lt;strong&gt;fast lookups based on keys&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;This post explains how to create and use hash tables in Common Lisp.&lt;/p&gt;
+&lt;h2 id=&#34;1-creating-a-hash-table-make-hash-table&#34;&gt;1. Creating a Hash Table (&lt;code&gt;make-hash-table&lt;/code&gt;)&lt;/h2&gt;
+&lt;p&gt;To create a hash table in Common Lisp, use the &lt;code&gt;make-hash-table&lt;/code&gt; function.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Understanding Equality in Common Lisp</title>
       <link>https://seojuncha.github.io/posts/common-lisp/equality-predicate-in-common-lisp/</link>
