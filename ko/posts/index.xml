@@ -1,12 +1,119 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>블로그 on 서준&#39;s 개인 사이트</title>
+    <title>블로그 on 서준&#39;s 블로그</title>
     <link>https://seojuncha.github.io/ko/posts/</link>
-    <description>Recent content in 블로그 on 서준&#39;s 개인 사이트</description>
+    <description>Recent content in 블로그 on 서준&#39;s 블로그</description>
     <generator>Hugo -- 0.143.1</generator>
     <language>ko</language>
-    <lastBuildDate></lastBuildDate>
+    <lastBuildDate>Fri, 14 Mar 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://seojuncha.github.io/ko/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Common Lisp의 Hash Table 이해하기</title>
+      <link>https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-hash-table/</link>
+      <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-hash-table/</guid>
+      <description>&lt;p&gt;최근 다시 조금씩 From the transistor 프로젝트의 컴파일러 만들기를 진행하면서 C언어에서 사용하는 키워드 저장을 위해 &lt;a href=&#34;https://en.wikipedia.org/wiki/Hash_table&#34;&gt;&lt;strong&gt;해시 테이블(Hash Table)&lt;/strong&gt;&lt;/a&gt;이 필요한 상황이 있었습니다. Common Lisp에서 &lt;strong&gt;해시 테이블은 키-값(key-value) 쌍을 저장하는 효율적인 데이터 구조&lt;/strong&gt;입니다. 배열이나 리스트와 달리, 해시 테이블은 &lt;strong&gt;키를 기반으로 값을 빠르게 검색&lt;/strong&gt;할 수 있도록 설계되었습니다.&lt;/p&gt;
+&lt;p&gt;이 글에서는 Common Lisp의 해시 테이블을 생성하고 활용하는 방법을 설명합니다.&lt;/p&gt;
+&lt;h2 id=&#34;1-hash-table-생성하기-make-hash-table&#34;&gt;1. Hash Table 생성하기 (&lt;code&gt;make-hash-table&lt;/code&gt;)&lt;/h2&gt;
+&lt;p&gt;Common Lisp에서 해시 테이블을 생성하려면 &lt;code&gt;make-hash-table&lt;/code&gt; 함수를 사용합니다.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;(&lt;span style=&#34;color:#d0a8ff&#34;&gt;defparameter&lt;/span&gt; *my-table* (&lt;span style=&#34;color:#41a1c0&#34;&gt;make-hash-table&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;이렇게 생성된 해시 테이블은 기본적으로 &lt;strong&gt;eq 테스트&lt;/strong&gt;를 사용하여 키를 비교합니다. 하지만 다른 비교 방법을 사용하고 싶다면 &lt;code&gt;:test&lt;/code&gt; 옵션을 지정할 수 있습니다.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Common Lisp에서의 Equality 이해하기</title>
+      <link>https://seojuncha.github.io/ko/posts/common-lisp/equality-predicate-in-common-lisp/</link>
+      <pubDate>Tue, 25 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/common-lisp/equality-predicate-in-common-lisp/</guid>
+      <description>Common Lisp의 eq, eql, equal, equalp 차이를 이해하고, 적절한 동등성 비교 연산자를 선택하는 방법을 알아보세요.</description>
+    </item>
+    <item>
+      <title>Common Lisp의 기초적인 loop 활용</title>
+      <link>https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-loop/</link>
+      <pubDate>Mon, 24 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-loop/</guid>
+      <description>Common Lisp에서 loop 문을 활용하여 반복문을 쉽게 구현하는 방법을 알아봅니다. 기본적인 사용법부터 리스트 순회, 범위 지정, 조건문과 함께 사용하는 방법까지 다양한 예제를 통해 익혀보세요.</description>
+    </item>
+    <item>
+      <title>Common Lisp 문자와 문자열 완벽 가이드 – 문자 비교, 변환, 문자열 조작 방법 정리</title>
+      <link>https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-string-and-char/</link>
+      <pubDate>Mon, 17 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-string-and-char/</guid>
+      <description>Common Lisp의 문자와 문자열을 다루는 방법을 자세히 설명합니다. 문자 표현, ASCII 변환, 문자열 비교, 부분 문자열, 숫자 변환, 문자열 조작까지 다양한 기능을 예제와 함께 알아보세요.</description>
+    </item>
+    <item>
+      <title>Common Lisp 조건문 완벽 가이드: when, unless, if, cond 활용법</title>
+      <link>https://seojuncha.github.io/ko/posts/common-lisp/how-to-make-decision-in-common-lisp/</link>
+      <pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/common-lisp/how-to-make-decision-in-common-lisp/</guid>
+      <description>Lisp에서 조건문을 활용하는 방법을 알아봅니다. when, unless, if, cond 등의 분기문을 사용하여 논리 흐름을 제어하고, 반환 값을 활용하는 방식까지 자세히 설명합니다. 이를 통해 가독성 높은 코드 작성과 오류 방지를 위한 최적의 조건문 사용법을 익혀보세요.</description>
+    </item>
+    <item>
+      <title>Common Lisp의 변수 할당에 대한 이해</title>
+      <link>https://seojuncha.github.io/ko/posts/common-lisp/variable-assignment-in-common-lisp/</link>
+      <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/common-lisp/variable-assignment-in-common-lisp/</guid>
+      <description>&lt;p&gt;변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.&lt;/p&gt;
+&lt;h2 id=&#34;전역-변수의-생성-defvar-defparameter&#34;&gt;전역 변수의 생성: &lt;code&gt;defvar&lt;/code&gt;, &lt;code&gt;defparameter&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;가장 먼저 살펴볼 변수 할당 방법은 &lt;code&gt;defvar&lt;/code&gt;과 &lt;code&gt;defparameter&lt;/code&gt;를 사용한 &lt;em&gt;&lt;strong&gt;전역 변수(Global Variable) 할당&lt;/strong&gt;&lt;/em&gt;입니다.
+Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>테스트 벤치와 Verilog 개발 환경 설정: Icarus Verilog와 cocotb</title>
+      <link>https://seojuncha.github.io/ko/posts/low-level-programming/verilog-develop-environment/</link>
+      <pubDate>Thu, 06 Feb 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/low-level-programming/verilog-develop-environment/</guid>
+      <description>&lt;p&gt;다른 소프트웨어 프로그래밍 언어와 마찬가지로 Verilog로 작성한 코드 역시 의도한대로 동작하는지 검증하는 과정이 필요합니다.
+Verilog는 크게 두가지 방식으로 검증할 수 있습니다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;하드웨어 기반 검증&lt;/li&gt;
+&lt;li&gt;소프트웨어 기반 검증&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;하드웨어 기반 검증 방식은 Verilog코드를 실제 하드웨어에 업로드하여 입력신호에 따른 출력신호를 확인하는 방법입니다.
+이에 반해, 소프트웨어 기반 검증 방식은 별도의 하드웨어 없이 순수 소프트웨어만으로 코드의 동작을 검증하는 방법입니다.
+하드웨어 기반의 검증방식은 하드웨어가 필요할 뿐아니라 신호 변화를 디버깅하기 어렵기 때문에 하드웨어 업로드 전에 소프트웨어 기반 검증 방식을 사용합니다.
+이런 일련의 소프트웨어 기반 검증 과정을 수행하기 위한 코드를 ***테스트벤치(Testbench)***라고 하고 테스트 벤치를 실행하는 환경을 ***시뮬레이터(Simulator)***라고 합니다.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ARM프로세서의 Carry Flag와 Overflow Flag</title>
+      <link>https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow-in-hardware/</link>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow-in-hardware/</guid>
+      <description>&lt;p&gt;하드웨어의 &lt;strong&gt;Carry&lt;/strong&gt; 플래그(C)와 &lt;strong&gt;Overflow&lt;/strong&gt; 플래그(V) 동작을 프로그래머 입장에서 깊이 이해하는 것은 다양한 측면에서 큰 장점을 제공합니다. 특히, &lt;strong&gt;저수준 시스템 프로그래밍, 임베디드 시스템 개발, 그리고 성능 최적화와 디버깅에서 매우 중요한 역할&lt;/strong&gt;을 합니다. 예를 들어,&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;정확한 수치 연산 구현&lt;/li&gt;
+&lt;li&gt;고성능 저수준 최적화&lt;/li&gt;
+&lt;li&gt;디버깅과 문제 해결&lt;/li&gt;
+&lt;li&gt;오류 검출 및 안정성 향상&lt;/li&gt;
+&lt;li&gt;다중 정밀도 연산 구현&lt;/li&gt;
+&lt;li&gt;조건부 분기와 코드 단순화&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;위와 같은 다양한 장점을 제공합니다. 이번 포스팅에서는 ARM 프로세서에서 &lt;strong&gt;&lt;a href=&#34;carry-and-overflow-kr.md&#34;&gt;Carry와 Overflow&lt;/a&gt;를 처리하는 방법&lt;/strong&gt;을 알아보고 간단한 &lt;strong&gt;어셈블리(&lt;em&gt;Assembly&lt;/em&gt;) 예제&lt;/strong&gt;를 사용해 &lt;strong&gt;QEMU에서 디버깅&lt;/strong&gt; 해보겠습니다.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>예제로 알아보는 컴퓨터 연산의 Overflow</title>
+      <link>https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow/</link>
+      <pubDate>Wed, 15 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow/</guid>
+      <description>&lt;p&gt;컴퓨터는 유한한 크기의 메모리를 사용하여 숫자를 표현합니다. 특정 연산이 표현범위를 초과하면 잘못된 결과를 초래할 수 있습니다. 예를들어:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;8비트 정수에서 127 + 1을 계산하면 실제 결과는 128이지만, Signed Integer의 경우 Overflow로 인해 결과는 -128이 됩니다.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;이러한 결과는 프로그램의 논리 오류로 이어질 수 있습니다.
+또한, Overflow는 악용될 경우 보안 취약점으로 이어질 수 있습니다. 널리 알려져있는 버퍼 오버플로우(Buffer Overflow)와 같은 취약점은 공격자가 코드를 실행하거나 시스템을 제어할 수 있는 가능성을 제공합니다.&lt;/p&gt;
+&lt;p&gt;이 외에도 하드웨어 설계측면에서도 중요한 역할을 하며 프로그래머는 이런 산술 연산의 한계를 이해해야만 안전하고 정확한 연산 결과를 보장할 수 있습니다. 이번 포스팅에서는 &lt;strong&gt;Overflow&lt;/strong&gt;의 개념과 &lt;strong&gt;프로그래밍 예제를 통한 Overflow의 위험성&lt;/strong&gt;을 살펴보고 &lt;strong&gt;Overflow와 Carry를 비교&lt;/strong&gt;하여 서로의 차이점을 정확히 이해하는 것을 목표로 합니다.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기</title>
+      <link>https://seojuncha.github.io/ko/posts/low-level-programming/signed-unsigned-binary-representation/</link>
+      <pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/ko/posts/low-level-programming/signed-unsigned-binary-representation/</guid>
+      <description>&lt;p&gt;이 글에서는 &lt;strong&gt;Signed Binary와 Unsigned Binary의 차이점&lt;/strong&gt;, &lt;strong&gt;각각의 표현법&lt;/strong&gt;, 그리고 &lt;strong&gt;C언어 프로그래밍 시의 주의사항&lt;/strong&gt;을 알아보겠습니다.&lt;/p&gt;
+&lt;p&gt;사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;ascii-table&#34; loading=&#34;lazy&#34; src=&#34;https://upload.wikimedia.org/wikipedia/commons/b/b3/ASCII-Table.png&#34;&gt;
+&lt;em&gt;문자를 숫자로 표현하기 위한 ascii 테이블이 존재&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;정수의-개념-integer-concept&#34;&gt;정수의 개념 (Integer Concept)&lt;/h2&gt;
+&lt;p&gt;컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.&lt;/p&gt;</description>
+    </item>
   </channel>
 </rss>

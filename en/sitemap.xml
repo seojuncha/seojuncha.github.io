@@ -15,19 +15,6 @@
                 href="https://seojuncha.github.io/posts/"
                 />
   </url><url>
-    <loc>https://seojuncha.github.io/posts/low-level-programming/</loc>
-    <lastmod>2025-02-26T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko"
-                href="https://seojuncha.github.io/ko/posts/low-level-programming/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://seojuncha.github.io/posts/low-level-programming/"
-                />
-  </url><url>
     <loc>https://seojuncha.github.io/projects/from-the-transistor/</loc>
     <lastmod>2025-02-18T00:00:00+00:00</lastmod>
     <xhtml:link
@@ -52,43 +39,6 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://seojuncha.github.io/projects/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/posts/media/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko"
-                href="https://seojuncha.github.io/ko/posts/media/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://seojuncha.github.io/posts/media/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/posts/qt-qml/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko"
-                href="https://seojuncha.github.io/ko/posts/qt-qml/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://seojuncha.github.io/posts/qt-qml/"
-                />
-  </url><url>
-    <loc>https://seojuncha.github.io/posts/common-lisp/</loc>
-    <lastmod>2025-03-14T00:00:00+00:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ko"
-                href="https://seojuncha.github.io/ko/posts/common-lisp/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://seojuncha.github.io/posts/common-lisp/"
                 />
   </url><url>
     <loc>https://seojuncha.github.io/tags/common-lisp/</loc>

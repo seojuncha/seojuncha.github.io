@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>블로그 | 서준&#39;s 개인 사이트</title>
+<title>블로그 | 서준&#39;s 블로그</title>
 <meta name="keywords" content="">
 <meta name="description" content="로우레벨 프로그래밍, 미디어 처리, Qt 개발, 그리고 Common Lisp을 연구합니다.">
 <meta name="author" content="">
@@ -54,7 +54,7 @@
 
 
 <meta property="og:url" content="https://seojuncha.github.io/ko/posts/">
-  <meta property="og:site_name" content="서준&#39;s 개인 사이트">
+  <meta property="og:site_name" content="서준&#39;s 블로그">
   <meta property="og:title" content="블로그">
   <meta property="og:description" content="로우레벨 프로그래밍, 미디어 처리, Qt 개발, 그리고 Common Lisp을 연구합니다.">
   <meta property="og:locale" content="ko">
@@ -85,7 +85,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://seojuncha.github.io/ko/" accesskey="h" title="서준&#39;s 개인 사이트 (Alt + H)">서준&#39;s 개인 사이트</a>
+            <a href="https://seojuncha.github.io/ko/" accesskey="h" title="서준&#39;s 블로그 (Alt + H)">서준&#39;s 블로그</a>
             <div class="logo-switches">
                 <ul class="lang-switch"><li>|</li>
                     <li>
@@ -133,15 +133,13 @@
     로우레벨 프로그래밍, 미디어 처리, Qt 개발, 그리고 Common Lisp을 연구합니다.
   </div>
 </header>
-<div class="post-content"><p>이 블로그에서는 <strong>로우레벨 프로그래밍, 미디어 처리, Qt 개발, 그리고 Common Lisp</strong>을 깊이 연구합니다. <strong>어셈블리 언어에서 GUI 개발, 함수형 프로그래밍</strong>까지, 다양한 주제에 대한 연구와 실험을 기록하는 공간입니다.</p>
-<p>각 게시물은 <strong>하드웨어 작동 방식 이해, 미디어 파이프라인 최적화, 효율적인 UI 구축, 고급 메타프로그래밍을 위한 Lisp 활용</strong> 등 <strong>실용적인 지식 공유</strong>를 위해 작성되었습니다.</p>
+<div class="post-content"><p>이 블로그에서는 <strong>로우레벨 프로그래밍, Common Lisp</strong>을 깊이 연구합니다. <strong>어셈블리 언어에서 함수형 프로그래밍</strong>까지, 다양한 주제에 대한 연구와 실험을 기록하는 공간입니다.</p>
+<p>각 게시물은 <strong>하드웨어 작동 방식 이해, 고급 메타프로그래밍을 위한 Lisp 활용</strong> 등 <strong>실용적인 지식 공유</strong>를 위해 작성되었습니다.</p>
 <p>기술적인 깊이를 추구하는 개발자라면, 이 블로그에서 흥미로운 내용을 많이 찾을 수 있을 것입니다!</p>
 <blockquote>
 <p><strong>주요 카테고리</strong>:</p>
 <ul>
 <li><strong>Low-Level Programming</strong> – 어셈블리, Verilog, 시스템 프로그래밍</li>
-<li><strong>Media</strong> – 비디오 코덱, 스트리밍, FFmpeg</li>
-<li><strong>Qt/QML</strong> – 고성능 GUI 개발</li>
 <li><strong>Common Lisp</strong> – 함수형 및 메타프로그래밍</li>
 </ul></blockquote>
 
@@ -150,67 +148,156 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Low-Level Programming
+    <h2 class="entry-hint-parent">Common Lisp의 Hash Table 이해하기
     </h2>
   </header>
   <div class="entry-content">
-    <p>로우레벨 프로그래밍은 컴퓨팅의 기초입니다. 이 카테고리는 어셈블리, C, 하드웨어 관련 프로그래밍을 다루며, 소프트웨어가 하드웨어와 직접 상호작용하는 방식을 탐구합니다.
-ARM 어셈블리, Verilog, 시스템 프로그래밍, 임베디드 개발 등의 주제를 다루며, 소프트웨어와 하드웨어의 경계를 깊이 이해하는 것을 목표로 합니다.
-주요 주제: ARM 어셈블리, Verilog, 컴퓨터 아키텍처, 시스템 프로그래밍, 임베디드 개발
-</p>
+    <p>최근 다시 조금씩 From the transistor 프로젝트의 컴파일러 만들기를 진행하면서 C언어에서 사용하는 키워드 저장을 위해 해시 테이블(Hash Table)이 필요한 상황이 있었습니다. Common Lisp에서 해시 테이블은 키-값(key-value) 쌍을 저장하는 효율적인 데이터 구조입니다. 배열이나 리스트와 달리, 해시 테이블은 키를 기반으로 값을 빠르게 검색할 수 있도록 설계되었습니다.
+이 글에서는 Common Lisp의 해시 테이블을 생성하고 활용하는 방법을 설명합니다.
+1. Hash Table 생성하기 (make-hash-table) Common Lisp에서 해시 테이블을 생성하려면 make-hash-table 함수를 사용합니다.
+(defparameter *my-table* (make-hash-table)) 이렇게 생성된 해시 테이블은 기본적으로 eq 테스트를 사용하여 키를 비교합니다. 하지만 다른 비교 방법을 사용하고 싶다면 :test 옵션을 지정할 수 있습니다.
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-02-27 00:00:00 +0000 UTC'>2월 27, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Low-Level Programming" href="https://seojuncha.github.io/ko/posts/low-level-programming/"></a>
+  <footer class="entry-footer"><span title='2025-03-14 00:00:00 +0000 UTC'>3월 14, 2025</span>&nbsp;·&nbsp;4 분</footer>
+  <a class="entry-link" aria-label="post link to Common Lisp의 Hash Table 이해하기" href="https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-hash-table/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Media
+    <h2 class="entry-hint-parent">Common Lisp에서의 Equality 이해하기
     </h2>
   </header>
   <div class="entry-content">
-    <p>미디어 프로세싱은 단순히 영상을 재생하는 것이 아니라, 코덱, 스트리밍, 효율적인 데이터 처리를 포함하는 복잡한 기술입니다.
-이 카테고리에서는 비디오 압축, 실시간 스트리밍, FFmpeg, 미디어 파일 분석을 다루며, 저수준 프로그래밍 관점에서 미디어 처리 기술을 깊이 파고듭니다.
-주요 주제: FFmpeg, 비디오 코덱, 스트리밍 기술, 로우레벨 미디어 프로세싱
-</p>
+    <p>들어가며 Equality(동등성) 비교는 모든 프로그래밍 언어에서 중요한 개념이지만, Common Lisp에서는 다양한 **동등성 비교 연산자(equality predicates)**가 존재하기 때문에 이를 올바르게 사용하는 것이 중요합니다. 이 글에서는 Common Lisp에서 제공하는 네 가지 주요 동등성 비교 연산자를 살펴보고, 각각의 특징과 사용 사례를 설명하겠습니다.
+Common Lisp의 Equality 종류 Common Lisp은 다음과 같은 네 가지 주요 비교 연산자를 제공합니다:
+eq – 객체 참조 비교(Reference Equality) eql – eq에 숫자와 문자 비교 기능 추가 equal – 리스트와 문자열의 구조적 동등성 비교 equalp – 대소문자 무시 및 숫자 타입 유연한 동등성 비교 각각의 연산자가 어떻게 동작하는지 자세히 알아보겠습니다.
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-02-27 00:00:00 +0000 UTC'>2월 27, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Media" href="https://seojuncha.github.io/ko/posts/media/"></a>
+  <footer class="entry-footer"><span title='2025-02-25 00:00:00 +0000 UTC'>2월 25, 2025</span>&nbsp;·&nbsp;3 분</footer>
+  <a class="entry-link" aria-label="post link to Common Lisp에서의 Equality 이해하기" href="https://seojuncha.github.io/ko/posts/common-lisp/equality-predicate-in-common-lisp/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Qt/QML
+    <h2 class="entry-hint-parent">Common Lisp의 기초적인 loop 활용
     </h2>
   </header>
   <div class="entry-content">
-    <p>Qt는 강력한 크로스 플랫폼 GUI 프레임워크이며, QML은 선언형 UI 언어로 부드럽고 반응성이 뛰어난 애플리케이션을 개발할 수 있도록 해줍니다.
-이 카테고리에서는 Qt 개발, GUI 아키텍처, 성능 최적화, 실전 애플리케이션 제작과 관련된 다양한 내용을 다룹니다.
-주요 주제: Qt 위젯, QML, 크로스 플랫폼 개발, GUI 성능 최적화
-</p>
+    <p>Common Lisp에서 반복문을 작성하는 방법은 여러 가지가 있지만, 그중에서도 loop 문은 강력하면서도 직관적인 구문을 제공합니다. 이번 글에서는 Common Lisp의 loop 문을 활용하는 기초적인 방법을 예제와 함께 살펴보겠습니다.
+기본적인 loop 사용법 loop문은 다양한 하위 조항(subclause)들을 조합하여 반복횟수, 지역변수 할당, 조건 분기 등의 동작이 가능하지만, 가장 간단한 형태의 loop문은 무한 루프 입니다.
+(loop (format t &#34;this is loop!~%&#34;)) 출력:
+this is loop! this is loop! this is loop! ... # 종료: Ctrl&#43;c 반복 횟수 지정하기 (repeat) 무한대의 횟수로 반복하는 것이 아니라 특정 횟수만큼만 반복하기 위해선 repeat을 사용합니다.
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-02-19 00:00:00 +0000 UTC'>2월 19, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Qt/QML" href="https://seojuncha.github.io/ko/posts/qt-qml/"></a>
+  <footer class="entry-footer"><span title='2025-02-24 00:00:00 +0000 UTC'>2월 24, 2025</span>&nbsp;·&nbsp;3 분</footer>
+  <a class="entry-link" aria-label="post link to Common Lisp의 기초적인 loop 활용" href="https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-loop/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Common Lisp
+    <h2 class="entry-hint-parent">Common Lisp 문자와 문자열 완벽 가이드 – 문자 비교, 변환, 문자열 조작 방법 정리
     </h2>
   </header>
   <div class="entry-content">
-    <p>Common Lisp은 동적이고 표현력이 뛰어난 강력한 프로그래밍 언어로, 인공지능, 심볼릭 연산, 메타프로그래밍에서 깊이 활용됩니다.
-이 카테고리에서는 Lisp 기본 개념, 매크로 프로그래밍, 컴파일러 개발, 현대적인 Lisp 활용법을 다루며, Lisp의 진정한 가치를 탐구합니다.
-주요 주제: Lisp 매크로, 컴파일러 개발, 함수형 프로그래밍
-</p>
+    <p>Common Lisp에서 문자는 #\ 접두사를 사용하여 표현되며, ASCII 및 유니코드 문자 집합을 포함하여 다양한 문자를 다룰 수 있습니다. 문자는 self-evaluating 객체이므로 quote 없이도 사용 가능하며, 공백(#\space)과 줄바꿈(#\newline) 같은 특수 문자도 제공합니다. 문자 비교를 위한 다양한 함수가 제공되며, 대소문자 구분 여부에 따라 char=와 char-equal을 선택할 수 있습니다. 또한, 문자를 ASCII 코드로 변환하거나, 반대로 숫자를 문자로 변환하는 기능도 지원합니다.
+문자열은 단순히 문자의 배열로, 큰따옴표(&#34; “)로 감싸서 표현됩니다. 문자열 비교는 문자 비교와 유사한 방식으로 이루어지며, 대소문자 구분 여부에 따라 적절한 함수를 선택해야 합니다. 문자열을 다루기 위한 다양한 함수(length, subseq, concatenate, string-upcase, string-downcase, search 등)가 제공되며, coerce를 활용하여 문자열과 리스트 간 변환도 가능합니다. 또한, parse-integer를 사용하여 문자열을 숫자로 변환하거나, princ-to-string을 사용하여 숫자를 문자열로 변환할 수 있습니다.
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-03-14 00:00:00 +0000 UTC'>3월 14, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Common Lisp" href="https://seojuncha.github.io/ko/posts/common-lisp/"></a>
+  <footer class="entry-footer"><span title='2025-02-17 00:00:00 +0000 UTC'>2월 17, 2025</span>&nbsp;·&nbsp;7 분</footer>
+  <a class="entry-link" aria-label="post link to Common Lisp 문자와 문자열 완벽 가이드 – 문자 비교, 변환, 문자열 조작 방법 정리" href="https://seojuncha.github.io/ko/posts/common-lisp/common-lisp-string-and-char/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Common Lisp 조건문 완벽 가이드: when, unless, if, cond 활용법
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>오늘은 프로그래밍 논리 흐름을 제어하기 위한 분기문의 사용법을 알아보겠습니다. 분기문(Branch Statements)은 특정 조건의 참 혹은 거짓 여부를 판단하여 다음 행동을 결정합니다. Common Lisp(이하, Lisp)에서도 조건(Condition)검사를 위한 다양한 방식을 제공하고 있기 때문에, 각각의 활용법을 익히고 적절하게 사용하면 코드 가독성 향상과 오류를 최소화하는데 도움이 됩니다.
+참(True) 혹은 거짓(False): t &amp; nil 대부분의 프로그래밍 언어와 같이, 조건 검사는 참/거짓을 판단하는 것 입니다.
+예를 들어, 파이썬은 아래와 같이 True 혹은 False를 사용하여 참/거짓을 구분합니다.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-13 00:00:00 +0000 UTC'>2월 13, 2025</span>&nbsp;·&nbsp;5 분</footer>
+  <a class="entry-link" aria-label="post link to Common Lisp 조건문 완벽 가이드: when, unless, if, cond 활용법" href="https://seojuncha.github.io/ko/posts/common-lisp/how-to-make-decision-in-common-lisp/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Common Lisp의 변수 할당에 대한 이해
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>변수의 사용은 프로그램을 개발할 때 가장 기초가 되는 내용 중 하나입니다. Common Lisp은 다른 언어와는 변수의 사용방식에서 다소 상이한 방식을 제공하고 있습니다. 이번 포스팅에서는 Common Lisp에서 제공하는 다양한 변수 할당 방식을 실제 예제와 함께 살펴보고 각각의 유의점을 살펴보겠습니다.
+전역 변수의 생성: defvar, defparameter 가장 먼저 살펴볼 변수 할당 방법은 defvar과 defparameter를 사용한 전역 변수(Global Variable) 할당입니다. Lisp프로그램을 작성할 때 가장 쉽게 변수를 생성할 수 있는 방법입니다. 각각은 모두 전역범위의 변수를 생성합니다.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-12 00:00:00 +0000 UTC'>2월 12, 2025</span>&nbsp;·&nbsp;5 분</footer>
+  <a class="entry-link" aria-label="post link to Common Lisp의 변수 할당에 대한 이해" href="https://seojuncha.github.io/ko/posts/common-lisp/variable-assignment-in-common-lisp/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">테스트 벤치와 Verilog 개발 환경 설정: Icarus Verilog와 cocotb
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>다른 소프트웨어 프로그래밍 언어와 마찬가지로 Verilog로 작성한 코드 역시 의도한대로 동작하는지 검증하는 과정이 필요합니다. Verilog는 크게 두가지 방식으로 검증할 수 있습니다.
+하드웨어 기반 검증 소프트웨어 기반 검증 하드웨어 기반 검증 방식은 Verilog코드를 실제 하드웨어에 업로드하여 입력신호에 따른 출력신호를 확인하는 방법입니다. 이에 반해, 소프트웨어 기반 검증 방식은 별도의 하드웨어 없이 순수 소프트웨어만으로 코드의 동작을 검증하는 방법입니다. 하드웨어 기반의 검증방식은 하드웨어가 필요할 뿐아니라 신호 변화를 디버깅하기 어렵기 때문에 하드웨어 업로드 전에 소프트웨어 기반 검증 방식을 사용합니다. 이런 일련의 소프트웨어 기반 검증 과정을 수행하기 위한 코드를 ***테스트벤치(Testbench)***라고 하고 테스트 벤치를 실행하는 환경을 ***시뮬레이터(Simulator)***라고 합니다.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-06 00:00:00 +0000 UTC'>2월 6, 2025</span>&nbsp;·&nbsp;4 분</footer>
+  <a class="entry-link" aria-label="post link to 테스트 벤치와 Verilog 개발 환경 설정: Icarus Verilog와 cocotb" href="https://seojuncha.github.io/ko/posts/low-level-programming/verilog-develop-environment/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">ARM프로세서의 Carry Flag와 Overflow Flag
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>하드웨어의 Carry 플래그(C)와 Overflow 플래그(V) 동작을 프로그래머 입장에서 깊이 이해하는 것은 다양한 측면에서 큰 장점을 제공합니다. 특히, 저수준 시스템 프로그래밍, 임베디드 시스템 개발, 그리고 성능 최적화와 디버깅에서 매우 중요한 역할을 합니다. 예를 들어,
+정확한 수치 연산 구현 고성능 저수준 최적화 디버깅과 문제 해결 오류 검출 및 안정성 향상 다중 정밀도 연산 구현 조건부 분기와 코드 단순화 위와 같은 다양한 장점을 제공합니다. 이번 포스팅에서는 ARM 프로세서에서 Carry와 Overflow를 처리하는 방법을 알아보고 간단한 어셈블리(Assembly) 예제를 사용해 QEMU에서 디버깅 해보겠습니다.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-01-20 00:00:00 +0000 UTC'>1월 20, 2025</span>&nbsp;·&nbsp;6 분</footer>
+  <a class="entry-link" aria-label="post link to ARM프로세서의 Carry Flag와 Overflow Flag" href="https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow-in-hardware/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">예제로 알아보는 컴퓨터 연산의 Overflow
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>컴퓨터는 유한한 크기의 메모리를 사용하여 숫자를 표현합니다. 특정 연산이 표현범위를 초과하면 잘못된 결과를 초래할 수 있습니다. 예를들어:
+8비트 정수에서 127 &#43; 1을 계산하면 실제 결과는 128이지만, Signed Integer의 경우 Overflow로 인해 결과는 -128이 됩니다. 이러한 결과는 프로그램의 논리 오류로 이어질 수 있습니다. 또한, Overflow는 악용될 경우 보안 취약점으로 이어질 수 있습니다. 널리 알려져있는 버퍼 오버플로우(Buffer Overflow)와 같은 취약점은 공격자가 코드를 실행하거나 시스템을 제어할 수 있는 가능성을 제공합니다.
+이 외에도 하드웨어 설계측면에서도 중요한 역할을 하며 프로그래머는 이런 산술 연산의 한계를 이해해야만 안전하고 정확한 연산 결과를 보장할 수 있습니다. 이번 포스팅에서는 Overflow의 개념과 프로그래밍 예제를 통한 Overflow의 위험성을 살펴보고 Overflow와 Carry를 비교하여 서로의 차이점을 정확히 이해하는 것을 목표로 합니다.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-01-15 00:00:00 +0000 UTC'>1월 15, 2025</span>&nbsp;·&nbsp;4 분</footer>
+  <a class="entry-link" aria-label="post link to 예제로 알아보는 컴퓨터 연산의 Overflow" href="https://seojuncha.github.io/ko/posts/low-level-programming/carry-and-overflow/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.
+사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.
+문자를 숫자로 표현하기 위한 ascii 테이블이 존재
+정수의 개념 (Integer Concept) 컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-01-08 00:00:00 +0000 UTC'>1월 8, 2025</span>&nbsp;·&nbsp;9 분</footer>
+  <a class="entry-link" aria-label="post link to Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기" href="https://seojuncha.github.io/ko/posts/low-level-programming/signed-unsigned-binary-representation/"></a>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="https://seojuncha.github.io/ko/">서준&#39;s 개인 사이트</a></span> · 
+        <span>&copy; 2025 <a href="https://seojuncha.github.io/ko/">서준&#39;s 블로그</a></span> · 
 
     <span>
         Powered by
