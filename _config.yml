@@ -30,6 +30,8 @@ url: "https://seojuncha.github.io" # the base hostname & protocol for your site,
 #twitter_username: jekyllrb
 github_username:  seojuncha
 
+google_site_verification: "GjNEwrMRhQqn3Pm3dtPhyuhW7QV40wDLB0mRJNUJsBs"
+
 # Build settings
 theme: minima
 plugins:
