@@ -1,6 +1,7 @@
-*_temp
-conf
-logs
-sbin
-.hugo_build.lock
-robots.txt
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor
+Gemfile.lock
+
