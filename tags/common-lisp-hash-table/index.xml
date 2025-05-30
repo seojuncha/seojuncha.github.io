@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Common Lisp Hash Table on Seojun Blog</title>
+    <link>https://seojuncha.github.io/tags/common-lisp-hash-table/</link>
+    <description>Recent content in Common Lisp Hash Table on Seojun Blog</description>
+    <generator>Hugo -- 0.143.1</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 14 Mar 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://seojuncha.github.io/tags/common-lisp-hash-table/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Common Lisp의 Hash Table 이해하기</title>
+      <link>https://seojuncha.github.io/posts/common-lisp/common-lisp-hash-table.ko/</link>
+      <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/common-lisp/common-lisp-hash-table.ko/</guid>
+      <description>&lt;p&gt;최근 다시 조금씩 From the transistor 프로젝트의 컴파일러 만들기를 진행하면서 C언어에서 사용하는 키워드 저장을 위해 &lt;a href=&#34;https://en.wikipedia.org/wiki/Hash_table&#34;&gt;&lt;strong&gt;해시 테이블(Hash Table)&lt;/strong&gt;&lt;/a&gt;이 필요한 상황이 있었습니다. Common Lisp에서 &lt;strong&gt;해시 테이블은 키-값(key-value) 쌍을 저장하는 효율적인 데이터 구조&lt;/strong&gt;입니다. 배열이나 리스트와 달리, 해시 테이블은 &lt;strong&gt;키를 기반으로 값을 빠르게 검색&lt;/strong&gt;할 수 있도록 설계되었습니다.&lt;/p&gt;
+&lt;p&gt;이 글에서는 Common Lisp의 해시 테이블을 생성하고 활용하는 방법을 설명합니다.&lt;/p&gt;
+&lt;h2 id=&#34;1-hash-table-생성하기-make-hash-table&#34;&gt;1. Hash Table 생성하기 (&lt;code&gt;make-hash-table&lt;/code&gt;)&lt;/h2&gt;
+&lt;p&gt;Common Lisp에서 해시 테이블을 생성하려면 &lt;code&gt;make-hash-table&lt;/code&gt; 함수를 사용합니다.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#fff;background-color:#1f1f24;-moz-tab-size:2;-o-tab-size:2;tab-size:2;&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;(&lt;span style=&#34;color:#d0a8ff&#34;&gt;defparameter&lt;/span&gt; *my-table* (&lt;span style=&#34;color:#41a1c0&#34;&gt;make-hash-table&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;이렇게 생성된 해시 테이블은 기본적으로 &lt;strong&gt;eq 테스트&lt;/strong&gt;를 사용하여 키를 비교합니다. 하지만 다른 비교 방법을 사용하고 싶다면 &lt;code&gt;:test&lt;/code&gt; 옵션을 지정할 수 있습니다.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Understanding Hash Tables in Common Lisp</title>
+      <link>https://seojuncha.github.io/posts/common-lisp/common-lisp-hash-table/</link>
+      <pubDate>Fri, 14 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>https://seojuncha.github.io/posts/common-lisp/common-lisp-hash-table/</guid>
+      <description>&lt;p&gt;Recently, while working on the &amp;ldquo;From the Transistor&amp;rdquo; project and building a compiler, I encountered a need for a &lt;a href=&#34;https://en.wikipedia.org/wiki/Hash_table&#34;&gt;&lt;strong&gt;hash table&lt;/strong&gt;&lt;/a&gt; to store keywords in C. In Common Lisp, a &lt;strong&gt;hash table is an efficient data structure for storing key-value pairs&lt;/strong&gt;. Unlike arrays or lists, hash tables are designed for &lt;strong&gt;fast lookups based on keys&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;This post explains how to create and use hash tables in Common Lisp.&lt;/p&gt;
+&lt;h2 id=&#34;1-creating-a-hash-table-make-hash-table&#34;&gt;1. Creating a Hash Table (&lt;code&gt;make-hash-table&lt;/code&gt;)&lt;/h2&gt;
+&lt;p&gt;To create a hash table in Common Lisp, use the &lt;code&gt;make-hash-table&lt;/code&gt; function.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
