@@ -1,0 +1,82 @@
+/* 폰트 가져오기 (예: Google Fonts) */
+/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap'); */
+
+/* :root {
+  --theme: #1E1E2E;
+  --entry: #26263c;
+  --primary: #F8F8F2;
+  --content: #F8F8F2;
+  --secondary: #A0A0A0;
+  --tertiary: #44475A;
+  --code-block-bg: #282A36;
+  --code-text: #F8F8F2;
+  --inline-code-bg: #44475A;
+  --border: #6272A4;
+  --accent: #FF79C6;
+} */
+
+/* 다크 모드 색상 설정 */
+/*
+body.dark {
+    --theme: #121212;
+    --code-bg: #2e2e2e;
+    --text-main: #ffffff;
+    --text-muted: #b0b0b0;
+    --text-heading: #ffffff;
+}
+*/
+/* body.dark {
+  --theme: #1E1E2E;
+  --primary: #F8F8F2;
+  --secondary: #A0A0A0;
+  --tertiary: #44475A;
+  --entry: #26263c;
+  --content: #cecdcd;
+  --code-block-bg: #282A36;
+  --code-text: #F8F8F2;
+  --inline-code-bg: #44475A;
+  --accent: #BD93F9;
+} */
+
+/* .katex-display>.katex {
+  white-space: normal
+} */
+
+/* Add space between broken lines: */
+/* .katex-display>.base {
+  margin: 0.25em 0
+} */
+
+/* Compensate by reducing space around display math */
+/* .katex-display {
+  margin: 0.5em 0;
+} */
+
+/* blockquote {
+  background: var(--code-block-bg);
+}
+
+body {
+  color: var(--text-main) !important;
+  font-family: 'Roboto', sans-serif;
+}
+  */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-heading) !important;
+  font-family: 'Montserrat', sans-serif;
+}
+
+p {
+  color: var(--text-main) !important;
+}
+
+code {
+  font-family: 'Fira Code', monospace;
+  font-variant-ligatures: none;
+}
