@@ -59,7 +59,7 @@ weight = 2
 # title = "반갑습니다! 프로그래머 차서준입니다."
 # subtitle = "💻 프리랜서 프로그래머\n\n🛠️ 로우레벨 | 🎨 Qt/QML | 🎥 멀티미디어"
 [params.homeInfoParams]
-title = "Welcome to my blog"
+title = "My blog posts"
 Content = ""
 
 [menus]
