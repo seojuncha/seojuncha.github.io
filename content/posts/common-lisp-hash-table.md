@@ -3,6 +3,10 @@ title: "Common Lisp의 Hash Table 이해하기"
 date: 2025-03-14
 tags: [Common Lisp, Common Lisp Hash Table]
 description: ""
+# cover:
+#   image: "img/assembler-verify-output-1.png"
+#   alt: ""
+  # caption: "test"
 ---
 
 최근 다시 조금씩 From the transistor 프로젝트의 컴파일러 만들기를 진행하면서 C언어에서 사용하는 키워드 저장을 위해 [**해시 테이블(Hash Table)**](https://en.wikipedia.org/wiki/Hash_table)이 필요한 상황이 있었습니다. Common Lisp에서 **해시 테이블은 키-값(key-value) 쌍을 저장하는 효율적인 데이터 구조**입니다. 배열이나 리스트와 달리, 해시 테이블은 **키를 기반으로 값을 빠르게 검색**할 수 있도록 설계되었습니다.

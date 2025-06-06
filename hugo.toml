@@ -2,7 +2,7 @@ baseURL = "https://seojuncha.github.io/"
 theme = "PaperMod"
 enableRobotsTXT = true
 
-defaultContentLanguage = "ko"
+defaultContentLanguage = "en"
 
 # [languages]
 # [languages.en]
@@ -79,14 +79,14 @@ weight = 30
 name = 'Tags'
 pageRef = '/tags'
 weight = 40
-[[menus.main]]
-name = 'Projects'
-pageRef = '/projects'
-weight = 25
-[[menus.main]]
-name = 'From the transistor'
-pageRef = '/projects/from-the-transistor'
-parent = 'Projects'
+# [[menus.main]]
+# name = 'Projects'
+# pageRef = '/projects'
+# weight = 25
+# [[menus.main]]
+# name = 'From the transistor'
+# pageRef = '/projects/from-the-transistor'
+# parent = 'Projects'
 
 [outputs]
 home = ["HTML", "RSS", "JSON"]
