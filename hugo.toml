@@ -52,14 +52,14 @@ defaultContentLanguage = "en"
 # languageCode = "ko"
 # languageDirection = 'ltr'
 # languageName = "한국어"
-title = "Seojun Blog"
+title = "Seojun's Blog"
 weight = 2
 # [languages.ko.params.profileMode]
 # enabled = false
 # title = "반갑습니다! 프로그래머 차서준입니다."
 # subtitle = "💻 프리랜서 프로그래머\n\n🛠️ 로우레벨 | 🎨 Qt/QML | 🎥 멀티미디어"
 [params.homeInfoParams]
-title = "My blog posts"
+title = "Engineer's Engineer"
 Content = ""
 
 [menus]
@@ -103,7 +103,7 @@ style = "xcode-dark"
 [params]
 env = "production"
 cleanDestinationDir = true
-defaultTheme = "light"
+defaultTheme = "dark"
 disableThemeToggle = true
 comments = true
 ShowPostNavLinks = true
@@ -118,7 +118,7 @@ mathEngine = "katex"
 [params.utterances]
 repo = "seojuncha/seojuncha.github.io"
 issue-term = "pathname"
-theme = "github-light"
+theme = "github-dark"
 
 [params.assets]
 customCSS = ["css/extended/custom.css"]

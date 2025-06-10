@@ -62,7 +62,7 @@ body {
 }
   */
 
-h1,
+/* h1,
 h2,
 h3,
 h4,
@@ -75,7 +75,7 @@ h6 {
 p {
   color: var(--text-main) !important;
 }
-
+*/
 code {
   font-family: 'Fira Code', monospace;
   font-variant-ligatures: none;
