@@ -53,8 +53,9 @@ I offer freelance development and consulting in the following areas:
 - **Compiler & Toolchain Engineering** — parsing, code generation, optimization
 -  **Reverse Engineering & Refactoring** — legacy code analysis, modernization, debugging support
 
-> ⚠️ Currently, I only accept projects from **Korean-speaking clients** due to language constraints.  
-> ⚠️ 현재는 영어로 업무 진행이 어려워, **한국어 사용 고객만** 의뢰를 받고 있습니다.
+> Although all my technical content is written in English for global reach and sharing,
+> **my freelance services are currently limited to Korean-speaking clients only**.
+> This is to ensure clear and effective communication for project success.
 
 Interested in working together? Please fill out the following form so I can understand your needs:
 
