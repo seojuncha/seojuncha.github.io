@@ -189,7 +189,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 /**
@@ -206,7 +206,7 @@ dl, dd, ol, ul, figure {
  * Basic styling
  */
 body {
-  font: 400 16px/1.5 -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol", "Apple Color Emoji", Roboto, Helvetica, Arial, sans-serif;
+  font: 400 18px/1.75 "Roboto", "Noto Sans KR", sans-serif;
   color: rgb(148.75, 148.75, 148.75);
   background-color: #181818;
   -webkit-text-size-adjust: 100%;
@@ -327,7 +327,7 @@ blockquote i, blockquote em {
  */
 pre,
 code {
-  font-family: "Menlo", "Inconsolata", "Consolas", "Roboto Mono", "Ubuntu Mono", "Liberation Mono", "Courier New", monospace;
+  font-family: "Fira Code", monospace;
   background-color: #222222;
 }
 @media screen and (max-width: 600px) {
@@ -466,7 +466,7 @@ table td {
   position: relative;
   width: 100%;
   min-height: 55.95px;
-  line-height: 54px;
+  line-height: 70.875px;
   background-color: #181818;
   border-top: 5px solid #999999;
   border-bottom: 1px solid rgb(43.35, 43.35, 43.35);
@@ -558,7 +558,7 @@ table td {
     display: block;
     padding: 5px 0;
     color: rgb(148.75, 148.75, 148.75);
-    line-height: 1.5;
+    line-height: 1.75;
   }
 }
 
