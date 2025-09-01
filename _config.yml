@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Cha Seojun – Hacking the System, One Bit at a Time
+title: Hacking the System, One Bit at a Time
 author:
   name: 차서준 (Cha Seojun)
   email: sjcha36@gmail.com
