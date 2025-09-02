@@ -260,7 +260,7 @@ figure > img {
 }
 
 figcaption {
-  font-size: 14px;
+  font-size: 15.75px;
 }
 
 /**
@@ -386,7 +386,7 @@ code.highlighter-rouge {
  * Wrapper
  */
 .wrapper {
-  max-width: 800px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 0 30px;
 }
@@ -657,7 +657,7 @@ table td {
 }
 
 .post-meta {
-  font-size: 14px;
+  font-size: 15.75px;
   color: rgb(132.6, 132.6, 132.6);
 }
 
