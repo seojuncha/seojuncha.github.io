@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" /><updated>2025-09-03T14:31:03+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry><title type="html">ARM 어셈블리 - 개발환경과 첫 코드</title><link href="https://seojuncha.github.io/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-assembly-ko.html" rel="alternate" type="text/html" title="ARM 어셈블리 - 개발환경과 첫 코드" /><published>2025-09-03T14:24:00+00:00</published><updated>2025-09-03T14:24:00+00:00</updated><id>https://seojuncha.github.io/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-assembly-ko</id><content type="html" xml:base="https://seojuncha.github.io/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-assembly-ko.html"><![CDATA[<p>이번 포스팅에서는 ARM 기반의 어셈블리 코드를 작성하고 실행하는 방법을 소개합니다. 향후 이어질 시리즈의 기본이 되는 내용이므로, 차근차근 따라오시길 추천드립니다. 간단한 어셈블리 코드를 작성하고, 컴파일, 실행, 디버깅하는 기본적인 흐름을 익히는 것이 목표입니다. 또한 이후 포스팅에서 사용할 QEMU 가상환경과 GDB 디버깅 도구도 함께 준비합니다.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" /><updated>2025-09-04T12:36:19+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry><title type="html">ARM 어셈블리 - 개발환경과 첫 코드</title><link href="https://seojuncha.github.io/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-arm-assembly-ko.html" rel="alternate" type="text/html" title="ARM 어셈블리 - 개발환경과 첫 코드" /><published>2025-09-03T14:24:00+00:00</published><updated>2025-09-03T14:24:00+00:00</updated><id>https://seojuncha.github.io/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-arm-assembly-ko</id><content type="html" xml:base="https://seojuncha.github.io/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-arm-assembly-ko.html"><![CDATA[<p>이번 포스팅에서는 ARM 기반의 어셈블리 코드를 작성하고 실행하는 방법을 소개합니다. 향후 이어질 시리즈의 기본이 되는 내용이므로, 차근차근 따라오시길 추천드립니다. 간단한 어셈블리 코드를 작성하고, 컴파일, 실행, 디버깅하는 기본적인 흐름을 익히는 것이 목표입니다. 또한 이후 포스팅에서 사용할 QEMU 가상환경과 GDB 디버깅 도구도 함께 준비합니다.</p>
 
 <h2 id="왜-어셈블리를-배우는가">왜 어셈블리를 배우는가?</h2>
 <p>제가 어셈블리를 공부하게 된 계기는 <a href="https://github.com/seojuncha/ftt-c-compiler">C 컴파일러</a>의 코드 생성(codegen) 단계를 직접 구현하려 했던 경험에서 비롯됐습니다.<br />
 컴파일러는 소스 코드를 파싱한 뒤, 중간코드(IR)나 어셈블리 코드를 생성하는데, 이 과정에서 “C 코드가 어떤 어셈블리 코드로 변환되어야 하는가?”에 대한 이해가 부족해 구현이 어려웠습니다.</p>
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ast-output-of-my-compiler.png" alt="자체 제작 컴파일러의 AST" style="display: block; margin: auto;" />
+  <img src="/assets/img/ast-output-of-my-compiler.png" alt="자체 제작 컴파일러의 AST" width="70%" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">AST는 만들었는데… 도대체 여기서 어떤 어셈블리를 만들어야 하지?</figcaption>
 </figure>
 
@@ -18,6 +18,7 @@
 <h2 id="간단한-어셈블리-코드-예시">간단한 어셈블리 코드 예시</h2>
 <p>이제 각 시리즈에서 사용될 기반 코드의 가장 간단한 형태를 살펴보겠습니다.</p>
 
+<p><strong>only-main.s</strong></p>
 <div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nf">.text</span>
   <span class="nf">.global</span> <span class="nv">_start</span>
 <span class="nl">_start:</span>
@@ -86,7 +87,7 @@ ARM 하드웨어 없이도 ARM 프로그램을 실행할 수 있기 때문에, �
 <p>어셈블리 프로그램을 제대로 디버깅하기 위해 GDB가 필요합니다.
 ARM 바이너리를 분석할 수 있는 gdb-multiarch를 설치합니다:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt <span class="nb">install </span>gdb-multiarch
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>gdb-multiarch
 </code></pre></div></div>
 
 <p>설치 후, GDB 내부에서 <code class="language-plaintext highlighter-rouge">target remote</code> 명령을 통해 QEMU에 연결할 수 있습니다.</p>
@@ -136,7 +137,7 @@ only-main.elf: ELF 32-bit LSB executable, ARM, EABI5 version 1 <span class="o">(
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">출처: <a href="https://en.wikipedia.org/wiki/Data_segment#Program_memory">[Wikipedia - Program memory]</a></figcaption>
 </figure>
 
-<h3 id="global-_start---외부-심볼로-내보내기">.global _start: - 외부 심볼로 내보내기</h3>
+<h3 id="global-_start---외부-심볼로-내보내기">.global _start - 외부 심볼로 내보내기</h3>
 <div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">.global</span> <span class="nv">_start</span>
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">.global</code> 지시어는 해당 레이블(_start)을 외부 심볼로 노출합니다.
