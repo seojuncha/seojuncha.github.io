@@ -47,11 +47,7 @@ layout: base
 
   <div class="post-content e-content" itemprop="articleBody">{{ content }}</div>
 
-  {% if jekyll.environment == 'production' -%} {% if page.comments == false -%}
-  <div class="comments-disabled-message">
-    Comments have been disabled for this post.
-  </div>
-  {% else -%} {% include utterances.html %} {% endif -%} {% endif -%}
+  {%- if page.comments != false -%} {% include utterances.html %} {%- endif -%}
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
