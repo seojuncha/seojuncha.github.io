@@ -3,9 +3,6 @@ layout: page
 title: About
 permalink: /about/
 ---
-
-# About Cha Seojun (차서준)
-
 I'm **Cha Seojun**, a systems programmer and independent researcher deeply focused on understanding how computers work at the lowest level.
 
 My work explores everything from:
