@@ -13,7 +13,7 @@ tags: [어셈블리, 임베디드, 저수준 프로그래밍, ARM, QEMU, GDB]
 컴파일러는 소스 코드를 파싱한 뒤, 중간코드(IR)나 어셈블리 코드를 생성하는데, 이 과정에서 "C 코드가 어떤 어셈블리 코드로 변환되어야 하는가?"에 대한 이해가 부족해 구현이 어려웠습니다.
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ast-output-of-my-compiler.png" alt="자체 제작 컴파일러의 AST" style="display: block; margin: auto;" />
+  <img src="/assets/img/ast-output-of-my-compiler.png" alt="자체 제작 컴파일러의 AST" width="70%" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">AST는 만들었는데… 도대체 여기서 어떤 어셈블리를 만들어야 하지?</figcaption>
 </figure>
 
@@ -24,6 +24,7 @@ tags: [어셈블리, 임베디드, 저수준 프로그래밍, ARM, QEMU, GDB]
 ## 간단한 어셈블리 코드 예시
 이제 각 시리즈에서 사용될 기반 코드의 가장 간단한 형태를 살펴보겠습니다.
 
+**only-main.s**
 ```nasm
   .text
   .global _start
@@ -89,7 +90,7 @@ $ sudo apt-get install qemu-system qemu-user-static
 ARM 바이너리를 분석할 수 있는 gdb-multiarch를 설치합니다:
 
 ```bash
-$ sudo apt install gdb-multiarch
+$ sudo apt-get install gdb-multiarch
 ```
 
 설치 후, GDB 내부에서 `target remote` 명령을 통해 QEMU에 연결할 수 있습니다.
@@ -139,7 +140,7 @@ only-main.elf: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), staticall
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">출처: <a href="https://en.wikipedia.org/wiki/Data_segment#Program_memory">[Wikipedia - Program memory]</a></figcaption>
 </figure>
 
-### .global _start: - 외부 심볼로 내보내기
+### .global _start - 외부 심볼로 내보내기
 ```nasm
 .global _start
 ```
