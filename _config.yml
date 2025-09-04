@@ -45,6 +45,13 @@ exclude_from_localizations:
 
 parallel_localization: true
 
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      comments: true
+
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
