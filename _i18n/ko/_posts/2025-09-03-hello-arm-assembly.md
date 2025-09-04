@@ -1,5 +1,6 @@
 ---
 layout: post
+lang: ko
 title: ARM 어셈블리 - 개발환경과 첫 코드
 date: 2025-09-03 23:24:00 +0900
 categories: ARM 어셈블리 튜토리얼

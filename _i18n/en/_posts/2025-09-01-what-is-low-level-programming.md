@@ -1,5 +1,6 @@
 ---
 layout: post
+lang: en
 title: "What is Low-Level Programming?"
 date: 2025-09-01 21:49:00 +0900
 categories: programming low-level
