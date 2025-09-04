@@ -1,4 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-09-04T15:18:10+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly - Build Environment and First Code</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" rel="alternate" type="text/html" title="ARM Assembly - Build Environment and First Code" /><published>2025-09-03T14:24:00+00:00</published><updated>2025-09-03T14:24:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"><![CDATA[<p>In this post, I will show you how to write and run your first ARM assembly code. 
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly - Build Environment and First Code | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly - Build Environment and First Code" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="In this post, I will show you how to write and run your first ARM assembly code. This is the foundation for the rest of this tutorial series. We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB." />
+<meta property="og:description" content="In this post, I will show you how to write and run your first ARM assembly code. This is the foundation for the rest of this tutorial series. We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-09-03T14:24:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly - Build Environment and First Code" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-03T14:24:00+00:00","datePublished":"2025-09-03T14:24:00+00:00","description":"In this post, I will show you how to write and run your first ARM assembly code. This is the foundation for the rest of this tutorial series. We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB.","headline":"ARM Assembly - Build Environment and First Code","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">ARM Assembly - Build Environment and First Code</h1>
+    <div class="post-meta">
+      <time class="dt-published" datetime="2025-09-03T14:24:00+00:00" itemprop="datePublished">
+        Sep 3, 2025
+      </time>
+    </div>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>In this post, I will show you how to write and run your first ARM assembly code. 
 This is the foundation for the rest of this tutorial series. 
 We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB.</p>
 
@@ -182,95 +249,60 @@ We installed the tools, compiled the code, and prepared to debug it.</p>
   <li>Start real debugging</li>
 </ul>
 
-<p>Thanks for reading!</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="ARM" /><category term="Assembly" /><category term="Tutorial" /><category term="Assembly" /><category term="Embedded" /><category term="low-level programming" /><category term="ARM" /><category term="QEMU" /><category term="GDB" /><summary type="html"><![CDATA[In this post, I will show you how to write and run your first ARM assembly code. This is the foundation for the rest of this tutorial series. We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB.]]></summary></entry><entry xml:lang="en"><title type="html">What is Low-Level Programming?</title><link href="https://seojuncha.github.io/programming/low-level/2025/09/01/what-is-low-level-programming.html" rel="alternate" type="text/html" title="What is Low-Level Programming?" /><published>2025-09-01T12:49:00+00:00</published><updated>2025-09-01T12:49:00+00:00</updated><id>https://seojuncha.github.io/programming/low-level/2025/09/01/what-is-low-level-programming</id><content type="html" xml:base="https://seojuncha.github.io/programming/low-level/2025/09/01/what-is-low-level-programming.html"><![CDATA[<p>All the electronic devices we use every day—smartphones, laptops, and servers—are built on a complex combination of software and hardware.
-Most people only interact with the visible parts, like websites or apps, but beneath the surface lies an unseen world: <strong>low-level programming</strong>.</p>
+<p>Thanks for reading!</p>
 
-<p>Throughout my 10+ years of programming experience, I’ve worked with many languages and environments. But I’ve always been curious about how things actually work inside. Over time, I grew uncomfortable with code that I couldn’t clearly predict or fully understand. Even C++, the language I used most in industry, felt unsatisfying—despite being relatively close to the hardware, it still left me wondering what was truly happening underneath.</p>
+  </div>
 
-<blockquote>
-  <p>Of course, I completely agree that scripting languages like Python are extremely useful—and I still use them all the time!</p>
-</blockquote>
+  <a class="u-url" href="/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" hidden></a>
+</article>
 
-<p>So even though my professional career hasn’t centered on low-level programming, my personal curiosity and research have led me down this path.
-In this article, I’ll explore what low-level programming is, why it matters, and why we should care about it.</p>
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
 
-<h2 id="what-is-low-level-programming">What Is Low-Level Programming?</h2>
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
 
-<p>Low-level programming means working <strong>as close to the hardware as possible</strong>:</p>
+  <div class="wrapper">
 
-<ul>
-  <li>Directly manipulating CPU registers</li>
-  <li>Accessing specific memory addresses</li>
-  <li>Designing software based on hardware principles</li>
-</ul>
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
 
-<p>High-level languages like Python, Java, and JavaScript abstract away these details so developers don’t need to think about hardware.
-By contrast, languages like C and Assembly map almost directly to hardware operations, which is why they’re considered <strong>low-level languages</strong>.</p>
-
-<p>Personally, I see C more as a high-level language than a low-level one. With C, you usually don’t have to rewrite code just because the hardware changes—thanks to its portability. Assembly, on the other hand, ties you directly to the CPU and memory architecture. That’s also where the compiler plays its role: bridging the gap between high-level abstractions and low-level execution.</p>
-
-<h2 id="key-characteristics-of-low-level-programming">Key Characteristics of Low-Level Programming</h2>
-
-<ol>
-  <li>Hardware Control
-    <ul>
-      <li>You can control I/O devices, memory, and CPU instructions directly.</li>
-      <li>Example: writing a value to a specific memory address or executing an instruction that manipulates a register.</li>
-    </ul>
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
   </li>
-  <li>Fine-Grained Optimization
-    <ul>
-      <li>Because code is closely tied to hardware, it can be optimized for speed and memory usage.</li>
-      <li>Essential for embedded systems, operating systems, and real-time control systems.</li>
-    </ul>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
   </li>
-  <li>Complexity and Difficulty
-    <ul>
-      <li>With less abstraction, the learning curve is steeper.</li>
-      <li>But it also provides a deep understanding of how computers fundamentally work.</li>
-    </ul>
-  </li>
-</ol>
-
-<h2 id="why-does-it-matter">Why Does It Matter?</h2>
-
-<p>Low-level programming isn’t just an “old-school” technique—it still plays a crucial role in many fields today:</p>
-
-<ul>
-  <li><strong>Operating Systems &amp; Kernels:</strong> The core of Linux, Windows, and macOS is written in C and Assembly.</li>
-  <li><strong>Drivers &amp; Firmware:</strong> Keyboards, mice, graphics cards, network cards—none of them work without low-level code.</li>
-  <li><strong>Security &amp; Hacking:</strong> Understanding vulnerabilities requires knowledge of memory structures and Assembly.</li>
-  <li><strong>Embedded Systems:</strong> Cars, IoT devices, and appliances all rely on low-level programming.</li>
 </ul>
+</div>
 
-<p>In short: everything we use daily is powered by low-level code beneath the surface.</p>
+  </div>
 
-<p><img src="/assets/img/github-linux-kernel-lanauge.png" alt="github linux kernel language" /></p>
+</footer>
 
-<h2 id="simple-examples">Simple Examples</h2>
+</body>
 
-<ul>
-  <li>In ARM Assembly, the instruction <code class="language-plaintext highlighter-rouge">add r0, r1, r2</code> isn’t just “addition.” 
-It represents the CPU’s Arithmetic Logic Unit (ALU) receiving register values, performing the operation, and storing the result.</li>
-  <li>In Verilog, the line <code class="language-plaintext highlighter-rouge">assign y = a &amp; b;</code> corresponds to actual electrical signals flowing through a semiconductor circuit.</li>
-  <li>In C, the line <code class="language-plaintext highlighter-rouge">printf("Hello");</code> eventually invokes a system call, where the kernel manages the hardware I/O operation.</li>
-</ul>
-
-<p>Every single line of code hides countless low-level operations.
-Low-level programming isn’t just about learning difficult skills—it’s about developing a mindset of <strong>understanding computers at their core</strong>.</p>
-
-<h2 id="closing-thoughts">Closing Thoughts</h2>
-
-<p>Low-level programming may not always be visible, but it forms the foundation of all modern technology.
-My guiding framework will be George Hotz’s <a href="https://github.com/seojuncha/fromthetransistor">From the Transistor project</a>, 
-which demonstrates how to directly build and observe low-level computer systems.</p>
-
-<p>In future posts, I’ll dive into topics like:</p>
-<ul>
-  <li><strong>Binary Representation</strong></li>
-  <li><strong>ARM Assembly</strong></li>
-  <li><strong>Verilog</strong></li>
-  <li><strong>Compiler and OS Development</strong></li>
-</ul>
-
-<p>Low-level programming is not just about writing code—it’s about exploring the essence of how computers work.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="programming" /><category term="low-level" /><category term="low-level" /><category term="assembly" /><category term="C" /><category term="ARM" /><category term="Verilog" /><category term="compiler" /><category term="operating-system" /><summary type="html"><![CDATA[All the electronic devices we use every day—smartphones, laptops, and servers—are built on a complex combination of software and hardware. Most people only interact with the visible parts, like websites or apps, but beneath the surface lies an unseen world: low-level programming.]]></summary></entry></feed>
+</html>
