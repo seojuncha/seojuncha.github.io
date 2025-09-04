@@ -1,7 +1,7 @@
 ---
 layout: post
 lang: ko
-ref: hello-arm-assembly
+ref: what-is-low-level-programming
 title: "로우레벨 프로그래밍이란?"
 date: 2025-09-01 21:48:00 +0900
 categories: programming low-level
