@@ -851,6 +851,34 @@ table td {
     width: calc(50% - 30px / 2);
   }
 }
+.highlight pre {
+  margin: 0;
+  line-height: 1.4;
+  font-family: "Fira Code", monospace;
+}
+.highlight table {
+  border-spacing: 0;
+}
+.highlight td {
+  padding: 0;
+  vertical-align: top;
+}
+.highlight .lineno {
+  color: #888;
+  padding-right: 1em;
+  user-select: none;
+  text-align: right;
+}
+.highlight .hll {
+  display: block;
+  width: 100%;
+}
+.highlight .err {
+  background-color: transparent;
+  color: inherit;
+  border: none;
+}
+
 html {
   scroll-behavior: smooth;
 }

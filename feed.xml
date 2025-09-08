@@ -1,4 +1,257 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-09-04T15:59:33+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly - Build Environment and First Code</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" rel="alternate" type="text/html" title="ARM Assembly - Build Environment and First Code" /><published>2025-09-03T14:24:00+00:00</published><updated>2025-09-03T14:24:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"><![CDATA[<p>In this post, I will show you how to write and run your first ARM assembly code. 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-09-08T13:46:30+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly (1) – mov; Storing Values in Registers</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html" rel="alternate" type="text/html" title="ARM Assembly (1) – mov; Storing Values in Registers" /><published>2025-09-08T13:24:00+00:00</published><updated>2025-09-08T13:24:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html"><![CDATA[<p>Computers are machines designed to perform <em>calculations</em>.<br />
+These calculations are ultimately performed by the <strong>CPU</strong>, and a typical operation requires two things:
+<strong>operands</strong> and an <strong>operator</strong>.<br />
+Operands are usually stored in <strong>registers</strong>, which are small, fast storage locations inside the CPU.</p>
+
+<p>Assembly language gives us direct access to CPU registers. In this post, we’ll explore how to store values in these registers using the fundamental <code class="language-plaintext highlighter-rouge">mov</code> instruction.</p>
+
+<blockquote>
+  <p>You can find the source code used in this tutorial on <a href="https://github.com/seojuncha/arm-assembly-tutorial/tree/main/02_moving-data-around">GitHub</a>!</p>
+</blockquote>
+
+<h2 id="using-mov-to-store-a-value-in-a-register">Using mov to Store a Value in a Register</h2>
+
+<h3 id="storing-immediate-values">Storing Immediate Values</h3>
+
+<p><strong>store-imm-to-reg.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span>
+
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">mov r0, #2</code>: stores the number 3 in register R0.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">mov</code> instruction follows a simple syntax:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mov destination_register, value
+</code></pre></div></div>
+<p>When a number is prefixed with <code class="language-plaintext highlighter-rouge">#</code> (like <code class="language-plaintext highlighter-rouge">#2</code>), it is called an <strong><em>immediate value</em></strong>.
+You can also use hexadecimal notation: e.g., <code class="language-plaintext highlighter-rouge">#0x2</code>.</p>
+
+<blockquote>
+  <p>For compiling, running on QEMU, and setting up GDB, refer to <a href="hello-arm-assembly">this post</a>.</p>
+</blockquote>
+
+<h3 id="compile">Compile</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="se">\</span>
+  <span class="nt">-nostdlib</span> <span class="se">\</span>
+  <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="se">\</span>
+  store-imm-to-reg.s <span class="se">\</span>
+  <span class="nt">-o</span> store-imm-to-reg.elf
+</code></pre></div></div>
+
+<h3 id="run-on-qemu--debug-with-gdb">Run on QEMU &amp; Debug with GDB</h3>
+<h4 id="start-qemu">Start QEMU</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>qemu-system-arm <span class="se">\</span>
+  <span class="nt">-machine</span> versatilepb <span class="se">\</span>
+  <span class="nt">-nographic</span> <span class="se">\</span>
+  <span class="nt">-S</span> <span class="nt">-s</span> <span class="se">\</span>
+  <span class="nt">-kernel</span> store-imm-to-reg.elf
+</code></pre></div></div>
+<p>Here’s a quick explanation of each option:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Option</th>
+      <th style="text-align: left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">-machine versatilepb</code></td>
+      <td style="text-align: left">Use the VersatilePB ARM development board</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">-nographic</code></td>
+      <td style="text-align: left">Disable GUI; run in console</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">-S</code></td>
+      <td style="text-align: left">Halt the CPU until GDB connects</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">-s</code></td>
+      <td style="text-align: left">Start GDB server on port 1234</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">-kernel</code></td>
+      <td style="text-align: left">Load the specified ELF file</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>QEMU may seem unresponsive at first — this is expected. It’s waiting for GDB to connect.</p>
+</blockquote>
+
+<h4 id="connect-with-gdb">Connect with GDB</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb-multiarch store-imm-to-reg.elf
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/run-gdb.png" alt="Launching GDB with the ELF binary" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Launching GDB with the compiled ELF binary</figcaption>
+</figure>
+
+<p>Inside GDB, connect to QEMU’s GDB server:</p>
+<pre><code class="language-gdb">(gdb) target retmote localhost:1234
+</code></pre>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/connect-gdb-server.png" alt="Connecting GDB to QEMU's GDB server on port 1234" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Connecting GDB to QEMU’s GDB server at port 1234</figcaption>
+</figure>
+
+<p>Once connected, we can inspect whether our program is properly loaded into memory.
+To check the contents at a specific memory address, GDB uses the following command format:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>x/{N}{format} {address}
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">{N}</code>: number of units to display</li>
+  <li><code class="language-plaintext highlighter-rouge">{format}</code>: output type (e.g., <code class="language-plaintext highlighter-rouge">i</code> for instructions, <code class="language-plaintext highlighter-rouge">x</code> for hexadecimal, <code class="language-plaintext highlighter-rouge">s</code> for string, <code class="language-plaintext highlighter-rouge">u</code> for unsigned decimal)</li>
+  <li><code class="language-plaintext highlighter-rouge">{address}</code>: memory address to inspect</li>
+</ul>
+
+<p>For example, to disassemble 10 instructions starting at address <code class="language-plaintext highlighter-rouge">0x10000</code>, use:</p>
+<pre><code class="language-gdb">(gdb) x/10i 0x10000
+</code></pre>
+<p>This helps you verify that the machine code was loaded properly and matches what you wrote in your assembly source file.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/show-10-instructions.png" alt="Disassembling 10 instructions starting at address 0x10000" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Disassembling 10 instructions from address 0x10000</figcaption>
+</figure>
+
+<p>To check the current register values:</p>
+
+<pre><code class="language-gdb">(gdb) info registers   # or shorthand: i r 
+(gdb) i r pc r0        # check just PC and R0
+</code></pre>
+<figure style="text-align: center;">
+  <img src="/assets/img/print-pc-and-r0.png" alt="Printing the values of PC and R0 registers in GDB" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Checking the values of PC and R0 in GDB</figcaption>
+</figure>
+
+<p>At this point, PC (program counter) should be pointing at <code class="language-plaintext highlighter-rouge">0x10000</code>, which is our <code class="language-plaintext highlighter-rouge">mov r0, #3</code> instruction.</p>
+
+<h4 id="execute-step-by-step">Execute Step-by-Step</h4>
+<p>To execute a single instruction:</p>
+<pre><code class="language-gdb">(gdb) stepi   # or shorthand: si
+</code></pre>
+<p>Then check the register values again:</p>
+<pre><code class="language-gdb">(gdb) i r pc r0
+</code></pre>
+<figure style="text-align: center;">
+  <img src="/assets/img/next-step-pc-and-r0.png" alt="Stepping through one instruction and inspecting updated PC and R0" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">PC moves forward, and R0 is now updated after executing `mov`</figcaption>
+</figure>
+
+<p>You’ll see:</p>
+<ul>
+  <li>PC has moved from <code class="language-plaintext highlighter-rouge">0x10000</code> to <code class="language-plaintext highlighter-rouge">0x10004</code></li>
+  <li>R0 now contains <code class="language-plaintext highlighter-rouge">3</code></li>
+</ul>
+
+<p>Run <code class="language-plaintext highlighter-rouge">stepi</code> one more time to execute <code class="language-plaintext highlighter-rouge">b .</code>, which creates an infinite loop by jumping to the current PC.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/next-step-to-branch.png" alt="PC value remains the same after executing a self-branching instruction" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">PC value stays the same after `b .` (infinite loop)</figcaption>
+</figure>
+
+<h3 id="copying-between-registers">Copying Between Registers</h3>
+<p>Let’s now copy a value from one register to another.</p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+<span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span>
+
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Here, <code class="language-plaintext highlighter-rouge">mov r1, r0</code> copies the value of R0 into R1.</p>
+
+<blockquote>
+  <p>You can repeat the GDB steps from above to verify the register contents after each instruction.</p>
+</blockquote>
+
+<h2 id="whats-the-difference-between-mov-and-mvn">What’s the Difference Between mov and mvn?</h2>
+<p>The <code class="language-plaintext highlighter-rouge">mvn</code> instruction is similar to <code class="language-plaintext highlighter-rouge">mov</code>, but it stores the bitwise NOT (<a href="https://en.wikipedia.org/wiki/Ones%27_complement">1’s complement</a>) of the value.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">mvn</th>
+      <th style="text-align: left">mov</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">mvn r0, #0</td>
+      <td style="text-align: left">mov r0, #-1</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">mvn r0, #-1</td>
+      <td style="text-align: left">mov r0, #0</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">mvn r0, #0xF</td>
+      <td style="text-align: left">mov r0, #-16</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>Pro tip: Use Python REPL to test bitwise negation:</p>
+  <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="o">~</span><span class="mh">0xf</span>
+<span class="o">-</span><span class="mi">16</span>
+</code></pre></div>  </div>
+</blockquote>
+
+<h2 id="coming-up-next-shift-operands">Coming Up Next: Shift Operands</h2>
+<p>Both <code class="language-plaintext highlighter-rouge">mov</code> and <code class="language-plaintext highlighter-rouge">mvn</code> belong to the <strong>Data Processing Instructions</strong> category in the ARM architecture.</p>
+
+<p>These instructions can use a <strong>shifted operand</strong> as input, which allows you to shift bits while copying or computing values.</p>
+
+<p>This concept applies to many arithmetic operations (like <code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>, etc.), and we’ll cover it in the next post.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/shifter-operand-in-arm-manual.png" alt="Excerpt from ARM manual showing shifted operand encoding" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">ARM manual: encoding format for shifted operand</figcaption>
+</figure>
+
+<h2 id="summary">Summary</h2>
+<p>In this post, we explored how to:</p>
+<ul>
+  <li>Use <code class="language-plaintext highlighter-rouge">mov</code> to assign immediate values to registers</li>
+  <li>Copy values between registers</li>
+  <li>Understand the difference between <code class="language-plaintext highlighter-rouge">mov</code> and <code class="language-plaintext highlighter-rouge">mvn</code></li>
+  <li>Use QEMU and GDB to debug and inspect registers</li>
+</ul>
+
+<p>We confirmed our code works in a simulated ARM environment using QEMU and GDB — a key part of your low-level dev workflow.</p>
+
+<p>Don’t worry if GDB feels unfamiliar right now. We’ll continue using this setup in future posts, so it will become second nature with practice.</p>
+
+<p>Up next: we’ll dive into shift operands and how they enhance the expressiveness of ARM instructions.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="ARM" /><category term="Assembly" /><category term="Tutorial" /><category term="assembly" /><category term="embedded" /><category term="low-level" /><category term="ARM" /><category term="QEMU" /><category term="GDB" /><summary type="html"><![CDATA[Computers are machines designed to perform calculations. These calculations are ultimately performed by the CPU, and a typical operation requires two things: operands and an operator. Operands are usually stored in registers, which are small, fast storage locations inside the CPU.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly - Build Environment and First Code</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" rel="alternate" type="text/html" title="ARM Assembly - Build Environment and First Code" /><published>2025-09-03T14:24:00+00:00</published><updated>2025-09-03T14:24:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"><![CDATA[<p>In this post, I will show you how to write and run your first ARM assembly code. 
 This is the foundation for the rest of this tutorial series. 
 We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB.</p>
 
@@ -31,10 +284,10 @@ The main problem was:</p>
 <p>Let’s start with the simplest possible ARM assembly code.</p>
 
 <p><strong>only-main.s</strong></p>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nf">.text</span>
-  <span class="nf">.global</span> <span class="nv">_start</span>
-<span class="nl">_start:</span>
-  <span class="nf">b</span> <span class="nv">.</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">b</span> <span class="mf">.</span>
 </code></pre></div></div>
 <p>This code does nothing useful — but it’s a great starting point.</p>
 
@@ -129,7 +382,7 @@ only-main.elf: ELF 32-bit LSB executable, ARM, EABI5 version 1 <span class="o">(
 <p>Let’s understand the 4 lines of our code.</p>
 
 <h3 id="text--code-section">.text → Code section</h3>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">.text</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">.</span><span class="nl">text</span>
 </code></pre></div></div>
 <p>This means <strong><em>“put the following instructions in the code section.”</em></strong>
 This is where the CPU fetches instructions.</p>
@@ -144,7 +397,7 @@ This is where the CPU fetches instructions.</p>
 </figure>
 
 <h3 id="global-_start--make-the-label-visible">.global _start → Make the label visible</h3>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">.global</span> <span class="nv">_start</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">.</span><span class="nl">global</span> <span class="nf">_start</span>
 </code></pre></div></div>
 <p>This tells the linker:
 <strong><em>”_start is the entry point of the program.”</em></strong></p>
@@ -152,13 +405,13 @@ This is where the CPU fetches instructions.</p>
 <p>In C, we use <code class="language-plaintext highlighter-rouge">main()</code> — in assembly, we use <code class="language-plaintext highlighter-rouge">_start</code>.</p>
 
 <h3 id="_start--label-definition">_start: → Label definition</h3>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">_start:</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">_start</span><span class="err">:</span>
 </code></pre></div></div>
 <p>This defines a <strong>label</strong>.
 It marks a location in the code so other instructions can jump to it.</p>
 
 <h3 id="b---infinite-loop">b . → Infinite loop</h3>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">b</span> <span class="nv">.</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">b</span> <span class="err">.</span>
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">b</code> means <strong><em>branch</em></strong> (jump).<br />
 .(dot) means <strong><em>“this current line”</em></strong> — so the program jumps to itself forever.</p>

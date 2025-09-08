@@ -106,10 +106,10 @@ The main problem was:</p>
 <p>Let’s start with the simplest possible ARM assembly code.</p>
 
 <p><strong>only-main.s</strong></p>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nf">.text</span>
-  <span class="nf">.global</span> <span class="nv">_start</span>
-<span class="nl">_start:</span>
-  <span class="nf">b</span> <span class="nv">.</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">b</span> <span class="mf">.</span>
 </code></pre></div></div>
 <p>This code does nothing useful — but it’s a great starting point.</p>
 
@@ -204,7 +204,7 @@ only-main.elf: ELF 32-bit LSB executable, ARM, EABI5 version 1 <span class="o">(
 <p>Let’s understand the 4 lines of our code.</p>
 
 <h3 id="text--code-section">.text → Code section</h3>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">.text</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">.</span><span class="nl">text</span>
 </code></pre></div></div>
 <p>This means <strong><em>“put the following instructions in the code section.”</em></strong>
 This is where the CPU fetches instructions.</p>
@@ -219,7 +219,7 @@ This is where the CPU fetches instructions.</p>
 </figure>
 
 <h3 id="global-_start--make-the-label-visible">.global _start → Make the label visible</h3>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">.global</span> <span class="nv">_start</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">.</span><span class="nl">global</span> <span class="nf">_start</span>
 </code></pre></div></div>
 <p>This tells the linker:
 <strong><em>”_start is the entry point of the program.”</em></strong></p>
@@ -227,13 +227,13 @@ This is where the CPU fetches instructions.</p>
 <p>In C, we use <code class="language-plaintext highlighter-rouge">main()</code> — in assembly, we use <code class="language-plaintext highlighter-rouge">_start</code>.</p>
 
 <h3 id="_start--label-definition">_start: → Label definition</h3>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">_start:</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">_start</span><span class="err">:</span>
 </code></pre></div></div>
 <p>This defines a <strong>label</strong>.
 It marks a location in the code so other instructions can jump to it.</p>
 
 <h3 id="b---infinite-loop">b . → Infinite loop</h3>
-<div class="language-nasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">b</span> <span class="nv">.</span>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">b</span> <span class="err">.</span>
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">b</code> means <strong><em>branch</em></strong> (jump).<br />
 .(dot) means <strong><em>“this current line”</em></strong> — so the program jumps to itself forever.</p>
