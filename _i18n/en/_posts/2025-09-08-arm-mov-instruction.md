@@ -141,7 +141,7 @@ Then check the register values again:
 
 You’ll see:
 -	PC has moved from `0x10000` to `0x10004`
--	R0 now contains `3`
+-	R0 now contains `2`
 
 Run `stepi` one more time to execute `b .`, which creates an infinite loop by jumping to the current PC.
 
@@ -157,7 +157,7 @@ Let’s now copy a value from one register to another.
   .text
   .global _start
 _start:
-  mov r0, #3
+  mov r0, #2
   mov r1, r0
   b .
 {% endhighlight %}
