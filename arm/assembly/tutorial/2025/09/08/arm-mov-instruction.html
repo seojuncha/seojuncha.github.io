@@ -234,7 +234,7 @@ To check the contents at a specific memory address, GDB uses the following comma
 <p>You’ll see:</p>
 <ul>
   <li>PC has moved from <code class="language-plaintext highlighter-rouge">0x10000</code> to <code class="language-plaintext highlighter-rouge">0x10004</code></li>
-  <li>R0 now contains <code class="language-plaintext highlighter-rouge">3</code></li>
+  <li>R0 now contains <code class="language-plaintext highlighter-rouge">2</code></li>
 </ul>
 
 <p>Run <code class="language-plaintext highlighter-rouge">stepi</code> one more time to execute <code class="language-plaintext highlighter-rouge">b .</code>, which creates an infinite loop by jumping to the current PC.</p>
@@ -256,7 +256,7 @@ To check the contents at a specific memory address, GDB uses the following comma
 </pre></td><td class="code"><pre>  <span class="err">.</span><span class="nb">text</span>
   <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
 <span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
 <span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
 </span>  <span class="nb">b</span> <span class="mf">.</span>
 

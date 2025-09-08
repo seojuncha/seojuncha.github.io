@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-09-08T13:55:17+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly (1) – mov; Storing Values in Registers</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html" rel="alternate" type="text/html" title="ARM Assembly (1) – mov; Storing Values in Registers" /><published>2025-09-08T13:24:00+00:00</published><updated>2025-09-08T13:24:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html"><![CDATA[<p>Computers are machines designed to perform <em>calculations</em>.<br />
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-09-08T13:58:33+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly (1) – mov; Storing Values in Registers</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html" rel="alternate" type="text/html" title="ARM Assembly (1) – mov; Storing Values in Registers" /><published>2025-09-08T13:24:00+00:00</published><updated>2025-09-08T13:24:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html"><![CDATA[<p>Computers are machines designed to perform <em>calculations</em>.<br />
 These calculations are ultimately performed by the <strong>CPU</strong>, and a typical operation requires two things:
 <strong>operands</strong> and an <strong>operator</strong>.<br />
 Operands are usually stored in <strong>registers</strong>, which are small, fast storage locations inside the CPU.</p>
@@ -159,7 +159,7 @@ To check the contents at a specific memory address, GDB uses the following comma
 <p>You’ll see:</p>
 <ul>
   <li>PC has moved from <code class="language-plaintext highlighter-rouge">0x10000</code> to <code class="language-plaintext highlighter-rouge">0x10004</code></li>
-  <li>R0 now contains <code class="language-plaintext highlighter-rouge">3</code></li>
+  <li>R0 now contains <code class="language-plaintext highlighter-rouge">2</code></li>
 </ul>
 
 <p>Run <code class="language-plaintext highlighter-rouge">stepi</code> one more time to execute <code class="language-plaintext highlighter-rouge">b .</code>, which creates an infinite loop by jumping to the current PC.</p>
@@ -181,7 +181,7 @@ To check the contents at a specific memory address, GDB uses the following comma
 </pre></td><td class="code"><pre>  <span class="err">.</span><span class="nb">text</span>
   <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
 <span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
 <span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
 </span>  <span class="nb">b</span> <span class="mf">.</span>
 
