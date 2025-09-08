@@ -52,6 +52,9 @@ defaults:
     values:
       comments: true
 
+highlighter: rouge
+markdown: kramdown
+
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

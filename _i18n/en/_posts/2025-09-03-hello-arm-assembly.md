@@ -1,6 +1,7 @@
 ---
 layout: post
 lang: en
+ref: hello-arm-assembly
 title: ARM Assembly - Build Environment and First Code
 date: 2025-09-03 23:24:00 +0900
 categories: ARM Assembly Tutorial
@@ -33,7 +34,7 @@ Later, I realized that knowing assembly helps with:
 Let's start with the simplest possible ARM assembly code.
 
 **only-main.s**
-```nasm
+```armasm
   .text
   .global _start
 _start:
@@ -130,7 +131,7 @@ only-main.elf: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), staticall
 Let’s understand the 4 lines of our code.
 
 ### .text → Code section
-```nasm
+```armasm
 .text
 ```
 This means ***“put the following instructions in the code section.”***
@@ -144,7 +145,7 @@ This is where the CPU fetches instructions.
 </figure>
 
 ### .global _start → Make the label visible
-```nasm
+```armasm
 .global _start
 ```
 This tells the linker:
@@ -153,14 +154,14 @@ This tells the linker:
 In C, we use `main()` — in assembly, we use `_start`.
 
 ### _start: → Label definition
-```nasm
+```armasm
 _start:
 ```
 This defines a **label**.
 It marks a location in the code so other instructions can jump to it.
 
 ### b . → Infinite loop
-```nasm
+```armasm
 b .
 ```
 `b` means ***branch*** (jump).  
