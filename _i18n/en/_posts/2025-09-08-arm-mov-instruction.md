@@ -38,7 +38,7 @@ mov destination_register, value
 When a number is prefixed with `#` (like `#2`), it is called an ***immediate value***.
 You can also use hexadecimal notation: e.g., `#0x2`.
 
-> For compiling, running on QEMU, and setting up GDB, refer to [this post](hello-arm-assembly).
+> For compiling, running on QEMU, and setting up GDB, refer to [this post](../../../2025/09/03/hello-arm-assembly).
 
 ### Compile 
 ```bash
