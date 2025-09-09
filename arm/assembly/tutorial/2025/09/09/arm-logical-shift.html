@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #2 - Understanding Logical Shifts (LSL, LSR) | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #2 - Understanding Logical Shifts (LSL, LSR)" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Computers frequently perform bit-level operations to manipulate data, and shift operations are one of the most fundamental among them. In this post, we’ll focus on Logical Shifts in ARM assembly." />
+<meta property="og:description" content="Computers frequently perform bit-level operations to manipulate data, and shift operations are one of the most fundamental among them. In this post, we’ll focus on Logical Shifts in ARM assembly." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-09-09T15:13:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #2 - Understanding Logical Shifts (LSL, LSR)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-09T15:13:00+00:00","datePublished":"2025-09-09T15:13:00+00:00","description":"Computers frequently perform bit-level operations to manipulate data, and shift operations are one of the most fundamental among them. In this post, we’ll focus on Logical Shifts in ARM assembly.","headline":"ARM Assembly #2 - Understanding Logical Shifts (LSL, LSR)","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #2 - Understanding Logical Shifts (LSL, LSR)
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-09-09T15:13:00+00:00"
+        itemprop="datePublished"
+      >
+        Sep 9, 2025
+      </time>
+    </div>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>Computers frequently perform bit-level operations to manipulate data, and <strong>shift operations</strong> are one of the most fundamental among them. In this post, we’ll focus on <strong>Logical Shifts</strong> in ARM assembly.</p>
+
+<p>Rather than going deep into abstract theory, we’ll walk through simple examples that show how logical shift works in practice. We’ll also look at how the <strong>Carry Flag</strong> (C flag) is affected by these operations.</p>
+
+<blockquote>
+  <p>You can find the example code on the <a href="https://github.com/seojuncha/arm-assembly-tutorial/tree/main/02_moving-data-around">GitHub repository</a>.</p>
+</blockquote>
+
+<h2 id="what-is-a-shift-operand">What is a shift operand?</h2>
+
+<p>In ARM assembly, instructions like <code class="language-plaintext highlighter-rouge">mov</code>, <code class="language-plaintext highlighter-rouge">add</code>, and <code class="language-plaintext highlighter-rouge">sub</code> allow one of the operands to be shifted on the fly before being used.</p>
+
+<p>This is called a <strong>shift operand</strong>.</p>
+
+<p>Thanks to this feature, you can perform shift and assignment in a single instruction, making the code more concise.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/alut-shifter-usage.png" alt="Explanation of how ARM instructions control both the ALU and the shifter to maximize efficiency" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">ARM data-processing instructions allow simultaneous use of the Arithmetic Logic Unit (ALU) and the shifter, enabling efficient execution of complex operations in a single instruction cycle.</figcaption>
+</figure>
+
+<p>Example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span>   <span class="no">@</span> <span class="nv">Shift</span> <span class="nv">R0</span> <span class="nv">left</span> <span class="nv">by</span> <span class="mi">2</span> <span class="nv">bits</span> <span class="nv">and</span> <span class="nv">store</span> <span class="nv">in</span> <span class="nv">R1</span>
+</code></pre></div></div>
+
+<h2 id="what-is-a-logical-shift">What is a logical shift?</h2>
+<p>A <strong>logical shift</strong> simply moves the bits to the left or right, filling empty bits with 0.</p>
+
+<p>For example, using 4-bit data <code class="language-plaintext highlighter-rouge">0110</code>:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Left shift:     0110 &lt;&lt; 1 = 1100
+Right shift:    0110 &gt;&gt; 1 = 0011
+</code></pre></div></div>
+
+<p>ARM provides two logical shift operations:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Instruction</th>
+      <th style="text-align: center">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">lsl</code></td>
+      <td style="text-align: center">Logical Shift Left</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">lsr</code></td>
+      <td style="text-align: center">Logical Shift Right</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The amount of shift can be specified either by an immediate value or by a register.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">lsl #n</code>, <code class="language-plaintext highlighter-rouge">lsr #n</code> : Immediate shift</li>
+  <li><code class="language-plaintext highlighter-rouge">lsl rN</code>, <code class="language-plaintext highlighter-rouge">lsr rN</code> : Register shift</li>
+</ul>
+
+<h3 id="example-code-logical-shift-in-action">Example Code: Logical Shift in Action</h3>
+
+<p><strong>logical-shift.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+<span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="nv">r0</span>
+</span><span class="hll">  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="nb">lsr</span> <span class="o">#</span><span class="mi">1</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #3</code> stores 3 in <code class="language-plaintext highlighter-rouge">R0</code></li>
+  <li><code class="language-plaintext highlighter-rouge">mov r1, r0, lsl r0</code> shifts <code class="language-plaintext highlighter-rouge">R0</code> left by 3 bits and stores in <code class="language-plaintext highlighter-rouge">R1</code></li>
+  <li><code class="language-plaintext highlighter-rouge">mov r2, r1, lsr #1</code> shifts <code class="language-plaintext highlighter-rouge">R1</code> right by 1 bit and stores in <code class="language-plaintext highlighter-rouge">R2</code></li>
+</ul>
+
+<blockquote>
+  <p>For an introduction to the <code class="language-plaintext highlighter-rouge">mov</code> instruction, please refer to <a href="/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html">the previous post</a></p>
+</blockquote>
+
+<p>Example flow:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>r0 = 0x3 = 0b0...000011
+
+# r1 = r0 &lt;&lt; 3
+r1 = 0x18 = 0b0..011000
+
+# r2 = 0x18 &gt;&gt; 1
+r2= 0xC = 0b0...001100
+</code></pre></div></div>
+
+<h3 id="debugging-with-gdb">Debugging with GDB</h3>
+<p>Let’s confirm the behavior using QEMU and GDB.</p>
+
+<h4 id="1-run-qemu">1. Run QEMU</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>qemu-system-arm <span class="se">\</span>
+    <span class="nt">-machine</span> versatilepb <span class="se">\</span>
+    <span class="nt">-nographic</span> <span class="se">\</span>
+    <span class="nt">-S</span> <span class="se">\</span>
+    <span class="nt">-s</span> <span class="se">\</span>
+    <span class="nt">-kernel</span> logical-shift.elf
+</code></pre></div></div>
+<h4 id="2-connect-with-gdb">2. Connect with GDB</h4>
+<pre><code class="language-gdb">$ gdb-multiarch logical-shift.elf
+(gdb) target remote localhost:1234
+</code></pre>
+<h4 id="3-check-instructions">3. Check instructions</h4>
+<pre><code class="language-gdb">(gdb) x/10i 0x10000
+</code></pre>
+<h4 id="4-check-registers">4. Check registers</h4>
+<pre><code class="language-gdb">(gdb) info registers
+(gdb) i r r0 r1 r2
+</code></pre>
+<h4 id="5-step-through">5. Step Through</h4>
+<pre><code class="language-gdb">(gdb) stepi
+</code></pre>
+<p>After each step, check register values again to confirm the effect.</p>
+
+<h2 id="when-is-the-carry-flag-set">When is the Carry Flag set?</h2>
+<p>Shift operations push out bits that no longer fit in the range.
+One of those bits may be captured in the <strong>Carry Flag (C)</strong> in the <strong>CPSR</strong> register.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/cpsr-condition-flags.png" alt="Description of the CPSR register and the four condition flags: Negative, Zero, Carry, and Overflow." style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">The Current Program Status Register (CPSR) holds the processor's condition flags—Negative (N), Zero (Z), Carry (C), and Overflow (V)—which reflect the results of arithmetic and logical operations.</figcaption>
+</figure>
+
+<p>By default, instructions like <code class="language-plaintext highlighter-rouge">mov</code> do not update the carry flag.
+To update it, use the <code class="language-plaintext highlighter-rouge">s</code> suffix: <code class="language-plaintext highlighter-rouge">movs</code>, <code class="language-plaintext highlighter-rouge">adds</code>, <code class="language-plaintext highlighter-rouge">subs</code>, etc.</p>
+
+<h3 id="example-code-checking-the-carry-flag">Example Code: Checking the Carry Flag</h3>
+<p><strong>logical-right-shift-carry.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="mh">0x1</span>
+<span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsr</span> <span class="o">#</span><span class="mi">1</span>
+</span><span class="hll">  <span class="nb">movs</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsr</span> <span class="o">#</span><span class="mi">1</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov</code> does <strong>not</strong> affect the Carry flag</li>
+  <li><code class="language-plaintext highlighter-rouge">movs</code> updates the CPSR flags including Carry</li>
+</ul>
+
+<p>To check the carry flag in GDB:</p>
+
+<pre><code class="language-gdb">(gdb) target remote localhost:1234
+(gdb) info registers cpsr
+(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
+</code></pre>
+<p>This will show whether the Carry flag (bit 29) is set.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/cpsr-layout.png" alt="CPSR bit layout showing N, Z, C, V flags and mode bits." style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">CPSR register layout with condition flags and mode bits.</figcaption>
+</figure>
+
+<h2 id="limitations-and-use-cases">Limitations and Use Cases</h2>
+<p>Logical shift always fills in <code class="language-plaintext highlighter-rouge">0</code>s. This works well for <strong>unsigned integers</strong>,
+but can cause issues with <strong>signed values</strong> where the highest bit represents the sign.</p>
+
+<p>Example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsr</span> <span class="o">#</span><span class="mi">1</span>
+</code></pre></div></div>
+
+<p>Shifting a signed number right with <code class="language-plaintext highlighter-rouge">lsr</code> can destroy the sign bit.
+In these cases, use <strong>ASR (Arithmetic Shift Right)</strong> instead.</p>
+
+<p>Despite this limitation, logical shift is extremely useful in:</p>
+<ul>
+  <li>Array indexing</li>
+  <li>Address calculations</li>
+  <li>Bitmasking</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we covered:</p>
+<ul>
+  <li>How to use <code class="language-plaintext highlighter-rouge">lsl</code> and <code class="language-plaintext highlighter-rouge">lsr</code> in ARM assembly</li>
+  <li>What a shift operand is</li>
+  <li>How to check the Carry flag using <code class="language-plaintext highlighter-rouge">movs</code></li>
+  <li>Why logical shifts are suitable for unsigned integers</li>
+</ul>
+
+<p>In the next post, we’ll explore other shift types such as <code class="language-plaintext highlighter-rouge">asr</code> and <code class="language-plaintext highlighter-rouge">ror</code>.</p>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
