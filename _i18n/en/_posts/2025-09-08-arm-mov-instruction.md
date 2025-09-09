@@ -38,7 +38,7 @@ mov destination_register, value
 When a number is prefixed with `#` (like `#2`), it is called an ***immediate value***.
 You can also use hexadecimal notation: e.g., `#0x2`.
 
-> For compiling, running on QEMU, and setting up GDB, refer to [this post](../../../2025/09/03/hello-arm-assembly).
+> For compiling, running on QEMU, and setting up GDB, refer to [this post]({% post_url 2025-09-03-hello-arm-assembly %}).
 
 ### Compile 
 ```bash
@@ -122,7 +122,7 @@ To check the current register values:
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Checking the values of PC and R0 in GDB</figcaption>
 </figure>
 
-At this point, PC (program counter) should be pointing at `0x10000`, which is our `mov r0, #3` instruction.
+At this point, PC (program counter) should be pointing at `0x10000`, which is our `mov r0, #2` instruction.
 
 #### Execute Step-by-Step
 To execute a single instruction:
