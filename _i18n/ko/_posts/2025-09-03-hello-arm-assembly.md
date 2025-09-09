@@ -1,7 +1,8 @@
 ---
 layout: post
 lang: ko
-title: ARM 어셈블리 - 개발환경과 첫 코드
+ref: hello-arm-assembly
+title: "ARM 어셈블리 #0 - 개발환경과 첫 코드"
 date: 2025-09-03 23:24:00 +0900
 categories: ARM 어셈블리 튜토리얼
 tags: [어셈블리, 임베디드, 저수준 프로그래밍, ARM, QEMU, GDB]

@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: hello-arm-assembly
-title: ARM Assembly - Build Environment and First Code
+title: "ARM Assembly #0 - Build Environment and First Code"
 date: 2025-09-03 23:24:00 +0900
 categories: ARM Assembly Tutorial
 tags: [Assembly, Embedded, low-level programming, ARM, QEMU, GDB]

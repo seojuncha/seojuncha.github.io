@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: arm-mov-instruction
-title: ARM Assembly (1) – mov; Storing Values in Registers 
+title: "ARM Assembly #1 - Storing Values in Registers (MOV)"
 date: 2025-09-08 22:24:00 +0900
 categories: ARM Assembly Tutorial
 tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
