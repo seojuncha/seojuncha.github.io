@@ -43,6 +43,27 @@ layout: base
       </div>
       {%- endif %}
     </div>
+    {%- assign default_lang = site.default_lang | default: "en" -%} {%- assign
+    default_in_sub = site.default_lang_in_subfolder | default: false -%} {%- if
+    default_in_sub or page.lang != default_lang -%} {%- assign cur_prefix = '/'
+    | append: page.lang | append: '/' -%} {%- else -%} {%- assign cur_prefix =
+    '/' -%} {%- endif -%} {%- if page.lang == "en" -%} {%- assign other = "ko"
+    -%} {%- else -%} {%- assign other = "en" -%} {%- endif -%} {%- if
+    default_in_sub or other != default_lang -%} {%- assign other_prefix = '/' |
+    append: other | append: '/' -%} {%- else -%} {%- assign other_prefix = '/'
+    -%} {%- endif -%} {%- assign other_url = page.url | replace_first:
+    cur_prefix, other_prefix -%} {%- comment -%} Define labels: EN -> EN, KO ->
+    한국어 {%- endcomment -%} {%- if page.lang == "en" -%} {%- assign
+    current_label = "EN" -%} {%- else -%} {%- assign current_label = "한국어"
+    -%} {%- endif -%} {%- if other == "en" -%} {%- assign other_label = "EN" -%}
+    {%- else -%} {%- assign other_label = "한국어" -%} {%- endif -%}
+
+    <nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">{{ current_label }}</span>
+      <a class="lang-pill" href="{{ other_url | relative_url }}"
+        >{{ other_label }}</a
+      >
+    </nav>
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">{{ content }}</div>

@@ -36,3 +36,8 @@
     border: none;
   }
 }
+
+.lang-switch{display:flex;gap:.5rem;margin:.5rem 0 1rem;flex-wrap:wrap; justify-content: center;}
+.lang-pill{display:inline-block;padding:.2rem .6rem;border-radius:999px;font-size:.85rem;line-height:1.6;border:1px solid currentColor;text-decoration:none;opacity:.85}
+.lang-pill:hover{opacity:1}
+.lang-pill.is-current{font-weight:600;opacity:.55;pointer-events:none}

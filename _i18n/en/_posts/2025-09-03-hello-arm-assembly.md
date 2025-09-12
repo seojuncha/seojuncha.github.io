@@ -4,8 +4,8 @@ lang: en
 ref: hello-arm-assembly
 title: "ARM Assembly #0 - Build Environment and First Code"
 date: 2025-09-03 23:24:00 +0900
-categories: ARM Assembly Tutorial
-tags: [Assembly, Embedded, low-level programming, ARM, QEMU, GDB]
+categories: [arm,assembly,tutorial]
+tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
 ---
 In this post, I will show you how to write and run your first ARM assembly code. 
 This is the foundation for the rest of this tutorial series. 

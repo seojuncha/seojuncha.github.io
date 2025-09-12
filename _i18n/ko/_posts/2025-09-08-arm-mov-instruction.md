@@ -1,11 +1,11 @@
 ---
 layout: post
 lang: ko
-ref: arm-mov-instruction
+ref: "arm-mov-instruction"
 title: "ARM 어셈블리 #1 - mov 명령어로 레지스터에 값 저장하기"
 date: 2025-09-08 22:24:00 +0900
-categories: ARM 어셈블리 튜토리얼
-tags: [어셈블리, 임베디드, 저수준 프로그래밍, ARM, QEMU, GDB]
+categories: [arm,assembly,tutorial]
+tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
 ---
 컴퓨터는 연산을 하기 위한 기계입니다.
 

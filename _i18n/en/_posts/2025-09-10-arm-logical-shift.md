@@ -4,7 +4,7 @@ lang: en
 ref: arm-logical-shift
 title: "ARM Assembly #2 - Understanding Logical Shifts (LSL, LSR)"
 date: 2025-09-10 00:13:00 +0900
-categories: ARM Assembly Tutorial
+categories: [arm,assembly,tutorial]
 tags: [Assembly, Embedded, low-level programming, ARM, QEMU, GDB]
 ---
 

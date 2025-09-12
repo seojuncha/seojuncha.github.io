@@ -1,10 +1,10 @@
 ---
 layout: post
 lang: en
-ref: arm-mov-instruction
+ref: "arm-mov-instruction"
 title: "ARM Assembly #1 - Storing Values in Registers (MOV)"
 date: 2025-09-08 22:24:00 +0900
-categories: ARM Assembly Tutorial
+categories: [arm,assembly,tutorial]
 tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
 ---
 Computers are machines designed to perform *calculations*.  

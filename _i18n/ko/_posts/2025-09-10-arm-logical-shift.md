@@ -4,8 +4,8 @@ lang: ko
 ref: arm-logical-shift
 title: "ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)"
 date: 2025-09-10 00:13:00 +0900
-categories: ARM 어셈블리 튜토리얼
-tags: [어셈블리, 임베디드, 저수준 프로그래밍, ARM, QEMU, GDB]
+categories: [arm,assembly,tutorial]
+tags: [Assembly, Embedded, low-level programming, ARM, QEMU, GDB]
 ---
 컴퓨터는 비트 단위로 데이터를 조작하는 연산을 자주 수행합니다. 그 중에서도 **시프트(Shift) 연산**은 매우 중요하죠. 이번 글에서는 ARM 어셈블리에서 사용하는 논리 시프트(Logical Shift) 를 중심으로 설명합니다.
 
@@ -139,19 +139,19 @@ CPSR의 하위 비트를 보면 C, Z, N 등의 상태를 확인할 수 있습니
   mov r1, r0, lsr #1
 ```
 `mov r1, r0, lsr #1` 에서 오른쪽 시프트 결과로 부호 비트가 손실됩니다.  
-이런 이유로 부호 있는 정수에는 asr (Arithmetic Shift Right)를 사용합니다.
+이런 이유로 부호 있는 정수에는 ASR (Arithmetic Shift Right)를 사용합니다.
 
 그럼에도 불구하고 논리 시프트는 다음과 같은 상황에서 매우 유용합니다:
-- 배열 인덱스 계산 (예: i * 4 → i << 2)
+- 배열 인덱스 계산
 - 메모리 주소 계산
 - 비트 마스킹
 
 ## 마무리
 이번 글에서는 ARM 어셈블리에서 사용되는 논리 시프트 연산에 대해 알아보았습니다.
 
-- lsl, lsr을 통해 비트를 이동
+- `lsl`, `lsr`을 통해 비트를 이동
 - 시프트 피연산자를 사용해 명령어 안에서 시프트 적용
 - movs를 통해 캐리 플래그 확인
 - 부호 있는 정수 처리 시에는 주의 필요
 
-다음 글에서는 asr, ror 등 다른 시프트 유형에 대해 더 살펴보겠습니다.
+다음 글에서는 `asr`, `ror` 등 다른 시프트 유형에 대해 더 살펴보겠습니다.

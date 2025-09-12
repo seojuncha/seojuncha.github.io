@@ -4,8 +4,8 @@ lang: ko
 ref: hello-arm-assembly
 title: "ARM 어셈블리 #0 - 개발환경과 첫 코드"
 date: 2025-09-03 23:24:00 +0900
-categories: ARM 어셈블리 튜토리얼
-tags: [어셈블리, 임베디드, 저수준 프로그래밍, ARM, QEMU, GDB]
+categories: [arm,assembly,tutorial]
+tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
 ---
 
 이번 포스팅에서는 ARM 기반의 어셈블리 코드를 작성하고 실행하는 방법을 소개합니다. 향후 이어질 시리즈의 기본이 되는 내용이므로, 차근차근 따라오시길 추천드립니다. 간단한 어셈블리 코드를 작성하고, 컴파일, 실행, 디버깅하는 기본적인 흐름을 익히는 것이 목표입니다. 또한 이후 포스팅에서 사용할 QEMU 가상환경과 GDB 디버깅 도구도 함께 준비합니다.

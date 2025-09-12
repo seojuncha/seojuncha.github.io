@@ -4,7 +4,8 @@ lang: ko
 ref: what-is-low-level-programming
 title: "로우레벨 프로그래밍이란?"
 date: 2025-09-01 21:48:00 +0900
-categories: programming low-level
+categories: [programming, low-level]
+tags: [low-level, assembly, C, ARM, Verilog, compiler, operating-system]
 ---
 
 우리가 매일 사용하는 스마트폰, 노트북, 서버와 같은 모든 전자기기는 복잡한 소프트웨어와 하드웨어의 조합으로 이루어져 있습니다.
