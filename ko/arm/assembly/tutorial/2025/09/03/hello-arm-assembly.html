@@ -10,15 +10,15 @@
 <meta property="og:locale" content="ko" />
 <meta name="description" content="이번 포스팅에서는 ARM 기반의 어셈블리 코드를 작성하고 실행하는 방법을 소개합니다. 향후 이어질 시리즈의 기본이 되는 내용이므로, 차근차근 따라오시길 추천드립니다. 간단한 어셈블리 코드를 작성하고, 컴파일, 실행, 디버깅하는 기본적인 흐름을 익히는 것이 목표입니다. 또한 이후 포스팅에서 사용할 QEMU 가상환경과 GDB 디버깅 도구도 함께 준비합니다." />
 <meta property="og:description" content="이번 포스팅에서는 ARM 기반의 어셈블리 코드를 작성하고 실행하는 방법을 소개합니다. 향후 이어질 시리즈의 기본이 되는 내용이므로, 차근차근 따라오시길 추천드립니다. 간단한 어셈블리 코드를 작성하고, 컴파일, 실행, 디버깅하는 기본적인 흐름을 익히는 것이 목표입니다. 또한 이후 포스팅에서 사용할 QEMU 가상환경과 GDB 디버깅 도구도 함께 준비합니다." />
-<link rel="canonical" href="https://seojuncha.github.io/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-arm-assembly.html" />
-<meta property="og:url" content="https://seojuncha.github.io/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-arm-assembly.html" />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" />
 <meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-09-03T14:24:00+00:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="ARM 어셈블리 #0 - 개발환경과 첫 코드" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-03T14:24:00+00:00","datePublished":"2025-09-03T14:24:00+00:00","description":"이번 포스팅에서는 ARM 기반의 어셈블리 코드를 작성하고 실행하는 방법을 소개합니다. 향후 이어질 시리즈의 기본이 되는 내용이므로, 차근차근 따라오시길 추천드립니다. 간단한 어셈블리 코드를 작성하고, 컴파일, 실행, 디버깅하는 기본적인 흐름을 익히는 것이 목표입니다. 또한 이후 포스팅에서 사용할 QEMU 가상환경과 GDB 디버깅 도구도 함께 준비합니다.","headline":"ARM 어셈블리 #0 - 개발환경과 첫 코드","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-arm-assembly.html"},"url":"https://seojuncha.github.io/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-arm-assembly.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-03T14:24:00+00:00","datePublished":"2025-09-03T14:24:00+00:00","description":"이번 포스팅에서는 ARM 기반의 어셈블리 코드를 작성하고 실행하는 방법을 소개합니다. 향후 이어질 시리즈의 기본이 되는 내용이므로, 차근차근 따라오시길 추천드립니다. 간단한 어셈블리 코드를 작성하고, 컴파일, 실행, 디버깅하는 기본적인 흐름을 익히는 것이 목표입니다. 또한 이후 포스팅에서 사용할 QEMU 가상환경과 GDB 디버깅 도구도 함께 준비합니다.","headline":"ARM 어셈블리 #0 - 개발환경과 첫 코드","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -70,7 +70,12 @@
       >
         Sep 3, 2025
       </time>
-    </div>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">한국어</span>
+      <a class="lang-pill" href="/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"
+        >EN</a
+      >
+    </nav>
   </header>
 
   <div class="post-content e-content" itemprop="articleBody"><p>이번 포스팅에서는 ARM 기반의 어셈블리 코드를 작성하고 실행하는 방법을 소개합니다. 향후 이어질 시리즈의 기본이 되는 내용이므로, 차근차근 따라오시길 추천드립니다. 간단한 어셈블리 코드를 작성하고, 컴파일, 실행, 디버깅하는 기본적인 흐름을 익히는 것이 목표입니다. 또한 이후 포스팅에서 사용할 QEMU 가상환경과 GDB 디버깅 도구도 함께 준비합니다.</p>
@@ -257,7 +262,7 @@ only-main.elf: ELF 32-bit LSB executable, ARM, EABI5 version 1 <span class="o">(
   crossorigin="anonymous"
   async
 ></script>
-<a class="u-url" href="/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/03/hello-arm-assembly.html" hidden></a>
+<a class="u-url" href="/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" hidden></a>
 </article>
 
       </div>

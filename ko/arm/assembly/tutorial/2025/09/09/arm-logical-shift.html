@@ -10,15 +10,15 @@
 <meta property="og:locale" content="ko" />
 <meta name="description" content="컴퓨터는 비트 단위로 데이터를 조작하는 연산을 자주 수행합니다. 그 중에서도 시프트(Shift) 연산은 매우 중요하죠. 이번 글에서는 ARM 어셈블리에서 사용하는 논리 시프트(Logical Shift) 를 중심으로 설명합니다." />
 <meta property="og:description" content="컴퓨터는 비트 단위로 데이터를 조작하는 연산을 자주 수행합니다. 그 중에서도 시프트(Shift) 연산은 매우 중요하죠. 이번 글에서는 ARM 어셈블리에서 사용하는 논리 시프트(Logical Shift) 를 중심으로 설명합니다." />
-<link rel="canonical" href="https://seojuncha.github.io/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/09/arm-logical-shift.html" />
-<meta property="og:url" content="https://seojuncha.github.io/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/09/arm-logical-shift.html" />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html" />
 <meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-09-09T15:13:00+00:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-09T15:13:00+00:00","datePublished":"2025-09-09T15:13:00+00:00","description":"컴퓨터는 비트 단위로 데이터를 조작하는 연산을 자주 수행합니다. 그 중에서도 시프트(Shift) 연산은 매우 중요하죠. 이번 글에서는 ARM 어셈블리에서 사용하는 논리 시프트(Logical Shift) 를 중심으로 설명합니다.","headline":"ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/09/arm-logical-shift.html"},"url":"https://seojuncha.github.io/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/09/arm-logical-shift.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-09T15:13:00+00:00","datePublished":"2025-09-09T15:13:00+00:00","description":"컴퓨터는 비트 단위로 데이터를 조작하는 연산을 자주 수행합니다. 그 중에서도 시프트(Shift) 연산은 매우 중요하죠. 이번 글에서는 ARM 어셈블리에서 사용하는 논리 시프트(Logical Shift) 를 중심으로 설명합니다.","headline":"ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -70,7 +70,12 @@
       >
         Sep 9, 2025
       </time>
-    </div>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">한국어</span>
+      <a class="lang-pill" href="/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html"
+        >EN</a
+      >
+    </nav>
   </header>
 
   <div class="post-content e-content" itemprop="articleBody"><p>컴퓨터는 비트 단위로 데이터를 조작하는 연산을 자주 수행합니다. 그 중에서도 <strong>시프트(Shift) 연산</strong>은 매우 중요하죠. 이번 글에서는 ARM 어셈블리에서 사용하는 논리 시프트(Logical Shift) 를 중심으로 설명합니다.</p>
@@ -214,11 +219,11 @@ r1 = 0xC = 0b0...001100
   <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsr</span> <span class="o">#</span><span class="mi">1</span>
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">mov r1, r0, lsr #1</code> 에서 오른쪽 시프트 결과로 부호 비트가 손실됩니다.<br />
-이런 이유로 부호 있는 정수에는 asr (Arithmetic Shift Right)를 사용합니다.</p>
+이런 이유로 부호 있는 정수에는 ASR (Arithmetic Shift Right)를 사용합니다.</p>
 
 <p>그럼에도 불구하고 논리 시프트는 다음과 같은 상황에서 매우 유용합니다:</p>
 <ul>
-  <li>배열 인덱스 계산 (예: i * 4 → i « 2)</li>
+  <li>배열 인덱스 계산</li>
   <li>메모리 주소 계산</li>
   <li>비트 마스킹</li>
 </ul>
@@ -227,13 +232,13 @@ r1 = 0xC = 0b0...001100
 <p>이번 글에서는 ARM 어셈블리에서 사용되는 논리 시프트 연산에 대해 알아보았습니다.</p>
 
 <ul>
-  <li>lsl, lsr을 통해 비트를 이동</li>
+  <li><code class="language-plaintext highlighter-rouge">lsl</code>, <code class="language-plaintext highlighter-rouge">lsr</code>을 통해 비트를 이동</li>
   <li>시프트 피연산자를 사용해 명령어 안에서 시프트 적용</li>
   <li>movs를 통해 캐리 플래그 확인</li>
   <li>부호 있는 정수 처리 시에는 주의 필요</li>
 </ul>
 
-<p>다음 글에서는 asr, ror 등 다른 시프트 유형에 대해 더 살펴보겠습니다.</p>
+<p>다음 글에서는 <code class="language-plaintext highlighter-rouge">asr</code>, <code class="language-plaintext highlighter-rouge">ror</code> 등 다른 시프트 유형에 대해 더 살펴보겠습니다.</p>
 </div><!-- _includes/utterances.html -->
 <script
   src="https://utteranc.es/client.js"
@@ -244,7 +249,7 @@ r1 = 0xC = 0b0...001100
   crossorigin="anonymous"
   async
 ></script>
-<a class="u-url" href="/ko/arm/%EC%96%B4%EC%85%88%EB%B8%94%EB%A6%AC/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/2025/09/09/arm-logical-shift.html" hidden></a>
+<a class="u-url" href="/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html" hidden></a>
 </article>
 
       </div>
