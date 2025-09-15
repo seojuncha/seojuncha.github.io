@@ -1,4 +1,180 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-09-12T12:41:52+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)" /><published>2025-09-09T15:13:00+00:00</published><updated>2025-09-09T15:13:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html"><![CDATA[<p>컴퓨터는 비트 단위로 데이터를 조작하는 연산을 자주 수행합니다. 그 중에서도 <strong>시프트(Shift) 연산</strong>은 매우 중요하죠. 이번 글에서는 ARM 어셈블리에서 사용하는 논리 시프트(Logical Shift) 를 중심으로 설명합니다.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-09-15T13:00:07+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)" /><published>2025-09-15T12:53:00+00:00</published><updated>2025-09-15T12:53:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"><![CDATA[<p>CPU의 중요한 모듈중 하나인 ALU는 산술논리장치입니다. 이름에서 유추할 수 있듯이 논리연산 뿐 아니라 산술연산도 가능해야 하죠.
+산술연산에서 유의해야 할 것은 피연산자의 부호 유무입니다. <a href="/ko/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html">앞선 포스팅</a>에서는 논리 시프트를 사용한 비트 단위의 연산을 고려했다면,
+이번 포스팅에서는 부호를 고려한 산술 시프트 연산자인 <code class="language-plaintext highlighter-rouge">asr</code>의 특징과 사용법을 살펴보겠습니다.</p>
+
+<h2 id="산술-시프트">산술 시프트</h2>
+<p>ARM에서는 산술 시프트를 위한 하나의 명령어를 제공합니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">명령어</th>
+      <th style="text-align: left">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">asr</code></td>
+      <td style="text-align: left">오른쪽 산술 시프트</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code class="language-plaintext highlighter-rouge">asr</code>은 아래와 같이 사용할 수 있습니다:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">asr #&lt;imm&gt;</code> : 즉시값만큼 시프트</li>
+  <li><code class="language-plaintext highlighter-rouge">asr &lt;Rs&gt;</code> : 레지스터값만큼 시프트</li>
+</ul>
+
+<h3 id="산술-시프트의-부호-유지-방법">산술 시프트의 부호 유지 방법</h3>
+<p>산술 시프트에서 기존 값의 부호를 유지하기 위해,</p>
+
+<p><strong><em>“시프트 이전 데이터의 최상위 비트값으로 시프트 공간을 채운다.”</em></strong></p>
+
+<p>라는 규칙을 가지고 있습니다.</p>
+
+<p>예를 들어, 최상위 비트가 0이고 3비트 만큼 시프트 한다면, 최상위 3비트는 <code class="language-plaintext highlighter-rouge">000</code>이 되고,
+최상위 비트가 1이면, 최상위 3비트는 <code class="language-plaintext highlighter-rouge">111</code>이 됩니다.</p>
+
+<p><strong>최상위 비트가 0인 경우</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Before (32-bit):  
+0 1 0 1 1 1 0 0 ...  
+
+ASR #3 →  
+
+After (32-bit):  
+0 0 0 0 1 0 1 1 ...
+^ ^ ^  
+| | |  
++---- 시프트로 새로 채워진 상위 비트 (부호 유지: 0)
+</code></pre></div></div>
+
+<p><strong>최상위 비트가 1인 경우</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Before (32-bit):  
+1 0 1 0 0 0 1 1 ...
+
+ASR #3 →  
+
+After (32-bit):  
+1 1 1 1 0 1 0 ...
+^ ^ ^  
+| | |  
++---- 시프트로 새로 채워진 상위 비트 (부호 유지: 1)
+</code></pre></div></div>
+
+<h3 id="산술-시프트-예제">산술 시프트 예제</h3>
+
+<p><strong>asr.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">32</span>         <span class="no">@</span> <span class="o">-</span><span class="mi">32</span> <span class="o">=</span> <span class="mh">0xffffffe0</span>
+</span><span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">asr</span> <span class="o">#</span><span class="mi">1</span>   <span class="no">@</span> <span class="nv">R1</span> <span class="o">=</span> <span class="mh">0xfffffff0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">16</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">-32</code>는 16진수로 <code class="language-plaintext highlighter-rouge">0xffffffe0</code> 입니다. 여기서 부호를 유지한채 오른쪽 1비트를 시프트하면:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0xffffffe0 &gt;&gt; 1 = 0xfffffff0 (-16)
+</code></pre></div></div>
+<p>1비트 시프트 한다는 것은 <code class="language-plaintext highlighter-rouge">숫자/2</code>동작이므로 <code class="language-plaintext highlighter-rouge">-32/2 = -16</code> 이라는 부호를 유지한 산술연산이 가능해집니다.</p>
+
+<h2 id="왜-오른쪽-시프트만-있을까">왜 오른쪽 시프트만 있을까?</h2>
+<p>결과부터 얘기하면, 왼쪽 시프트는 최상위 비트가 바뀌더라도 그것이 의도한 산술 연산일 수 있기 때문입니다.</p>
+
+<p><strong>left-shift-for-negative.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x40000000</span>
+</span><span class="hll">  <span class="nb">movs</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">1</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">0x40000000 &lt;&lt; 1</code>은 <code class="language-plaintext highlighter-rouge">0x80000000</code>이므로 테이블로 작성하면 아래와 같습니다:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">2진수</th>
+      <th style="text-align: center">16진수</th>
+      <th style="text-align: center">10진수</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">0b0100…</td>
+      <td style="text-align: center"><strong>0x4000</strong>0000</td>
+      <td style="text-align: center">1073741824</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0b1000…</td>
+      <td style="text-align: center"><strong>0x8000</strong>0000</td>
+      <td style="text-align: center">2147483648 혹은 -2147483648</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>보다시피 <code class="language-plaintext highlighter-rouge">0x80000000</code>이라는 데이터는 정수의 표현법에 따라 양수가 될 수도 있고 음수가 될 수도 있습니다.
+그래서 ARM 프로세서는 <code class="language-plaintext highlighter-rouge">0x80000000</code>과 같이 최상위 비트가 1일 경우 부호 있는 정수 표현의 음수라는 것을 나타내기 위해 CPSR의 음수(Negative) 플래그를 설정합니다.</p>
+
+<p>프로그래머는 CPSR의 플래그를 확인하여 <code class="language-plaintext highlighter-rouge">R1</code>의 데이터를 부호 있는 정수로 활용할 것인지 아니면 부호 없는 정수로 활용할 것인지 선택할 수 있죠.</p>
+
+<blockquote>
+  <p>나중에 살펴볼 산술 연산(예: <code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>, 등)에서는 부호 있는 정수의 오버플로우를 나타내기 위해 <strong>오버플로우(V) 플래그</strong>라는 것도 설정합니다.
+지금은 논리연산(<code class="language-plaintext highlighter-rouge">lsl</code>)만 사용하였으므로 오버플로우 플래그를 설정하지 않습니다.
+산술연산에서의 플래그 설정 및 확인은 향후 산술 연산을 다루는 포스팅에서 자세히 살펴볼 예정입니다.</p>
+</blockquote>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/non-add-sub-v-left-unchanged.png" alt="ARM 매뉴얼에 명시된 오버플로우 플래그의 설정방법 두가지" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">덧셈이나 뺄셈연산이 아닌 경우 보통 오버플로우 플래그를 변경하지 않는다고 ARM매뉴얼에 명시되어있다.</figcaption>
+</figure>
+
+<p>결과적으로 왼쪽 시프트는 오히려 부호를 유지한다는 개념을 가지면 안되고 논리 시프트와 같은 역할을 하기 때문에 <code class="language-plaintext highlighter-rouge">lsl</code>명령어 하나로만 유지되는 것 입니다.</p>
+
+<h3 id="gdb로-플래그-확인하기">GDB로 플래그 확인하기</h3>
+<p><strong>left-shift-for-negative.s</strong> 파일을 컴파일하고 실행한 후 GDB로 음수 플래그를 확인해보겠습니다.</p>
+
+<h4 id="1-컴파일">1. 컴파일</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="se">\</span>
+    <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="se">\</span>
+    <span class="nt">-nostdlib</span> <span class="se">\</span>
+    left-shift-for-negative.s <span class="se">\</span>
+    <span class="nt">-o</span> left-shift-for-negative.elf
+</code></pre></div></div>
+<h4 id="2-qemu-실행">2. QEMU 실행</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>qemu-system-arm <span class="se">\</span>
+    <span class="nt">-machine</span> versatilepb <span class="se">\</span>
+    <span class="nt">-nographic</span> <span class="se">\</span>
+    <span class="nt">-S</span> <span class="se">\</span>
+    <span class="nt">-s</span> <span class="se">\</span>
+    <span class="nt">-kernel</span> left-shift-for-negative.elf
+</code></pre></div></div>
+<h4 id="3-gdb-연결-후-플래그-확인">3. GDB 연결 후 플래그 확인</h4>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gdb-multiarch left-shift-for-negative.elf
+</code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-gdb" data-lang="gdb">(gdb) target remote :1234
+0x00010000 in _start ()    
+(gdb) si                   # mov r0, #0x40000000 
+0x00010004 in _start ()    
+(gdb) p ($cpsr &gt;&gt; 31) &amp; 1
+$2 = 0
+<span class="hll">(gdb) si                   # movs r1, r0, lsl #1
+</span>0x00010008 in _start ()
+<span class="hll">(gdb) p ($cpsr &gt;&gt; 31) &amp; 1
+</span><span class="hll">$2 = 1
+</span></code></pre></figure>
+
+<h2 id="마무리">마무리</h2>
+<p>이번 글에서는 산술시프트 연산자인 <code class="language-plaintext highlighter-rouge">asr</code>을 활용하여 부호를 유지하고 시프트하는 방법을 알아봤습니다.</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">asr</code>의 사용</li>
+  <li>산술 시프트에서 왼쪽 시프트가 없는 이유</li>
+  <li>음수 플래그를 확인하는 방법</li>
+</ul>
+
+<p>다음 포스팅에서는 시프트 연산의 마지막 챕터로, 비트를 순환시키는 <code class="language-plaintext highlighter-rouge">ror</code>과 <code class="language-plaintext highlighter-rouge">rrx</code> 명령어를 다룰 예정입니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="Assembly" /><category term="ASR" /><category term="ARM" /><category term="QEMU" /><category term="GDB" /><summary type="html"><![CDATA[CPU의 중요한 모듈중 하나인 ALU는 산술논리장치입니다. 이름에서 유추할 수 있듯이 논리연산 뿐 아니라 산술연산도 가능해야 하죠. 산술연산에서 유의해야 할 것은 피연산자의 부호 유무입니다. 앞선 포스팅에서는 논리 시프트를 사용한 비트 단위의 연산을 고려했다면, 이번 포스팅에서는 부호를 고려한 산술 시프트 연산자인 asr의 특징과 사용법을 살펴보겠습니다.]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)" /><published>2025-09-09T15:13:00+00:00</published><updated>2025-09-09T15:13:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html"><![CDATA[<p>컴퓨터는 비트 단위로 데이터를 조작하는 연산을 자주 수행합니다. 그 중에서도 <strong>시프트(Shift) 연산</strong>은 매우 중요하죠. 이번 글에서는 ARM 어셈블리에서 사용하는 논리 시프트(Logical Shift) 를 중심으로 설명합니다.</p>
 
 <p>추상적인 개념 설명보다는 실습 예제를 통해 쉽게 접근하고, 시프트 연산이 실제로 어떤 효과를 가지는지, 그리고 그 과정에서 캐리 플래그(Carry Flag) 가 어떻게 작동하는지도 함께 살펴보겠습니다.</p>
 

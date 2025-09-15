@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations." />
+<meta property="og:description" content="One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-09-15T12:53:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-15T12:53:00+00:00","datePublished":"2025-09-15T12:53:00+00:00","description":"One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations.","headline":"ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-09-15T12:53:00+00:00"
+        itemprop="datePublished"
+      >
+        Sep 15, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations.</p>
+
+<p>In arithmetic operations, it’s important to consider whether a number is signed or unsigned. In the <a href="/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html">previous post</a>, we explored logical shifts for bit-level manipulation.<br />
+This time, we’ll look at arithmetic right shifts using the <code class="language-plaintext highlighter-rouge">asr</code> instruction and how they preserve the sign of a number.</p>
+
+<h2 id="arithmetic-shift-in-arm">Arithmetic Shift in ARM</h2>
+
+<p>ARM provides a single instruction for arithmetic shift:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Instruction</th>
+      <th style="text-align: left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">asr</code></td>
+      <td style="text-align: left">Arithmetic Shift Right</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>You can use <code class="language-plaintext highlighter-rouge">asr</code> in two ways:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">asr #&lt;imm&gt;</code>: Shift by an immediate value</li>
+  <li><code class="language-plaintext highlighter-rouge">asr &lt;Rs&gt;</code>: Shift by the value in a register</li>
+</ul>
+
+<h3 id="how-sign-is-preserved">How Sign Is Preserved</h3>
+<p>To preserve the sign of a number during an arithmetic shift,<br />
+<strong>“The shift-in bits are filled with the value of the original sign bit.”</strong></p>
+
+<p>That means:</p>
+<ul>
+  <li>If the most significant bit (MSB) is <code class="language-plaintext highlighter-rouge">0</code>, the shifted-in bits become <code class="language-plaintext highlighter-rouge">0</code></li>
+  <li>If the MSB is <code class="language-plaintext highlighter-rouge">1</code>, the shifted-in bits become <code class="language-plaintext highlighter-rouge">1</code></li>
+</ul>
+
+<p><strong>Case: MSB is 0</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Before (32-bit):  
+0 1 0 1 1 1 0 0 ...  
+
+ASR #3 →  
+
+After (32-bit):  
+0 0 0 0 1 0 1 1 ...
+^ ^ ^  
+| | |  
++---- Sign-preserving fill: 0
+</code></pre></div></div>
+
+<p><strong>Case: MSB is 1</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Before (32-bit):  
+1 0 1 0 0 0 1 1 ...
+
+ASR #3 →  
+
+After (32-bit):  
+1 1 1 1 0 1 0 ...
+^ ^ ^  
+| | |  
++---- Sign-preserving fill: 1
+</code></pre></div></div>
+
+<h3 id="asr-instruction-example">ASR Instruction Example</h3>
+
+<p><strong>asr.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">32</span>         <span class="no">@</span> <span class="o">-</span><span class="mi">32</span> <span class="o">=</span> <span class="mh">0xffffffe0</span>
+</span><span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">asr</span> <span class="o">#</span><span class="mi">1</span>   <span class="no">@</span> <span class="nv">R1</span> <span class="o">=</span> <span class="mh">0xfffffff0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">16</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">-32</code> is represented as <code class="language-plaintext highlighter-rouge">0xffffffe0</code> in hexadecimal.</p>
+
+<p>After a 1-bit arithmetic shift right:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0xffffffe0 &gt;&gt; 1 = 0xfffffff0 (-16)
+</code></pre></div></div>
+<p>This is equivalent to dividing by 2, while preserving the sign:<br />
+<code class="language-plaintext highlighter-rouge">-32 / 2 = -16</code></p>
+
+<h2 id="why-only-right-arithmetic-shift">Why Only Right Arithmetic Shift?</h2>
+<p>There is no left arithmetic shift because <strong>left shifting changes the MSB</strong>, and that may be intentional.<br />
+In other words, it doesn’t make sense to “preserve the sign” when you’re introducing new bits into the sign position.</p>
+
+<p><strong>left-shift-for-negative.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x40000000</span>
+</span><span class="hll">  <span class="nb">movs</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">1</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p>Shifting <code class="language-plaintext highlighter-rouge">0x40000000</code> left by 1 gives <code class="language-plaintext highlighter-rouge">0x80000000</code>. Here’s the breakdown:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Binary</th>
+      <th style="text-align: center">Hex</th>
+      <th style="text-align: center">Decimal</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">0b0100…</td>
+      <td style="text-align: center">0x40000000</td>
+      <td style="text-align: center">1073741824</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0b1000…</td>
+      <td style="text-align: center">0x80000000</td>
+      <td style="text-align: center">2147483648 or -2147483648</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>This result can be interpreted as either positive or negative, depending on whether you’re treating it as a signed or unsigned integer.</p>
+
+<p>To help the programmer decide, the ARM CPU sets the <strong>N (Negative)</strong> flag in the CPSR register when the result has MSB = 1.<br />
+This lets you check the CPSR and decide how to interpret the result.</p>
+
+<blockquote>
+  <p>Later, we’ll also explore the <strong>V (Overflow)</strong> flag used in arithmetic operations like <code class="language-plaintext highlighter-rouge">add</code> and <code class="language-plaintext highlighter-rouge">sub</code>.
+But for now, since we used <code class="language-plaintext highlighter-rouge">lsl</code>, only the Negative flag is relevant.
+We’ll discuss flags in more detail in upcoming posts on arithmetic instructions.</p>
+</blockquote>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/non-add-sub-v-left-unchanged.png" alt="ARM manual: overflow flag not updated on logical shift" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">The ARM manual states that overflow flags are generally not updated for non-add/sub operations like logical shifts.</figcaption>
+</figure>
+
+<p>In short: left shifts in ARM are always logical (<code class="language-plaintext highlighter-rouge">lsl</code>).<br />
+There’s no such thing as an “arithmetic left shift” because it doesn’t make sense to preserve the sign when the sign bit itself is being shifted.</p>
+
+<h2 id="checking-flags-in-gdb">Checking Flags in GDB</h2>
+<p>Let’s compile and run the <code class="language-plaintext highlighter-rouge">left-shift-for-negative.s</code> example and check the CPSR flags in GDB.</p>
+
+<h3 id="1-compile">1. Compile</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="se">\</span>
+    <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="se">\</span>
+    <span class="nt">-nostdlib</span> <span class="se">\</span>
+    left-shift-for-negative.s <span class="se">\</span>
+    <span class="nt">-o</span> left-shift-for-negative.elf
+</code></pre></div></div>
+<h4 id="2-ruin-in-qemu">2. Ruin in QEMU</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>qemu-system-arm <span class="se">\</span>
+    <span class="nt">-machine</span> versatilepb <span class="se">\</span>
+    <span class="nt">-nographic</span> <span class="se">\</span>
+    <span class="nt">-S</span> <span class="se">\</span>
+    <span class="nt">-s</span> <span class="se">\</span>
+    <span class="nt">-kernel</span> left-shift-for-negative.elf
+</code></pre></div></div>
+<h4 id="3-connect-gdb">3. Connect GDB</h4>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gdb-multiarch left-shift-for-negative.elf
+</code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-gdb" data-lang="gdb">(gdb) target remote :1234
+0x00010000 in _start ()    
+(gdb) si                   # mov r0, #0x40000000 
+0x00010004 in _start ()    
+(gdb) p ($cpsr &gt;&gt; 31) &amp; 1
+$2 = 0
+<span class="hll">(gdb) si                   # movs r1, r0, lsl #1
+</span>0x00010008 in _start ()
+<span class="hll">(gdb) p ($cpsr &gt;&gt; 31) &amp; 1
+</span><span class="hll">$2 = 1
+</span></code></pre></figure>
+
+<p>The second instruction(<code class="language-plaintext highlighter-rouge">movs r1, r0, lsl #1</code>) set the N (Negative) flag because the result of the shift was interpreted as a negative number.</p>
+
+<h2 id="summary">Summary</h2>
+<p>In this post, we learned:</p>
+
+<ul>
+  <li>How to use the <code class="language-plaintext highlighter-rouge">asr</code> instruction for arithmetic right shifts</li>
+  <li>Why there is no <code class="language-plaintext highlighter-rouge">asl</code> (arithmetic left shift)</li>
+  <li>How to check the Negative flag using GDB</li>
+</ul>
+
+<p>In the next chapter, we’ll explore the final type of shift:
+rotate right (<code class="language-plaintext highlighter-rouge">ror</code>) and rotate with extend (<code class="language-plaintext highlighter-rouge">rrx</code>), which are used to rotate bits circularly.</p>
+
+<p>Let me know if you found any mistakes or suggestions for improvement!</p>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
