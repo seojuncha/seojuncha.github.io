@@ -1,4 +1,251 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-09-15T13:00:07+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" rel="alternate" type="text/html" title="ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation" /><published>2025-09-15T12:53:00+00:00</published><updated>2025-09-15T12:53:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"><![CDATA[<p>One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-09-16T02:54:29+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">Understanding Carry in Arithmetic</title><link href="https://seojuncha.github.io/computer/arithmetic/2025/09/16/what-is-carry.html" rel="alternate" type="text/html" title="Understanding Carry in Arithmetic" /><published>2025-09-16T02:45:00+00:00</published><updated>2025-09-16T02:45:00+00:00</updated><id>https://seojuncha.github.io/computer/arithmetic/2025/09/16/what-is-carry</id><content type="html" xml:base="https://seojuncha.github.io/computer/arithmetic/2025/09/16/what-is-carry.html"><![CDATA[<p>Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore <strong>the definition and concept of Carry</strong>, <strong>how it works in binary and decimal arithmetic</strong>, and <strong>how programming languages handle Carry</strong>.</p>
+
+<p>Example: When unsigned int exceeds its maximum range:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">4294967295</span><span class="p">;</span>   <span class="cm">/* maximum value (32-bit unsigned integer) */</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>        <span class="cm">/* Overflow: c has 0 */</span>
+</code></pre></div></div>
+
+<h2 id="what-is-carry">What is Carry?</h2>
+<p>Let’s start with the concept of carrying in decimal addition:</p>
+
+\[5 + 4 = 9\]
+
+<p>No carry is generated when <code class="language-plaintext highlighter-rouge">5 + 4 = 9</code>, as the result fits within a single digit. Carry occurs when the sum exceeds the value that a single digit can represent. For example:</p>
+
+\[9 + 5 = 14 \; (Carry)\]
+
+<p>Here, <code class="language-plaintext highlighter-rouge">9 + 5</code> results in <code class="language-plaintext highlighter-rouge">14</code>, where the ones place overflows into the tens place.</p>
+
+<p>The same principle applies to binary addition. In binary, the maximum value a single digit can represent is 1. When adding <code class="language-plaintext highlighter-rouge">1 + 1</code>, carry is generated:</p>
+
+\[\begin{aligned}
+&amp;0 + 0 = 0  \; (No Carry) \newline
+&amp;1 + 0 = 1  \; (No Carry) \newline
+&amp;1 + 1 = 10 \; (Carry)
+\end{aligned}\]
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 + 1 = 10 (Carry generated)
+=&gt; In binary addition, carry is handled as a 1 passed to the next higher bit.
+</code></pre></div></div>
+
+<p>Carry is important because it <strong>occurs when the sum exceeds the capacity of a fixed-width space</strong>. For example, in a 4-bit memory, the maximum binary value <code class="language-plaintext highlighter-rouge">1111</code> overflows to <code class="language-plaintext highlighter-rouge">10000</code>.</p>
+
+<h2 id="carry-in-and-carry-out">Carry in and Carry out</h2>
+<p><strong><em>Carry in</em></strong> is the carry value passed from a lower bit operation, and <strong><em>Carry out</em></strong> is the carry value resulting from the current bit operation. This process is typically handled by a hardware <a href="https://en.wikipedia.org/wiki/Adder_(electronics)#Full_adder">Full Adder</a> circuit.</p>
+
+<p><em>Carry in</em> ensures continuity and accuracy in multi-bit operations.</p>
+
+<p><strong>Example</strong>: Adding <code class="language-plaintext highlighter-rouge">13</code> and <code class="language-plaintext highlighter-rouge">7</code> in a <code class="language-plaintext highlighter-rouge">4-bit</code> space</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"><span class="hll">carry in   :  1   1   1   1   0
+</span>13 (1101)  :      1   1   0   1
+7  (0111)  :      0   1   1   1
+--------------------------------
+sum        :  1   0   1   0   0
+<span class="hll">carry out  :  0   1   1   1   1
+</span></code></pre></figure>
+
+<p>Carry occurs when the sum exceeds the capacity of a bit. The result here is <code class="language-plaintext highlighter-rouge">13 + 7 = 20 (0b10100)</code>.</p>
+
+<h2 id="carry-in-arithmetic-operations">Carry in Arithmetic Operations</h2>
+<p>Let’s analyze carry in basic arithmetic operations like addition and subtraction.</p>
+
+<h3 id="binary-addition">Binary Addition</h3>
+<p>Addition in binary operates similarly regardless of whether the numbers are signed or unsigned.</p>
+
+<p><strong>Example 1:</strong> Unsigned <code class="language-plaintext highlighter-rouge">3 + 9</code> in 4-bit space</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0011
++ 1001
+------
+  1100  = 12 in Decimal
+</code></pre></div></div>
+
+<p><strong>Example 2:</strong> Signed <code class="language-plaintext highlighter-rouge">3 + 2</code> in 4-bit space</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0011
++ 0010
+------
+  0101  = 5 in Decimal
+</code></pre></div></div>
+<blockquote>
+  <p>For signed integers in 4-bit space, the maximum positive value is 7. Results exceeding this will be discussed in the later post.</p>
+</blockquote>
+
+<h3 id="binary-subtraction">Binary Subtraction</h3>
+<p>In computers, subtraction is performed by adding the two’s complement of the subtrahend.</p>
+
+\[7 - 3 = 7 + (-3)\]
+
+<p>For example, in 4-bit space:<br />
+Represent <code class="language-plaintext highlighter-rouge">-3</code> as <code class="language-plaintext highlighter-rouge">two's complement of 3</code>:</p>
+<ul>
+  <li>3 = 0011</li>
+  <li>-3 = 1101</li>
+</ul>
+
+<p><strong>Example 1:</strong> <code class="language-plaintext highlighter-rouge">7 - 3</code></p>
+<ul>
+  <li>7 = 0111</li>
+  <li>3 = 0011
+    <ul>
+      <li>-3 = 1101</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0111   (7 in binary)
++ 1101   (-3 in binary)
+-------
+ 10100  = 4 (ignore carry)
+</code></pre></div></div>
+<p><strong>Example 2:</strong> <code class="language-plaintext highlighter-rouge">3 - 7</code></p>
+<ul>
+  <li>3 = 0011</li>
+  <li>7 = 0111
+    <ul>
+      <li>-7 = 1001</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0011   (3 in binary)
++ 1001   (-7 in binary)
+-------
+  1100  = (interpret based on signed/unsigned)
+</code></pre></div></div>
+<p>For unsigned integers:</p>
+<ul>
+  <li>1100 = 12</li>
+</ul>
+
+<p>For signed integers:</p>
+<ul>
+  <li>1100 = -4</li>
+</ul>
+
+<h2 id="carry-in-shift-operations">Carry in Shift Operations</h2>
+<p>Carry is also relevant in shift operations, which move bits left or right. The behavior depends on the direction of the shift:</p>
+<ul>
+  <li><strong>Left Shift</strong>: Carry occurs if the MSB is exceeded.</li>
+  <li><strong>Right Shift</strong>: Carry occurs if the LSB is exceeded.</li>
+</ul>
+
+<p>Example of Left Shift:<br />
+Left shifts are used to double the value of a binary number, while right shifts are used to halve it. However, without considering the carry, data loss may occur.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">value</span> <span class="o">=</span> <span class="mb">0b0111</span>           <span class="c1"># 7 in binary
+</span><span class="n">left_shift</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span>  <span class="c1"># Shift left by 2 bits
+</span><span class="n">carry</span> <span class="o">=</span> <span class="n">left_shift</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span>  <span class="c1"># Extract carry from MSB
+</span><span class="nf">print</span><span class="p">(</span><span class="nf">bin</span><span class="p">(</span><span class="n">carry</span><span class="p">))</span>        <span class="c1"># Outputs: 0b1
+</span></code></pre></div></div>
+
+<p>Left Shift Example (4-bit):</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0111 &lt;&lt; 1 = (0)1110 (No Carry)
+0111 &lt;&lt; 2 = (1)1100 (Carry)
+</code></pre></div></div>
+
+<p>Right Shift Example (4-bit):</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0110 &gt;&gt; 1 = 0011(0)  (No Carry)
+0110 &gt;&gt; 2 = 0001(1)  (Carry)
+</code></pre></div></div>
+
+<h3 id="utilizing-carry-in-shift-operations">Utilizing Carry in Shift Operations</h3>
+<p>The carry in shift operations is often used in tasks such as circular data shifts (Circular Shift) or <a href="https://en.wikipedia.org/wiki/Cyclic_redundancy_check">CRC (Cyclic Redundancy Check)</a> calculations.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">circular_left_shift</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">bits</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="nf">return </span><span class="p">((</span><span class="n">value</span> <span class="o">&lt;&lt;</span> <span class="n">bits</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="n">bits</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="programming-examples">Programming Examples</h2>
+
+<h3 id="example-1-detecting-carry-in-python">Example 1: Detecting Carry in Python</h3>
+<p>Here’s a Python function to detect carry:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">has_carry</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">bits</span><span class="p">):</span>
+  <span class="sh">"""</span><span class="s">
+  Detects if carry occurs beyond a given bit width.
+  </span><span class="sh">"""</span>
+  <span class="k">return</span> <span class="nf">bool</span><span class="p">(</span><span class="n">value</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bits</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Example:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">5</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">a</span><span class="si">:</span><span class="mi">05</span><span class="n">b</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">b</span><span class="si">:</span><span class="mi">05</span><span class="n">b</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="si">:</span><span class="mi">05</span><span class="n">b</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">has_carry</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">has_carry</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Output:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01101
+00101
+10010
+True
+False
+</code></pre></div></div>
+
+<h3 id="example-2-unsigned-integer-carry-in-c">Example 2: Unsigned Integer Carry in C</h3>
+<p>This C example demonstrates how carry affects unsigned integers:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">uint8_t</span> <span class="n">ui8</span> <span class="o">=</span> <span class="n">UINT8_MAX</span><span class="p">;</span> <span class="c1">// 8-bit max value = 255</span>
+  <span class="kt">uint8_t</span> <span class="n">ui8_plus_one</span> <span class="o">=</span> <span class="n">UINT8_MAX</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// Carry wraps to 0</span>
+  <span class="kt">uint8_t</span> <span class="n">ui8_plus_two</span> <span class="o">=</span> <span class="n">UINT8_MAX</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>  <span class="c1">// Carry wraps to 1</span>
+
+  <span class="kt">uint16_t</span> <span class="n">ui16</span> <span class="o">=</span> <span class="n">UINT8_MAX</span><span class="p">;</span>  <span class="c1">// Expand to 16-bit</span>
+  <span class="kt">uint16_t</span> <span class="n">ui16_plus_one</span> <span class="o">=</span> <span class="n">UINT8_MAX</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// 256</span>
+  <span class="kt">uint16_t</span> <span class="n">ui16_plus_two</span> <span class="o">=</span> <span class="n">UINT8_MAX</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>  <span class="c1">// 257</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"8-bit Memory</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%02X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8</span><span class="p">,</span> <span class="n">ui8</span><span class="p">);</span>  <span class="c1">// 255</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%02X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8_plus_one</span><span class="p">,</span> <span class="n">ui8_plus_one</span><span class="p">);</span>  <span class="c1">// 0</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%02X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8_plus_two</span><span class="p">,</span> <span class="n">ui8_plus_two</span><span class="p">);</span>  <span class="c1">// 1</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"16-bit Memory</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%04X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui16</span><span class="p">,</span> <span class="n">ui16</span><span class="p">);</span>  <span class="c1">// 255</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%04X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui16_plus_one</span><span class="p">,</span> <span class="n">ui16_plus_one</span><span class="p">);</span>  <span class="c1">// 256</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%04X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui16_plus_two</span><span class="p">,</span> <span class="n">ui16_plus_two</span><span class="p">);</span>  <span class="c1">// 257</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Output:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>8-bit Memory
+  255 [0xFF]
+  0 [0x00]
+  1 [0x01]
+16-bit Memory
+  255 [0x00FF]
+  256 [0x0100]
+  257 [0x0101]
+</code></pre></div></div>
+<p>In this case, the compiler makes the warning message.</p>
+
+<p>Compiler Warning:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>carry.c: In function ‘main’:
+carry.c:6:26: warning: unsigned conversion from ‘int’ to ‘uint8_t’ {aka ‘unsigned char’} changes value from ‘256’ to ‘0’ [-Woverflow]
+    6 |   uint8_t ui8_plus_one = UINT8_MAX + 1;
+      |                          ^~~~~~~~~
+carry.c:7:26: warning: unsigned conversion from ‘int’ to ‘uint8_t’ {aka ‘unsigned char’} changes value from ‘257’ to ‘1’ [-Woverflow]
+    7 |   uint8_t ui8_plus_two = UINT8_MAX + 2;
+      |                          ^~~~~~~~~
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>Carry is not just a small detail in arithmetic—it is one of the <strong>core mechanisms that guarantee correctness in binary operations</strong>.<br />
+It appears in almost every low-level system, from simple addition inside a CPU to advanced cryptographic algorithms and error-detection methods like CRC.</p>
+
+<p>By understanding Carry, developers and engineers can:</p>
+<ul>
+  <li>Debug arithmetic bugs more effectively</li>
+  <li>Write safer low-level code for embedded systems and compilers</li>
+  <li>Optimize algorithms that rely on precise bit-level operations</li>
+</ul>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="computer" /><category term="arithmetic" /><category term="carry" /><category term="binary operation" /><category term="arithmetic operation" /><category term="binary arithmetic" /><summary type="html"><![CDATA[Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore the definition and concept of Carry, how it works in binary and decimal arithmetic, and how programming languages handle Carry.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" rel="alternate" type="text/html" title="ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation" /><published>2025-09-15T12:53:00+00:00</published><updated>2025-09-15T12:53:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"><![CDATA[<p>One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations.</p>
 
 <p>In arithmetic operations, it’s important to consider whether a number is signed or unsigned. In the <a href="/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html">previous post</a>, we explored logical shifts for bit-level manipulation.<br />
 This time, we’ll look at arithmetic right shifts using the <code class="language-plaintext highlighter-rouge">asr</code> instruction and how they preserve the sign of a number.</p>
