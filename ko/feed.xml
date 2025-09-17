@@ -1,4 +1,139 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-09-16T02:54:29+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)" /><published>2025-09-15T12:53:00+00:00</published><updated>2025-09-15T12:53:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"><![CDATA[<p>CPU의 중요한 모듈중 하나인 ALU는 산술논리장치입니다. 이름에서 유추할 수 있듯이 논리연산 뿐 아니라 산술연산도 가능해야 하죠.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-09-17T14:05:00+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법" /><published>2025-09-17T13:40:00+00:00</published><updated>2025-09-17T13:40:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"><![CDATA[<p>이번 글에서는 시프트 연산의 마지막 주제인 <strong>순환 시프트 (Rotate Shift)</strong> 를 다룹니다. 
+ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: <code class="language-plaintext highlighter-rouge">ror</code> (Rotate Right), <code class="language-plaintext highlighter-rouge">rrx</code> (Rotate Right with eXtend)</p>
+
+<p>이 명령어들은 단순히 비트를 밀어내는 것이 아니라, <strong>밀려난 비트를 다시 반대편에서 채워 넣는</strong> 방식으로 동작합니다.</p>
+
+<h2 id="arm-에서-제공하는-순환-시프트">ARM 에서 제공하는 순환 시프트</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">명령어</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">ror</code></td>
+      <td style="text-align: center">Rotate Right</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rrx</code></td>
+      <td style="text-align: center">Rotate Right with eXtend</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code class="language-plaintext highlighter-rouge">ror</code>은 다른 시프트 연산자들과 동일하게 즉시값이나 레지스터로 시프트양을 지정할 수 있습니다.</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ror #&lt;imm&gt;</code> : 즉시값 만큼 시프트 연산</li>
+  <li><code class="language-plaintext highlighter-rouge">ror &lt;Rs&gt;</code> : 레지스터값 만큼 시프트 연산</li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">rrx</code>는 피연산자를 가지지 않으며, <strong>항상 1비트</strong>를 시프트합니다. 대신 <strong>CPSR의 캐리(Carry) 플래그</strong>를 포함하여 33비트 시프트처럼 동작합니다.</p>
+
+<h2 id="ror-rotate-right">ROR: Rotate Right</h2>
+<p><code class="language-plaintext highlighter-rouge">ror</code> 명령은 오른쪽으로 시프트되는 비트를 <strong>최상위 비트로 되돌려</strong> 삽입합니다.<br />
+즉, <strong>모든 비트를 보존하면서 위치만 바꾸는</strong> 연산입니다.</p>
+
+<p><strong>ror.s</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x96</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">ror</span> <span class="o">#</span><span class="mi">4</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">R0</code>의 초기값은 <code class="language-plaintext highlighter-rouge">0x96</code>(<code class="language-plaintext highlighter-rouge">0b10010...0110</code>)입니다.
+<code class="language-plaintext highlighter-rouge">ror #4</code>를 실행하면 오른쪽 4비트를 잘라낸 후, 그것을 다시 상위 비트에 붙입니다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Before:   0b0000_0000_0000_0000_0000_0000_1001_0110 = 0x96
+After:    0b0110_0000_0000_0000_0000_0000_0000_1001 = 0x60000009
+</code></pre></div></div>
+
+<h2 id="rrx-rotate-right-with-extend">RRX: Rotate Right with Extend</h2>
+<p><code class="language-plaintext highlighter-rouge">rrx</code>는 <code class="language-plaintext highlighter-rouge">ror #1</code>과 거의 같지만, <strong>CPSR의 캐리 플래그</strong>와 함께 작동하여 32비트가 아닌 <strong>33비트 시프트처럼</strong> 동작합니다.</p>
+<ul>
+  <li>오른쪽으로 1비트를 밀면, LSB는 캐리 플래그로 이동</li>
+  <li>동시에 현재 캐리 플래그의 값이 MSB로 채워짐</li>
+</ul>
+
+<p><strong>rrx.s</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x69</span>
+  <span class="nb">movs</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">rrx</span>
+  <span class="nb">movs</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="nb">rrx</span>
+  <span class="nb">b</span> <span class="mf">.</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0b0000_0000_0000_0000_0000_0000_0110_1001 = 0x69
+
+[rrx/C=0]: 0b0000_0000_0000_0000_0000_0000_0011_0100 -&gt; R1=0x34, C=1
+[rrx/C=1]: 0b1000_0000_0000_0000_0000_0000_0001_1010 -&gt; R2=0x8000001a, C=0
+</code></pre></div></div>
+
+<h3 id="gdb로-캐리-플래그-확인">GDB로 캐리 플래그 확인</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="nt">-nostdlib</span> rrx.s <span class="nt">-o</span> rrx.elf
+<span class="nv">$ </span>qemu-system-arm <span class="nt">-machine</span> versatilepb <span class="nt">-nographic</span> <span class="nt">-S</span> <span class="nt">-s</span> <span class="nt">-kernel</span> rrx.elf
+<span class="nv">$ </span>gdb-multiarch rrx.elf
+</code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">(</span>gdb<span class="o">)</span> target remote :1234
+<span class="o">(</span>gdb<span class="o">)</span> si                          <span class="c"># mov r0, #0x69 실행</span>
+0x00010004 <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r r0
+r0             0x69     105
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1         <span class="c"># 최초 캐리플래그 확인</span>
+<span class="nv">$3</span> <span class="o">=</span> 0
+<span class="o">(</span>gdb<span class="o">)</span> si                          <span class="c"># movs r1, r0, rrx 실행</span>
+0x00010008 <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
+<span class="hll"><span class="nv">$4</span> <span class="o">=</span> 1
+</span><span class="o">(</span>gdb<span class="o">)</span> i r r1
+r1             0x34     52
+<span class="o">(</span>gdb<span class="o">)</span> si                          <span class="c"># movs r2, r1, rrx 실행</span>
+0x0001000c <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
+<span class="hll"><span class="nv">$5</span> <span class="o">=</span> 0
+</span><span class="o">(</span>gdb<span class="o">)</span> i r r0 r1 r2
+r0             0x69     105
+r1             0x34     52
+r2             0x8000001a       <span class="nt">-2147483622</span></code></pre></figure>
+
+<h2 id="왜-왼쪽-순환시프트는-없을까">왜 왼쪽 순환시프트는 없을까?</h2>
+<p>ARM에는 <code class="language-plaintext highlighter-rouge">ROL</code> (Rotate Left) 명령어가 없습니다.
+왜냐하면, 기존의 <code class="language-plaintext highlighter-rouge">lsl</code> + <code class="language-plaintext highlighter-rouge">ror</code> 조합으로 쉽게 구현할 수 있기 때문입니다.</p>
+
+<p>예를 들어:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">@</span> <span class="nv">ROL</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="nv">n</span>  <span class="o">(</span><span class="nv">Rotate</span> <span class="nv">Left</span><span class="o">)</span>
+  <span class="nb">lsl</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="nv">n</span>           <span class="no">@</span> <span class="err">왼쪽으로</span> <span class="nv">n</span><span class="err">비트</span> <span class="err">밀기</span>
+  <span class="nb">ror</span> <span class="nv">r3</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#(</span><span class="mi">32</span> <span class="o">-</span> <span class="nv">n</span><span class="o">)</span>    <span class="no">@</span> <span class="err">오른쪽으로</span> <span class="o">(</span><span class="mi">32</span><span class="o">-</span><span class="nv">n</span><span class="o">)</span><span class="err">비트</span> <span class="err">밀기</span>
+  <span class="nb">orr</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r3</span>           <span class="no">@</span> <span class="err">합치면</span> <span class="nv">ROL</span>
+</code></pre></div></div>
+
+<p>만약, <code class="language-plaintext highlighter-rouge">r0 = 0x80000001</code>, <code class="language-plaintext highlighter-rouge">n=1</code> 이라면:</p>
+<ul>
+  <li>LSL → <code class="language-plaintext highlighter-rouge">0x00000002</code></li>
+  <li>ROR(31) → <code class="language-plaintext highlighter-rouge">0x40000000</code></li>
+  <li>ORR → <code class="language-plaintext highlighter-rouge">0x40000002</code> (정상적인 ROL 결과)</li>
+</ul>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">orr</code> 은 논리합(OR) 연산입니다!</p>
+</blockquote>
+
+<h2 id="마무리">마무리</h2>
+<p>이번 포스팅에서는 ARM의 순환 시프트 명령어인 <code class="language-plaintext highlighter-rouge">ror</code>과 <code class="language-plaintext highlighter-rouge">rrx</code>를 살펴봤습니다.</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ror</code>: 비트를 오른쪽으로 밀고 최상위 비트로 다시 삽입</li>
+  <li><code class="language-plaintext highlighter-rouge">rrx</code>: 캐리 플래그를 포함한 33비트 순환 시프트</li>
+  <li>rol은 명령어로 존재하지 않지만 <code class="language-plaintext highlighter-rouge">lsl</code> + <code class="language-plaintext highlighter-rouge">ror</code> 조합으로 구현 가능</li>
+</ul>
+
+<p>다음 글에서는 이 시프트 연산들이 실제 연산 명령어(<code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>)와 어떻게 결합되어 쓰이는지,
+그리고 Carry/Overflow 플래그의 의미와 역할에 대해 자세히 다룰 예정입니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="ror" /><category term="rrx" /><category term="arm" /><category term="assembly" /><category term="rotate shift" /><summary type="html"><![CDATA[이번 글에서는 시프트 연산의 마지막 주제인 순환 시프트 (Rotate Shift) 를 다룹니다. ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: ror (Rotate Right), rrx (Rotate Right with eXtend)]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)" /><published>2025-09-15T12:53:00+00:00</published><updated>2025-09-15T12:53:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"><![CDATA[<p>CPU의 중요한 모듈중 하나인 ALU는 산술논리장치입니다. 이름에서 유추할 수 있듯이 논리연산 뿐 아니라 산술연산도 가능해야 하죠.
 산술연산에서 유의해야 할 것은 피연산자의 부호 유무입니다. <a href="/ko/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html">앞선 포스팅</a>에서는 논리 시프트를 사용한 비트 단위의 연산을 고려했다면,
 이번 포스팅에서는 부호를 고려한 산술 시프트 연산자인 <code class="language-plaintext highlighter-rouge">asr</code>의 특징과 사용법을 살펴보겠습니다.</p>
 

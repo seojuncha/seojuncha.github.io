@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #4 - How to Rotate Bits with ROR and RRX | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #4 - How to Rotate Bits with ROR and RRX" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="In this post, we’ll explore the final topic in ARM’s shift operations — Rotate Shift. The ARMv4 architecture provides two rotate instructions: ror (Rotate Right) and rrx (Rotate Right with eXtend)." />
+<meta property="og:description" content="In this post, we’ll explore the final topic in ARM’s shift operations — Rotate Shift. The ARMv4 architecture provides two rotate instructions: ror (Rotate Right) and rrx (Rotate Right with eXtend)." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-09-17T13:40:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #4 - How to Rotate Bits with ROR and RRX" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-17T13:40:00+00:00","datePublished":"2025-09-17T13:40:00+00:00","description":"In this post, we’ll explore the final topic in ARM’s shift operations — Rotate Shift. The ARMv4 architecture provides two rotate instructions: ror (Rotate Right) and rrx (Rotate Right with eXtend).","headline":"ARM Assembly #4 - How to Rotate Bits with ROR and RRX","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #4 - How to Rotate Bits with ROR and RRX
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-09-17T13:40:00+00:00"
+        itemprop="datePublished"
+      >
+        Sep 17, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>In this post, we’ll explore the final topic in ARM’s shift operations — <strong>Rotate Shift</strong>.<br />
+The ARMv4 architecture provides two rotate instructions: <code class="language-plaintext highlighter-rouge">ror</code> (Rotate Right) and <code class="language-plaintext highlighter-rouge">rrx</code> (Rotate Right with eXtend).</p>
+
+<p>Unlike logical or arithmetic shifts, rotate instructions <strong>wrap the shifted-out bits around and insert them back</strong> on the other side.</p>
+
+<h2 id="rotate-shift-instructions-in-arm">Rotate Shift Instructions in ARM</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Instruction</th>
+      <th style="text-align: center">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">ror</code></td>
+      <td style="text-align: center">Rotate Right</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rrx</code></td>
+      <td style="text-align: center">Rotate Right with eXtend</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Just like other shift operators, <code class="language-plaintext highlighter-rouge">ror</code> accepts either an immediate or a register for the shift amount:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ror #&lt;imm&gt;</code>: rotates right by an immediate value</li>
+  <li><code class="language-plaintext highlighter-rouge">ror &lt;Rs&gt;</code>: rotates right by the value in a register</li>
+</ul>
+
+<p>On the other hand, <code class="language-plaintext highlighter-rouge">rrx</code> does <strong>not</strong> take any operand and <strong>always rotates by 1 bit</strong>, using the <strong>Carry flag in CPSR</strong> to extend the operation to 33 bits.</p>
+
+<h2 id="ror-rotate-right">ROR: Rotate Right</h2>
+<p>The <code class="language-plaintext highlighter-rouge">ror</code> instruction shifts all bits to the right, and the bits shifted out from the LSB side are <strong>re-inserted into the MSB side</strong>.<br />
+In other words, it’s a <strong>bit-preserving, circular move</strong>.</p>
+
+<p><strong>ror.s</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x96</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">ror</span> <span class="o">#</span><span class="mi">4</span>
+</code></pre></div></div>
+
+<p>Here, <code class="language-plaintext highlighter-rouge">R0 = 0x96</code> → <code class="language-plaintext highlighter-rouge">0b0000...1001_0110</code>
+After <code class="language-plaintext highlighter-rouge">ror #4</code>, the lower 4 bits <code class="language-plaintext highlighter-rouge">0110</code> are wrapped around and placed at the MSB:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Before:   0b0000_0000_0000_0000_0000_0000_1001_0110 = 0x96
+After:    0b0110_0000_0000_0000_0000_0000_0000_1001 = 0x60000009
+</code></pre></div></div>
+
+<h2 id="rrx-rotate-right-with-extend">RRX: Rotate Right with Extend</h2>
+<p><code class="language-plaintext highlighter-rouge">rrx</code> behaves similarly to <code class="language-plaintext highlighter-rouge">ror #1</code>, but with one major difference — it includes the <strong>CPSR’s Carry flag</strong> and performs a <strong>33-bit rotation</strong>:</p>
+
+<ul>
+  <li>The LSB is shifted into the <strong>Carry flag</strong></li>
+  <li>The current Carry flag value is shifted into the <strong>MSB</strong></li>
+</ul>
+
+<p><strong>rrx.s</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x69</span>
+  <span class="nb">movs</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">rrx</span>
+  <span class="nb">movs</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="nb">rrx</span>
+  <span class="nb">b</span> <span class="mf">.</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Initial:   0b0000_0000_0000_0000_0000_0000_0110_1001 = 0x69
+
+[rrx/C=0]: 0b0000_0000_0000_0000_0000_0000_0011_0100 -&gt; R1=0x34, C=1
+[rrx/C=1]: 0b1000_0000_0000_0000_0000_0000_0001_1010 -&gt; R2=0x8000001a, C=0
+</code></pre></div></div>
+
+<h3 id="checking-carry-flag-in-gdb">Checking Carry Flag in GDB</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="nt">-nostdlib</span> rrx.s <span class="nt">-o</span> rrx.elf
+<span class="nv">$ </span>qemu-system-arm <span class="nt">-machine</span> versatilepb <span class="nt">-nographic</span> <span class="nt">-S</span> <span class="nt">-s</span> <span class="nt">-kernel</span> rrx.elf
+<span class="nv">$ </span>gdb-multiarch rrx.elf
+</code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">(</span>gdb<span class="o">)</span> target remote :1234
+<span class="o">(</span>gdb<span class="o">)</span> si                          <span class="c"># Executes: mov r0, #0x69</span>
+0x00010004 <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r r0
+r0             0x69     105
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1         <span class="c"># Check initial Carry Flag</span>
+<span class="nv">$3</span> <span class="o">=</span> 0
+<span class="o">(</span>gdb<span class="o">)</span> si                          <span class="c"># Executes: movs r1, r0, rrx</span>
+0x00010008 <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
+<span class="hll"><span class="nv">$4</span> <span class="o">=</span> 1
+</span><span class="o">(</span>gdb<span class="o">)</span> i r r1
+r1             0x34     52
+<span class="o">(</span>gdb<span class="o">)</span> si                          <span class="c"># Executes: movs r2, r1, rrx</span>
+0x0001000c <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
+<span class="hll"><span class="nv">$5</span> <span class="o">=</span> 0
+</span><span class="o">(</span>gdb<span class="o">)</span> i r r0 r1 r2
+r0             0x69     105
+r1             0x34     52
+r2             0x8000001a       <span class="nt">-2147483622</span></code></pre></figure>
+
+<h2 id="why-is-there-no-rotate-left-rol">Why is there no Rotate Left (ROL)?</h2>
+<p>ARM does not include a ROL instruction. Why?
+Because you can easily <strong>simulate rotate-left</strong> using a combination of <code class="language-plaintext highlighter-rouge">lsl</code> and <code class="language-plaintext highlighter-rouge">ror</code>.</p>
+
+<h3 id="simulated-rol-using-lsl-and-ror">Simulated ROL using LSL and ROR</h3>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">@</span> <span class="nv">ROL</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="nv">n</span>
+  <span class="nb">lsl</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="nv">n</span>           <span class="no">@</span> <span class="nv">Logical</span> <span class="nv">sfhit</span> <span class="nv">left</span>
+  <span class="nb">ror</span> <span class="nv">r3</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#(</span><span class="mi">32</span> <span class="o">-</span> <span class="nv">n</span><span class="o">)</span>    <span class="no">@</span> <span class="nv">Rotate</span> <span class="nv">right</span> <span class="nv">the</span> <span class="nv">remaining</span> <span class="nv">bits</span>
+  <span class="nb">orr</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r3</span>           <span class="no">@</span> <span class="nv">Combine</span> <span class="nv">both</span> <span class="nv">halves</span>
+</code></pre></div></div>
+
+<p>For example, if <code class="language-plaintext highlighter-rouge">r0 = 0x80000001</code> and <code class="language-plaintext highlighter-rouge">n=1</code>:</p>
+<ul>
+  <li>LSL → <code class="language-plaintext highlighter-rouge">0x00000002</code></li>
+  <li>ROR(31) → <code class="language-plaintext highlighter-rouge">0x40000000</code></li>
+  <li>ORR → <code class="language-plaintext highlighter-rouge">0x40000002</code> (Valid rotate-left result)</li>
+</ul>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">orr</code> performs bitwise OR between the two shifted values.</p>
+</blockquote>
+
+<h2 id="summary">Summary</h2>
+<p>In this post, we’ve covered ARM’s rotate shift instructions:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ror</code>: circular right shift that preserves all bits</li>
+  <li><code class="language-plaintext highlighter-rouge">rrx</code>: 1-bit circular shift with carry extension</li>
+  <li><code class="language-plaintext highlighter-rouge">rol</code> is not an instruction but can be emulated using <code class="language-plaintext highlighter-rouge">lsl</code> + <code class="language-plaintext highlighter-rouge">ror</code></li>
+</ul>
+
+<p>In the next post, we’ll explore how these shift operations integrate with real arithmetic instructions (<code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>) and how they affect <strong>Carry and Overflow</strong> flags.</p>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
