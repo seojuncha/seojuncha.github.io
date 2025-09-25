@@ -3,9 +3,10 @@ layout: post
 lang: ko
 ref: ""
 title: "ARM 어셈블리 #6 - 산술연산"
-date:
+date: 2025-09-25 21:40:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: []
+published: false
 ---
 
 지금까지는 ARM 어셈블리로 레지스터에 값을 할당하고 시프트하는 방법을 배웠다면 오늘은 산술연산을 다뤄보겠습니다.
