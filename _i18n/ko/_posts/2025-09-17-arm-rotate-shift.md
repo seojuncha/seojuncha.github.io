@@ -2,22 +2,22 @@
 layout: post
 lang: ko
 ref: "arm-rotate-shift"
-title: "ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법"
+title: "ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법"
 date: 2025-09-17 22:40:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ror", "rrx", "arm", "assembly", "rotate shift"]
 ---
-이번 글에서는 시프트 연산의 마지막 주제인 **순환 시프트 (Rotate Shift)** 를 다룹니다. 
-ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: `ror` (Rotate Right), `rrx` (Rotate Right with eXtend)
+이번 글에서는 시프트 연산의 마지막 주제인 **회전 시프트 (Rotate Shift)** 를 다룹니다. 
+ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: `ror` (Rotate Right), `rrx` (Rotate Right with eXtend)
 
 이 명령어들은 단순히 비트를 밀어내는 것이 아니라, **밀려난 비트를 다시 반대편에서 채워 넣는** 방식으로 동작합니다.
 
-## ARM 에서 제공하는 순환 시프트
+## ARM 에서 제공하는 회전 시프트
 
 | 명령어 | 설명 |
 |:---:|:---:|
-| `ror` | Rotate Right |
-| `rrx` | Rotate Right with eXtend |
+| `ror` | 오른쪽 회전 |
+| `rrx` | 오른쪽 회전 확장|
 
 `ror`은 다른 시프트 연산자들과 동일하게 즉시값이나 레지스터로 시프트양을 지정할 수 있습니다.
 - `ror #<imm>` : 즉시값 만큼 시프트 연산
@@ -100,7 +100,7 @@ r1             0x34     52
 r2             0x8000001a       -2147483622
 {% endhighlight %}
 
-## 왜 왼쪽 순환시프트는 없을까?
+## 왜 왼쪽 회전 시프트는 없을까?
 ARM에는 `ROL` (Rotate Left) 명령어가 없습니다.
 왜냐하면, 기존의 `lsl` + `ror` 조합으로 쉽게 구현할 수 있기 때문입니다.
 
@@ -120,7 +120,7 @@ ARM에는 `ROL` (Rotate Left) 명령어가 없습니다.
 > `orr` 은 논리합(OR) 연산입니다!
 
 ## 마무리
-이번 포스팅에서는 ARM의 순환 시프트 명령어인 `ror`과 `rrx`를 살펴봤습니다.
+이번 포스팅에서는 ARM의 회전 시프트 명령어인 `ror`과 `rrx`를 살펴봤습니다.
 - `ror`: 비트를 오른쪽으로 밀고 최상위 비트로 다시 삽입
 - `rrx`: 캐리 플래그를 포함한 33비트 순환 시프트
 - rol은 명령어로 존재하지 않지만 `lsl` + `ror` 조합으로 구현 가능
