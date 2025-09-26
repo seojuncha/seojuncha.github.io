@@ -3,22 +3,22 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법 | Hacking the System, One Bit at a Time</title>
+<title>ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법 | Hacking the System, One Bit at a Time</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법" />
+<meta property="og:title" content="ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="ko" />
-<meta name="description" content="이번 글에서는 시프트 연산의 마지막 주제인 순환 시프트 (Rotate Shift) 를 다룹니다. ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: ror (Rotate Right), rrx (Rotate Right with eXtend)" />
-<meta property="og:description" content="이번 글에서는 시프트 연산의 마지막 주제인 순환 시프트 (Rotate Shift) 를 다룹니다. ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: ror (Rotate Right), rrx (Rotate Right with eXtend)" />
+<meta name="description" content="이번 글에서는 시프트 연산의 마지막 주제인 회전 시프트 (Rotate Shift) 를 다룹니다. ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: ror (Rotate Right), rrx (Rotate Right with eXtend)" />
+<meta property="og:description" content="이번 글에서는 시프트 연산의 마지막 주제인 회전 시프트 (Rotate Shift) 를 다룹니다. ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: ror (Rotate Right), rrx (Rotate Right with eXtend)" />
 <link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html" />
 <meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html" />
 <meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-09-17T13:40:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법" />
+<meta property="twitter:title" content="ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-17T13:40:00+00:00","datePublished":"2025-09-17T13:40:00+00:00","description":"이번 글에서는 시프트 연산의 마지막 주제인 순환 시프트 (Rotate Shift) 를 다룹니다. ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: ror (Rotate Right), rrx (Rotate Right with eXtend)","headline":"ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-17T13:40:00+00:00","datePublished":"2025-09-17T13:40:00+00:00","description":"이번 글에서는 시프트 연산의 마지막 주제인 회전 시프트 (Rotate Shift) 를 다룹니다. ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: ror (Rotate Right), rrx (Rotate Right with eXtend)","headline":"ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법
+      ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법
     </h1>
     <div class="post-meta">
       <time
@@ -105,12 +105,12 @@
     </nav>
   </header>
 
-  <div class="post-content e-content" itemprop="articleBody"><p>이번 글에서는 시프트 연산의 마지막 주제인 <strong>순환 시프트 (Rotate Shift)</strong> 를 다룹니다. 
-ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: <code class="language-plaintext highlighter-rouge">ror</code> (Rotate Right), <code class="language-plaintext highlighter-rouge">rrx</code> (Rotate Right with eXtend)</p>
+  <div class="post-content e-content" itemprop="articleBody"><p>이번 글에서는 시프트 연산의 마지막 주제인 <strong>회전 시프트 (Rotate Shift)</strong> 를 다룹니다. 
+ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: <code class="language-plaintext highlighter-rouge">ror</code> (Rotate Right), <code class="language-plaintext highlighter-rouge">rrx</code> (Rotate Right with eXtend)</p>
 
 <p>이 명령어들은 단순히 비트를 밀어내는 것이 아니라, <strong>밀려난 비트를 다시 반대편에서 채워 넣는</strong> 방식으로 동작합니다.</p>
 
-<h2 id="arm-에서-제공하는-순환-시프트">ARM 에서 제공하는 순환 시프트</h2>
+<h2 id="arm-에서-제공하는-회전-시프트">ARM 에서 제공하는 회전 시프트</h2>
 
 <table>
   <thead>
@@ -122,11 +122,11 @@ ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: <code c
   <tbody>
     <tr>
       <td style="text-align: center"><code class="language-plaintext highlighter-rouge">ror</code></td>
-      <td style="text-align: center">Rotate Right</td>
+      <td style="text-align: center">오른쪽 회전</td>
     </tr>
     <tr>
       <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rrx</code></td>
-      <td style="text-align: center">Rotate Right with eXtend</td>
+      <td style="text-align: center">오른쪽 회전 확장</td>
     </tr>
   </tbody>
 </table>
@@ -209,7 +209,7 @@ r0             0x69     105
 r1             0x34     52
 r2             0x8000001a       <span class="nt">-2147483622</span></code></pre></figure>
 
-<h2 id="왜-왼쪽-순환시프트는-없을까">왜 왼쪽 순환시프트는 없을까?</h2>
+<h2 id="왜-왼쪽-회전-시프트는-없을까">왜 왼쪽 회전 시프트는 없을까?</h2>
 <p>ARM에는 <code class="language-plaintext highlighter-rouge">ROL</code> (Rotate Left) 명령어가 없습니다.
 왜냐하면, 기존의 <code class="language-plaintext highlighter-rouge">lsl</code> + <code class="language-plaintext highlighter-rouge">ror</code> 조합으로 쉽게 구현할 수 있기 때문입니다.</p>
 
@@ -232,7 +232,7 @@ r2             0x8000001a       <span class="nt">-2147483622</span></code></pre>
 </blockquote>
 
 <h2 id="마무리">마무리</h2>
-<p>이번 포스팅에서는 ARM의 순환 시프트 명령어인 <code class="language-plaintext highlighter-rouge">ror</code>과 <code class="language-plaintext highlighter-rouge">rrx</code>를 살펴봤습니다.</p>
+<p>이번 포스팅에서는 ARM의 회전 시프트 명령어인 <code class="language-plaintext highlighter-rouge">ror</code>과 <code class="language-plaintext highlighter-rouge">rrx</code>를 살펴봤습니다.</p>
 <ul>
   <li><code class="language-plaintext highlighter-rouge">ror</code>: 비트를 오른쪽으로 밀고 최상위 비트로 다시 삽입</li>
   <li><code class="language-plaintext highlighter-rouge">rrx</code>: 캐리 플래그를 포함한 33비트 순환 시프트</li>

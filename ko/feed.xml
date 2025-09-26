@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-09-25T14:15:17+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">ARM 어셈블리 #5 - 시프트 피연산자(Shifter Operand) 총정리</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand.html" rel="alternate" type="text/html" title="ARM 어셈블리 #5 - 시프트 피연산자(Shifter Operand) 총정리" /><published>2025-09-25T13:40:00+00:00</published><updated>2025-09-25T13:40:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand.html"><![CDATA[<p>오늘은 ARM 데이터 처리 명령어(Data Processing Instructions)의 <strong>시프트 피연산자(Shifter Operand)</strong>를 총정리해보겠습니다.<br />
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-09-26T14:36:10+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">ARM 어셈블리 #5 - 시프트 피연산자(Shifter Operand) 총정리</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand.html" rel="alternate" type="text/html" title="ARM 어셈블리 #5 - 시프트 피연산자(Shifter Operand) 총정리" /><published>2025-09-25T13:40:00+00:00</published><updated>2025-09-25T13:40:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand.html"><![CDATA[<p>오늘은 ARM 데이터 처리 명령어(Data Processing Instructions)의 <strong>시프트 피연산자(Shifter Operand)</strong>를 총정리해보겠습니다.<br />
 시프트 피연산자는 모든 데이터 처리 명령어에서 <strong>필수적으로 사용되는 중요한 개념</strong>입니다.</p>
 
 <p>이번 글에서는</p>
@@ -262,12 +262,12 @@ ALU 입력단에 배럴 시프터(Barrel Shifter) 가 연결되어 있습니다.
   <li>성능 최적화</li>
 </ul>
 
-<p>라는 장점을 가집니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="shifter-operand" /><summary type="html"><![CDATA[오늘은 ARM 데이터 처리 명령어(Data Processing Instructions)의 시프트 피연산자(Shifter Operand)를 총정리해보겠습니다. 시프트 피연산자는 모든 데이터 처리 명령어에서 필수적으로 사용되는 중요한 개념입니다.]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #4 - ROR, RRX로 비트를 순환하는 방법" /><published>2025-09-17T13:40:00+00:00</published><updated>2025-09-17T13:40:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"><![CDATA[<p>이번 글에서는 시프트 연산의 마지막 주제인 <strong>순환 시프트 (Rotate Shift)</strong> 를 다룹니다. 
-ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: <code class="language-plaintext highlighter-rouge">ror</code> (Rotate Right), <code class="language-plaintext highlighter-rouge">rrx</code> (Rotate Right with eXtend)</p>
+<p>라는 장점을 가집니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="shifter-operand" /><summary type="html"><![CDATA[오늘은 ARM 데이터 처리 명령어(Data Processing Instructions)의 시프트 피연산자(Shifter Operand)를 총정리해보겠습니다. 시프트 피연산자는 모든 데이터 처리 명령어에서 필수적으로 사용되는 중요한 개념입니다.]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법" /><published>2025-09-17T13:40:00+00:00</published><updated>2025-09-17T13:40:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"><![CDATA[<p>이번 글에서는 시프트 연산의 마지막 주제인 <strong>회전 시프트 (Rotate Shift)</strong> 를 다룹니다. 
+ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: <code class="language-plaintext highlighter-rouge">ror</code> (Rotate Right), <code class="language-plaintext highlighter-rouge">rrx</code> (Rotate Right with eXtend)</p>
 
 <p>이 명령어들은 단순히 비트를 밀어내는 것이 아니라, <strong>밀려난 비트를 다시 반대편에서 채워 넣는</strong> 방식으로 동작합니다.</p>
 
-<h2 id="arm-에서-제공하는-순환-시프트">ARM 에서 제공하는 순환 시프트</h2>
+<h2 id="arm-에서-제공하는-회전-시프트">ARM 에서 제공하는 회전 시프트</h2>
 
 <table>
   <thead>
@@ -279,11 +279,11 @@ ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: <code c
   <tbody>
     <tr>
       <td style="text-align: center"><code class="language-plaintext highlighter-rouge">ror</code></td>
-      <td style="text-align: center">Rotate Right</td>
+      <td style="text-align: center">오른쪽 회전</td>
     </tr>
     <tr>
       <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rrx</code></td>
-      <td style="text-align: center">Rotate Right with eXtend</td>
+      <td style="text-align: center">오른쪽 회전 확장</td>
     </tr>
   </tbody>
 </table>
@@ -366,7 +366,7 @@ r0             0x69     105
 r1             0x34     52
 r2             0x8000001a       <span class="nt">-2147483622</span></code></pre></figure>
 
-<h2 id="왜-왼쪽-순환시프트는-없을까">왜 왼쪽 순환시프트는 없을까?</h2>
+<h2 id="왜-왼쪽-회전-시프트는-없을까">왜 왼쪽 회전 시프트는 없을까?</h2>
 <p>ARM에는 <code class="language-plaintext highlighter-rouge">ROL</code> (Rotate Left) 명령어가 없습니다.
 왜냐하면, 기존의 <code class="language-plaintext highlighter-rouge">lsl</code> + <code class="language-plaintext highlighter-rouge">ror</code> 조합으로 쉽게 구현할 수 있기 때문입니다.</p>
 
@@ -389,7 +389,7 @@ r2             0x8000001a       <span class="nt">-2147483622</span></code></pre>
 </blockquote>
 
 <h2 id="마무리">마무리</h2>
-<p>이번 포스팅에서는 ARM의 순환 시프트 명령어인 <code class="language-plaintext highlighter-rouge">ror</code>과 <code class="language-plaintext highlighter-rouge">rrx</code>를 살펴봤습니다.</p>
+<p>이번 포스팅에서는 ARM의 회전 시프트 명령어인 <code class="language-plaintext highlighter-rouge">ror</code>과 <code class="language-plaintext highlighter-rouge">rrx</code>를 살펴봤습니다.</p>
 <ul>
   <li><code class="language-plaintext highlighter-rouge">ror</code>: 비트를 오른쪽으로 밀고 최상위 비트로 다시 삽입</li>
   <li><code class="language-plaintext highlighter-rouge">rrx</code>: 캐리 플래그를 포함한 33비트 순환 시프트</li>
@@ -397,7 +397,7 @@ r2             0x8000001a       <span class="nt">-2147483622</span></code></pre>
 </ul>
 
 <p>다음 글에서는 이 시프트 연산들이 실제 연산 명령어(<code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>)와 어떻게 결합되어 쓰이는지,
-그리고 Carry/Overflow 플래그의 의미와 역할에 대해 자세히 다룰 예정입니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="ror" /><category term="rrx" /><category term="arm" /><category term="assembly" /><category term="rotate shift" /><summary type="html"><![CDATA[이번 글에서는 시프트 연산의 마지막 주제인 순환 시프트 (Rotate Shift) 를 다룹니다. ARMv4에서는 두 가지 순환 시프트 명령어를 제공합니다: ror (Rotate Right), rrx (Rotate Right with eXtend)]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)" /><published>2025-09-15T12:53:00+00:00</published><updated>2025-09-15T12:53:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"><![CDATA[<p>CPU의 중요한 모듈중 하나인 ALU는 산술논리장치입니다. 이름에서 유추할 수 있듯이 논리연산 뿐 아니라 산술연산도 가능해야 하죠.
+그리고 Carry/Overflow 플래그의 의미와 역할에 대해 자세히 다룰 예정입니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="ror" /><category term="rrx" /><category term="arm" /><category term="assembly" /><category term="rotate shift" /><summary type="html"><![CDATA[이번 글에서는 시프트 연산의 마지막 주제인 회전 시프트 (Rotate Shift) 를 다룹니다. ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: ror (Rotate Right), rrx (Rotate Right with eXtend)]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" rel="alternate" type="text/html" title="ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)" /><published>2025-09-15T12:53:00+00:00</published><updated>2025-09-15T12:53:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"><![CDATA[<p>CPU의 중요한 모듈중 하나인 ALU는 산술논리장치입니다. 이름에서 유추할 수 있듯이 논리연산 뿐 아니라 산술연산도 가능해야 하죠.
 산술연산에서 유의해야 할 것은 피연산자의 부호 유무입니다. <a href="/ko/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html">앞선 포스팅</a>에서는 논리 시프트를 사용한 비트 단위의 연산을 고려했다면,
 이번 포스팅에서는 부호를 고려한 산술 시프트 연산자인 <code class="language-plaintext highlighter-rouge">asr</code>의 특징과 사용법을 살펴보겠습니다.</p>
 
