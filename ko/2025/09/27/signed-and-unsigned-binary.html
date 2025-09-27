@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="ko"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Binary Representation: Signed vs Unsigned | Hacking the System, One Bit at a Time</title>
+<title>Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기 | Hacking the System, One Bit at a Time</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Binary Representation: Signed vs Unsigned" />
+<meta property="og:title" content="Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기" />
 <meta name="author" content="차서준 (Cha Seojun)" />
-<meta property="og:locale" content="en" />
-<meta name="description" content="In this article, we will explore the differences between Signed Binary and Unsigned Binary, their respective representation methods, and considerations when programming in C." />
-<meta property="og:description" content="In this article, we will explore the differences between Signed Binary and Unsigned Binary, their respective representation methods, and considerations when programming in C." />
+<meta property="og:locale" content="ko" />
+<meta name="description" content="이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다." />
+<meta property="og:description" content="이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다." />
 <link rel="canonical" href="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" />
 <meta property="og:url" content="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" />
 <meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2025-09-27T13:00:00+00:00" />
+<meta property="article:published_time" content="2025-09-27T13:20:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Binary Representation: Signed vs Unsigned" />
+<meta property="twitter:title" content="Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-27T13:00:00+00:00","datePublished":"2025-09-27T13:00:00+00:00","description":"In this article, we will explore the differences between Signed Binary and Unsigned Binary, their respective representation methods, and considerations when programming in C.","headline":"Binary Representation: Signed vs Unsigned","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"},"url":"https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-27T13:20:00+00:00","datePublished":"2025-09-27T13:20:00+00:00","description":"이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.","headline":"Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"},"url":"https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,85 +87,82 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      Binary Representation: Signed vs Unsigned
+      Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기
     </h1>
     <div class="post-meta">
       <time
         class="dt-published"
-        datetime="2025-09-27T13:00:00+00:00"
+        datetime="2025-09-27T13:20:00+00:00"
         itemprop="datePublished"
       >
         Sep 27, 2025
       </time>
     </div><nav class="lang-switch" aria-label="Language switcher">
-      <span class="lang-pill is-current">EN</span>
-      <a class="lang-pill" href="/ko/2025/09/27/signed-and-unsigned-binary.html"
-        >한국어</a
+      <span class="lang-pill is-current">한국어</span>
+      <a class="lang-pill" href="/2025/09/27/signed-and-unsigned-binary.html"
+        >EN</a
       >
     </nav>
   </header>
 
-  <div class="post-content e-content" itemprop="articleBody"><p>In this article, we will explore the <strong>differences between Signed Binary and Unsigned Binary</strong>, <strong>their respective representation methods</strong>, and <strong>considerations when programming in C</strong>.</p>
+  <div class="post-content e-content" itemprop="articleBody"><p>이 글에서는 <strong>Signed Binary와 Unsigned Binary의 차이점</strong>, <strong>각각의 표현법</strong>, 그리고 <strong>C언어 프로그래밍 시의 주의사항</strong>을 알아보겠습니다.</p>
 
-<p>From the user’s perspective, data types handled by computers can be broadly categorized as either <strong>characters</strong> or <strong>numbers</strong>. However, from the computer’s perspective, even characters are ultimately processed as numbers. Therefore, today, we will focus on the numeric data types, specifically integers, and how they are handled by computers.</p>
+<p>사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.</p>
 
 <figure>
   <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/ASCII-Table.png" style="display: block; margin: auto;" alt="wiki-ascii-table" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-An ASCII table is used to represent characters as numbers.
+문자를 숫자로 표현하기 위한 ASCII 테이블이 존재
   </figcaption>
 </figure>
 
-<h2 id="concept-of-integers">Concept of Integers</h2>
-<p>Numerical data in computers can be broadly divided into integers and real numbers. In mathematics, numbers are classified based on their characteristics as shown below.</p>
+<h2 id="정수의-개념">정수의 개념</h2>
+<p>컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.</p>
 
-<h3 id="integers-and-real-numbers">Integers and Real Numbers</h3>
+<h3 id="정수와-실수">정수와 실수</h3>
 <figure>
   <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Classification_of_Numbers.jpg" style="display: block; margin: auto;" alt="classification-of-real-number" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-Definition of integers within the range of real numbers, which include positive numbers, negative numbers, and zero.
+실수범위에 포함되는 정수의 정의. 양수,음수 그리고 0이 될 수 있다.
   </figcaption>
 </figure>
 
-<h3 id="meaning-of-integers-in-computers">Meaning of Integers in Computers</h3>
-<p>All data is stored in a computer’s memory as binary. This means that <strong>storing an integer in a computer’s memory occupies a specific memory space</strong>. In daily life, we use decimal representation, where each digit (e.g., tens, hundreds) can range from 0 to 9, allowing for 10 different values per place (hence the term “decimal”).</p>
+<h3 id="컴퓨터에서-정수의-의미">컴퓨터에서 정수의 의미</h3>
+<p>모든 데이터는 2진수(Binary)형태로 컴퓨터 기억공간에 저장됩니다. 다시 말해, <strong>정수 데이터가 컴퓨터 메모리에 저장된다는 것은 메모리의 특정 공간을 차지한다는 것</strong> 입니다. 우리가 일상적으로 사용하는 정수는 10진수 표현법으로 하나의 자릿수(예: 10의 자리, 100의 자리 등)에 0부터 9까지, 총 10개의 숫자를 표현할 수 있습니다. (그래서 10진수입니다.)</p>
 
 <blockquote>
-  <p><strong>Memory Space?</strong><br />
-The term “memory space” is used because data is not always stored in main memory (RAM). For instance, data can also be stored in CPU registers. For convenience, we will use “memory” interchangeably in this article.</p>
+  <p><strong>기억공간?</strong><br />
+기억공간이라는 용어를 사용한 이유는 꼭 데이터가 메모리(Memory)에만 저장되지는 않기 때문 입니다. 가령 CPU 레지스터(Register)에도 데이터가 저장됩니다.<br />
+편의를 위해 본 포스팅에서는 메모리라는 용어와 혼용하여 사용합니다.</p>
 </blockquote>
 
-<p>Computers process all data as binary (0s and 1s). Thus, to represent any data, including numbers, we need a binary representation. However, this is merely a difference in representation; the meaning remains the same. For instance, the number ‘5’ is represented as ‘101’ in binary but remains the same numerical value.</p>
+<p>컴퓨터는 모두가 알다시피 0과 1로 이루어진 데이터를 처리합니다. 따라서, 숫자를 포함한 모든 데이터는 0과 1로 표현되어야 하기 때문에 2진수 표현법이 필요합니다.
+하지만 이는, 표현방법의 차이일 뿐, 의미가 변하는 것은 아닙니다. 예를 들어 ‘5’라는 숫자는 10진수 표현이 5일 뿐, 2진수 표현으로는 ‘101’입니다.</p>
 
-<p>As previously defined, integers consist of positive numbers, negative numbers, and zero. In computers, integers are represented using <strong>Signed Integers</strong> and <strong>Unsigned Integers</strong>.</p>
+<p>앞선 정수의 개념에서, 정수는 양수와 음수, 그리고 0으로 구성된다고 정의했습니다. 컴퓨터에서는 양수와 음수를 나타내기 위한 방법으로 <strong>부호 있는 정수(Signed Integer)</strong> 와 <strong>부호 없는 정수(Unsigned Integer)</strong> 로 나누어 표현합니다.</p>
 
-<ul>
-  <li><strong>Signed Integers</strong> include both positive (+) and negative (-) signs in memory.</li>
-  <li><strong>Unsigned Integers</strong> assume a positive sign by default and only store the magnitude of the number in memory.</li>
-</ul>
+<p>부호 있는 정수라는 것은 +기호와 -기호를 포함하여 컴퓨터 메모리에 저장한다는 의미이고, 부호 없는 정수라는 것은 항상 양의 방향(+)을 가정하고 정수의 크기만을 컴퓨터 메모리에 저장한다는 의미입니다. 이것은 컴퓨터 시스템에서 매우 중요한 의미를 가지는데, 동일한 2진 데이터라고 하더라도 해당 데이터가 <strong>어떤 표현법을 나타내는냐에 따라 실제로 의미하는 값이 다르기 때문</strong>입니다.</p>
 
-<p>This distinction is significant because <strong>the same binary data can represent different values depending on whether it is treated as signed or unsigned</strong>.</p>
+<h2 id="unsigned-binary-개념과-변환-방법">Unsigned Binary: 개념과 변환 방법</h2>
+<p>Unsigned Binary는 부호 없는 정수를 2진수로 표현한 데이터 입니다. 부호가 없는 경우, 부호를 나타낼 별도의 비트가 필요하지 않기 때문에 수학적인 2진수 $\leftrightarrow$ 10진수 변환을 그대로 적용할 수 있습니다.</p>
 
-<h2 id="unsigned-binary-concept-and-conversion">Unsigned Binary: Concept and Conversion</h2>
-<p>Unsigned Binary represents unsigned integers in binary. Since there is no sign bit, straightforward mathematical conversion between binary and decimal applies.</p>
-
+<p><strong>자연수(Natural Number)</strong></p>
 <blockquote>
-  <p><strong>Natural Numbers</strong><br />
-Unsigned integers are equivalent to natural numbers.</p>
+  <p>부호 없는 정수는 자연수와 동일합니다.</p>
 </blockquote>
 
-<h3 id="concept">Concept</h3>
+<h3 id="개념">개념</h3>
 
-<p>For example, in a 4-bit space, the binary, decimal, and hexadecimal representations of unsigned integers are as follows:</p>
+<p>예를 들어, 4비트 공간에서 부호 없는 정수의 2진수/10진수/16진수 표현은 아래와 같습니다.</p>
 
-<p><strong>4-bit Unsigned Binary</strong></p>
+<p><strong>4비트 unsigned binary</strong></p>
 
 <table>
   <thead>
     <tr>
-      <th style="text-align: center">Binary (bin)</th>
-      <th style="text-align: center">Decimal (dec)</th>
-      <th style="text-align: center">Hexadecimal (hex)</th>
+      <th style="text-align: center">2진수(bin)</th>
+      <th style="text-align: center">10진수(dec)</th>
+      <th style="text-align: center">16진수(hex)</th>
     </tr>
   </thead>
   <tbody>
@@ -252,26 +249,28 @@ Unsigned integers are equivalent to natural numbers.</p>
   </tbody>
 </table>
 
-<p>Thus, the decimal range of a 4-bit unsigned integer is $0 \leq \Z \leq 2^4-1$, and the hexadecimal range is from <code class="language-plaintext highlighter-rouge">0x0</code> to <code class="language-plaintext highlighter-rouge">0xF</code>.</p>
+<p>즉, 4비트 공간에서 부호 없는 정수의 10진수 정수의 표현 범위는 $0 \leqq \Z \leqq 2^4-1$ 이고, 16진수로는 <code class="language-plaintext highlighter-rouge">0x0</code>부터 <code class="language-plaintext highlighter-rouge">0xF</code>까지 입니다.</p>
 
 <blockquote>
-  <p><strong>Hexadecimal Representation by Bit Size</strong><br />
-Hexadecimal is widely used to represent numbers in computer systems. Here are the maximum hexadecimal values based on bit size:<br />
-4 bits  = 0xF<br />
-8 bits  = 0xFF<br />
-16 bits = 0xFFFF<br />
-32 bits = 0xFFFF_FFFF</p>
+  <p><strong>비트 크기 별 16진수 표현</strong></p>
+
+  <p>컴퓨터 시스템에서 숫자를 표현하기 위해 16진수 또한 굉장히 많이 사용됩니다. 따라서 비트 공간의 크기에 따라 최대 표현 가능한 16진수를 알고 있어야 합니다.<br />
+4비트  = 0xF<br />
+8비트  = 0xFF<br />
+16비트 = 0xFFFF<br />
+32비트 = 0xFFFF_FFFF</p>
 </blockquote>
 
-<h3 id="conversion">Conversion</h3>
-<h4 id="converting-decimal-to-binary">Converting Decimal to Binary</h4>
-<p>To convert a decimal number to binary, use division (/) and modulus (%) operations as follows:</p>
+<h3 id="변환">변환</h3>
+<h4 id="10진수를-2진수로-변환">10진수를 2진수로 변환</h4>
+
+<p>2진수로 변환하기 위해서는 숫자가 구성되는 원리에 의해 나누기 연산(/)과 나머지 연산(%)을 사용할 수 있습니다.</p>
 
 <table>
   <thead>
     <tr>
-      <th style="text-align: center">Division (/)</th>
-      <th style="text-align: center">Modulus (%)</th>
+      <th style="text-align: center">나누기(/)</th>
+      <th style="text-align: center">나머지(%)</th>
     </tr>
   </thead>
   <tbody>
@@ -313,8 +312,8 @@ Hexadecimal is widely used to represent numbers in computer systems. Here are th
 &amp;= 101101_2
 \end{aligned}\]
 
-<h4 id="converting-binary-to-decimal">Converting Binary to Decimal</h4>
-<p>Binary numbers can be converted to decimal using positional notation:</p>
+<h4 id="2진수를-10진수로-변환">2진수를 10진수로 변환</h4>
+<p>2진수 역시도 10진수의 표현원리와 동일하게 각 자릿수를 2의 거듭제곱으로 표현합니다.</p>
 
 \[\begin{aligned}
 101_2 &amp;= 1 \times 2^2 + 0 \times 2^1 + 1 \times 2^0  \newline
@@ -322,8 +321,9 @@ Hexadecimal is widely used to represent numbers in computer systems. Here are th
 &amp;= 5_{10}
 \end{aligned}\]
 
-<h4 id="using-python-for-conversion">Using Python for Conversion</h4>
-<p>Using Python’s REPL is often the simplest way to convert between binary, decimal, and hexadecimal. Note that the <code class="language-plaintext highlighter-rouge">bin</code> and <code class="language-plaintext highlighter-rouge">hex</code> functions return strings, not integers.</p>
+<h4 id="파이썬을-활용한-변환">파이썬을 활용한 변환</h4>
+<p>사실 가장 간단한 방법은 일일히 계산하는 것보다 파이썬 REPL을 사용하는 것 입니다.<br />
+단, 유의할 점은 <em>bin</em>이나 <em>hex</em>를 사용할 경우 반환값은 정수가 아닌 문자열입니다.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="sh">'</span><span class="s">0b1</span><span class="sh">'</span>
@@ -341,30 +341,31 @@ Hexadecimal is widely used to represent numbers in computer systems. Here are th
 <span class="mi">15</span>
 </code></pre></div></div>
 
-<h2 id="signed-binary-representation-and-python-usage">Signed Binary: Representation and Python Usage</h2>
-<p>Signed Binary represents signed integers in binary. Unlike unsigned binary, signed binary requires bit patterns to represent the sign. Although there are three methods to represent signed binary, modern computers primarily use the two’s complement method.</p>
+<h2 id="signed-binary-표현-방법과-파이썬-활용">Signed Binary: 표현 방법과 파이썬 활용</h2>
+<p>Signed Binary는 부호 있는 정수를 2진수로 표현한 데이터 입니다. Unsigned Binary와 다르게 부호를 나타내기 위한 비트 패턴이 필요합니다. 아래에 3가지 방법을 소개하겠지만, <strong>현대 컴퓨터에서는 주로 2의 보수 표현을 사용합니다</strong>.</p>
 
-<h3 id="representation-methods">Representation Methods</h3>
-<p>The basic principle for representing negative numbers is to <strong>allocate one bit (0 or 1) for the sign</strong>:</p>
+<h3 id="표현-방법">표현 방법</h3>
+<p>기본적인 음수 표현의 원리는 <strong>부호를 나타내기 위한 1비트(0 혹은 1)를 할당</strong>하는 것 입니다.</p>
 <ul>
-  <li>0: Positive</li>
-  <li>1: Negative</li>
+  <li>0 : 양수 (Positive)</li>
+  <li>1 : 음수 (Negative)</li>
 </ul>
 
-<h4 id="method-1-sign-magnitude">Method 1: Sign-Magnitude</h4>
-<p>In the sign-magnitude method, the most significant bit (MSB) is used to indicate the sign.
-For example, in an 8-bit space, the binary representation of +5 and −5 is:</p>
+<h4 id="방법1-부호-크기-sign-magnitude">방법1: 부호-크기 (Sign-Magnitude)</h4>
+<p>부호-크기 방법에서는 단순히 최상위 비트(MSB: Most Significant Bit)에 부호 비트를 추가합니다.</p>
+
+<p>예를 들어, 8비트 공간에서 양의 부호를 가진 정수 5와 음의 부호를 가진 정수 -5를 2진수로 표현하면 아래와 같습니다.</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
 -5 = 1000 0101
 </code></pre></div></div>
-<p>Here, <strong><em>0101</em></strong> represents the number <strong><em>5</em></strong>, and the MSB is set to 0 (positive) or 1 (negative).
-In an 8-bit space, the range of representable values using this method is summarized as follows:</p>
+<p><strong><em>0101</em></strong>이 숫자 <strong><em>5</em></strong>를 나타내고, 최상위 비트에 각각 0(양의 부호, +)과 1(음의 부호, -)을 사용했습니다.<br />
+동일한 방식으로, 8비트 공간에서 부호 비트를 추가하는 방법을 사용할 때 나타낼 수 있는 수는 아래와 같이 정리할 수 있습니다.</p>
 
 <table>
   <thead>
     <tr>
-      <th style="text-align: center">Binary</th>
-      <th style="text-align: center">Decimal</th>
+      <th style="text-align: center">2진수</th>
+      <th style="text-align: center">10진수</th>
     </tr>
   </thead>
   <tbody>
@@ -407,26 +408,26 @@ In an 8-bit space, the range of representable values using this method is summar
   </tbody>
 </table>
 
-<p>Thus, this method allows the representation of 254 unique values: <code class="language-plaintext highlighter-rouge">+0</code> to <code class="language-plaintext highlighter-rouge">+127</code> and <code class="language-plaintext highlighter-rouge">-0</code> to <code class="language-plaintext highlighter-rouge">-127</code>.</p>
+<p>따라서 표현할 수 있는 숫자는, +0부터 +127까지 127개와 -0부터 -127까지 127개, 총 254개의 숫자를 표현할 수 있습니다.</p>
 
-<h4 id="method-2-ones-complement">Method 2: One’s Complement</h4>
-<p>In one’s complement, the binary representation of an unsigned integer is inverted (0 becomes 1 and 1 becomes 0).</p>
+<h4 id="방법2-1의-보수-ones-complement">방법2: 1의 보수 (One’s Complement)</h4>
+<p>1의 보수법은 부호 없는 정수의 2진 데이터 형태를 모든 거꾸로 뒤집는 것 입니다. 2진수는 0 혹은 1이라는 두개의 값만 가질 수 있고 거꾸로 뒤집는 다는 것은 0 은 1로, 1은 0으로 바꾸는 것 입니다.</p>
 
-<p><strong>Bit Inversion</strong></p>
+<p><strong>비트 뒤집기</strong></p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0 -&gt; 1
 1 -&gt; 0
 </code></pre></div></div>
-<p><strong>Representation of <code class="language-plaintext highlighter-rouge">±5</code> in 8-bit One’s Complement</strong></p>
+<p><strong>1의 보수 표현에 의한 8비트 $\pm$ 5</strong></p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
 -5 = 1111 1010
 </code></pre></div></div>
-<p>The range of representable values in 8-bit one’s complement is summarized as:</p>
+<p>1의 보수 표현법에서 8비트 정수는 아래와 같이 정리할 수 있습니다.</p>
 
 <table>
   <thead>
     <tr>
-      <th style="text-align: center">Binary</th>
-      <th style="text-align: center">Decimal</th>
+      <th style="text-align: center">2진수</th>
+      <th style="text-align: center">10진수</th>
     </tr>
   </thead>
   <tbody>
@@ -463,6 +464,10 @@ In an 8-bit space, the range of representable values using this method is summar
       <td style="text-align: center">…</td>
     </tr>
     <tr>
+      <td style="text-align: center">1111 1101</td>
+      <td style="text-align: center">-2</td>
+    </tr>
+    <tr>
       <td style="text-align: center">1111 1110</td>
       <td style="text-align: center">-1</td>
     </tr>
@@ -473,18 +478,19 @@ In an 8-bit space, the range of representable values using this method is summar
   </tbody>
 </table>
 
-<h4 id="method-3-twos-complement">Method 3: Two’s Complement</h4>
-<p>In two’s complement, the binary representation is obtained by inverting all bits and adding 1 to the least significant bit (LSB). This method is widely used in modern computers as it addresses the shortcomings of the previous methods.</p>
+<h4 id="방법3-2의-보수-tows-complement">방법3: 2의 보수 (Tow’s Complement)</h4>
+<p>2의 보수법은 1의 보수법과 같이 모든 비트를 거꾸로 만들고 1비트의 1을 더하는 방식으로 표현됩니다. 앞선 2가지 방법의 단점을 보완하기 때문에 현재 대부분의 컴퓨터에서 음수를 표현하기 위한 방법입니다.</p>
 
-<p>To represent a negative number in two’s complement:</p>
+<p>음의 정수를 2의 보수법에 의한 2진수로 표현하기 위해서는 다음의 순서를 따릅니다.</p>
+
 <ol>
-  <li>Compute the one’s complement of the unsigned integer.</li>
-  <li>Add 1 to the LSB.</li>
+  <li>부호 없는 정수의 1의 보수를 구한다.</li>
+  <li>LSB에 1을 더한다.</li>
 </ol>
 
-<p><strong>Representation of ±5 in 8-bit Two’s Complement</strong></p>
+<p><strong>2의 보수 표현에 의한 8비트 $\pm$ 5</strong></p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
--5 = 1111 1010 (One's Complement)
+-5 = 1111 1010 (1의 보수 표현)
    +         1
    -----------
    = 1111 1011
@@ -493,9 +499,9 @@ In an 8-bit space, the range of representable values using this method is summar
 <table>
   <thead>
     <tr>
-      <th style="text-align: center">Binary</th>
-      <th style="text-align: center">Decimal</th>
-      <th style="text-align: center">Transformation (Positive → One’s Complement → +1)</th>
+      <th style="text-align: center">2진수</th>
+      <th style="text-align: center">10진수</th>
+      <th style="text-align: center">변환(양수 표현 &gt; 1의 보수 &gt; +1)</th>
     </tr>
   </thead>
   <tbody>
@@ -532,17 +538,17 @@ In an 8-bit space, the range of representable values using this method is summar
     <tr>
       <td style="text-align: center">1000 0000</td>
       <td style="text-align: center">-128</td>
-      <td style="text-align: center">1000 0000 → 0111 1111 → 1000 0000</td>
+      <td style="text-align: center">1000 0000 &gt; 0111 1111 &gt; 1000 0000</td>
     </tr>
     <tr>
       <td style="text-align: center">1000 0001</td>
       <td style="text-align: center">-127</td>
-      <td style="text-align: center">0111 1111 → 1000 0000 → 1000 0001</td>
+      <td style="text-align: center">0111 1111 &gt; 1000 0000 &gt; 1000 0001</td>
     </tr>
     <tr>
       <td style="text-align: center">1000 0010</td>
       <td style="text-align: center">-126</td>
-      <td style="text-align: center">0111 1110 → 1000 0001 → 1000 0010</td>
+      <td style="text-align: center">0111 1110 &gt; 1000 0001 &gt; 1000 0010</td>
     </tr>
     <tr>
       <td style="text-align: center">…</td>
@@ -552,22 +558,22 @@ In an 8-bit space, the range of representable values using this method is summar
     <tr>
       <td style="text-align: center">1111 1101</td>
       <td style="text-align: center">-3</td>
-      <td style="text-align: center">0000 0100 → 1111 1011 → 1111 1101</td>
+      <td style="text-align: center">0000 0100 &gt; 1111 1011 &gt; 1111 1101</td>
     </tr>
     <tr>
       <td style="text-align: center">1111 1110</td>
       <td style="text-align: center">-2</td>
-      <td style="text-align: center">0000 0010 → 1111 1101 → 1111 1110</td>
+      <td style="text-align: center">0000 0010 &gt; 1111 1101 &gt; 1111 1110</td>
     </tr>
     <tr>
       <td style="text-align: center">1111 1111</td>
       <td style="text-align: center">-1</td>
-      <td style="text-align: center">0000 0001 → 1111 1110 → 1111 1111</td>
+      <td style="text-align: center">0000 0001 &gt; 1111 1110 &gt; 1111 1111</td>
     </tr>
   </tbody>
 </table>
 
-<h4 id="using-python-for-twos-complement-conversion">Using Python for Two’s Complement Conversion</h4>
+<h4 id="파이썬을-활용한-2의-보수---10진수-변환">파이썬을 활용한 2의 보수 &lt;-&gt; 10진수 변환</h4>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="sh">"</span><span class="s">-128</span><span class="sh">"</span><span class="p">,</span> <span class="mi">10</span><span class="p">).</span><span class="nf">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="sh">"</span><span class="s">little</span><span class="sh">"</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="sa">b</span><span class="sh">'</span><span class="se">\x80</span><span class="sh">'</span>
 
@@ -577,54 +583,55 @@ In an 8-bit space, the range of representable values using this method is summar
 <span class="sh">'</span><span class="s">0b11111101</span><span class="sh">'</span>
 </code></pre></div></div>
 
-<h2 id="signed-vs-unsigned-comparison">Signed vs Unsigned Comparison</h2>
-<p>A summary of the key differences between signed and unsigned integers is as follows:</p>
+<h2 id="signed-vs-unsigned-비교">Signed vs Unsigned 비교</h2>
+<p>지금까지 설명드린 부호 있는 정수와 부호 없는 정수를 비교 정리하면 아래와 같습니다.</p>
 
 <table>
   <thead>
     <tr>
-      <th style="text-align: left">Category</th>
-      <th style="text-align: left">Signed Integer</th>
-      <th style="text-align: left">Unsigned Integer</th>
+      <th>구분</th>
+      <th>부호 있음(Signed)</th>
+      <th>부호 없음(Unsigned)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: left">Value Range</td>
-      <td style="text-align: left">Negative, 0, Positive</td>
-      <td style="text-align: left">0, Positive</td>
+      <td>값의 범위</td>
+      <td>음수,0,양수</td>
+      <td>0,양수</td>
     </tr>
     <tr>
-      <td style="text-align: left">Range (8-bit)</td>
-      <td style="text-align: left">-128 to 127</td>
-      <td style="text-align: left">0 to 255</td>
+      <td>범위(8비트)</td>
+      <td>-128 ~ 127</td>
+      <td>0~255</td>
     </tr>
     <tr>
-      <td style="text-align: left">Use Cases</td>
-      <td style="text-align: left">Sensors, Offsets, etc.</td>
-      <td style="text-align: left">Memory Addresses, Counters/Timers</td>
+      <td>사용사례</td>
+      <td>센서,오프셋 등</td>
+      <td>메모리 주소, 카운터/타이머 등</td>
     </tr>
     <tr>
-      <td style="text-align: left">Sign Bit</td>
-      <td style="text-align: left">Present (MSB)</td>
-      <td style="text-align: left">Absent</td>
+      <td>부호비트</td>
+      <td>존재(MSB)</td>
+      <td>없음</td>
     </tr>
   </tbody>
 </table>
 
-<p>The representable range based on two’s complement for signed integers and unsigned integers can be summarized mathematically:</p>
+<p>2의 보수 표현에 따른 부호 있는 정수와 부호 없는 정수의 표현 가능한 범위는 아래와 같이 수식으로 정리할 수 있습니다.</p>
 
-<p><strong>Unsigned Integer</strong>
-\(0 \leq Z \leq 2^{\text{bit size}} - 1\)</p>
+<p><strong>부호 없는 정수(Unsigned Integer)</strong>
+\(0 \leqq \Z \leqq 2^{비트수}-1\)</p>
 
-<p><strong>Signed Integer</strong>
-\(-2^{\text{bit size} - 1} \leq Z \leq 2^{\text{bit size} - 1} - 1\)</p>
+<p><strong>부호 있는 정수(Signed Integer)</strong>
+\(-2^{비트수-1} \leqq \Z \leqq 2^{비트수-1} - 1\)</p>
 
-<h2 id="programming-considerations">Programming Considerations</h2>
-<p>As seen, the interpretation of binary data changes depending on whether it is signed or unsigned. Understanding these differences is crucial when writing programs. Let’s look at two common pitfalls in C programming.</p>
+<h2 id="프로그래밍-주의사항">프로그래밍 주의사항</h2>
+<p>지금까지 살펴본 것 처럼  부호의 여부에 따라 컴퓨터가 해석하는 방법이 달라지기 때문에, 그 특성을 이해하고 프로그램을 작성할 때도 이점을 유의해야 합니다.
+주로 사용하는 C언어에서 2가지 예제를 살펴보면서 조심해야할 부분을 확인해보겠습니다.</p>
 
-<h3 id="example-1-comparing-signed-and-unsigned-integers">Example 1: Comparing Signed and Unsigned Integers</h3>
-<p>A common mistake is comparing integers of different signedness. In the example below, the signed integer <code class="language-plaintext highlighter-rouge">-1</code> is treated as an unsigned integer during comparison, resulting in unexpected behavior.</p>
+<h3 id="예제1-signed-int-와-unsigned-int의-비교">예제1: signed int 와 unsigned int의 비교</h3>
+<p>실수하기 쉬운 첫번째는 서로 다른 부호 유형간의 비교입니다. 아래의 예제에서는 signed형 정수인 <code class="language-plaintext highlighter-rouge">-1</code>이 unsigned형으로 변환 해석 되어 <code class="language-plaintext highlighter-rouge">1</code>보다 큰 값으로 처리됩니다.</p>
 
 <p><strong>comp.c</strong></p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
@@ -641,18 +648,23 @@ In an 8-bit space, the range of representable values using this method is summar
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></div>
-<p><strong>Output</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gcc comp.c &amp;&amp; ./a.out
+<p><strong>실행 결과</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc comp.c <span class="o">&amp;&amp;</span> ./a.out
 a is greater than or equals to b
 </code></pre></div></div>
-<p>Although intuitively <code class="language-plaintext highlighter-rouge">-1</code> is less than <code class="language-plaintext highlighter-rouge">1</code>, the signed integer <code class="language-plaintext highlighter-rouge">a</code> is converted to an unsigned integer, resulting in a value greater than <code class="language-plaintext highlighter-rouge">b</code>.</p>
+
+<p>우리가 직관적으로 생각하기에는 <code class="language-plaintext highlighter-rouge">-1</code>은 <code class="language-plaintext highlighter-rouge">1</code>보다 작으므로 “a is less than b”가 출력되야할 것으로 보입니다.<br />
+하지만 비교연산을 할 때, <strong><em>부호 있는 정수인 **</em>a</strong><em>가 부호 없는 정수(unsigned)로 변환되기 때문에 b보다 큰 값으로 해석</em>**됩니다.</p>
 
 <blockquote>
-  <p><strong>Bit Pattern of <code class="language-plaintext highlighter-rouge">int a = -1</code></strong><br />
-a = -1 = 0xFFFFFFFF (Two’s complement representation of -1) = 4,294,967,295</p>
+  <p><strong>int a = -1의 비트패턴</strong><br />
+a = -1 = 0xFFFFFFFF (-1의 2의 보수 표현) = 4,294,967,295</p>
 </blockquote>
 
-<p>Use the <a href="https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare">-W compiler option</a> to prevent such issues:</p>
+<blockquote>
+  <p>위와 같은 예제는 컴파일 시에 -W 옵션을 사용해서 예방할 수 있습니다.</p>
+</blockquote>
+
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-W</span> comp.c
 comp.c: In <span class="k">function</span> ‘main’:
 comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ <span class="o">[</span><span class="nt">-Wsign-compare</span><span class="o">]</span>
@@ -660,8 +672,8 @@ comp.c:8:9: warning: comparison of integer expressions of different signedness: 
       |         ^
 </code></pre></div></div>
 
-<h3 id="example-2-type-casting">Example 2: Type Casting</h3>
-<p>Another common mistake involves type casting between signed and unsigned integers. When casting, the value’s bit pattern remains unchanged, but its interpretation changes.</p>
+<h3 id="예제2-형-변환-type-casting">예제2: 형 변환 (Type Casting)</h3>
+<p>다른 예제는 흔히 사용하는 형 변환 실수입니다. int형과 unsigned int형과의 상호 형 변환시에는 해당 변수가 나타내는 수의 의미가 달라지는 것을 알고 있어야 합니다.</p>
 
 <p><strong>main.c</strong></p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
@@ -681,7 +693,7 @@ comp.c:8:9: warning: comparison of integer expressions of different signedness: 
   <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8</span><span class="p">,</span> <span class="n">ui8</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div></div>
-<p><strong>Output</strong></p>
+<p><strong>실행 결과</strong></p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.c <span class="o">&amp;&amp;</span> ./a.out
 UINT8_MAX: 255
 INT8_MAX: 127
@@ -690,21 +702,32 @@ INT8_MAX: 127
 0xfb <span class="o">[</span>251]          <span class="c"># (3)</span>
 </code></pre></div></div>
 
+<p>첫번째, <code class="language-plaintext highlighter-rouge">int8_t</code>형은 메모리 공간에서 8비트를 차지하는 변수입니다. 하지만 실제 변수가 가진 값이 <code class="language-plaintext highlighter-rouge">int</code>형보다 작은 메모리 공간을 차지하는 경우, <strong><em><code class="language-plaintext highlighter-rouge">printf</code>문에서 포맷팅을 할때는 <code class="language-plaintext highlighter-rouge">int</code>형으로 승격되기 때문</em></strong>에 (1)의 결과는 <code class="language-plaintext highlighter-rouge">0xFB</code>가 아닌 <code class="language-plaintext highlighter-rouge">0xFFFFFFFB</code>가 되는 것 입니다.</p>
+
+<blockquote>
+  <p>부호 있는 정수 -5는 2진수로 표현하면 $11111011_2$ 이고 16진수로는 <code class="language-plaintext highlighter-rouge">0xFB</code>입니다.</p>
+</blockquote>
+
+<blockquote>
+  <p><strong>부호 확장(Sign Extension)</strong><br />
+8비트 정수를 32비트 정수로 승격할 때, 부호 확장이란 것이 발생합니다.<br />
+부호 확장은 말 그대로 정수의 부호 비트를 확장된 메모리 크기에 맞도록 확장시키는 것 입니다.<br />
+위의 예시의 경우, 부호 비트가 음수를 나타내는 1이므로 최상위 비트(MSB)의 1을 나머지 상위비트에 채웁니다.</p>
+</blockquote>
+
+<p>두번째, 변수 ui8은 부호 있는 정수형 변수 i8을 부호 없는 정수형으로 형변환을 하여 할당했습니다. 하지만, 출력 결과 (3)에서 볼 수 있듯이 실제 메모리 패턴(<code class="language-plaintext highlighter-rouge">0xFB</code>)는 변하지 않고, <code class="language-plaintext highlighter-rouge">0xFB</code>의 부호 없는 정수값, <code class="language-plaintext highlighter-rouge">251</code>을 출력합니다.</p>
+
+<p>C언어의 형변환은 컴퓨터에 <strong><em>실제 저장되는 값을 변경하는 것이 아니라, 컴퓨터가 어떻게 해석할지를 알려주는 것</em></strong> 입니다.(형변환 뿐 아니라 타입시스템 자체가 그렇다고 봐야합니다.)</p>
+
+<h2 id="결론-conclusion">결론 (Conclusion)</h2>
+<p>이번 글에서는 <strong>Signed와 Unsigned Binary의 차이점</strong>, <strong>표현 방식</strong>, <strong>프로그래밍 주의사항</strong>을 살펴보았습니다.</p>
+
 <ul>
-  <li><strong>Sign Extension</strong>: When printing <code class="language-plaintext highlighter-rouge">i8</code>, the signed integer is promoted to <code class="language-plaintext highlighter-rouge">int</code>, causing sign extension (filling higher bits with the MSB of <code class="language-plaintext highlighter-rouge">i8</code>).</li>
-  <li><strong>Bit Pattern Interpretation</strong>: The value of <code class="language-plaintext highlighter-rouge">ui8</code> is interpreted as an unsigned integer, resulting in <code class="language-plaintext highlighter-rouge">251</code> instead of <code class="language-plaintext highlighter-rouge">-5</code>.</li>
+  <li><strong>Signed Binary:</strong> 음수와 양수를 모두 표현 (예: 센서 데이터, 오프셋)</li>
+  <li><strong>Unsigned Binary:</strong> 양수만 표현 (예: 메모리 주소, 타이머)</li>
 </ul>
 
-<h2 id="conclusion">Conclusion</h2>
-<p>This article explored the differences between <strong>Signed</strong> and <strong>Unsigned Binary</strong>, their representation methods, and programming considerations.</p>
-
-<ul>
-  <li><strong>Signed Binary</strong>: Represents both positive and negative values (e.g., sensor data, offsets).</li>
-  <li><strong>Unsigned Binary</strong>: Represents only positive values (e.g., memory addresses, timers).</li>
-</ul>
-
-<p><strong>Did this article help you? Leave your questions or feedback in the comments below!</strong></p>
-
+<p>이번 글이 도움이 되었나요? 궁금한 점이나 더 알고 싶은 부분이 있다면 댓글로 남겨주세요!</p>
 </div><!-- _includes/utterances.html -->
 <script
   src="https://utteranc.es/client.js"

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-09-27T13:09:04+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">Binary Representation: Signed vs Unsigned</title><link href="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" rel="alternate" type="text/html" title="Binary Representation: Signed vs Unsigned" /><published>2025-09-27T13:00:00+00:00</published><updated>2025-09-27T13:00:00+00:00</updated><id>https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary</id><content type="html" xml:base="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"><![CDATA[<p>In this article, we will explore the <strong>differences between Signed Binary and Unsigned Binary</strong>, <strong>their respective representation methods</strong>, and <strong>considerations when programming in C</strong>.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-09-27T13:26:20+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">Binary Representation: Signed vs Unsigned</title><link href="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" rel="alternate" type="text/html" title="Binary Representation: Signed vs Unsigned" /><published>2025-09-27T13:00:00+00:00</published><updated>2025-09-27T13:00:00+00:00</updated><id>https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary</id><content type="html" xml:base="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"><![CDATA[<p>In this article, we will explore the <strong>differences between Signed Binary and Unsigned Binary</strong>, <strong>their respective representation methods</strong>, and <strong>considerations when programming in C</strong>.</p>
 
 <p>From the user’s perspective, data types handled by computers can be broadly categorized as either <strong>characters</strong> or <strong>numbers</strong>. However, from the computer’s perspective, even characters are ultimately processed as numbers. Therefore, today, we will focus on the numeric data types, specifically integers, and how they are handled by computers.</p>
 
@@ -218,21 +218,21 @@ Hexadecimal is widely used to represent numbers in computer systems. Here are th
 <h4 id="using-python-for-conversion">Using Python for Conversion</h4>
 <p>Using Python’s REPL is often the simplest way to convert between binary, decimal, and hexadecimal. Note that the <code class="language-plaintext highlighter-rouge">bin</code> and <code class="language-plaintext highlighter-rouge">hex</code> functions return strings, not integers.</p>
 
-<pre><code class="language-pycon">&gt;&gt;&gt; bin(1)
-'0b1'
-&gt;&gt;&gt; bin(2)
-'0b10'
-&gt;&gt;&gt; int(0b11)
-3
-&gt;&gt;&gt; int(0b110)
-6
-&gt;&gt;&gt; hex(0b1)
-'0x1'
-&gt;&gt;&gt; hex(1)
-'0x1'
-&gt;&gt;&gt; int(0xf)
-15
-</code></pre>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="sh">'</span><span class="s">0b1</span><span class="sh">'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="sh">'</span><span class="s">0b10</span><span class="sh">'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="mb">0b11</span><span class="p">)</span>
+<span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="mb">0b110</span><span class="p">)</span>
+<span class="mi">6</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nf">hex</span><span class="p">(</span><span class="mb">0b1</span><span class="p">)</span>
+<span class="sh">'</span><span class="s">0x1</span><span class="sh">'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nf">hex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="sh">'</span><span class="s">0x1</span><span class="sh">'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="mh">0xf</span><span class="p">)</span>
+<span class="mi">15</span>
+</code></pre></div></div>
 
 <h2 id="signed-binary-representation-and-python-usage">Signed Binary: Representation and Python Usage</h2>
 <p>Signed Binary represents signed integers in binary. Unlike unsigned binary, signed binary requires bit patterns to represent the sign. Although there are three methods to represent signed binary, modern computers primarily use the two’s complement method.</p>
@@ -461,14 +461,14 @@ In an 8-bit space, the range of representable values using this method is summar
 </table>
 
 <h4 id="using-python-for-twos-complement-conversion">Using Python for Two’s Complement Conversion</h4>
-<pre><code class="language-python-repl">&gt;&gt;&gt; int("-128", 10).to_bytes(1, byteorder="little", signed=True)
-b'\x80'
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="sh">"</span><span class="s">-128</span><span class="sh">"</span><span class="p">,</span> <span class="mi">10</span><span class="p">).</span><span class="nf">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="sh">"</span><span class="s">little</span><span class="sh">"</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="sa">b</span><span class="sh">'</span><span class="se">\x80</span><span class="sh">'</span>
 
-&gt;&gt;&gt; int("-3", 10).to_bytes(1, byteorder="little", signed=True)
-b'\xfd'
-&gt;&gt;&gt; bin(0xfd)
-'0b11111101'
-</code></pre>
+<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="sh">"</span><span class="s">-3</span><span class="sh">"</span><span class="p">,</span> <span class="mi">10</span><span class="p">).</span><span class="nf">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="sh">"</span><span class="s">little</span><span class="sh">"</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="sa">b</span><span class="sh">'</span><span class="se">\xfd</span><span class="sh">'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mh">0xfd</span><span class="p">)</span>
+<span class="sh">'</span><span class="s">0b11111101</span><span class="sh">'</span>
+</code></pre></div></div>
 
 <h2 id="signed-vs-unsigned-comparison">Signed vs Unsigned Comparison</h2>
 <p>A summary of the key differences between signed and unsigned integers is as follows:</p>
@@ -546,10 +546,10 @@ a = -1 = 0xFFFFFFFF (Two’s complement representation of -1) = 4,294,967,295</p
 </blockquote>
 
 <p>Use the <a href="https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare">-W compiler option</a> to prevent such issues:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gcc -W comp.c
-comp.c: In function ‘main’:
-comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
-    8 |   if (a &lt; b) {
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-W</span> comp.c
+comp.c: In <span class="k">function</span> ‘main’:
+comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ <span class="o">[</span><span class="nt">-Wsign-compare</span><span class="o">]</span>
+    8 |   <span class="k">if</span> <span class="o">(</span>a &lt; b<span class="o">)</span> <span class="o">{</span>
       |         ^
 </code></pre></div></div>
 
@@ -575,17 +575,17 @@ comp.c:8:9: warning: comparison of integer expressions of different signedness: 
 <span class="p">}</span>
 </code></pre></div></div>
 <p><strong>Output</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gcc main.c &amp;&amp; ./a.out
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.c <span class="o">&amp;&amp;</span> ./a.out
 UINT8_MAX: 255
 INT8_MAX: 127
-0xfffffffb [-5]     # (1)
-0x05 [5]            # (2)
-0xfb [251]          # (3)
+0xfffffffb <span class="o">[</span><span class="nt">-5</span><span class="o">]</span>     <span class="c"># (1)</span>
+0x05 <span class="o">[</span>5]            <span class="c"># (2)</span>
+0xfb <span class="o">[</span>251]          <span class="c"># (3)</span>
 </code></pre></div></div>
 
 <ul>
   <li><strong>Sign Extension</strong>: When printing <code class="language-plaintext highlighter-rouge">i8</code>, the signed integer is promoted to <code class="language-plaintext highlighter-rouge">int</code>, causing sign extension (filling higher bits with the MSB of <code class="language-plaintext highlighter-rouge">i8</code>).</li>
-  <li><strong>Bit Pattern Interpretation</strong>: The value of <code class="language-plaintext highlighter-rouge">ui8</code> is interpreted as an unsigned integer, resulting in 251 instead of -5.</li>
+  <li><strong>Bit Pattern Interpretation</strong>: The value of <code class="language-plaintext highlighter-rouge">ui8</code> is interpreted as an unsigned integer, resulting in <code class="language-plaintext highlighter-rouge">251</code> instead of <code class="language-plaintext highlighter-rouge">-5</code>.</li>
 </ul>
 
 <h2 id="conclusion">Conclusion</h2>
