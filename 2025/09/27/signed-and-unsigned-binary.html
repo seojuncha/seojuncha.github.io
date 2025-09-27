@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Binary Representation: Signed vs Unsigned | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Binary Representation: Signed vs Unsigned" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="In this article, we will explore the differences between Signed Binary and Unsigned Binary, their respective representation methods, and considerations when programming in C." />
+<meta property="og:description" content="In this article, we will explore the differences between Signed Binary and Unsigned Binary, their respective representation methods, and considerations when programming in C." />
+<link rel="canonical" href="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" />
+<meta property="og:url" content="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-09-27T13:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Binary Representation: Signed vs Unsigned" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-27T13:00:00+00:00","datePublished":"2025-09-27T13:00:00+00:00","description":"In this article, we will explore the differences between Signed Binary and Unsigned Binary, their respective representation methods, and considerations when programming in C.","headline":"Binary Representation: Signed vs Unsigned","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"},"url":"https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      Binary Representation: Signed vs Unsigned
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-09-27T13:00:00+00:00"
+        itemprop="datePublished"
+      >
+        Sep 27, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/2025/09/27/signed-and-unsigned-binary.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>In this article, we will explore the <strong>differences between Signed Binary and Unsigned Binary</strong>, <strong>their respective representation methods</strong>, and <strong>considerations when programming in C</strong>.</p>
+
+<p>From the user’s perspective, data types handled by computers can be broadly categorized as either <strong>characters</strong> or <strong>numbers</strong>. However, from the computer’s perspective, even characters are ultimately processed as numbers. Therefore, today, we will focus on the numeric data types, specifically integers, and how they are handled by computers.</p>
+
+<figure>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/ASCII-Table.png" style="display: block; margin: auto;" alt="wiki-ascii-table" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+An ASCII table is used to represent characters as numbers.
+  </figcaption>
+</figure>
+
+<h2 id="concept-of-integers">Concept of Integers</h2>
+<p>Numerical data in computers can be broadly divided into integers and real numbers. In mathematics, numbers are classified based on their characteristics as shown below.</p>
+
+<h3 id="integers-and-real-numbers">Integers and Real Numbers</h3>
+<figure>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Classification_of_Numbers.jpg" style="display: block; margin: auto;" alt="classification-of-real-number" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+Definition of integers within the range of real numbers, which include positive numbers, negative numbers, and zero.
+  </figcaption>
+</figure>
+
+<h3 id="meaning-of-integers-in-computers">Meaning of Integers in Computers</h3>
+<p>All data is stored in a computer’s memory as binary. This means that <strong>storing an integer in a computer’s memory occupies a specific memory space</strong>. In daily life, we use decimal representation, where each digit (e.g., tens, hundreds) can range from 0 to 9, allowing for 10 different values per place (hence the term “decimal”).</p>
+
+<blockquote>
+  <p><strong>Memory Space?</strong><br />
+The term “memory space” is used because data is not always stored in main memory (RAM). For instance, data can also be stored in CPU registers. For convenience, we will use “memory” interchangeably in this article.</p>
+</blockquote>
+
+<p>Computers process all data as binary (0s and 1s). Thus, to represent any data, including numbers, we need a binary representation. However, this is merely a difference in representation; the meaning remains the same. For instance, the number ‘5’ is represented as ‘101’ in binary but remains the same numerical value.</p>
+
+<p>As previously defined, integers consist of positive numbers, negative numbers, and zero. In computers, integers are represented using <strong>Signed Integers</strong> and <strong>Unsigned Integers</strong>.</p>
+
+<ul>
+  <li><strong>Signed Integers</strong> include both positive (+) and negative (-) signs in memory.</li>
+  <li><strong>Unsigned Integers</strong> assume a positive sign by default and only store the magnitude of the number in memory.</li>
+</ul>
+
+<p>This distinction is significant because <strong>the same binary data can represent different values depending on whether it is treated as signed or unsigned</strong>.</p>
+
+<h2 id="unsigned-binary-concept-and-conversion">Unsigned Binary: Concept and Conversion</h2>
+<p>Unsigned Binary represents unsigned integers in binary. Since there is no sign bit, straightforward mathematical conversion between binary and decimal applies.</p>
+
+<blockquote>
+  <p><strong>Natural Numbers</strong><br />
+Unsigned integers are equivalent to natural numbers.</p>
+</blockquote>
+
+<h3 id="concept">Concept</h3>
+
+<p>For example, in a 4-bit space, the binary, decimal, and hexadecimal representations of unsigned integers are as follows:</p>
+
+<p><strong>4-bit Unsigned Binary</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Binary (bin)</th>
+      <th style="text-align: center">Decimal (dec)</th>
+      <th style="text-align: center">Hexadecimal (hex)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">0000</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">0x0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0001</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">0x1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0010</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: center">0x2</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0011</td>
+      <td style="text-align: center">3</td>
+      <td style="text-align: center">0x3</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0100</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: center">0x4</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0101</td>
+      <td style="text-align: center">5</td>
+      <td style="text-align: center">0x5</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0110</td>
+      <td style="text-align: center">6</td>
+      <td style="text-align: center">0x6</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0111</td>
+      <td style="text-align: center">7</td>
+      <td style="text-align: center">0x7</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1000</td>
+      <td style="text-align: center">8</td>
+      <td style="text-align: center">0x8</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1001</td>
+      <td style="text-align: center">9</td>
+      <td style="text-align: center">0x9</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1010</td>
+      <td style="text-align: center">10</td>
+      <td style="text-align: center">0xA</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1011</td>
+      <td style="text-align: center">11</td>
+      <td style="text-align: center">0xB</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1100</td>
+      <td style="text-align: center">12</td>
+      <td style="text-align: center">0xC</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1101</td>
+      <td style="text-align: center">13</td>
+      <td style="text-align: center">0xD</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1110</td>
+      <td style="text-align: center">14</td>
+      <td style="text-align: center">0xE</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1111</td>
+      <td style="text-align: center">15</td>
+      <td style="text-align: center">0xF</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Thus, the decimal range of a 4-bit unsigned integer is $0 \leq \Z \leq 2^4-1$, and the hexadecimal range is from <code class="language-plaintext highlighter-rouge">0x0</code> to <code class="language-plaintext highlighter-rouge">0xF</code>.</p>
+
+<blockquote>
+  <p><strong>Hexadecimal Representation by Bit Size</strong><br />
+Hexadecimal is widely used to represent numbers in computer systems. Here are the maximum hexadecimal values based on bit size:<br />
+4 bits  = 0xF<br />
+8 bits  = 0xFF<br />
+16 bits = 0xFFFF<br />
+32 bits = 0xFFFF_FFFF</p>
+</blockquote>
+
+<h3 id="conversion">Conversion</h3>
+<h4 id="converting-decimal-to-binary">Converting Decimal to Binary</h4>
+<p>To convert a decimal number to binary, use division (/) and modulus (%) operations as follows:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Division (/)</th>
+      <th style="text-align: center">Modulus (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">45 / 2 = 22</td>
+      <td style="text-align: center">45 % 2 = 1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">22 / 2 = 11</td>
+      <td style="text-align: center">22 % 2 = 0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">11 / 2 = 5</td>
+      <td style="text-align: center">11 % 2 = 1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">5 / 2 = 2</td>
+      <td style="text-align: center">5 % 2 = 1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">2 / 2 = 1</td>
+      <td style="text-align: center">2 % 2 = 0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1 / 2 = 0</td>
+      <td style="text-align: center">1 % 2 = 1</td>
+    </tr>
+  </tbody>
+</table>
+
+\[\begin{aligned}
+45_{10} &amp;= 22 \times 2 + 1 \newline
+&amp;= (11 \times 2 + 0) \times 2 + 1 \newline
+&amp;= ((5 \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
+&amp;= (((2 \times 2 + 1) \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
+&amp;= ((((1 \times 2 + 0) \times 2 + 1) \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
+&amp;= (((((0 \times 2 + 1) \times 2 + 0) \times 2 + 1) \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
+&amp;= 1 \times 2^5 + 0 \times 2^4 + 1 \times 2^3 + 1 \times 2^2 + 0 \times 2^1 + 1 \newline
+&amp;= 101101_2
+\end{aligned}\]
+
+<h4 id="converting-binary-to-decimal">Converting Binary to Decimal</h4>
+<p>Binary numbers can be converted to decimal using positional notation:</p>
+
+\[\begin{aligned}
+101_2 &amp;= 1 \times 2^2 + 0 \times 2^1 + 1 \times 2^0  \newline
+&amp;= 1 \times 4 + 0 \times 2 + 1 \times 1 \newline
+&amp;= 5_{10}
+\end{aligned}\]
+
+<h4 id="using-python-for-conversion">Using Python for Conversion</h4>
+<p>Using Python’s REPL is often the simplest way to convert between binary, decimal, and hexadecimal. Note that the <code class="language-plaintext highlighter-rouge">bin</code> and <code class="language-plaintext highlighter-rouge">hex</code> functions return strings, not integers.</p>
+
+<pre><code class="language-pycon">&gt;&gt;&gt; bin(1)
+'0b1'
+&gt;&gt;&gt; bin(2)
+'0b10'
+&gt;&gt;&gt; int(0b11)
+3
+&gt;&gt;&gt; int(0b110)
+6
+&gt;&gt;&gt; hex(0b1)
+'0x1'
+&gt;&gt;&gt; hex(1)
+'0x1'
+&gt;&gt;&gt; int(0xf)
+15
+</code></pre>
+
+<h2 id="signed-binary-representation-and-python-usage">Signed Binary: Representation and Python Usage</h2>
+<p>Signed Binary represents signed integers in binary. Unlike unsigned binary, signed binary requires bit patterns to represent the sign. Although there are three methods to represent signed binary, modern computers primarily use the two’s complement method.</p>
+
+<h3 id="representation-methods">Representation Methods</h3>
+<p>The basic principle for representing negative numbers is to <strong>allocate one bit (0 or 1) for the sign</strong>:</p>
+<ul>
+  <li>0: Positive</li>
+  <li>1: Negative</li>
+</ul>
+
+<h4 id="method-1-sign-magnitude">Method 1: Sign-Magnitude</h4>
+<p>In the sign-magnitude method, the most significant bit (MSB) is used to indicate the sign.
+For example, in an 8-bit space, the binary representation of +5 and −5 is:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
+-5 = 1000 0101
+</code></pre></div></div>
+<p>Here, <strong><em>0101</em></strong> represents the number <strong><em>5</em></strong>, and the MSB is set to 0 (positive) or 1 (negative).
+In an 8-bit space, the range of representable values using this method is summarized as follows:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Binary</th>
+      <th style="text-align: center">Decimal</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">0000 0000</td>
+      <td style="text-align: center">+0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0000 0001</td>
+      <td style="text-align: center">+1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0000 0010</td>
+      <td style="text-align: center">+2</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">…</td>
+      <td style="text-align: center">…</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0111 1111</td>
+      <td style="text-align: center">+127</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1000 0000</td>
+      <td style="text-align: center">-0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1000 0001</td>
+      <td style="text-align: center">-1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">…</td>
+      <td style="text-align: center">…</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1111 1111</td>
+      <td style="text-align: center">-127</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Thus, this method allows the representation of 254 unique values: <code class="language-plaintext highlighter-rouge">+0</code> to <code class="language-plaintext highlighter-rouge">+127</code> and <code class="language-plaintext highlighter-rouge">-0</code> to <code class="language-plaintext highlighter-rouge">-127</code>.</p>
+
+<h4 id="method-2-ones-complement">Method 2: One’s Complement</h4>
+<p>In one’s complement, the binary representation of an unsigned integer is inverted (0 becomes 1 and 1 becomes 0).</p>
+
+<p><strong>Bit Inversion</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0 -&gt; 1
+1 -&gt; 0
+</code></pre></div></div>
+<p><strong>Representation of <code class="language-plaintext highlighter-rouge">±5</code> in 8-bit One’s Complement</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
+-5 = 1111 1010
+</code></pre></div></div>
+<p>The range of representable values in 8-bit one’s complement is summarized as:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Binary</th>
+      <th style="text-align: center">Decimal</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">0000 0000</td>
+      <td style="text-align: center">+0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0000 0001</td>
+      <td style="text-align: center">+1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">…</td>
+      <td style="text-align: center">…</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0111 1110</td>
+      <td style="text-align: center">+126</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0111 1111</td>
+      <td style="text-align: center">+127</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1000 0000</td>
+      <td style="text-align: center">-127</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1000 0001</td>
+      <td style="text-align: center">-126</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">…</td>
+      <td style="text-align: center">…</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1111 1110</td>
+      <td style="text-align: center">-1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1111 1111</td>
+      <td style="text-align: center">-0</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="method-3-twos-complement">Method 3: Two’s Complement</h4>
+<p>In two’s complement, the binary representation is obtained by inverting all bits and adding 1 to the least significant bit (LSB). This method is widely used in modern computers as it addresses the shortcomings of the previous methods.</p>
+
+<p>To represent a negative number in two’s complement:</p>
+<ol>
+  <li>Compute the one’s complement of the unsigned integer.</li>
+  <li>Add 1 to the LSB.</li>
+</ol>
+
+<p><strong>Representation of ±5 in 8-bit Two’s Complement</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
+-5 = 1111 1010 (One's Complement)
+   +         1
+   -----------
+   = 1111 1011
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Binary</th>
+      <th style="text-align: center">Decimal</th>
+      <th style="text-align: center">Transformation (Positive → One’s Complement → +1)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">0000 0000</td>
+      <td style="text-align: center">+0</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0000 0001</td>
+      <td style="text-align: center">+1</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0000 0010</td>
+      <td style="text-align: center">+2</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">…</td>
+      <td style="text-align: center">…</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0111 1110</td>
+      <td style="text-align: center">+126</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0111 1111</td>
+      <td style="text-align: center">+127</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1000 0000</td>
+      <td style="text-align: center">-128</td>
+      <td style="text-align: center">1000 0000 → 0111 1111 → 1000 0000</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1000 0001</td>
+      <td style="text-align: center">-127</td>
+      <td style="text-align: center">0111 1111 → 1000 0000 → 1000 0001</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1000 0010</td>
+      <td style="text-align: center">-126</td>
+      <td style="text-align: center">0111 1110 → 1000 0001 → 1000 0010</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">…</td>
+      <td style="text-align: center">…</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1111 1101</td>
+      <td style="text-align: center">-3</td>
+      <td style="text-align: center">0000 0100 → 1111 1011 → 1111 1101</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1111 1110</td>
+      <td style="text-align: center">-2</td>
+      <td style="text-align: center">0000 0010 → 1111 1101 → 1111 1110</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1111 1111</td>
+      <td style="text-align: center">-1</td>
+      <td style="text-align: center">0000 0001 → 1111 1110 → 1111 1111</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="using-python-for-twos-complement-conversion">Using Python for Two’s Complement Conversion</h4>
+<pre><code class="language-python-repl">&gt;&gt;&gt; int("-128", 10).to_bytes(1, byteorder="little", signed=True)
+b'\x80'
+
+&gt;&gt;&gt; int("-3", 10).to_bytes(1, byteorder="little", signed=True)
+b'\xfd'
+&gt;&gt;&gt; bin(0xfd)
+'0b11111101'
+</code></pre>
+
+<h2 id="signed-vs-unsigned-comparison">Signed vs Unsigned Comparison</h2>
+<p>A summary of the key differences between signed and unsigned integers is as follows:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Category</th>
+      <th style="text-align: left">Signed Integer</th>
+      <th style="text-align: left">Unsigned Integer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Value Range</td>
+      <td style="text-align: left">Negative, 0, Positive</td>
+      <td style="text-align: left">0, Positive</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Range (8-bit)</td>
+      <td style="text-align: left">-128 to 127</td>
+      <td style="text-align: left">0 to 255</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Use Cases</td>
+      <td style="text-align: left">Sensors, Offsets, etc.</td>
+      <td style="text-align: left">Memory Addresses, Counters/Timers</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Sign Bit</td>
+      <td style="text-align: left">Present (MSB)</td>
+      <td style="text-align: left">Absent</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The representable range based on two’s complement for signed integers and unsigned integers can be summarized mathematically:</p>
+
+<p><strong>Unsigned Integer</strong>
+\(0 \leq Z \leq 2^{\text{bit size}} - 1\)</p>
+
+<p><strong>Signed Integer</strong>
+\(-2^{\text{bit size} - 1} \leq Z \leq 2^{\text{bit size} - 1} - 1\)</p>
+
+<h2 id="programming-considerations">Programming Considerations</h2>
+<p>As seen, the interpretation of binary data changes depending on whether it is signed or unsigned. Understanding these differences is crucial when writing programs. Let’s look at two common pitfalls in C programming.</p>
+
+<h3 id="example-1-comparing-signed-and-unsigned-integers">Example 1: Comparing Signed and Unsigned Integers</h3>
+<p>A common mistake is comparing integers of different signedness. In the example below, the signed integer <code class="language-plaintext highlighter-rouge">-1</code> is treated as an unsigned integer during comparison, resulting in unexpected behavior.</p>
+
+<p><strong>comp.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"a is less than b</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"a is greater than or equals to b</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p><strong>Output</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gcc comp.c &amp;&amp; ./a.out
+a is greater than or equals to b
+</code></pre></div></div>
+<p>Although intuitively <code class="language-plaintext highlighter-rouge">-1</code> is less than <code class="language-plaintext highlighter-rouge">1</code>, the signed integer <code class="language-plaintext highlighter-rouge">a</code> is converted to an unsigned integer, resulting in a value greater than <code class="language-plaintext highlighter-rouge">b</code>.</p>
+
+<blockquote>
+  <p><strong>Bit Pattern of <code class="language-plaintext highlighter-rouge">int a = -1</code></strong><br />
+a = -1 = 0xFFFFFFFF (Two’s complement representation of -1) = 4,294,967,295</p>
+</blockquote>
+
+<p>Use the <a href="https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare">-W compiler option</a> to prevent such issues:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gcc -W comp.c
+comp.c: In function ‘main’:
+comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+    8 |   if (a &lt; b) {
+      |         ^
+</code></pre></div></div>
+
+<h3 id="example-2-type-casting">Example 2: Type Casting</h3>
+<p>Another common mistake involves type casting between signed and unsigned integers. When casting, the value’s bit pattern remains unchanged, but its interpretation changes.</p>
+
+<p><strong>main.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+</span>
+<span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">int8_t</span> <span class="n">i8</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">;</span>  <span class="c1">// 1111 1011</span>
+  <span class="kt">uint8_t</span> <span class="n">u8</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>  <span class="c1">// 0000 0101</span>
+  <span class="kt">uint8_t</span> <span class="n">ui8</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">i8</span><span class="p">;</span>  <span class="c1">// 1111 1011</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"UINT8_MAX: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">UINT8_MAX</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"INT8_MAX: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">INT8_MAX</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i8</span><span class="p">,</span> <span class="n">i8</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">u8</span><span class="p">,</span> <span class="n">u8</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8</span><span class="p">,</span> <span class="n">ui8</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p><strong>Output</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gcc main.c &amp;&amp; ./a.out
+UINT8_MAX: 255
+INT8_MAX: 127
+0xfffffffb [-5]     # (1)
+0x05 [5]            # (2)
+0xfb [251]          # (3)
+</code></pre></div></div>
+
+<ul>
+  <li><strong>Sign Extension</strong>: When printing <code class="language-plaintext highlighter-rouge">i8</code>, the signed integer is promoted to <code class="language-plaintext highlighter-rouge">int</code>, causing sign extension (filling higher bits with the MSB of <code class="language-plaintext highlighter-rouge">i8</code>).</li>
+  <li><strong>Bit Pattern Interpretation</strong>: The value of <code class="language-plaintext highlighter-rouge">ui8</code> is interpreted as an unsigned integer, resulting in 251 instead of -5.</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>This article explored the differences between <strong>Signed</strong> and <strong>Unsigned Binary</strong>, their representation methods, and programming considerations.</p>
+
+<ul>
+  <li><strong>Signed Binary</strong>: Represents both positive and negative values (e.g., sensor data, offsets).</li>
+  <li><strong>Unsigned Binary</strong>: Represents only positive values (e.g., memory addresses, timers).</li>
+</ul>
+
+<p><strong>Did this article help you? Leave your questions or feedback in the comments below!</strong></p>
+
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/2025/09/27/signed-and-unsigned-binary.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
