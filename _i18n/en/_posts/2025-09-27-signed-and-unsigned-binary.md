@@ -124,7 +124,7 @@ $$
 #### Using Python for Conversion
 Using Python's REPL is often the simplest way to convert between binary, decimal, and hexadecimal. Note that the `bin` and `hex` functions return strings, not integers.
 
-```pycon
+```python
 >>> bin(1)
 '0b1'
 >>> bin(2)
@@ -234,7 +234,7 @@ __Representation of ±5 in 8-bit Two's Complement__
 |1111 1111|-1|0000 0001 → 1111 1110 → 1111 1111|
 
 #### Using Python for Two's Complement Conversion
-```python-repl
+```python
 >>> int("-128", 10).to_bytes(1, byteorder="little", signed=True)
 b'\x80'
 
@@ -299,7 +299,7 @@ Although intuitively `-1` is less than `1`, the signed integer `a` is converted 
 > a = -1 = 0xFFFFFFFF (Two's complement representation of -1) = 4,294,967,295
 
 Use the [-W compiler option](https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare) to prevent such issues:
-```
+```bash
 $ gcc -W comp.c
 comp.c: In function ‘main’:
 comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
@@ -330,7 +330,7 @@ void main(void)
 }
 ```
 __Output__
-```
+```bash
 $ gcc main.c && ./a.out
 UINT8_MAX: 255
 INT8_MAX: 127
@@ -340,7 +340,7 @@ INT8_MAX: 127
 ```
 
 - **Sign Extension**: When printing `i8`, the signed integer is promoted to `int`, causing sign extension (filling higher bits with the MSB of `i8`).
-- **Bit Pattern Interpretation**: The value of `ui8` is interpreted as an unsigned integer, resulting in 251 instead of -5.
+- **Bit Pattern Interpretation**: The value of `ui8` is interpreted as an unsigned integer, resulting in `251` instead of `-5`.
 
 ## Conclusion
 This article explored the differences between **Signed** and **Unsigned Binary**, their representation methods, and programming considerations.
