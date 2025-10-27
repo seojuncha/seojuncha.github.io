@@ -1,4 +1,363 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-09-27T13:26:21+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기</title><link href="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" rel="alternate" type="text/html" title="Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기" /><published>2025-09-27T13:20:00+00:00</published><updated>2025-09-27T13:20:00+00:00</updated><id>https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary</id><content type="html" xml:base="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"><![CDATA[<p>이 글에서는 <strong>Signed Binary와 Unsigned Binary의 차이점</strong>, <strong>각각의 표현법</strong>, 그리고 <strong>C언어 프로그래밍 시의 주의사항</strong>을 알아보겠습니다.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-10-27T11:26:04+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">ARM 어셈블리 #6 - 산술연산</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html" rel="alternate" type="text/html" title="ARM 어셈블리 #6 - 산술연산" /><published>2025-10-27T11:20:00+00:00</published><updated>2025-10-27T11:20:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"><![CDATA[<p>이번 포스팅에서는 <strong>ARM의 기본 산술 연산(Arithmetic Operations)</strong> 명령어들을 다뤄보겠습니다.<br />
+특히 덧셈과 뺄셈, 그리고 <strong>Carry(캐리)</strong>를 포함하는 연산까지 함께 살펴봅니다.
+지금까지는 레지스터에 값을 저장하고 시프트(shift)하는 방법을 배웠다면, 오늘은 그 값을 <strong>연산</strong>하는 단계로 나아가 보겠습니다.</p>
+
+<blockquote>
+  <p>곱셈과 나눗셈에 관한 내용은 성격이 조금 달라서 별도의 포스팅에 작성할 예정입니다!</p>
+</blockquote>
+
+<h2 id="armv4의-덧셈과-뺄셈">ARMv4의 덧셈과 뺄셈</h2>
+<p>ARM 어셈블리의 기본 산술 연산 명령어는 다음과 같습니다:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">명령어</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">add</code></td>
+      <td style="text-align: center">더하기</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">adc</code></td>
+      <td style="text-align: center">더하기(캐리 포함)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">sub</code></td>
+      <td style="text-align: center">빼기</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">sbc</code></td>
+      <td style="text-align: center">빼기(캐리 포함)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rsb</code></td>
+      <td style="text-align: center">역방향 빼기</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rsc</code></td>
+      <td style="text-align: center">역방향 빼기(캐리 포함)</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>이제부터는 “ARM” 대신 좀 더 정확히 <strong>ARMv4</strong>라고 명시하겠습니다.</p>
+</blockquote>
+
+<p>이 명령어들은 모두 <strong>이항 연산자(binary operator)</strong> 형태입니다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>result = first-operand op second-operand
+&lt;opcode&gt; = &lt;Rd&gt;, &lt;Rn&gt;, &lt;shifter-operand&gt;
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">필드</th>
+      <th style="text-align: center">의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">&lt;opcode&gt;</code></td>
+      <td style="text-align: center">연산 종류 (add, sub 등)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">&lt;Rd&gt;</code></td>
+      <td style="text-align: center">결과가 저장될 레지스터</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">&lt;Rn&gt;</code></td>
+      <td style="text-align: center">첫 번째 피연산자</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">&lt;shifter-operand&gt;</code></td>
+      <td style="text-align: center">두 번째 피연산자 (즉시값 또는 시프트된 레지스터)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>즉, 이 명령어들도 모두 <a href="/ko/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand.html">이전 포스팅</a>에서 다뤘던 <strong>시프트 피연산자(Shifter Operand)</strong>를 사용합니다.</p>
+
+<h2 id="1-add--더하기">1. ADD : 더하기</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>어셈블리 문법: add &lt;Rd&gt;, &lt;Rn&gt;, &lt;Shifter-Operand&gt;
+
+수학적 표현: C = A + B
+  C: &lt;Rd&gt;
+  A: &lt;Rn&gt;
+  B: &lt;Shifter-Operand&gt;
+</code></pre></div></div>
+
+<p>수학에서는 <code class="language-plaintext highlighter-rouge">C = A + B</code>와 <code class="language-plaintext highlighter-rouge">C = B + A</code>가 같지만,<br />
+<strong>어셈블리에서는 첫 번째 피연산자(<code class="language-plaintext highlighter-rouge">&lt;Rn&gt;</code>)의 위치가 고정</strong>되어 있으므로 교환법칙이 성립하지 않습니다.</p>
+
+<p><strong>올바른 예시</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">add</span> <span class="nb">r0</span><span class="err">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+</code></pre></div></div>
+<ul>
+  <li>첫번째 피연산자는 레지스터: <code class="language-plaintext highlighter-rouge">R1</code></li>
+  <li>두번째 피연산자는 시프트 피연산자의 형태중 즉시값: <code class="language-plaintext highlighter-rouge">#2</code></li>
+</ul>
+
+<p><strong>잘못된 예시</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">add</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">#</span><span class="mi">2</span><span class="o">,</span> <span class="nv">r1</span>
+</code></pre></div></div>
+<ul>
+  <li>첫번째 피연산자는 반드시 레지스터여야 합니다.</li>
+</ul>
+
+<h3 id="add-예제">ADD 예제</h3>
+<p><strong>add.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span><span class="err">:</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+<span class="hll">  <span class="nb">add</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+</span>  <span class="nb">add</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span>
+  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p>주요 라인 해석:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #3</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 3</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">add r1, r0, #3</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R1 = R0 + 3</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R1= 3 + 3</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 6</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">add r2, r0, r0 lsl #2</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R2 = R0 + (3 &lt;&lt; 2)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 3 + (3 &lt;&lt; 2)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 3 + 12</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 15</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">add r2, r0, r0 lsl #2</code>에서 <code class="language-plaintext highlighter-rouge">r0 lsl #2</code>만큼이 두번째 피연산자인 시프트 피연산자입니다.
+그렇기 때문에 <code class="language-plaintext highlighter-rouge">add</code>동작 이전에 <code class="language-plaintext highlighter-rouge">R0</code>를 2만큼 왼쪽 시프트한 이후에 그 값을 덧셈에 사용했습니다.</p>
+
+<h2 id="2-sub--빼기">2. SUB : 빼기</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>어셈블리 문법: sub &lt;Rd&gt;, &lt;Rn&gt;, &lt;Shifter-Operand&gt;
+
+수학적 표현: C = A - B
+  C: &lt;Rd&gt;
+  A: &lt;Rn&gt;
+  B: &lt;Shifter-Operand&gt;
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">sub</code>는 첫번째 피연산자(<code class="language-plaintext highlighter-rouge">&lt;Rn&gt;</code>)에서 두번째 피연산자(<code class="language-plaintext highlighter-rouge">&lt;Shifter-Operand&gt;</code>)를 빼는 동작입니다.</p>
+
+<h3 id="sub-예제">SUB 예제</h3>
+<p><strong>sub.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span><span class="err">:</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span>
+<span class="hll">  <span class="nb">sub</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p>주요 라인 해석:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #4</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 4</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">sub r1, r0, #0x1</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R1 = R0 - 0x1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 4 - 1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 3</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="3-rsb--역방향-빼기">3. RSB : 역방향 빼기</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>어셈블리 문법: rsb &lt;Rd&gt;, &lt;Rn&gt;, &lt;Shifter-Operand&gt;
+
+수학적 표현: C = B - A
+  C: &lt;Rd&gt;
+  A: &lt;Rn&gt;
+  B: &lt;Shifter-Operand&gt;
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">rsb</code>는 <strong>두번째</strong> 피연산자(<code class="language-plaintext highlighter-rouge">&lt;Shifter-Operand&gt;</code>)에서 첫번째 피연산자(<code class="language-plaintext highlighter-rouge">&lt;Rn&gt;</code>)를 빼는 동작입니다.
+<code class="language-plaintext highlighter-rouge">sub</code>의 반대 방향 뺄셈이기 때문에 <em>Reverse SuB</em> 입니다.</p>
+
+<h3 id="rsb-예제">RSB 예제</h3>
+<p><strong>rsb.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span><span class="err">:</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+<span class="hll">  <span class="nb">rsb</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p>주요 라인 해석:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #5</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 5</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">mov r1, #2</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 2</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">rsb r2, r1, r0</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R2 = R0 - R1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 5 - 2</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 3</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>만약, <code class="language-plaintext highlighter-rouge">rsb</code>가 아닌 <code class="language-plaintext highlighter-rouge">sub</code>를 사용했다면, <code class="language-plaintext highlighter-rouge">R2 = R1 - R0</code>이기 때문에 <code class="language-plaintext highlighter-rouge">-3</code>이 될 것입니다.</p>
+
+<h2 id="4-adcsbcrbc--캐리를-포함한-연산">4. ADC/SBC/RBC : 캐리를 포함한 연산</h2>
+<p>기본적인 <code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>, <code class="language-plaintext highlighter-rouge">rsb</code>만으로도 대부분의 연산이 가능합니다.
+하지만 컴퓨터는 항상 “<strong>올림(Carry)</strong>”과 “<strong>빌림(Borrow)</strong>”을 고려해야 합니다.</p>
+
+<p>캐리를 고려한 연산 명령어는 다음과 같습니다:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">adc</code> = <code class="language-plaintext highlighter-rouge">add</code> + 캐리(올림)</li>
+  <li><code class="language-plaintext highlighter-rouge">sbc</code> = <code class="language-plaintext highlighter-rouge">sub</code> + 캐리(빌림)</li>
+  <li><code class="language-plaintext highlighter-rouge">rbc</code> = <code class="language-plaintext highlighter-rouge">rsb</code> + 캐리(빌림)</li>
+</ul>
+
+<h3 id="adc-예제">ADC 예제</h3>
+<p><strong>adc.s</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+  <span class="nb">movs</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsr</span> <span class="o">#</span><span class="mi">1</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+  <span class="nb">adc</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
+  <span class="nb">b</span> <span class="mf">.</span>
+</code></pre></div></div>
+
+<p>주요 라인 해석:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #0x3</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 3</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">movs r0, r0, lsr #1</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = R0 &gt;&gt; 1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 3 &gt;&gt; 1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 1</code></li>
+      <li>단, <code class="language-plaintext highlighter-rouge">movs</code>이므로 밀려난 비트가 캐리플래그로 설정</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">mov r1, #2</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 2</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">adc r2, r0, r1</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R2 = R0 + R1 + Carry</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 1 + 2 + 1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 4</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>디버깅:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(gdb) x/5i 0x10000
+=&gt; 0x10000 &lt;_start&gt;:    mov     r0, #3
+   0x10004 &lt;_start+4&gt;:  lsrs    r0, r0, #1
+   0x10008 &lt;_start+8&gt;:  mov     r1, #2
+   0x1000c &lt;_start+12&gt;: adc     r2, r0, r1
+   0x10010 &lt;_start+16&gt;: b       0x10010 &lt;_start+16&gt;
+(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
+$1 = 0
+(gdb) i r r0 r1 r2
+r0             0x0      0
+r1             0x0      0
+r2             0x0      0
+(gdb) si
+0x00010004 in _start ()
+(gdb) i r r0 r1 r2
+r0             0x3      3
+r1             0x0      0
+r2             0x0      0
+(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
+$2 = 0
+(gdb) si
+0x00010008 in _start ()
+(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
+$3 = 1
+(gdb) i r r0 r1 r2
+r0             0x1      1
+r1             0x0      0
+r2             0x0      0
+(gdb) si
+0x0001000c in _start ()
+(gdb) i r r0 r1 r2
+r0             0x1      1
+r1             0x2      2
+r2             0x0      0
+(gdb) si
+0x00010010 in _start ()
+(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
+$4 = 1
+(gdb) i r r0 r1 r2
+r0             0x1      1
+r1             0x2      2
+r2             0x4      4
+(gdb)
+</code></pre></div></div>
+
+<h2 id="마무리">마무리</h2>
+<p>이번 포스팅에서는 ARMv4에서 사용되는 기본 산술 연산 명령어들을 살펴봤습니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">종류</th>
+      <th style="text-align: center">명령어</th>
+      <th style="text-align: center">특징</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">덧셈</td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">adc</code></td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">adc</code> 는 캐리를 더함</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">뺄셈</td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">sub</code>, <code class="language-plaintext highlighter-rouge">sbc</code></td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">sbc</code>는 캐리(혹은 빌림)을 고려</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">역방향 뺄셈</td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rsb</code>, <code class="language-plaintext highlighter-rouge">rsc</code></td>
+      <td style="text-align: center">순서를 뒤집은 뺄셈</td>
+    </tr>
+  </tbody>
+</table>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="add" /><category term="sub" /><category term="adc" /><category term="sbc" /><category term="rsb" /><category term="rsc" /><summary type="html"><![CDATA[이번 포스팅에서는 ARM의 기본 산술 연산(Arithmetic Operations) 명령어들을 다뤄보겠습니다. 특히 덧셈과 뺄셈, 그리고 Carry(캐리)를 포함하는 연산까지 함께 살펴봅니다. 지금까지는 레지스터에 값을 저장하고 시프트(shift)하는 방법을 배웠다면, 오늘은 그 값을 연산하는 단계로 나아가 보겠습니다.]]></summary></entry><entry xml:lang="ko"><title type="html">Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기</title><link href="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" rel="alternate" type="text/html" title="Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기" /><published>2025-09-27T13:20:00+00:00</published><updated>2025-09-27T13:20:00+00:00</updated><id>https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary</id><content type="html" xml:base="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"><![CDATA[<p>이 글에서는 <strong>Signed Binary와 Unsigned Binary의 차이점</strong>, <strong>각각의 표현법</strong>, 그리고 <strong>C언어 프로그래밍 시의 주의사항</strong>을 알아보겠습니다.</p>
 
 <p>사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.</p>
 

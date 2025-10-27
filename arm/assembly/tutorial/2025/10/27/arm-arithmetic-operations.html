@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #6 - Arithmetic Operations | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #6 - Arithmetic Operations" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="In this post, we’ll explore the basic arithmetic operations in ARM Assembly — addition, subtraction, and their variants that include carry (C flag)." />
+<meta property="og:description" content="In this post, we’ll explore the basic arithmetic operations in ARM Assembly — addition, subtraction, and their variants that include carry (C flag)." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-10-27T11:20:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #6 - Arithmetic Operations" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-10-27T11:20:00+00:00","datePublished":"2025-10-27T11:20:00+00:00","description":"In this post, we’ll explore the basic arithmetic operations in ARM Assembly — addition, subtraction, and their variants that include carry (C flag).","headline":"ARM Assembly #6 - Arithmetic Operations","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #6 - Arithmetic Operations
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-10-27T11:20:00+00:00"
+        itemprop="datePublished"
+      >
+        Oct 27, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>In this post, we’ll explore the <strong>basic arithmetic operations</strong> in ARM Assembly —<br />
+addition, subtraction, and their variants that include <strong>carry (C flag)</strong>.</p>
+
+<p>So far, we’ve learned how to move values into registers and how to shift them.<br />
+Now it’s time to perform actual <strong>arithmetic operations</strong> with those values.</p>
+
+<h2 id="addition-and-subtraction-in-armv4">Addition and Subtraction in ARMv4</h2>
+<p>ARM provides the following arithmetic instructions:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Instructions</th>
+      <th style="text-align: center">Descriptions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">add</code></td>
+      <td style="text-align: center">Add</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">adc</code></td>
+      <td style="text-align: center">Add with carry</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">sub</code></td>
+      <td style="text-align: center">Subtract</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">sbc</code></td>
+      <td style="text-align: center">Subtract with carry</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rsb</code></td>
+      <td style="text-align: center">Reverse subtract</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rsc</code></td>
+      <td style="text-align: center">Reverse subtract with carry</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>From now on, we’ll refer specifically to <strong>ARMv4</strong>, as this series is based on that architecture.</p>
+</blockquote>
+
+<p>All these instructions are <strong>binary operations</strong> that take two operands:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>result = first-operand op second-operand
+&lt;opcode&gt; = &lt;Rd&gt;, &lt;Rn&gt;, &lt;shifter-operand&gt;
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Field</th>
+      <th style="text-align: center">Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">&lt;opcode&gt;</code></td>
+      <td style="text-align: center">Operations (e.g., add, sub)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">&lt;Rd&gt;</code></td>
+      <td style="text-align: center">Destination register (result)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">&lt;Rn&gt;</code></td>
+      <td style="text-align: center">First operand</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">&lt;shifter-operand&gt;</code></td>
+      <td style="text-align: center">Second operand (immediate or shifted register)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Just like other <strong>data processing instructions</strong>, these also use<br />
+the <a href="/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand.html">shifter operand</a> mechanism introduced earlier.</p>
+
+<h2 id="1-add--addition">1. ADD : Addition</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Assembly Syntax: add &lt;Rd&gt;, &lt;Rn&gt;, &lt;Shifter-Operand&gt;
+
+Methemetical form: C = A + B
+  C: &lt;Rd&gt;
+  A: &lt;Rn&gt;
+  B: &lt;Shifter-Operand&gt;
+</code></pre></div></div>
+
+<p>Unlike mathematics, where <code class="language-plaintext highlighter-rouge">C = A + B</code> and <code class="language-plaintext highlighter-rouge">C = B + A</code> are equivalent,<br />
+ARM assembly requires the <strong>first operand (<code class="language-plaintext highlighter-rouge">&lt;Rn&gt;</code>) to be a register</strong>,<br />
+so the order <strong>cannot be swapped</strong>.</p>
+
+<p><strong>Valid</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">add</span> <span class="nb">r0</span><span class="err">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+</code></pre></div></div>
+<p><strong>Invalid</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">add</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">#</span><span class="mi">2</span><span class="o">,</span> <span class="nv">r1</span>   <span class="no">@</span> <span class="nv">The</span> <span class="nv">first</span> <span class="nv">operand</span> <span class="nv">must</span> <span class="nv">be</span> <span class="nv">a</span> <span class="nv">register</span><span class="mf">.</span>
+</code></pre></div></div>
+
+<h3 id="example-add">Example: ADD</h3>
+<p><strong>add.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span><span class="err">:</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+<span class="hll">  <span class="nb">add</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+</span>  <span class="nb">add</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span>
+  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p>Explanation:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #3</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 3</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">add r1, r0, #3</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R1 = R0 + 3</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R1= 3 + 3</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 6</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">add r2, r0, r0 lsl #2</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R2 = R0 + (3 &lt;&lt; 2)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 3 + (3 &lt;&lt; 2)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 3 + 12</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 15</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>Here, the second operand <code class="language-plaintext highlighter-rouge">r0 lsl #2</code> is a <strong>shifter operand</strong>,
+so ARM shifts <code class="language-plaintext highlighter-rouge">r0</code> left by 2 bits before performing the addition.</p>
+
+<h2 id="2-sub--subtraction">2. SUB : Subtraction</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Assembly Syntax: sub &lt;Rd&gt;, &lt;Rn&gt;, &lt;Shifter-Operand&gt;
+
+Methemetical form: C = A - B
+  C: &lt;Rd&gt;
+  A: &lt;Rn&gt;
+  B: &lt;Shifter-Operand&gt;
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">sub</code> subtracts the second operand from the first operand.</p>
+
+<h3 id="example-sub">Example: SUB</h3>
+<p><strong>sub.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span><span class="err">:</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span>
+<span class="hll">  <span class="nb">sub</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p>Explanation:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #4</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 4</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">sub r1, r0, #0x1</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R1 = R0 - 0x1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 4 - 1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 3</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="3-rsb--reverse-subtract">3. RSB : Reverse Subtract</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Assembly Syntax: rsb &lt;Rd&gt;, &lt;Rn&gt;, &lt;Shifter-Operand&gt;
+
+Mathmetical form: C = B - A
+  C: &lt;Rd&gt;
+  A: &lt;Rn&gt;
+  B: &lt;Shifter-Operand&gt;
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">rsb</code> performs subtraction in the <strong>reverse direction</strong>:
+it subtracts the first operand from the second one.
+RSB stands for <em>Reverse Subtract</em>.</p>
+
+<h3 id="example-rsb">Example: RSB</h3>
+<p><strong>rsb.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span><span class="err">:</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+<span class="hll">  <span class="nb">rsb</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
+</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+
+<p>Explanation:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #5</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 5</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">mov r1, #2</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 2</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">rsb r2, r1, r0</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R2 = R0 - R1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 5 - 2</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 3</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>If <code class="language-plaintext highlighter-rouge">sub r2, r1, r0</code> were used instead, the result would be <code class="language-plaintext highlighter-rouge">-3</code>.</p>
+
+<h2 id="4-adcsbcrbc--operations-with-carry">4. ADC/SBC/RBC : Operations with Carry</h2>
+
+<p>So far, we’ve handled simple addition and subtraction.
+However, computers must also handle carry (C flag) —
+the overflow or borrow that occurs when results exceed bit limits.</p>
+
+<p>ARM provides separate instructions for these cases:
+| Instruction | Desciption |
+| :-: | :-: |
+| <code class="language-plaintext highlighter-rouge">adc</code> | Add with carry (includes carry flag) |
+| <code class="language-plaintext highlighter-rouge">sbc</code> | Subtract with carry (includes borrow) |
+| <code class="language-plaintext highlighter-rouge">rsc</code> | Reverse subtract with carry |</p>
+
+<h3 id="example-adc-add-with-carry">Example: ADC (Add with Carry)</h3>
+<p><strong>adc.s</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+  <span class="nb">movs</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsr</span> <span class="o">#</span><span class="mi">1</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+  <span class="nb">adc</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
+  <span class="nb">b</span> <span class="mf">.</span>
+</code></pre></div></div>
+
+<p>Explanation:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #0x3</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 3</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">movs r0, r0, lsr #1</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R0 = R0 &gt;&gt; 1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 3 &gt;&gt; 1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R0 = 1</code></li>
+      <li>because of the <code class="language-plaintext highlighter-rouge">S</code> suffix, the <strong>bit shifted out</strong> (1) sets the <strong>Carry flag</strong>.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">mov r1, #2</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R1 = 2</code></li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">adc r2, r0, r1</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">R2 = R0 + R1 + Carry</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 1 + 2 + 1</code></li>
+      <li><code class="language-plaintext highlighter-rouge">R2 = 4</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="gdb-debugging-output">GDB Debugging Output</h4>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(gdb) x/5i 0x10000
+=&gt; 0x10000 &lt;_start&gt;:    mov     r0, #3
+   0x10004 &lt;_start+4&gt;:  lsrs    r0, r0, #1
+   0x10008 &lt;_start+8&gt;:  mov     r1, #2
+   0x1000c &lt;_start+12&gt;: adc     r2, r0, r1
+   0x10010 &lt;_start+16&gt;: b       0x10010 &lt;_start+16&gt;
+(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
+$1 = 0
+(gdb) i r r0 r1 r2
+r0             0x0      0
+r1             0x0      0
+r2             0x0      0
+(gdb) si
+0x00010004 in _start ()
+(gdb) i r r0 r1 r2
+r0             0x3      3
+r1             0x0      0
+r2             0x0      0
+(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
+$2 = 0       @ Carry flag = 0
+(gdb) si
+0x00010008 in _start ()
+(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
+$3 = 1
+(gdb) i r r0 r1 r2
+r0             0x1      1
+r1             0x0      0
+r2             0x0      0
+(gdb) si
+0x0001000c in _start ()
+(gdb) i r r0 r1 r2
+r0             0x1      1
+r1             0x2      2
+r2             0x0      0
+(gdb) si
+0x00010010 in _start ()
+(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
+$4 = 1        @ Carry flag = 1
+(gdb) i r r0 r1 r2
+r0             0x1      1
+r1             0x2      2
+r2             0x4      4
+(gdb)
+</code></pre></div></div>
+
+<p>As shown, the Carry flag was set during the shift,
+and <code class="language-plaintext highlighter-rouge">adc</code> correctly included it in the addition.</p>
+
+<h2 id="summary">Summary</h2>
+<p>Here’s a quick summary of what we covered:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Type</th>
+      <th style="text-align: center">Instuctions</th>
+      <th style="text-align: center">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Addition</td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">adc</code></td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">adc</code> adds with the carry flag</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Subtraction</td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">sub</code>, <code class="language-plaintext highlighter-rouge">sbc</code></td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">sbc</code> subtracts with borrow</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Reverse Subtraction</td>
+      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rsb</code>, <code class="language-plaintext highlighter-rouge">rsc</code></td>
+      <td style="text-align: center">Performs subtraction in reverse order</td>
+    </tr>
+  </tbody>
+</table>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
