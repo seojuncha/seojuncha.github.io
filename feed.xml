@@ -1,4 +1,130 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-10-31T12:27:30+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html" rel="alternate" type="text/html" title="ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR" /><published>2025-10-31T11:00:00+00:00</published><updated>2025-10-31T11:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html"><![CDATA[<p>This post is an introductory tutorial on <strong>memory access</strong> for beginners learning ARM assembly.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-02T04:47:36+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #8 - Calculating Memory Addresses with Offsets</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html" rel="alternate" type="text/html" title="ARM Assembly #8 - Calculating Memory Addresses with Offsets" /><published>2025-11-02T04:40:00+00:00</published><updated>2025-11-02T04:40:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"><![CDATA[<p>In this post, we’ll explore how <strong>offset-based addressing</strong> works in ARM assembly.<br />
+You’ll learn how to calculate memory addresses efficiently <a href="/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html">using <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code></a> without needing separate <a href="/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"><code class="language-plaintext highlighter-rouge">ADD</code> instructions</a> each time.</p>
+
+<h2 id="why-we-need-offsets">Why We Need Offsets</h2>
+<p>In assembly, a simple instruction like <code class="language-plaintext highlighter-rouge">ldr r0, [r1]</code> always accesses the same memory address.
+But when working with arrays or structures <strong>stored in contiguous memory</strong>, we’d have to use extra <code class="language-plaintext highlighter-rouge">add</code> instructions each time to move to the next element.</p>
+
+<p>For example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">]</span>       <span class="no">@</span> <span class="nv">Read</span> <span class="nv">first</span> <span class="nv">data</span>
+<span class="nl">add</span> <span class="nb">r1</span><span class="err">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span>     <span class="no">@</span> <span class="nv">Move</span> <span class="nv">to</span> <span class="nv">next</span> <span class="nv">element</span>
+<span class="nl">ldr</span> <span class="nb">r2</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">]</span>       <span class="no">@</span> <span class="nv">Read</span> <span class="nv">second</span> <span class="nv">data</span>
+</code></pre></div></div>
+<p>That works, but it’s repetitive and inefficient.
+Instead, ARM lets us <strong>combine address calculation and memory access</strong>:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]</span>   <span class="no">@</span> <span class="nv">Reads</span> <span class="nv">directly</span> <span class="nv">from</span> <span class="nv">r1</span> <span class="o">+</span> <span class="mi">4</span>
+</code></pre></div></div>
+<p>This reduces instruction count and CPU cycles, improving performance.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/arm-offset-memory.png" alt="Byte-addressed memory with int array and base+offset" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">In byte-addressed memory, an <code>int</code> array advances by 4 bytes per index.</figcaption>
+</figure>
+
+<h2 id="how-offset-address-calculation-works">How Offset Address Calculation Works</h2>
+<p>An offset represents the distance from a base register address.
+ARM calculates the final memory address by adding or subtracting this offset from the base:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Address = Base Register + Offset
+</code></pre></div></div>
+
+<p>Offsets can be:</p>
+<ul>
+  <li>Immediate – a constant value like <code class="language-plaintext highlighter-rouge">#4</code> or <code class="language-plaintext highlighter-rouge">#8</code></li>
+  <li>Register – the value of another register</li>
+</ul>
+
+<p>Example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">8</span><span class="o">]</span>    <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="nv">r1</span> <span class="o">+</span> <span class="mi">8</span>
+<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">]</span>    <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="nv">r1</span> <span class="o">+</span> <span class="nv">r2</span>
+</code></pre></div></div>
+<p>Both addition (+) and subtraction (–) are supported,
+and immediate offsets are limited to 12-bit unsigned values (<code class="language-plaintext highlighter-rouge">0</code>–<code class="language-plaintext highlighter-rouge">4095</code>).</p>
+
+<h2 id="three-offset-forms-immediate-register-and-shifted-register">Three Offset Forms: Immediate, Register, and Shifted Register</h2>
+<p>ARM provides three main ways to express an offset:</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/arm-offset-forms.png" alt="Three offset forms: immediate, register, shifted register" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Offsets can be expressed as immediate, register, or shifted-register forms.</figcaption>
+</figure>
+
+<h3 id="1-immediate-offset--add-a-constant-directly">1. Immediate Offset – Add a constant directly.</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Rn, #imm]
+</code></pre></div></div>
+<p>Example:</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">12</span><span class="o">]</span>     <span class="no">@</span> <span class="nv">Load</span> <span class="nv">data</span> <span class="nv">from</span> <span class="o">(</span><span class="nv">r1</span> <span class="o">+</span> <span class="mi">12</span><span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="2-register-offset--add-the-value-of-another-register">2. Register Offset – Add the value of another register.</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Rn, Rm]
+</code></pre></div></div>
+<p>Example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">]</span>      <span class="no">@</span> <span class="nv">Load</span> <span class="nv">data</span> <span class="nv">from</span> <span class="o">(</span><span class="nv">r1</span> <span class="o">+</span> <span class="nv">r2</span><span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="3-shifted-register-offset--add-a-shifted-version-of-another-register">3. Shifted Register Offset – Add a shifted version of another register.</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Rn, Rm, Shift #n]
+</code></pre></div></div>
+
+<p>Example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">]</span>  <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="nv">r1</span> <span class="o">+</span> <span class="o">(</span><span class="nv">r2</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>Here, <code class="language-plaintext highlighter-rouge">lsl #2</code> means “×4”.
+Since each int element is 4 bytes, this perfectly aligns with array indexing.</p>
+
+<h2 id="example-code">Example Code</h2>
+<p>Here’s how offset-based address calculation works in assembly:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r1</span><span class="err">,</span> <span class="o">=</span><span class="mh">0x1000</span>            <span class="no">@</span> <span class="nv">Base</span> <span class="nv">address</span> <span class="o">(</span><span class="nv">start</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">array</span><span class="o">)</span>
+<span class="nl">ldr</span> <span class="nb">r2</span><span class="err">,</span> <span class="o">=</span><span class="mi">3</span>                 <span class="no">@</span> <span class="nv">Index</span> <span class="nv">i</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">]</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x1000</span> <span class="o">+</span> <span class="o">(</span><span class="mi">3</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">=</span> <span class="mh">0x100C</span>
+                           <span class="err">@</span> <span class="nv">r0</span> <span class="o">=</span> <span class="nv">value</span> <span class="nv">of</span> <span class="nv">arr</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span>
+</code></pre></div></div>
+
+<p>This is equivalent to accessing <code class="language-plaintext highlighter-rouge">arr[i]</code> in C.
+The <code class="language-plaintext highlighter-rouge">lsl #2</code> part represents <code class="language-plaintext highlighter-rouge">i * 4</code>, perfectly matching a 4-byte int element.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/arm-offset-forms.png" alt="Scaling i by 4 using lsl #2" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"><code>lsl #2</code> scales the index <code>i</code> by 4 to match the 4-byte size of <code>int</code></figcaption>
+</figure>
+
+<h2 id="c-to-assembly-conversion">C to Assembly Conversion</h2>
+<p>In C, when accessing an array element, the compiler automatically calculates the memory address.</p>
+
+<p>For example:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">arr</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">};</span>
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>The compiler might generate:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r1</span><span class="err">,</span> <span class="o">=</span><span class="nv">arr</span>                 <span class="no">@</span> <span class="nv">r1</span> <span class="o">=</span> <span class="mh">&amp;a</span><span class="nv">rr</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">8</span><span class="o">]</span>             <span class="no">@</span> <span class="nv">arr</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="err">→</span> <span class="nv">base</span> <span class="o">+</span> <span class="o">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">4</span><span class="o">)</span> <span class="o">=</span> <span class="o">+</span><span class="mi">8</span>
+</code></pre></div></div>
+
+<p>If the index is stored in a variable:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r1</span><span class="err">,</span> <span class="o">=</span><span class="nv">arr</span>
+<span class="nl">mov</span> <span class="nb">r2</span><span class="err">,</span> <span class="nv">r0</span>                   <span class="no">@</span> <span class="nv">r2</span> <span class="o">=</span> <span class="nv">i</span>
+<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">]</span>     <span class="no">@</span> <span class="nv">arr</span><span class="o">[</span><span class="nv">i</span><span class="o">]</span> <span class="o">=</span> <span class="o">*(</span><span class="nv">base</span> <span class="o">+</span> <span class="nv">i</span><span class="o">*</span><span class="mi">4</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>In short:</p>
+<ul>
+  <li>Each int element is 4 bytes.</li>
+  <li>Memory is byte-addressed, so the address increases by 4 for each index.</li>
+  <li>ARM uses <code class="language-plaintext highlighter-rouge">lsl #2</code> to efficiently represent this <code class="language-plaintext highlighter-rouge">×4</code> scaling.</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we learned how to use offsets in <code class="language-plaintext highlighter-rouge">ldr</code> and <code class="language-plaintext highlighter-rouge">str </code> to calculate memory addresses efficiently.</p>
+
+<p>Using offsets lets you perform both address calculation and memory access in one instruction.
+This makes it easier and faster to work with arrays or structures stored in consecutive memory.</p>
+
+<p>In the next post, we’ll explore how to use <strong>pre-index</strong> and <strong>post-index addressing</strong>
+to perform automatic address updates after each memory access.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="ldr" /><category term="str" /><category term="offset" /><category term="addressing" /><summary type="html"><![CDATA[In this post, we’ll explore how offset-based addressing works in ARM assembly. You’ll learn how to calculate memory addresses efficiently using LDR and STR without needing separate ADD instructions each time.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html" rel="alternate" type="text/html" title="ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR" /><published>2025-10-31T11:00:00+00:00</published><updated>2025-10-31T11:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html"><![CDATA[<p>This post is an introductory tutorial on <strong>memory access</strong> for beginners learning ARM assembly.
 Using the ARMv4 architecture as a reference, we’ll explore how the CPU uses the <code class="language-plaintext highlighter-rouge">ldr</code> (load) and <code class="language-plaintext highlighter-rouge">str</code> (store) instructions to read and write data to memory.</p>
 
 <p>In this post, you’ll learn:</p>
@@ -2473,188 +2599,4 @@ To check the contents at a specific memory address, GDB uses the following comma
 
 <p>Don’t worry if GDB feels unfamiliar right now. We’ll continue using this setup in future posts, so it will become second nature with practice.</p>
 
-<p>Up next: we’ll dive into shift operands and how they enhance the expressiveness of ARM instructions.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="assembly" /><category term="embedded" /><category term="low-level" /><category term="ARM" /><category term="QEMU" /><category term="GDB" /><summary type="html"><![CDATA[Computers are machines designed to perform calculations. These calculations are ultimately performed by the CPU, and a typical operation requires two things: operands and an operator. Operands are usually stored in registers, which are small, fast storage locations inside the CPU.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #0 - Build Environment and First Code</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html" rel="alternate" type="text/html" title="ARM Assembly #0 - Build Environment and First Code" /><published>2025-09-03T14:24:00+00:00</published><updated>2025-09-03T14:24:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"><![CDATA[<p>In this post, I will show you how to write and run your first ARM assembly code. 
-This is the foundation for the rest of this tutorial series. 
-We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB.</p>
-
-<h2 id="why-learn-assembly">Why Learn Assembly?</h2>
-
-<p>I started learning assembly while building a small <a href="https://github.com/seojuncha/ftt-c-compiler">C compiler</a>. I had trouble implementing the <strong>code generation</strong> phase.<br />
-The main problem was:</p>
-<blockquote>
-  <p><em>“How do I convert C code into proper assembly?”</em></p>
-</blockquote>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ast-output-of-my-compiler.png" alt="AST output of my compiler" width="70%" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">I made the AST… but how do I turn this into assembly?</figcaption>
-</figure>
-
-<p>Later, I realized that knowing assembly helps with:</p>
-<ul>
-  <li>writing more optimized code</li>
-  <li>debugging low-level issues</li>
-  <li>reverse engineering</li>
-</ul>
-
-<blockquote>
-  <p>People say: “If you know assembly, all software is open-source.”<br />
-(But of course, you also need to understand the <strong>ISA</strong> — Instruction Set Architecture.)</p>
-</blockquote>
-
-<h2 id="a-minimal-assembly-program">A Minimal Assembly Program</h2>
-<p>Let’s start with the simplest possible ARM assembly code.</p>
-
-<p><strong>only-main.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">b</span> <span class="mf">.</span>
-</code></pre></div></div>
-<p>This code does nothing useful — but it’s a great starting point.</p>
-
-<p>It creates <strong>an infinite loop with just one instruction</strong>.
-We’ll use this as a template for later exercises.</p>
-
-<blockquote>
-  <p>In C or Python, we start with “Hello, World!”<br />
-But in assembly, even that is too complex for day one.</p>
-</blockquote>
-
-<h2 id="development-environment">Development Environment</h2>
-<p>I use <strong>Debian Linux</strong> for this tutorial.
-It will also work on <strong>Ubuntu</strong> and other Linux systems.</p>
-
-<p>We need <strong>3 tools</strong>:</p>
-<ul>
-  <li><strong>arm-none-eabi-gcc</strong> (cross-compiler for ARM)</li>
-  <li><strong>qemu-system-arm</strong> (virtual ARM board)</li>
-  <li><strong>gdb-multiarch</strong> (debugger that supports ARM)</li>
-</ul>
-
-<h3 id="1-install-arm-gcc">1. Install ARM GCC</h3>
-<p>Most desktop PCs are x86, not ARM.
-So we can’t use the default GCC to build ARM binaries.</p>
-
-<p>We need a cross-compiler for ARM.
-Download it from the <a href="https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads">official ARM toolchain page</a>.</p>
-
-<p>Choose:</p>
-<ul>
-  <li>OS: Linux (x86_64)</li>
-  <li>Target: bare-metal</li>
-  <li>Format: arm-none-eabi-gcc.tar.gz</li>
-</ul>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/arm-toolchain-download-page.png" alt="ARM toolchain download page" style="display: block; margin: auto;" />
-</figure>
-
-<p>If you use terminal only:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wget https://developer.arm.com/path/to/your/toolchain.tar.gz
-</code></pre></div></div>
-<p>Extract the archive and add the bin folder to your PATH.</p>
-
-<p>Check the version:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="nt">--version</span>
-</code></pre></div></div>
-
-<h3 id="2-install-qemu">2. Install QEMU</h3>
-<p><strong><em>QEMU</em></strong> is a powerful virtual machine for many architectures.
-We’ll use it to emulate ARM hardware.</p>
-
-<p>Install it using <strong><em>apt</em></strong>:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>qemu-system qemu-user-static
-</code></pre></div></div>
-<p>You can also find it on the <a href="https://www.qemu.org/download/">official QEMU website</a>.</p>
-
-<h3 id="3-install-gdb-multiarch">3. Install GDB (Multiarch)</h3>
-<p>We also need a debugger for ARM.
-Install <strong><em>gdb-multiarch</em></strong>:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>gdb-multiarch
-</code></pre></div></div>
-<p>You’ll use this later to connect to QEMU and inspect memory or registers.</p>
-
-<h2 id="compile-the-assembly-code">Compile the Assembly Code</h2>
-<p>Now, let’s compile our <code class="language-plaintext highlighter-rouge">.s</code> file to a binary (ELF format):</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="se">\</span>
-	<span class="nt">-O0</span> <span class="se">\</span>
-	<span class="nt">-nostdlib</span> <span class="se">\</span>
-	<span class="nt">-march</span><span class="o">=</span>armv4 <span class="se">\</span>
-	<span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="se">\</span>
-	only-main.s <span class="se">\</span>
-	<span class="nt">-o</span> only-main.elf
-</code></pre></div></div>
-
-<p>Options explained:</p>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">-O0</code>: no optimization</li>
-  <li><code class="language-plaintext highlighter-rouge">-nostdlib</code>: no standard C library</li>
-  <li><code class="language-plaintext highlighter-rouge">-march=armv4</code>: target architecture</li>
-  <li><code class="language-plaintext highlighter-rouge">-Ttext=0x10000</code>: start .text at address 0x10000</li>
-</ul>
-
-<p>Check the output:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>file only-main.elf
-only-main.elf: ELF 32-bit LSB executable, ARM, EABI5 version 1 <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, not stripped
-</code></pre></div></div>
-
-<h2 id="code-structure-explained">Code Structure Explained</h2>
-<p>Let’s understand the 4 lines of our code.</p>
-
-<h3 id="text--code-section">.text → Code section</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">.</span><span class="nl">text</span>
-</code></pre></div></div>
-<p>This means <strong><em>“put the following instructions in the code section.”</em></strong>
-This is where the CPU fetches instructions.</p>
-
-<blockquote>
-  <p>We’ll learn more about memory layout (<code class="language-plaintext highlighter-rouge">.text</code>, <code class="language-plaintext highlighter-rouge">.data</code>, <code class="language-plaintext highlighter-rouge">.bss</code>) later.</p>
-</blockquote>
-
-<figure style="text-align: center;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Program_memory_layout.pdf/page1-234px-Program_memory_layout.pdf.jpg" alt="Program memory layout" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Source: <a href="https://en.wikipedia.org/wiki/Data_segment#Program_memory">Wikipedia</a></figcaption>
-</figure>
-
-<h3 id="global-_start--make-the-label-visible">.global _start → Make the label visible</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">.</span><span class="nl">global</span> <span class="nf">_start</span>
-</code></pre></div></div>
-<p>This tells the linker:
-<strong><em>”_start is the entry point of the program.”</em></strong></p>
-
-<p>In C, we use <code class="language-plaintext highlighter-rouge">main()</code> — in assembly, we use <code class="language-plaintext highlighter-rouge">_start</code>.</p>
-
-<h3 id="_start--label-definition">_start: → Label definition</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">_start</span><span class="err">:</span>
-</code></pre></div></div>
-<p>This defines a <strong>label</strong>.
-It marks a location in the code so other instructions can jump to it.</p>
-
-<h3 id="b---infinite-loop">b . → Infinite loop</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">b</span> <span class="err">.</span>
-</code></pre></div></div>
-<p><code class="language-plaintext highlighter-rouge">b</code> means <strong><em>branch</em></strong> (jump).<br />
-.(dot) means <strong><em>“this current line”</em></strong> — so the program jumps to itself forever.</p>
-
-<p>This creates a simple infinite loop.</p>
-
-<blockquote>
-  <p>This is useful. It keeps the program alive so we can connect GDB and inspect the system.</p>
-</blockquote>
-
-<h2 id="summary">Summary</h2>
-<p>We wrote the smallest possible ARM assembly program.
-We installed the tools, compiled the code, and prepared to debug it.</p>
-
-<p>This basic template will be reused in many future posts.</p>
-
-<p>In the next post, we will:</p>
-<ul>
-  <li>Add register access</li>
-  <li>Connect QEMU and GDB</li>
-  <li>Start real debugging</li>
-</ul>
-
-<p>Thanks for reading!</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="assembly" /><category term="embedded" /><category term="low-level" /><category term="ARM" /><category term="QEMU" /><category term="GDB" /><summary type="html"><![CDATA[In this post, I will show you how to write and run your first ARM assembly code. This is the foundation for the rest of this tutorial series. We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB.]]></summary></entry></feed>
+<p>Up next: we’ll dive into shift operands and how they enhance the expressiveness of ARM instructions.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="assembly" /><category term="embedded" /><category term="low-level" /><category term="ARM" /><category term="QEMU" /><category term="GDB" /><summary type="html"><![CDATA[Computers are machines designed to perform calculations. These calculations are ultimately performed by the CPU, and a typical operation requires two things: operands and an operator. Operands are usually stored in registers, which are small, fast storage locations inside the CPU.]]></summary></entry></feed>
