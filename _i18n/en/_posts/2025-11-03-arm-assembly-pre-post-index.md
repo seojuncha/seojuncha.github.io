@@ -34,6 +34,12 @@ This increases instruction count and reduces performance.
 To address this, ARM integrates automatic address calculation into `LDR` and `STR` instructions, 
 allowing the CPU to perform the address update itself, improving both performance and pipeline efficiency.  
 
+
+<figure style="text-align: center;">
+  <img src="/assets/img/pre-post-offset.png" alt="[Offset vs Pre vs Post] Addressing modes overview" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">offset vs pre-index vs post-index — manual vs automatic address update</figcaption>
+</figure>
+
 ## What is automatic address calculation?
 Automatic address calculation is a feature where the CPU automatically increments or decrements the memory address  
 during the execution of a load or store instruction.  
