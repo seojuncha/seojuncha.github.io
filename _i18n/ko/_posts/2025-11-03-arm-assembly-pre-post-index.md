@@ -27,6 +27,11 @@ ARM에서 메모리에 접근할 때, CPU는 대괄호 안의 표현식을 먼�
 
 즉, CPU가 `ADD`를 대신 수행하도록 만들어 명령어 수를 줄이고 파이프라인 효율을 높인 것이죠.
 
+<figure style="text-align: center;">
+  <img src="/assets/img/pre-post-offset.png" alt="[Offset vs Pre vs Post] Addressing modes overview" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">오프셋 / pre-index / post-index 비교 — 수동 vs 자동 주소 갱신</figcaption>
+</figure>
+
 ## 자동 주소 계산이란 무엇인가  
 CPU가 명령을 실행하는 동안, 메모리 접근 명령이 자동으로 주소를 증가시키거나 감소시키는 기능을 말합니다.  
 이 기능은 두 가지 방식으로 동작합니다: **pre-index**와 **post-index**입니다.  
