@@ -3,10 +3,9 @@ layout: post
 lang: en
 ref: "arm-assembly-pre-post-index"
 title: "ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index"
-date: 2025-11-03 12:40:00 +0900
+date: 2025-11-05 22:35:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ldr", "str", "pre-index", "post-index", "addressing mode"]
-published: false
 ---
 
 When accessing memory in ARM assembly, simply using `[R1]` as an address is often not enough. 
@@ -86,6 +85,11 @@ ldr r0, [r1], #4    @ post-index: access memory first, then update R1
 Thus, pre-indexing is used when you want to access the **next** element first,
 while post-indexing is useful when you need to access the **current** element before moving on.
 
+<figure style="text-align: center;">
+  <img src="/assets/img/timing-pre-post.png" alt="Timing: pre-index (update→access) vs post-index (access→update)" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">pre-index updates then accesses; post-index accesses then updates</figcaption>
+</figure>
+
 ## Example test using GCC, QEMU, and GDB
 Here’s a minimal example comparing both modes.
 You can build and debug it using GCC, QEMU, and GDB as follows.
@@ -109,13 +113,16 @@ array:
 **Build & Run QEMU**
 ```bash
 $ arm-none-eabi-gcc \
-        -O0 \
-        -nostdlib \
-        -march=armv4 \
-        -Ttext=0x10000 \
-        pre-post.s \
-        -o pre-post.elf
-$ qemu-system-arm -nographic -S -s -kernel pre-post.elf
+    -nostdlib \
+    -march=armv4 \
+    -Ttext=0x10000 \
+    pre-post.s \
+    -o pre-post.elf
+$ qemu-system-arm \
+    -machine versatilepb \
+    -nographic \
+    -S -s \
+    -kernel pre-post.elf
 ```
 **Debug with GDB**
 ```bash
@@ -126,7 +133,10 @@ $ gdb-multiarch pre-post.elf
 (gdb) x/4w 0x10010           # Print 4 words at 0x10010(address of array)
 ```
 
-<object type="image/svg+xml" data="/assets/gif/gdb-prepost.svg" width="720"></object>
+<figure style="text-align: center;">
+  <img src="/assets/gif/prepost.gif" alt="GDB pre/post step execution demo" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"><code>R1</code> value changes during GDB step execution — pre-index updates first, post-index after.</figcaption>
+</figure>
 
 After running step-by-step in GDB,
 you’ll see that `R1` changes to `array+4` after the pre-index instruction,
@@ -151,5 +161,4 @@ and their only difference lies in **whether the update occurs before or after me
 Use **pre-index** when you need to move to the next element before accessing it,
 and **post-index** when you want to access the current element first.
 
-In the next post, we’ll extend this concept and explore
-**how the CPU perceives and accesses memory**, including **instruction pipeline operations** in detail.
+In the next post, we’ll extend this idea to **stack operations** and explore how `LDM`/`STM` can load or store multiple registers efficiently.

@@ -3,10 +3,9 @@ layout: post
 lang: ko
 ref: "arm-assembly-pre-post-index"
 title: "ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기"
-date: 2025-11-03 12:40:00 +0900
+date: 2025-11-05 22:35:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ldr", "str", "pre-index", "post-index", "addressing mode"]
-published: false
 ---
 
 ARM 어셈블리에서 메모리에 접근할 때, 단순히 `[R1]` 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 
@@ -82,6 +81,11 @@ ldr r0, [r1], #4    @ post-index: R1이 가리키는 주소에서 읽은 뒤 R1�
 따라서, pre-index는 “다음 주소부터 접근해야 할 때”,
 post-index는 “현재 주소를 먼저 사용해야 할 때” 적합합니다.
 
+<figure style="text-align: center;">
+  <img src="/assets/img/timing-pre-post.png" alt="Timing: pre-index (update→access) vs post-index (access→update)" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">pre-index는 주소 갱신 후 접근, post-index는 접근 후 주소 갱신</figcaption>
+</figure>
+
 ## 예제 코드 실행 (GCC / QEMU / GDB)
 아래 코드는 두 방식을 비교하기 위한 간단한 예제입니다.
 
@@ -104,13 +108,16 @@ array:
 **컴파일 & QEMU실행**:
 ```bash
 $ arm-none-eabi-gcc \
-        -O0 \
-        -nostdlib \
-        -march=armv4 \
-        -Ttext=0x10000 \
-        pre-post-index.s \
-        -o pre-post-index.elf
-$ qemu-system-arm -nographic -S -s -kernel pre-post-index.elf
+    -nostdlib \
+    -march=armv4 \
+    -Ttext=0x10000 \
+    pre-post.s \
+    -o pre-post.elf
+$ qemu-system-arm \
+    -machine versatilepb \
+    -nographic \
+    -S -s \
+    -kernel pre-post.elf
 ```
 
 **디버깅**:
@@ -122,7 +129,10 @@ $ gdb-multiarch
 (gdb) x/4w 0x10010           # 메모리 주소 0x10010의 4개 워드값 출력
 ```
 
-<object type="image/svg+xml" data="/assets/gif/gdb-prepost.svg" width="720"></object>
+<figure style="text-align: center;">
+  <img src="/assets/gif/prepost.gif" alt="GDB pre/post step execution demo" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">GDB에서 한 스텝씩 실행했을 때 R1 값 변화 — pre-index는 먼저 갱신, post-index는 나중 갱신</figcaption>
+</figure>
 
 - pre-index 명령 실행 후에는 `R1`이 `array+4`로 변경되고,
 - post-index 명령 실행 후에는 `R1`이 `array+8`로 변경됩니다.
@@ -146,4 +156,4 @@ pre-index와 post-index는 모두 **주소 갱신을 자동화**해주는 기능
 pre-index는 다음 데이터를 미리 읽어야 하는 경우에,
 post-index는 현재 데이터를 읽고 다음으로 넘어갈 때 유용합니다.
 
-다음 포스팅에서는 이 개념을 확장하여, **CPU가 메모리를 어떻게 인식하고 접근하는지(명령어 파이프라인 동작 포함)**를 자세히 살펴보겠습니다.
+다음 포스팅에서는 이 개념을 확장하여, 스택(Stack) 구조와 `LDM`/`STM` 명령어를 통해 한 번에 여러 값을 푸시/팝하는 방법을 살펴보겠습니다. 
