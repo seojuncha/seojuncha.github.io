@@ -106,6 +106,16 @@
 
 
   <ul class="post-list"><li>
+        <span class="post-meta">Nov 5, 2025</span>
+        <h3>
+          <a class="post-link" href="/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html">
+            ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기
+          </a>
+        </h3><p>ARM 어셈블리에서 메모리에 접근할 때, 단순히 <code class="language-plaintext highlighter-rouge">[R1]</code> 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 
+배열이나 버퍼처럼 연속된 데이터를 다룰 때, 매번 <code class="language-plaintext highlighter-rouge">ADD</code> 명령으로 주소를 갱신하는 것은 비효율적이기 때문입니다. 
+이 문제를 해결하기 위해 ARM은 <strong>pre-index</strong>와 <strong>post-index</strong>라는 자동 주소 계산 기능을 제공합니다. 
+이 글에서는 두 방식의 차이와 동작 원리를 이해하기 쉽게 설명하고, 마지막에는 실제 예제 코드와 함께 CPU 내부에서 주소가 어떻게 계산되는지도 알아보겠습니다.</p>
+</li><li>
         <span class="post-meta">Nov 2, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html">

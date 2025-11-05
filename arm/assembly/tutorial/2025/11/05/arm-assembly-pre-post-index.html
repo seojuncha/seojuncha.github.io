@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="When accessing memory in ARM assembly, simply using [R1] as an address is often not enough. When dealing with arrays or buffers stored in consecutive memory, repeatedly updating the base register using ADD can be inefficient." />
+<meta property="og:description" content="When accessing memory in ARM assembly, simply using [R1] as an address is often not enough. When dealing with arrays or buffers stored in consecutive memory, repeatedly updating the base register using ADD can be inefficient." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-05T13:35:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-05T13:35:00+00:00","datePublished":"2025-11-05T13:35:00+00:00","description":"When accessing memory in ARM assembly, simply using [R1] as an address is often not enough. When dealing with arrays or buffers stored in consecutive memory, repeatedly updating the base register using ADD can be inefficient.","headline":"ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-11-05T13:35:00+00:00"
+        itemprop="datePublished"
+      >
+        Nov 5, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>When accessing memory in ARM assembly, simply using <code class="language-plaintext highlighter-rouge">[R1]</code> as an address is often not enough. 
+When dealing with arrays or buffers stored in consecutive memory, repeatedly updating the base register using <code class="language-plaintext highlighter-rouge">ADD</code> can be inefficient.</p>
+
+<p>To solve this, ARM provides an <strong>automatic address calculation</strong> mechanism through <strong>pre-index</strong> and <strong>post-index</strong> modes. 
+In this post, we’ll clearly explain how these modes work, how they differ, 
+and explore how the CPU handles address calculation internally with real assembly examples.</p>
+
+<h2 id="why-do-we-need-pre-index-and-post-index">Why do we need pre-index and post-index?</h2>
+<p>In <a href="/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html">the previous post</a>, we discussed the basic offset addressing mode using <code class="language-plaintext highlighter-rouge">[Rn, #offset]</code>.
+In that form, the CPU simply calculates an address by adding a fixed offset to the base register <code class="language-plaintext highlighter-rouge">Rn</code> and accesses memory at that address.
+However, this calculation happens each time the instruction runs,
+and the base register <code class="language-plaintext highlighter-rouge">Rn</code> itself does <strong>not</strong> get updated automatically.</p>
+
+<p>In this post, we’ll take it one step further and explore automatic address calculation, <strong>the pre-index and post-index addressing modes</strong>.
+These modes allow the CPU to automatically update <code class="language-plaintext highlighter-rouge">Rn</code> during execution,
+improving both performance and code compactness when working with repetitive memory accesses.</p>
+
+<p>When accessing memory, the CPU first evaluates the expression inside the brackets to obtain the actual address. 
+For example, <code class="language-plaintext highlighter-rouge">LDR R0, [R1]</code> loads the value stored at the address in <code class="language-plaintext highlighter-rouge">R1</code>. 
+However, when reading consecutive data such as arrays, an additional <code class="language-plaintext highlighter-rouge">ADD R1, R1, #4</code> instruction is required each time. 
+This increases instruction count and reduces performance.</p>
+
+<p>To address this, ARM integrates automatic address calculation into <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> instructions, 
+allowing the CPU to perform the address update itself, improving both performance and pipeline efficiency.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/pre-post-offset.png" alt="[Offset vs Pre vs Post] Addressing modes overview" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">offset vs pre-index vs post-index — manual vs automatic address update</figcaption>
+</figure>
+
+<h2 id="what-is-automatic-address-calculation">What is automatic address calculation?</h2>
+<p>Automatic address calculation is a feature where the CPU automatically increments or decrements the memory address<br />
+during the execution of a load or store instruction.<br />
+There are two main modes for this: <strong>pre-indexing</strong> and <strong>post-indexing</strong>.</p>
+
+<h3 id="the-pre-index-mode">The pre-index mode</h3>
+<p>The <strong>pre-index</strong> mode means that the CPU updates the base register <strong><em>before accessing memory</em></strong>.
+In the form <code class="language-plaintext highlighter-rouge">[Rn, #offset]!</code>, the CPU calculates <code class="language-plaintext highlighter-rouge">Rn + offset</code>, writes it back to <code class="language-plaintext highlighter-rouge">Rn</code>, and then uses that address to access memory.</p>
+
+<p>For example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]!</span>   <span class="no">@</span> <span class="nv">add</span> <span class="mi">4</span> <span class="nv">to</span> <span class="nv">R1</span><span class="o">,</span> <span class="nv">then</span> <span class="nv">load</span> <span class="nv">from</span> <span class="nv">the</span> <span class="nv">new</span> <span class="nv">address</span>
+</code></pre></div></div>
+
+<p>Execution steps:</p>
+<ol>
+  <li>R1 ← R1 + 4</li>
+  <li>R0 ← Mem[R1]</li>
+</ol>
+
+<h3 id="the-post-index-mode">The post-index mode</h3>
+<p>The <strong>post-index</strong> mode performs the memory access <strong><em>before updating the base register</em></strong>.
+In <code class="language-plaintext highlighter-rouge">[Rn], #offset</code>, the CPU first accesses memory using <code class="language-plaintext highlighter-rouge">Rn</code>, then adds the offset afterward.</p>
+
+<p>For example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>    <span class="no">@</span> <span class="nv">load</span> <span class="nv">from</span> <span class="nv">R1</span><span class="o">,</span> <span class="nv">then</span> <span class="nv">increment</span> <span class="nv">R1</span> <span class="nv">by</span> <span class="mi">4</span>
+</code></pre></div></div>
+
+<p>Execution steps:</p>
+<ol>
+  <li>R0 ← Mem[R1]</li>
+  <li>R1 ← R1 + 4</li>
+</ol>
+
+<h2 id="comparing-memory-access-and-address-update-timing">Comparing memory access and address update timing</h2>
+<p>Although both modes ultimately change Rn by adding the same offset,
+their behavior differs depending on when the update occurs.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]!</span>   <span class="no">@</span> <span class="nv">pre</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">update</span> <span class="nv">R1</span> <span class="nv">before</span> <span class="nv">accessing</span> <span class="nv">memory</span>
+<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>    <span class="no">@</span> <span class="nv">post</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">access</span> <span class="nv">memory</span> <span class="nv">first</span><span class="o">,</span> <span class="nv">then</span> <span class="nv">update</span> <span class="nv">R1</span>
+</code></pre></div></div>
+<ul>
+  <li>In <strong>pre-index</strong>, <code class="language-plaintext highlighter-rouge">R1</code> is updated before memory access.</li>
+  <li>In <strong>post-index</strong>, <code class="language-plaintext highlighter-rouge">R1</code> is updated after memory access.</li>
+</ul>
+
+<p>Thus, pre-indexing is used when you want to access the <strong>next</strong> element first,
+while post-indexing is useful when you need to access the <strong>current</strong> element before moving on.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/timing-pre-post.png" alt="Timing: pre-index (update→access) vs post-index (access→update)" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">pre-index updates then accesses; post-index accesses then updates</figcaption>
+</figure>
+
+<h2 id="example-test-using-gcc-qemu-and-gdb">Example test using GCC, QEMU, and GDB</h2>
+<p>Here’s a minimal example comparing both modes.
+You can build and debug it using GCC, QEMU, and GDB as follows.</p>
+
+<p><strong>pre-post.s</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">ldr</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">=</span><span class="nv">array</span>
+  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]!</span>   <span class="no">@</span> <span class="nv">pre</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">R1</span> <span class="err">←</span> <span class="nv">R1</span><span class="o">+</span><span class="mi">4</span> <span class="nv">then</span><span class="o">,</span> <span class="nv">load</span>
+  <span class="nb">ldr</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>    <span class="no">@</span> <span class="nv">post</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">R2</span> <span class="err">←</span> <span class="nv">Mem</span><span class="o">[</span><span class="nv">R1</span><span class="o">],</span> <span class="nv">then</span> <span class="nv">R1</span> <span class="err">←</span> <span class="nv">R1</span><span class="o">+</span><span class="mi">4</span>
+  <span class="nb">b</span> <span class="mf">.</span>
+<span class="nl">array</span><span class="err">:</span>
+  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x11111111</span>
+  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x22222222</span>
+  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x33333333</span>
+  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x44444444</span>
+</code></pre></div></div>
+
+<p><strong>Build &amp; Run QEMU</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="se">\</span>
+    <span class="nt">-nostdlib</span> <span class="se">\</span>
+    <span class="nt">-march</span><span class="o">=</span>armv4 <span class="se">\</span>
+    <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="se">\</span>
+    pre-post.s <span class="se">\</span>
+    <span class="nt">-o</span> pre-post.elf
+<span class="nv">$ </span>qemu-system-arm <span class="se">\</span>
+    <span class="nt">-machine</span> versatilepb <span class="se">\</span>
+    <span class="nt">-nographic</span> <span class="se">\</span>
+    <span class="nt">-S</span> <span class="nt">-s</span> <span class="se">\</span>
+    <span class="nt">-kernel</span> pre-post.elf
+</code></pre></div></div>
+<p><strong>Debug with GDB</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb-multiarch pre-post.elf
+
+<span class="o">(</span>gdb<span class="o">)</span> target remote :1234    <span class="c"># Connect to GDB server</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r r0 r1 r2           <span class="c"># Show registers, R0, R1, R2</span>
+<span class="o">(</span>gdb<span class="o">)</span> x/4w 0x10010           <span class="c"># Print 4 words at 0x10010(address of array)</span>
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/gif/prepost.gif" alt="GDB pre/post step execution demo" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"><code>R1</code> value changes during GDB step execution — pre-index updates first, post-index after.</figcaption>
+</figure>
+
+<p>After running step-by-step in GDB,
+you’ll see that <code class="language-plaintext highlighter-rouge">R1</code> changes to <code class="language-plaintext highlighter-rouge">array+4</code> after the pre-index instruction,
+and to <code class="language-plaintext highlighter-rouge">array+8</code> after the post-index instruction.</p>
+
+<h2 id="hardware-level-perspective">Hardware-level perspective</h2>
+
+<p>Inside the CPU, each instruction passes through multiple pipeline stages.
+Typically, <strong>address calculation happens in the Execute stage</strong> via the ALU,
+and <strong>memory access occurs in the Memory stage</strong>.</p>
+
+<ul>
+  <li>In <strong>pre-index</strong>, the address is calculated first (Execute) and then used for access (Memory).</li>
+  <li>In <strong>post-index</strong>, memory access happens first, then the base register is updated (Write Back).</li>
+</ul>
+
+<p>This hardware design allows the CPU to <strong>update addresses automatically</strong> without additional ADD instructions,
+reducing instruction count and improving pipeline throughput for repetitive memory operations.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>Both pre-index and post-index modes automate address updates,
+and their only difference lies in <strong>whether the update occurs before or after memory access</strong>.</p>
+
+<p>Use <strong>pre-index</strong> when you need to move to the next element before accessing it,
+and <strong>post-index</strong> when you want to access the current element first.</p>
+
+<p>In the next post, we’ll extend this idea to <strong>stack operations</strong> and explore how <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> can load or store multiple registers efficiently.</p>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
