@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM 어셈블리 #7 - 오프셋(Offset)으로 메모리 주소 계산하기 | Hacking the System, One Bit at a Time</title>
+<title>ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기 | Hacking the System, One Bit at a Time</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM 어셈블리 #7 - 오프셋(Offset)으로 메모리 주소 계산하기" />
+<meta property="og:title" content="ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="ko" />
 <meta name="description" content="메모리에 저장된 여러 데이터를 효율적으로 읽고 쓰기 위해서는 매번 주소를 계산하지 않아도 되는 방법이 필요합니다. 이번 글에서는 ARM 어셈블리의 오프셋(Offset) 주소 지정 방식을 살펴보며, LDR과 STR 명령어에서 주소 계산을 단 한 줄로 처리하는 방법을 이해해보겠습니다." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-11-02T04:40:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM 어셈블리 #7 - 오프셋(Offset)으로 메모리 주소 계산하기" />
+<meta property="twitter:title" content="ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-02T04:40:00+00:00","datePublished":"2025-11-02T04:40:00+00:00","description":"메모리에 저장된 여러 데이터를 효율적으로 읽고 쓰기 위해서는 매번 주소를 계산하지 않아도 되는 방법이 필요합니다. 이번 글에서는 ARM 어셈블리의 오프셋(Offset) 주소 지정 방식을 살펴보며, LDR과 STR 명령어에서 주소 계산을 단 한 줄로 처리하는 방법을 이해해보겠습니다.","headline":"ARM 어셈블리 #7 - 오프셋(Offset)으로 메모리 주소 계산하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-02T04:40:00+00:00","datePublished":"2025-11-02T04:40:00+00:00","description":"메모리에 저장된 여러 데이터를 효율적으로 읽고 쓰기 위해서는 매번 주소를 계산하지 않아도 되는 방법이 필요합니다. 이번 글에서는 ARM 어셈블리의 오프셋(Offset) 주소 지정 방식을 살펴보며, LDR과 STR 명령어에서 주소 계산을 단 한 줄로 처리하는 방법을 이해해보겠습니다.","headline":"ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM 어셈블리 #7 - 오프셋(Offset)으로 메모리 주소 계산하기
+      ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기
     </h1>
     <div class="post-meta">
       <time
