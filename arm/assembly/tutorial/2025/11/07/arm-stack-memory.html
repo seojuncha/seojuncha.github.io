@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #10 - Understanding Stack Memory in ARM | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #10 - Understanding Stack Memory in ARM" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Today, we’ll learn about stack memory, which the CPU uses to handle temporary data. Building on what we learned about memory access instructions in previous posts, we’ll prepare for the next topic — block memory access using LDM and STM." />
+<meta property="og:description" content="Today, we’ll learn about stack memory, which the CPU uses to handle temporary data. Building on what we learned about memory access instructions in previous posts, we’ll prepare for the next topic — block memory access using LDM and STM." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-07T07:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #10 - Understanding Stack Memory in ARM" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-07T07:00:00+00:00","datePublished":"2025-11-07T07:00:00+00:00","description":"Today, we’ll learn about stack memory, which the CPU uses to handle temporary data. Building on what we learned about memory access instructions in previous posts, we’ll prepare for the next topic — block memory access using LDM and STM.","headline":"ARM Assembly #10 - Understanding Stack Memory in ARM","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #10 - Understanding Stack Memory in ARM
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-11-07T07:00:00+00:00"
+        itemprop="datePublished"
+      >
+        Nov 7, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>Today, we’ll learn about <strong>stack memory</strong>, which the CPU uses to handle temporary data.
+Building on what we learned about memory access instructions in previous posts, we’ll prepare for the next topic — block memory access using <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code>.</p>
+
+<p><strong>Previous Posts:</strong></p>
+<ul>
+  <li><a href="/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html">Accessing memory using LDR and STR</a></li>
+  <li><a href="/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html">Applying offset addressing</a></li>
+  <li><a href="/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html">Pre-index and Post-index addressing</a></li>
+</ul>
+
+<h2 id="what-is-temporary-data">What Is Temporary Data?</h2>
+<p>Temporary data refers to information that is created and destroyed during program execution.
+Typical examples include <strong>local variables</strong>, <strong>function parameters</strong>, and <strong>return addresses</strong> used in function calls.
+Because these values exist only temporarily, they don’t need to occupy memory for the entire program runtime.</p>
+
+<h2 id="arm-memory-layout">ARM Memory Layout</h2>
+<p>Even temporary data must be stored in memory before the CPU can process it.
+Memory is typically divided into several regions based on purpose:</p>
+<ul>
+  <li><strong>Code Segment:</strong> where executable instructions are stored.</li>
+  <li><strong>Data Segment:</strong> where global and static variables are stored.</li>
+  <li><strong>Heap Segment:</strong> where dynamically allocated data is stored.</li>
+  <li><strong>Stack Segment:</strong> where function calls and local variables are stored.</li>
+</ul>
+
+<p>Among these, the <strong>code</strong> and <strong>stack</strong> segments are essential; in this post, we’ll focus on the stack.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/aapcs32-memory-categories.png" alt="[AAPCS32] Memory Categories" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Figure 1. Memory regions according to AAPCS32 6.2</figcaption>
+</figure>
+
+<h2 id="what-is-a-stack">What Is a Stack?</h2>
+<p>A stack is literally a structure that “stacks” data.
+It’s a type of data structure widely used across many areas of computer science.</p>
+
+<h3 id="basic-stack-operations-push--pop">Basic Stack Operations: PUSH &amp; POP</h3>
+<p>A stack <a href="https://www.w3schools.com/dsa/dsa_data_stacks.php">supports two key operations</a> — <strong>PUSH</strong>, which adds data, and <strong>POP</strong>, which removes it.
+PUSH places data onto the top of the stack, and POP retrieves the most recently added item.</p>
+
+<h3 id="stack-vs-queue">Stack vs Queue</h3>
+<p>A stack can be imagined as a pile, whereas a queue can be imagined as a waiting line.
+Both are linear data structures, but they differ in their input/output order.</p>
+
+<ul>
+  <li><strong><a href="https://www.geeksforgeeks.org/dsa/lifo-principle-in-stack/">Stack (LIFO)</a></strong> — The last element added is the first one removed.</li>
+  <li><strong><a href="https://www.geeksforgeeks.org/dsa/introduction-to-queue-data-structure-and-algorithm-tutorials/">Queue (FIFO)</a></strong> — The first element added is the first one removed.</li>
+</ul>
+
+<p>The key point of a stack is that it processes <strong>the most recent data first</strong>.
+This property makes it especially useful for managing function calls and local variables.</p>
+
+<h2 id="arm-stack-memory">ARM Stack Memory</h2>
+<p>Stack memory refers to the memory area that behaves like a stack data structure.
+In ARM, it’s a continuous region used to store temporary data such as local variables and function parameters.</p>
+
+<h3 id="structure-of-arm-stack-memory">Structure of ARM Stack Memory</h3>
+<p>The ARM architecture uses a <strong>Full Descending (FD)</strong> stack model.
+This means the stack grows <strong>downward in memory</strong>, and the Stack Pointer (SP) points to the last stored value.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/fd-stack-memory.png" alt="Full Descending Stack Memory Model" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Figure 2. Stack growth in FD (Full Descending) model</figcaption>
+</figure>
+
+<blockquote>
+  <p><strong>Note: Four stack model types</strong></p>
+  <ul>
+    <li><strong>Full Stack:</strong> SP points to the last stored item.</li>
+    <li><strong>Empty Stack:</strong> SP points to the next empty space.</li>
+    <li><strong>Descending Stack:</strong> Stack grows toward lower memory addresses.</li>
+    <li><strong>Ascending Stack:</strong> Stack grows toward higher memory addresses.</li>
+  </ul>
+
+  <p>Therefore, an FD stack grows downward (descending) while SP always points to the topmost (full) item.</p>
+</blockquote>
+
+<h3 id="stack-pointer-sp">Stack Pointer (SP)</h3>
+<p>Stack memory is still just memory, so it must be accessed through addresses.
+In the FD model, we must keep track of the most recently pushed data, so a dedicated register is used for that purpose.
+This register is called the <strong>Stack Pointer (SP)</strong>.</p>
+
+<blockquote>
+  <p>In <strong>ARMv4</strong>, register <strong>R13</strong> is used as the stack pointer.</p>
+</blockquote>
+
+<h3 id="implementing-push--pop-using-ldr-and-str">Implementing PUSH &amp; POP Using LDR and STR</h3>
+
+<h4 id="push-using-str">PUSH using STR</h4>
+<p>The PUSH operation adds data to the stack in two steps:</p>
+
+<ol>
+  <li>Decrease SP by 4.</li>
+  <li>Store the value at the new SP location.</li>
+</ol>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x80000</span>
+  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+</code></pre></div></div>
+
+<p>Since the stack grows downward, SP must be decreased.
+Because the ARM stack uses 4-byte words, the SP is decreased by 4 for each push.</p>
+
+<h4 id="pop-using-ldr">POP using LDR</h4>
+<p>POP removes data from the top of the stack in two steps:</p>
+
+<ol>
+  <li>Load the value at the address pointed by SP.</li>
+  <li>Increase SP by 4.</li>
+</ol>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x80000</span>
+  <span class="nb">ldr</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
+</code></pre></div></div>
+
+<p>Because SP points to the most recent value in the FD model, we first read it, then increment SP to move to the next item.</p>
+
+<h4 id="example-and-debugging">Example and Debugging</h4>
+<p><strong>stack-push-pop.s</strong></p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x80000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+  
+  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  <span class="nb">str</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  <span class="nb">str</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  
+  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
+  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
+  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
+  
+  <span class="nb">b</span> <span class="mf">.</span>
+</code></pre></div></div>
+<blockquote>
+  <p>In this example, we manually set the stack base address to <code class="language-plaintext highlighter-rouge">0x80000</code>.
+In a real system, the stack pointer is initialized by the <a href="https://wiki.osdev.org/Linker_Scripts">linker script</a> or the kernel during process setup.</p>
+</blockquote>
+
+<p><strong>Build and Run in QEMU</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="nt">-nostdlib</span> <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="nt">-o</span> stack-push-pop.elf stack-push-pop.s
+<span class="nv">$ </span>qemu-system-arm <span class="nt">-nographic</span> <span class="nt">-machine</span> versatilepb <span class="nt">-S</span> <span class="nt">-s</span> <span class="nt">-kernel</span> stack-push-pop.elf
+</code></pre></div></div>
+
+<p><strong>Debugging with GDB</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb-multiarch stack-push-pop.elf
+
+<span class="o">(</span>gdb<span class="o">)</span> target remote :1234    <span class="c"># connect to GDB server</span>
+
+<span class="c"># Check pushed values</span>
+<span class="o">(</span>gdb<span class="o">)</span> x/3w <span class="nv">$sp</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r r1 r2 r3
+<span class="o">(</span>gdb<span class="o">)</span> i r sp                 <span class="c"># SP after STR</span>
+
+<span class="c"># Check popped values</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r r0
+<span class="o">(</span>gdb<span class="o">)</span> x/3w <span class="nv">$sp</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r sp                 <span class="c"># SP after LDR</span>
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/stack-push-pop-gdb.png" alt="STR and LDR instructions shown as PUSH and POP in GDB disassembly" style="display: block; margin: auto;" /> 
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 3. <code>str</code> and <code>ldr</code> instructions automatically shown as <code>push</code> and <code>pop</code> in GDB
+  </figcaption>
+</figure>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we examined both t<strong>he concept of the stack and how it works in ARM architecture</strong>.
+The stack plays a crucial role in managing function calls and local variables.</p>
+
+<p>However, when saving or restoring multiple registers, using only <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> becomes inefficient, as shown below:</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+  
+  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  <span class="nb">str</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  <span class="nb">str</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+
+  <span class="err">@</span> <span class="nv">You</span> <span class="nv">must</span> <span class="nv">repeat</span> <span class="nv">STR</span> <span class="nv">for</span> <span class="nv">each</span> <span class="nv">register</span> <span class="nv">you</span> <span class="nv">want</span> <span class="nv">to</span> <span class="nv">store</span><span class="mf">.</span>
+</code></pre></div></div>
+
+<p>As the number of instructions increases, CPU pipeline efficiency decreases.
+To solve this problem, ARM provides the <code class="language-plaintext highlighter-rouge">LDM</code> (Load Multiple) and <code class="language-plaintext highlighter-rouge">STM</code> (Store Multiple) instructions.
+In the next post, we’ll explore <strong>how to use them for efficient block memory access on the stack</strong>.</p>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>

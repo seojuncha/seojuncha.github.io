@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM 어셈블리 #10 - 스택 메모리(Stack Memory) 이해하기 | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM 어셈블리 #10 - 스택 메모리(Stack Memory) 이해하기" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="ko" />
+<meta name="description" content="오늘은 CPU가 임시 데이터를 다루기 위해 활용하는 스택 메모리(Stack Memory) 에 대해 알아보겠습니다. 앞선 포스팅들에서 살펴본 메모리 접근 명령의 응용법을 기반으로, 다음 포스팅에서 다룰 블록 단위 메모리 접근 명령(LDM, STM)을 이해하기 위한 기초 개념을 다집니다." />
+<meta property="og:description" content="오늘은 CPU가 임시 데이터를 다루기 위해 활용하는 스택 메모리(Stack Memory) 에 대해 알아보겠습니다. 앞선 포스팅들에서 살펴본 메모리 접근 명령의 응용법을 기반으로, 다음 포스팅에서 다룰 블록 단위 메모리 접근 명령(LDM, STM)을 이해하기 위한 기초 개념을 다집니다." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-07T07:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM 어셈블리 #10 - 스택 메모리(Stack Memory) 이해하기" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-07T07:00:00+00:00","datePublished":"2025-11-07T07:00:00+00:00","description":"오늘은 CPU가 임시 데이터를 다루기 위해 활용하는 스택 메모리(Stack Memory) 에 대해 알아보겠습니다. 앞선 포스팅들에서 살펴본 메모리 접근 명령의 응용법을 기반으로, 다음 포스팅에서 다룰 블록 단위 메모리 접근 명령(LDM, STM)을 이해하기 위한 기초 개념을 다집니다.","headline":"ARM 어셈블리 #10 - 스택 메모리(Stack Memory) 이해하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM 어셈블리 #10 - 스택 메모리(Stack Memory) 이해하기
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-11-07T07:00:00+00:00"
+        itemprop="datePublished"
+      >
+        Nov 7, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">한국어</span>
+      <a class="lang-pill" href="/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html"
+        >EN</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>오늘은 CPU가 임시 데이터를 다루기 위해 활용하는 <strong>스택 메모리(Stack Memory)</strong> 에 대해 알아보겠습니다. 
+앞선 포스팅들에서 살펴본 메모리 접근 명령의 응용법을 기반으로, 다음 포스팅에서 다룰 블록 단위 메모리 접근 명령(<code class="language-plaintext highlighter-rouge">LDM</code>, <code class="language-plaintext highlighter-rouge">STM</code>)을 이해하기 위한 기초 개념을 다집니다.</p>
+
+<p><strong>이전 포스팅들:</strong></p>
+<ul>
+  <li><a href="/ko/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html">LDR과 STR을 활용한 메모리 접근</a></li>
+  <li><a href="/ko/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html">메모리 오프셋 주소 적용</a></li>
+  <li><a href="/ko/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html">Pre-index와 Post-index</a></li>
+</ul>
+
+<h2 id="임시데이터란">임시데이터란?</h2>
+<p>프로그램 실행 중 일시적으로 생성되고 사라지는 데이터를 말합니다. 대표적으로 <strong>함수의 지역 변수(local variable)</strong>, <strong>매개변수(parameter)</strong>, 그리고 <strong>함수 호출 시의 반환 주소(return address)</strong> 등이 이에 해당합니다. 이러한 데이터들은 프로그램 실행 내내 유지될 필요가 없기 때문에, 일정한 메모리 영역을 계속 차지하지 않아도 됩니다.</p>
+
+<h2 id="arm-메모리-영역">ARM 메모리 영역</h2>
+
+<p>임시 데이터도 결국 CPU가 연산하기 전에 메모리에 저장되어야 합니다.</p>
+
+<p>일반적으로 메모리는 역할에 따라 여러 영역으로 구분됩니다.</p>
+
+<ul>
+  <li><strong>코드 영역 (Code Segment)</strong>: 실행 명령어가 저장되는 영역</li>
+  <li><strong>데이터 영역 (Data Segment)</strong>: 전역변수와 정적변수가 저장되는 영역</li>
+  <li><strong>힙 영역 (Heap Segment)</strong>: 동적으로 생성되는 데이터가 저장되는 영역</li>
+  <li><strong>스택 영역 (Stack Segment)</strong>: 함수 호출과 지역 변수가 저장되는 영역</li>
+</ul>
+
+<p>이 중 <strong>코드 영역</strong>과 <strong>스택 영역</strong>은 필수적으로 정의되어야 하며, 이번 글에서는 스택 영역에 집중해 보겠습니다.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/aapcs32-memory-categories.png" alt="[AAPCS32] ARM 메모리 유형" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">그림 1. [AAPCS32] 6.2 Processes, Memory and the Stack의 메모리 영역 분류</figcaption>
+</figure>
+
+<h2 id="스택이란">스택이란?</h2>
+<p>스택(Stack)은 말 그대로 무언가를 “쌓는” 구조입니다.
+데이터 구조의 일종으로, 컴퓨터 과학의 여러 분야에서 널리 활용됩니다.</p>
+
+<h3 id="스택-기본-동작-push--pop">스택 기본 동작: PUSH &amp; POP</h3>
+<p>스택에는 데이터를 <a href="https://www.w3schools.com/dsa/dsa_data_stacks.php">쌓는 동작(<strong>PUSH</strong>)과 꺼내는 동작(<strong>POP</strong>)</a>이 있습니다.<br />
+PUSH는 데이터를 스택 위에 올리는 것이고, POP은 쌓인 데이터 중 가장 위의 데이터를 꺼내는 동작입니다.</p>
+
+<h3 id="스택-vs-큐">스택 vs 큐</h3>
+<p>스택(Stack)은 <strong>쌓는 구조</strong>, 큐(Queue)는 <strong>줄 서는 구조</strong>로 비유할 수 있습니다.<br />
+두 구조 모두 선형 데이터 구조이지만, <strong>데이터의 입출력 순서</strong>가 다릅니다.</p>
+
+<ul>
+  <li><strong>스택(Stack)</strong>: <a href="https://www.geeksforgeeks.org/dsa/lifo-principle-in-stack/">LIFO (Last In, First Out)</a> — 나중에 들어온 데이터가 먼저 나옵니다.</li>
+  <li><strong>큐(Queue)</strong>: <a href="https://www.geeksforgeeks.org/dsa/introduction-to-queue-data-structure-and-algorithm-tutorials/">FIFO (First In, First Out)</a> — 먼저 들어온 데이터가 먼저 나옵니다.</li>
+</ul>
+
+<p>스택의 핵심은 <strong>가장 최근의 데이터부터 처리한다는 점</strong>입니다.<br />
+이 특성이 함수 호출과 지역 변수 관리에서 매우 유용하게 활용됩니다.</p>
+
+<h2 id="arm-스택-메모리">ARM 스택 메모리</h2>
+<p>스택 메모리는 메모리 공간 중 스택의 형태로 동작하는 영역을 말합니다.<br />
+ARM의 스택 메모리 영역은 지역 변수나 함수 인자 등 임시 데이터를 저장하기 위한 연속된 메모리 공간입니다.</p>
+
+<h3 id="arm-스택-메모리-구조">ARM 스택 메모리 구조</h3>
+<p>ARM 아키텍처는 기본적으로 <strong>FD(Full Descending)</strong> 구조를 사용합니다.<br />
+즉, 스택이 <strong>주소가 감소하는 방향으로 확장</strong>되며, 스택 포인터(SP)는 <strong>마지막으로 저장된 데이터의 주소</strong>를 가리킵니다.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/fd-stack-memory.png" alt="스택 메모리의 확장 방향과 SP 값" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">그림 2. FD 구조 스택의 확장 방향</figcaption>
+</figure>
+
+<blockquote>
+  <p><strong>참고: 스택 구조의 네 가지 유형</strong></p>
+  <ul>
+    <li><strong>Full Stack</strong>: SP가 마지막으로 입력된 데이터의 주소를 가리킴</li>
+    <li><strong>Empty Stack</strong>: SP가 비어 있는 영역의 주소를 가리킴</li>
+    <li><strong>Descending Stack</strong>: 스택이 주소가 감소하는 방향으로 확장됨</li>
+    <li><strong>Ascending Stack</strong>: 스택이 주소가 증가하는 방향으로 확장됨</li>
+  </ul>
+
+  <p>따라서 FD 구조는 “주소가 감소하면서 데이터가 쌓이고, SP는 가장 최근 데이터(Full)를 가리키는” 형태입니다.</p>
+</blockquote>
+
+<h3 id="스택-포인터sp">스택 포인터(SP)</h3>
+<p>스택 메모리도 결국 메모리이기 때문에 주소로 접근해야 합니다.<br />
+FD 구조에서는 마지막으로 PUSH된 데이터의 주소를 항상 추적해야 하므로, 이를 담당하는 전용 레지스터가 필요합니다.<br />
+이를 <strong>스택 포인터(Stack Pointer, SP)</strong> 라고 합니다.</p>
+
+<blockquote>
+  <p><strong>ARMv4</strong> 아키텍처에서는 <strong>R13 레지스터</strong>가 SP로 사용됩니다.</p>
+</blockquote>
+
+<h3 id="ldrstr을-활용한-push--pop-구현">LDR/STR을 활용한 PUSH &amp; POP 구현</h3>
+
+<h4 id="str로-구현한-push">STR로 구현한 PUSH</h4>
+<p>PUSH 동작은 데이터를 스택에 추가하는 것입니다. 다음 두 단계로 이루어집니다.</p>
+
+<ol>
+  <li>SP 값을 4만큼 감소시킵니다.</li>
+  <li>현재 SP 위치에 값을 저장합니다.</li>
+</ol>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x80000</span>
+  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+</code></pre></div></div>
+
+<p>데이터가 스택의 상단에 쌓이므로, SP는 감소해야 합니다.
+ARM의 스택은 FD 구조를 사용하며, 워드(4바이트) 단위로 동작하기 때문에 4를 감소시킵니다.</p>
+
+<h4 id="ldr로-구현한-pop">LDR로 구현한 POP</h4>
+<p>POP은 스택의 최상단 데이터를 꺼내는 동작입니다. 다음 두 단계로 구성됩니다.</p>
+
+<ol>
+  <li>현재 SP가 가리키는 값을 불러옵니다.</li>
+  <li>SP 값을 4만큼 증가시킵니다.</li>
+</ol>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x80000</span>
+  <span class="nb">ldr</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
+</code></pre></div></div>
+
+<p>FD 구조에서는 SP가 마지막 데이터의 주소를 가리키므로, 먼저 그 값을 읽은 뒤 SP를 증가시켜 다음 데이터로 이동합니다.</p>
+
+<h4 id="예제-코드와-디버깅">예제 코드와 디버깅</h4>
+<p><strong>stack-push-pop.s</strong></p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x80000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+  
+  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  <span class="nb">str</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  <span class="nb">str</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  
+  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
+  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
+  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
+  
+  <span class="nb">b</span> <span class="mf">.</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>이 예제에서는 단순히 스택의 시작 주소를 <code class="language-plaintext highlighter-rouge">0x80000</code>으로 지정했습니다.
+실제 시스템에서는 링커 스크립트 또는 커널 초기화 과정에서 SP의 초기값이 설정됩니다.</p>
+</blockquote>
+
+<p><strong>컴파일 &amp; QEMU 실행</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="nt">-nostdlib</span> <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="nt">-o</span> stack-push-pop.elf stack-push-pop.s
+<span class="nv">$ </span>qemu-system-arm <span class="nt">-nographic</span> <span class="nt">-machine</span> versatilepb <span class="nt">-S</span> <span class="nt">-s</span> <span class="nt">-kernel</span> stack-push-pop.elf
+</code></pre></div></div>
+
+<p><strong>GDB 디버깅</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb-multiarch stack-push-pop.elf
+
+<span class="o">(</span>gdb<span class="o">)</span> target remote :1234    <span class="c"># GDB 서버 접속</span>
+
+<span class="c"># 스택 PUSH 상태 확인</span>
+<span class="o">(</span>gdb<span class="o">)</span> x/3w <span class="nv">$sp</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r r1 r2 r3
+<span class="o">(</span>gdb<span class="o">)</span> i r sp                 <span class="c"># STR 실행 후 SP 확인</span>
+
+<span class="c"># 스택 POP 상태 확인</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r r0
+<span class="o">(</span>gdb<span class="o">)</span> x/3w <span class="nv">$sp</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r sp                 <span class="c"># LDR 실행 후 SP 확인</span>
+</code></pre></div></div>
+<figure style="text-align: center;">
+  <img src="/assets/img/stack-push-pop-gdb.png" alt="GDB 디스어셈블리에서 STR과 LDR 명령이 PUSH와 POP 명령으로 표시되는 모습 " style="display: block; margin: auto;" /> 
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 3. GDB에서 <code>str</code>과 <code>ldr</code>명령이 자동으로 <code>push</code>와 <code>pop</code>으로 표시됨 
+  </figcaption>
+</figure>
+
+<h2 id="마무리">마무리</h2>
+<p>이번 글에서는 스택의 개념과 <strong>ARM의 스택 메모리 구조 및 동작 방식</strong>을 함께 살펴보았습니다.
+스택은 함수 호출과 지역 변수 관리에 핵심적인 역할을 담당합니다.</p>
+
+<p>하지만 여러 데이터를 한 번에 저장하거나 복원해야 할 때, <code class="language-plaintext highlighter-rouge">LDR</code>과 <code class="language-plaintext highlighter-rouge">STR</code>만 사용하면 다음과 같이 비효율적인 코드가 됩니다.</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+  
+  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  <span class="nb">str</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  <span class="nb">str</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
+  <span class="err">@</span> <span class="mf">...</span>
+  <span class="err">@</span> <span class="err">저장하는</span> <span class="err">데이터의</span> <span class="err">개수만큼</span> <span class="nv">str</span> <span class="err">명령을</span> <span class="err">반복해야</span> <span class="err">함</span>
+</code></pre></div></div>
+
+<p>명령어가 많아질수록 CPU 파이프라인 효율이 떨어지게 됩니다.
+이러한 비효율을 해결하기 위한 명령어가 바로 <code class="language-plaintext highlighter-rouge">LDM</code>(Load Multiple) 과 <code class="language-plaintext highlighter-rouge">STM</code>(Store Multiple) 입니다.
+다음 포스팅에서는 이 두 명령어를 통해 <strong>블록 단위 메모리 접근을 효율적으로 수행하는 방법</strong>을 살펴보겠습니다.</p>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
