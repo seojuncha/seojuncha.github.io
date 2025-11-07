@@ -3,10 +3,9 @@ layout: post
 lang: en
 ref: "arm-stack-memory"
 title: "ARM Assembly #10 - Understanding Stack Memory in ARM"
-date: 2025-11-06 17:30:00 +0900
+date: 2025-11-07 16:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm stack memory", "ldm", "stm"]
-published: false
 ---
 
 Today, we’ll learn about **stack memory**, which the CPU uses to handle temporary data.
@@ -46,12 +45,6 @@ It’s a type of data structure widely used across many areas of computer scienc
 A stack [supports two key operations](https://www.w3schools.com/dsa/dsa_data_stacks.php) — **PUSH**, which adds data, and **POP**, which removes it.
 PUSH places data onto the top of the stack, and POP retrieves the most recently added item.
 
-<figure style="text-align: center;">
-  <img src="/assets/img/stack-push-pop.svg" alt="Stack Operations: PUSH and POP" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Figure 2. Basic stack operations: PUSH and POP</figcaption>
-</figure>
-
-
 ### Stack vs Queue
 A stack can be imagined as a pile, whereas a queue can be imagined as a waiting line.
 Both are linear data structures, but they differ in their input/output order.
@@ -73,11 +66,9 @@ The ARM architecture uses a **Full Descending (FD)** stack model.
 This means the stack grows **downward in memory**, and the Stack Pointer (SP) points to the last stored value.
 
 <figure style="text-align: center;">
-  <img src="/assets/img/arm-stack-fd.svg" alt="스택 메모리의 확장 방향과 SP 값" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Stack growth in FD (Full Descending) model</figcaption>
+  <img src="/assets/img/fd-stack-memory.png" alt="Full Descending Stack Memory Model" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Figure 2. Stack growth in FD (Full Descending) model</figcaption>
 </figure>
-
-
 
 > **Note: Four stack model types**  
 > -  **Full Stack:** SP points to the last stored item.  
@@ -176,12 +167,11 @@ $ gdb-multiarch stack-push-pop.elf
 ```
 
 <figure style="text-align: center;">
-  <img src="/assets/gif/" alt="GDB에서 PUSH/POP 확인" style="display: block; margin: auto;" /> 
+  <img src="/assets/img/stack-push-pop-gdb.png" alt="STR and LDR instructions shown as PUSH and POP in GDB disassembly" style="display: block; margin: auto;" /> 
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  Visualizing PUSH & POP in GDB
+  Figure 3. <code>str</code> and <code>ldr</code> instructions automatically shown as <code>push</code> and <code>pop</code> in GDB
   </figcaption>
 </figure>
-
 
 ## Conclusion
 In this post, we examined both t**he concept of the stack and how it works in ARM architecture**.

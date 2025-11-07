@@ -3,10 +3,9 @@ layout: post
 lang: ko
 ref: "arm-stack-memory"
 title: "ARM 어셈블리 #10 - 스택 메모리(Stack Memory) 이해하기"
-date: 2025-11-06 17:30:00 +0900
+date: 2025-11-07 16:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm stack memory", "ldm", "stm"]
-published: false
 ---
 
 오늘은 CPU가 임시 데이터를 다루기 위해 활용하는 **스택 메모리(Stack Memory)** 에 대해 알아보겠습니다. 
@@ -34,8 +33,8 @@ published: false
 이 중 **코드 영역**과 **스택 영역**은 필수적으로 정의되어야 하며, 이번 글에서는 스택 영역에 집중해 보겠습니다.  
 
 <figure style="text-align: center;">
-  <img src="/assets/img/aapcs32-memory-categories.png" alt="[AAPCS32] Memory Categories" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">[AAPCS32] 6.2 Processes, Memory and the Stack의 메모리 영역 분류</figcaption>
+  <img src="/assets/img/aapcs32-memory-categories.png" alt="[AAPCS32] ARM 메모리 유형" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">그림 1. [AAPCS32] 6.2 Processes, Memory and the Stack의 메모리 영역 분류</figcaption>
 </figure>
 
 
@@ -47,10 +46,8 @@ published: false
 스택에는 데이터를 [쌓는 동작(**PUSH**)과 꺼내는 동작(**POP**)](https://www.w3schools.com/dsa/dsa_data_stacks.php)이 있습니다.  
 PUSH는 데이터를 스택 위에 올리는 것이고, POP은 쌓인 데이터 중 가장 위의 데이터를 꺼내는 동작입니다.  
 
-### 스택 vs 큐  
-
+### 스택 vs 큐
 스택(Stack)은 **쌓는 구조**, 큐(Queue)는 **줄 서는 구조**로 비유할 수 있습니다.  
-
 두 구조 모두 선형 데이터 구조이지만, **데이터의 입출력 순서**가 다릅니다.  
 
 - **스택(Stack)**: [LIFO (Last In, First Out)](https://www.geeksforgeeks.org/dsa/lifo-principle-in-stack/) — 나중에 들어온 데이터가 먼저 나옵니다.  
@@ -68,8 +65,8 @@ ARM 아키텍처는 기본적으로 **FD(Full Descending)** 구조를 사용합�
 즉, 스택이 **주소가 감소하는 방향으로 확장**되며, 스택 포인터(SP)는 **마지막으로 저장된 데이터의 주소**를 가리킵니다.  
 
 <figure style="text-align: center;">
-  <img src="/assets/img/arm-stack-fd.svg" alt="스택 메모리의 확장 방향과 SP 값" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">FD 구조 스택의 확장 방향</figcaption>
+  <img src="/assets/img/fd-stack-memory.png" alt="스택 메모리의 확장 방향과 SP 값" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">그림 2. FD 구조 스택의 확장 방향</figcaption>
 </figure>
 
 > **참고: 스택 구조의 네 가지 유형**  
@@ -163,14 +160,12 @@ $ gdb-multiarch stack-push-pop.elf
 (gdb) x/3w $sp
 (gdb) i r sp                 # LDR 실행 후 SP 확인
 ```
-
 <figure style="text-align: center;">
-  <img src="/assets/gif/" alt="GDB에서 PUSH/POP 확인" style="display: block; margin: auto;" /> 
+  <img src="/assets/img/stack-push-pop-gdb.png" alt="GDB 디스어셈블리에서 STR과 LDR 명령이 PUSH와 POP 명령으로 표시되는 모습 " style="display: block; margin: auto;" /> 
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  GDB에서 PUSH/POP 동작 확인
+  그림 3. GDB에서 <code>str</code>과 <code>ldr</code>명령이 자동으로 <code>push</code>와 <code>pop</code>으로 표시됨 
   </figcaption>
 </figure>
-
 
 ## 마무리
 이번 글에서는 스택의 개념과 **ARM의 스택 메모리 구조 및 동작 방식**을 함께 살펴보았습니다.
