@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-offset-addressing"
-title: "ARM 어셈블리 #7 - 오프셋(Offset)으로 메모리 주소 계산하기"
+title: "ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기"
 date: 2025-11-02 13:40:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ldr", "str", "offset", "addressing"]
