@@ -2,107 +2,128 @@
 layout: post
 lang: ko
 ref: "arm-memory-block-access"
-title: "ARM 어셈블리 #11 - "
-date: 2025-11-11 16:00:00 +0900
+title: "ARM 어셈블리 #11 - 메모리 블럭 접근(LDM, STM)"
+date: 2025-11-11 00:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["memory block", "arm ldm", "arm stm"]
 published: false
 ---
 
-메모리 블럭내의 여러개의 워드를 한번에 다루기 위한 ldm과 stm의 기본적인 사용법을 살펴보자.
-배열이나 구조체처럼 여러개의 연속된 메모리를 한번에 다루기 위해 사용되는 ldm과 stm을 알아보자.
+이번 글에서는 메모리에 저장된 여러 개의 워드를 **한 번에 읽거나 저장**할 수 있는 ARM 명령어 `LDM`과 `STM`에 대해 알아보겠습니다.  
 
+이전 포스팅에서 살펴본 `LDR`과 `STR` 명령은 한 번에 하나의 워드만 다룰 수 있었습니다.  
+하지만 배열이나 구조체처럼 **연속된 메모리 영역**을 다룰 때, 매번 `LDR`이나 `STR`을 반복해서 사용하는 것은 비효율적입니다.  
+이러한 문제를 해결하기 위해 ARM은 메모리 블럭 단위로 데이터를 읽고 쓸 수 있는 `LDM`(Load Multiple)과 `STM`(Store Multiple) 명령을 제공합니다.  
 
 ## 메모리 블럭
-ARM 프로그래밍에서 배열이나 구조체 처럼 연속된 데이터를 한꺼번에 다루는 상황은 매우 흔하다.
-메모리 안에는 이 데이터들이 여러 워드 단위로 연속되어 저장된다.
-이 연속된 영역을 메모리 블럭이라고 한다.
+ARM 프로그래밍에서는 배열이나 구조체처럼 **연속된 데이터를 한꺼번에 다루는 상황**이 자주 발생합니다.  
+메모리 내부에서는 이러한 데이터들이 여러 개의 워드 단위로 연속해서 저장되어 있습니다.  
+이런 연속된 영역을 **메모리 블럭(memory block)** 이라고 부릅니다.  
 
 <figure style="text-align: center;">
-  <img src="/assets/img/memory-block.png" alt="" style="display: block; margin: auto;" />
+  <img src="/assets/img/memory-block.png" alt="연속된 워드로 구성된 메모리 블럭" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    메모리 블럭은 연속된 워드들로 구성되어 있으며, 각 워드는 순차적으로 증가하는 주소를 가집니다.  
   </figcaption>
 </figure>
 
-메모리는 선형구조이지만, 2차원 배열형태로 표현하면 직관적이다.
-하나의 열은 1워드(4바이트) 저장공간이다.
+메모리는 실제로는 선형 구조이지만, 이해를 돕기 위해 2차원 배열 형태로 표현하면 좀 더 직관적으로 볼 수 있습니다.  
+각 칸은 1워드(4바이트) 크기의 저장공간을 의미합니다.  
 
-[여기]({% post_url %})에서 언급한 것 처럼 16진수 메모리 주소를 사용해서 하나의 워드만큼의 메모리 값에 접근할 수 있다.
+[이전 포스팅]({% post_url 2025-10-31-arm-ldr-str-basic %})에서 설명드린 것처럼, 메모리는 16진수 주소를 사용해 한 워드 단위로 접근할 수 있습니다.  
 
  
-### ldr/str 사용시 비효율성
-`str`과 `ldr`같은 단일 주소 접근으로는 하나의 워드를 읽어서 레지스터에 저장하거나, 하나의 레지스터에서 하나의 워드만 메모리에 저장한다.
- 
+### LDR/STR 사용 시의 비효율성
+`STR`과 `LDR` 같은 단일 주소 접근 명령은 한 번에 하나의 워드만 읽거나 쓸 수 있습니다.  
+
 ```armasm
   mov r0, #0x8000
   mov r1, #0x1
   str r1, [r0]
 ```
- 
 <figure style="text-align: center;">
-  <img src="/assets/img/" alt="" style="display: block; margin: auto;" />
+  <img src="/assets/img/ldr-str-single-access.png" alt="단일 워드 접근 구조" style="display: block; margin: auto;" /> 
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  LDR/STR 명령은 메모리와 레지스터 간의 1:1 관계로 데이터를 전송합니다.  
   </figcaption>
 </figure>
- 
-즉, Mem[address] <-> register 관계가 워드 단위의 1:1이다.
-다양한 offset방식으로 주소는 편리하게 다룰 수 있지만, 여러개의 워드를 다루려면 ldr/str을 반복적으로 사용해야 한다.
-하지만, 배열이나 구조체와 같이 연속된 메모리 영역에 저장되는 경우 반복적인 ldr/str 호출은 비효율적이다.
- 
-## ldm과 stm
-ARM은 이런 연속된 메모리 영역에 저장되는 블럭단위의 여러 워드를 효율적으로 다루기 위해 `LDM`과 `STM`을 제공한다.
 
-- `LDM`: 메모리 블럭에서 여러 레지스터로 데이터 불러오기
-- `STM`: 여러 레지스터의 값을 메모리 블럭에 저장하기
+즉, Mem[address]와 Register의 관계는 워드 단위의 1:1 관계입니다.
+주소를 오프셋(offset) 방식으로 조작할 수는 있지만, 여러 워드를 다루려면 결국 `LDR`과 `STR` 명령을 반복해야 합니다.
+배열이나 구조체처럼 연속된 데이터를 다룰 때 이런 반복은 비효율적입니다.
+
+ 
+## LDM과 STM
+ARM은 이러한 연속된 메모리 블럭을 효율적으로 다루기 위해 `LDM`과 `STM` 명령을 제공합니다.
+
+- `LDM`: 메모리 블럭에서 여러 레지스터로 데이터를 불러옵니다.
+- `STM`: 여러 레지스터의 값을 메모리 블럭에 저장합니다.
 
 ```
   ldm Rn, {registers}
   stm Rn, {registers}
 ```
-여기서, 
-- `Rn`은 접근할 메모리의 베이스 주소
-- `{regsters}`는 `,`로 구분된 레지스터 목록. 여러 레지스터를 순차적으로 접근할 때는 `-`를 사용
 
-> `Rn`을 시작주소가 아니라 베이스 주소라고 표현했다.
-> 뒤에 살펴보겠지만 메모리 접근 시작주소는 어떤 주소모드를 사용하는지에 따라 다르다.
+여기서,  
+`Rn`은 접근할 메모리의 **베이스 주소(base address)** 입니다.
+`{registers}`는 `,`로 구분된 레지스터 목록으로, 연속된 레지스터는 `-`를 사용해 표현합니다.
+
+> `Rn`을 시작 주소(start address)가 *아니라* 베이스 주소(base address) 라고 부릅니다.
+> 실제 시작 주소는 이후에 설명드릴 주소 모드(addressing mode) 에 따라 달라집니다.
 
 ### 레지스터 목록 다루기
-3개의 예시에서 여러 레지스터 목록을 어떻게 다루는지 살펴보겠다.
-> 예시는 ldm만 사용했지만, stm도 동일하게 레지스터 목록을 사용할 수 있다.
-> 단지 stm은 ldm과 반대로 레지스터 목록의 값들을 메모리에 저장할 뿐이다.
+다음 세 가지 예시를 통해 여러 레지스터 목록을 어떻게 사용하는지 살펴보겠습니다.
 
-#### 예시 1) `0x8000`위치의 메모리로 부터 2개의 워드를  `R1`과 `R2`에 저장할 때:
+> 아래 예시에서는 `LDM`만 사용했지만, `STM` 명령도 동일한 방식으로 동작합니다.  
+> 단지 `STM`은 반대 방향으로, 레지스터의 값을 메모리에 저장합니다.
+
+#### 예시 1) 0x8000 위치의 메모리에서 2개의 워드를 R1, R2에 저장할 때
 ```armasm
   mov r0, #0x8000
   ldm r0, {r1, r2}
 ```
+- `R1` ← Mem[`0x8000`] 
+- `R2` ← Mem[`0x8004`] 
  
 <figure style="text-align: center;">
-  <img src="/assets/img/ldm-comma-seperated-registers.png" alt="" style="display: block; margin: auto;" />
+  <img src="/assets/img/ldm-comma-seperated-registers.png" alt="LDM 명령의 쉼표 구분 레지스터 목록" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  `LDM r0, {r1, r2}` 명령은 연속된 두 워드를 각각 R1과 R2에 불러옵니다.
   </figcaption>
 </figure>
- 
-#### 예시 2) `0x8000`위치의 메모리로 부터 4개의 워드를  `R1`부터 `R4`에 저장할 때:
+
+
+#### 예시 2) 0x8000 위치의 메모리에서 4개의 워드를 R1~R4에 저장할 때
 ```armasm
   mov r0, #0x8000
   ldm r0, {r1 - r4}
 ```
- 
+- `R1` ← Mem[`0x8000`] 
+- `R2` ← Mem[`0x8004`] 
+- `R3` ← Mem[`0x8008`] 
+- `R4` ← Mem[`0x800C`] 
+
 <figure style="text-align: center;">
-  <img src="/assets/img/ldm-range-registers.png" alt="" style="display: block; margin: auto;" />
+  <img src="/assets/img/ldm-range-registers.png" alt="LDM 명령의 연속 레지스터 목록" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+   `LDM r0, {r1-r4}` 명령은 4개의 연속된 워드를 메모리에서 읽어 R1부터 R4까지 순서대로 저장합니다. 
   </figcaption>
 </figure>
- 
-#### 예시 3) `0x8000`위치의 메모리로 부터 5개의 워드를 `R1`부터 `R4`, 그리고 R7에 저장할 때:
+
+
+#### 예시 3) 0x8000 위치의 메모리에서 R1, R2, R7에 저장할 때 
 ```armasm
   mov r0, #0x8000
   ldm r0, {r1 - r2, r7}
 ```
+- `R1` ← Mem[`0x8000`] 
+- `R2` ← Mem[`0x8004`] 
+- `R7` ← Mem[`0x8008`] 
+
 <figure style="text-align: center;">
-  <img src="/assets/img/ldm-range-comma-seperated-registers.png" alt="" style="display: block; margin: auto;" />
+  <img src="/assets/img/ldm-range-comma-seperated-registers.png" alt="LDM 명령의 복합 레지스터 목록" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+   `LDM r0, {r1-r2, r7}` 명령은 비연속적인 레지스터 목록을 지정해 사용할 수 있습니다. 
   </figcaption>
 </figure>
  
@@ -111,7 +132,7 @@ ARM은 이런 연속된 메모리 영역에 저장되는 블럭단위의 여러 
   ldm Rn!, {registers}
   stm Rn!, {registers}
 ```
-메모리 주소를 저장한 베이스 레지스터에 `!`를 추가하면 메모리로부터 값을 읽어오거나 저장한 이후에 베이스 레지스터 값을 갱신해준다.
+베이스 레지스터 `Rn` 뒤에 `!`를 붙이면, 명령 실행 후 **자동으로 다음 주소로 갱신**됩니다.
  
 ```armasm
   mov r0, #0x8000
@@ -120,10 +141,19 @@ ARM은 이런 연속된 메모리 영역에 저장되는 블럭단위의 여러 
   mov r3, #0x3
  
   stm r0!, {r1 - r3}
-  @ r0 = r0 + 레지스터 개수(3) * 4 = 0x8000 + 0xC = 0x800C
+  @ r0 = r0 + (3 * 4) = 0x8000 + 0xC = 0x800C
 ```
+즉, 한 번의 명령으로 여러 데이터를 저장하고 다음 메모리 위치로 자동 이동할 수 있습니다.
+
+---
+지금까지 살펴본 예제에서는 메모리 주소가 항상 **아래에서 위로(증가 방향)** 으로 갱신되었습니다.  
+하지만 실제로는 상황에 따라 **주소가 증가할 수도, 감소할 수도 있으며**, 베이스 레지스터(`Rn`)가 갱신되기 전에 접근할지, 후에 접근할지도 결정할 수 있습니다.  
+이러한 동작 방식을 제어하는 것이 바로 **주소 모드(Addressing Mode)** 입니다.  
+
+ARM의 `LDM`과 `STM` 명령은 다음 네 가지 주소 모드를 지원합니다.  
  
 ### 4개의 주소모드:IA, IB, DA, DB
+
 | 주소 모드 | 설명 |
 |--|--|
 | IA | Icrement After |
@@ -132,25 +162,28 @@ ARM은 이런 연속된 메모리 영역에 저장되는 블럭단위의 여러 
 | DB | Decrement Before |
 
 <figure style="text-align: center;">
-  <img src="/assets/img/multi-memory-inst-addr-mode.png" alt="" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"></figcaption>
+  <img src="/assets/img/multi-memory-inst-addr-mode.png" alt="LDM/STM 주소 모드 개요" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  LDM/STM 명령은 IA, IB, DA, DB의 네 가지 주소 모드를 지원하며, 각 모드는 주소 증가 및 시작 위치가 다릅니다.
+  </figcaption>
 </figure>
 
- 
-Increment/Decrement의 기준: (U-bit)
-- Increment -> Upward(U=1) : bottom of range, low to high address
-- Decrement -> Downward(U=0) : top of range, high to low address
- 
-After/Before의 기준: (P-bit)
-- After (P=0) : included Rn, 시작주소 포함.
-- Before (P=1) : excluded Rn. beyond the top(U=0) & below the bottom(U=1), 시작주소 바로 다음부터.
+참고:
+- Increment / Decrement는 U-bit에 의해 결정된다.
+  - Increment (U=1): 아래에서 위로 (low → high address)
+  - Decrement (U=0): 위에서 아래로 (high → low address)
+- After / Before는 P-bit에 의해 결정된다.
+  - After (P=0): Rn을 포함 (included Rn)
+  - Before (P=1): Rn을 제외 (excluded Rn)
 
-> 스택에 관해 다룬 포스팅의 그림처럼 높은 주소가 위에, 낮은 주소가 아래에 오는 메모리 형태로 생각하면 이해하기 쉽다.
+> [스택 포스팅]({% post_url 2025-11-06-arm-stack-memory %})의 그림처럼,
+> 메모리의 높은 주소가 위에, 낮은 주소가 아래에 있다고 생각하면 이해하기 쉽다.
  
 #### IA (default):
 - start_address = Rn
 - end_addrses = Rn + (# of registers * 4) - 4
 - Rn = Rn + (# of registers * 4)
+
 ```
 <bottom & included>
 # of registers = 3, Rn = 0x1000
@@ -161,15 +194,19 @@ After/Before의 기준: (P-bit)
  
 Rn = 0x100C
 ```
+
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png" alt="" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"></figcaption>
+  <img src="/assets/img/ia-addr-mode-in-memory.png" alt="IA 주소 모드 메모리 배치" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  IA(Increment After) 모드는 베이스 주소부터 시작해 레지스터 개수에 따라 주소가 증가합니다.
+  </figcaption>
 </figure>
  
 #### IB:
 - start_address = Rn + 4
 - end_address = Rn + (# of registers * 4)
 - Rn = Rn + (# of registers * 4)
+
 ```
 <bottom & excluded>
 # of registers = 3, Rn = 0x1000
@@ -181,15 +218,19 @@ Rn = 0x100C
  
 Rn = 0x100C
 ```
+
 <figure style="text-align: center;">
-  <img src="/assets/img/ib-addr-mode-in-memory.png" alt="" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"></figcaption>
+  <img src="/assets/img/ib-addr-mode-in-memory.png" alt="IB 주소 모드 메모리 배치" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  IB(Increment Before) 모드는 베이스 주소 다음 주소부터 시작하여 주소가 증가합니다.  
+  </figcaption>
 </figure>
  
-#### DA
+#### DA:
 - start_address = Rn - (# of registers * 4) + 4
 - end_address = Rn
 - Rn = Rn - (# of registers * 4)
+
 ```
 <top & included>
 # of registers = 3, Rn = 0x1000
@@ -198,34 +239,42 @@ Rn = 0x100C
 0x0FFC
 0x0FF8  : start address
 0x0FF4
-0x0FF0
  
 Rn = 0xFFF4
 ```
+
 <figure style="text-align: center;">
-  <img src="/assets/img/da-addr-mode-in-memory.png" alt="" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"></figcaption>
+  <img src="/assets/img/da-addr-mode-in-memory.png" alt="DA 주소 모드 메모리 배치" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  DA(Decrement After) 모드는 상단 주소부터 시작하여 주소가 감소합니다.
+  </figcaption>
 </figure>
  
 #### DB:
 - start_address = Rn - (# of registers * 4)
 - end_address = Rn - 4
 - Rn = Rn - (# of registers * 4)
+
 ```
 <top & excluded>
 # of registers = 3, Rn = 0x1000
- 0x1000 0x0FFC  : end address
+
+0x1000
+0x0FFC  : end address
 0x0FF8
 0x0FF4  : start address
  
 Rn = 0xFFF4
 ```
+
 <figure style="text-align: center;">
-  <img src="/assets/img/db-addr-mode-in-memory.png" alt="" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"></figcaption>
+  <img src="/assets/img/db-addr-mode-in-memory.png" alt="DB 주소 모드 메모리 배치" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  DB(Decrement Before) 모드는 베이스 주소 이전의 주소부터 시작하여 주소가 감소합니다.
+  </figcaption>
 </figure>
  
 ## 마무리
-다음은 이전 포스팅의 내용과 이번 포스팅의 내용을 종합한 스택메모리에서의 `LDM`과 `STM`을 사용해보고,
-스택 메모리용 주소 모드를 알아보겠다. 
-스택의 특성상 push/pop으로 여러 레지스터를 한번에 저장하거나 불러와야 하기 때문에 ldm과 stm이 유용하다.
+이번 글에서는 `LDM`과 `STM`을 이용해 여러 워드를 한 번에 다루는 방법을 배웠다.
+다음 포스팅에서는 스택 메모리에서 `LDM`과 `STM`이 어떻게 사용되는지 살펴보겠다.
+스택은 여러 레지스터를 한꺼번에 저장(push)하거나 복원(pop)해야 하기 때문에 이 두 명령이 특히 유용하다.
