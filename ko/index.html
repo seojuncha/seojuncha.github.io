@@ -111,106 +111,79 @@
           <a class="post-link" href="/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html">
             ARM 어셈블리 #10 - 스택 메모리(Stack Memory) 이해하기
           </a>
-        </h3><p>오늘은 CPU가 임시 데이터를 다루기 위해 활용하는 <strong>스택 메모리(Stack Memory)</strong> 에 대해 알아보겠습니다. 
-앞선 포스팅들에서 살펴본 메모리 접근 명령의 응용법을 기반으로, 다음 포스팅에서 다룰 블록 단위 메모리 접근 명령(<code class="language-plaintext highlighter-rouge">LDM</code>, <code class="language-plaintext highlighter-rouge">STM</code>)을 이해하기 위한 기초 개념을 다집니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Nov 5, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html">
             ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기
           </a>
-        </h3><p>ARM 어셈블리에서 메모리에 접근할 때, 단순히 <code class="language-plaintext highlighter-rouge">[R1]</code> 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 
-배열이나 버퍼처럼 연속된 데이터를 다룰 때, 매번 <code class="language-plaintext highlighter-rouge">ADD</code> 명령으로 주소를 갱신하는 것은 비효율적이기 때문입니다. 
-이 문제를 해결하기 위해 ARM은 <strong>pre-index</strong>와 <strong>post-index</strong>라는 자동 주소 계산 기능을 제공합니다. 
-이 글에서는 두 방식의 차이와 동작 원리를 이해하기 쉽게 설명하고, 마지막에는 실제 예제 코드와 함께 CPU 내부에서 주소가 어떻게 계산되는지도 알아보겠습니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Nov 2, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html">
             ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기
           </a>
-        </h3><p>메모리에 저장된 여러 데이터를 효율적으로 읽고 쓰기 위해서는 매번 주소를 계산하지 않아도 되는 방법이 필요합니다.<br />
-이번 글에서는 <strong>ARM 어셈블리의 오프셋(Offset) 주소 지정 방식</strong>을 살펴보며, <code class="language-plaintext highlighter-rouge">LDR</code>과 <code class="language-plaintext highlighter-rouge">STR</code> 명령어에서 <strong>주소 계산을 단 한 줄로 처리하는 방법</strong>을 이해해보겠습니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Oct 31, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html">
             ARM 어셈블리 #7 - LDR과 STR로 메모리에 접근하는 가장 단순한 방법
           </a>
-        </h3><p>이 글은 ARM 어셈블리를 처음 배우는 사람을 위한 <strong>메모리 접근 입문 튜토리얼</strong>입니다.
-ARMv4 아키텍처 기준으로 <code class="language-plaintext highlighter-rouge">ldr</code>(load)과 <code class="language-plaintext highlighter-rouge">str</code>(store) 명령어를 사용하여 CPU가 메모리의 데이터를 읽고 쓰는 가장 기본적인 방식을 다룹니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Oct 27, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html">
             ARM 어셈블리 #6 - 산술연산
           </a>
-        </h3><p>이번 포스팅에서는 <strong>ARM의 기본 산술 연산(Arithmetic Operations)</strong> 명령어들을 다뤄보겠습니다.<br />
-특히 덧셈과 뺄셈, 그리고 <strong>Carry(캐리)</strong>를 포함하는 연산까지 함께 살펴봅니다.
-지금까지는 레지스터에 값을 저장하고 시프트(shift)하는 방법을 배웠다면, 오늘은 그 값을 <strong>연산</strong>하는 단계로 나아가 보겠습니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Sep 27, 2025</span>
         <h3>
           <a class="post-link" href="/2025/09/27/signed-and-unsigned-binary.html">
             Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기
           </a>
-        </h3><p>이 글에서는 <strong>Signed Binary와 Unsigned Binary의 차이점</strong>, <strong>각각의 표현법</strong>, 그리고 <strong>C언어 프로그래밍 시의 주의사항</strong>을 알아보겠습니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Sep 25, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand.html">
             ARM 어셈블리 #5 - 시프트 피연산자(Shifter Operand) 총정리
           </a>
-        </h3><p>오늘은 ARM 데이터 처리 명령어(Data Processing Instructions)의 <strong>시프트 피연산자(Shifter Operand)</strong>를 총정리해보겠습니다.<br />
-시프트 피연산자는 모든 데이터 처리 명령어에서 <strong>필수적으로 사용되는 중요한 개념</strong>입니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Sep 17, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html">
             ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법
           </a>
-        </h3><p>이번 글에서는 시프트 연산의 마지막 주제인 <strong>회전 시프트 (Rotate Shift)</strong> 를 다룹니다. 
-ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: <code class="language-plaintext highlighter-rouge">ror</code> (Rotate Right), <code class="language-plaintext highlighter-rouge">rrx</code> (Rotate Right with eXtend)</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Sep 15, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html">
             ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)
           </a>
-        </h3><p>CPU의 중요한 모듈중 하나인 ALU는 산술논리장치입니다. 이름에서 유추할 수 있듯이 논리연산 뿐 아니라 산술연산도 가능해야 하죠.
-산술연산에서 유의해야 할 것은 피연산자의 부호 유무입니다. <a href="/ko/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html">앞선 포스팅</a>에서는 논리 시프트를 사용한 비트 단위의 연산을 고려했다면,
-이번 포스팅에서는 부호를 고려한 산술 시프트 연산자인 <code class="language-plaintext highlighter-rouge">asr</code>의 특징과 사용법을 살펴보겠습니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Sep 9, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html">
             ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)
           </a>
-        </h3><p>컴퓨터는 비트 단위로 데이터를 조작하는 연산을 자주 수행합니다. 그 중에서도 <strong>시프트(Shift) 연산</strong>은 매우 중요하죠. 이번 글에서는 ARM 어셈블리에서 사용하는 논리 시프트(Logical Shift) 를 중심으로 설명합니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Sep 8, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html">
             ARM 어셈블리 #1 - mov 명령어로 레지스터에 값 저장하기
           </a>
-        </h3><p>컴퓨터는 연산을 하기 위한 기계입니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Sep 3, 2025</span>
         <h3>
           <a class="post-link" href="/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html">
             ARM 어셈블리 #0 - 개발환경과 첫 코드
           </a>
-        </h3><p>이번 포스팅에서는 ARM 기반의 어셈블리 코드를 작성하고 실행하는 방법을 소개합니다. 향후 이어질 시리즈의 기본이 되는 내용이므로, 차근차근 따라오시길 추천드립니다. 간단한 어셈블리 코드를 작성하고, 컴파일, 실행, 디버깅하는 기본적인 흐름을 익히는 것이 목표입니다. 또한 이후 포스팅에서 사용할 QEMU 가상환경과 GDB 디버깅 도구도 함께 준비합니다.</p>
-</li><li>
+        </h3></li><li>
         <span class="post-meta">Sep 1, 2025</span>
         <h3>
           <a class="post-link" href="/programming/low-level/2025/09/01/what-is-low-level-programming.html">
             로우레벨 프로그래밍이란?
           </a>
-        </h3><p>우리가 매일 사용하는 스마트폰, 노트북, 서버와 같은 모든 전자기기는 복잡한 소프트웨어와 하드웨어의 조합으로 이루어져 있습니다.
-많은 사람들은 웹이나 앱 같은 눈에 보이는 부분만 접하지만, 그 아래에는 보이지 않는 세계가 있습니다.
-바로 <strong>저수준 프로그래밍</strong>입니다.</p>
-</li></ul>
+        </h3></li></ul>
 
     </div>
 
