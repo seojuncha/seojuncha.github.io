@@ -169,15 +169,15 @@ ARM의 `LDM`과 `STM` 명령은 다음 네 가지 주소 모드를 지원합니�
 </figure>
 
 참고:
-- Increment / Decrement는 U-bit에 의해 결정된다.
+- Increment / Decrement는 U-bit에 의해 결정됩니다.
   - Increment (U=1): 아래에서 위로 (low → high address)
   - Decrement (U=0): 위에서 아래로 (high → low address)
-- After / Before는 P-bit에 의해 결정된다.
+- After / Before는 P-bit에 의해 결정됩니다.
   - After (P=0): Rn을 포함 (included Rn)
   - Before (P=1): Rn을 제외 (excluded Rn)
 
 > [스택 포스팅]({% post_url 2025-11-06-arm-stack-memory %})의 그림처럼,
-> 메모리의 높은 주소가 위에, 낮은 주소가 아래에 있다고 생각하면 이해하기 쉽다.
+> 메모리의 높은 주소가 위에, 낮은 주소가 아래에 있다고 생각하면 이해하기 쉽습니다.
  
 #### IA (default):
 - start_address = Rn
@@ -275,6 +275,6 @@ Rn = 0xFFF4
 </figure>
  
 ## 마무리
-이번 글에서는 `LDM`과 `STM`을 이용해 여러 워드를 한 번에 다루는 방법을 배웠다.
-다음 포스팅에서는 스택 메모리에서 `LDM`과 `STM`이 어떻게 사용되는지 살펴보겠다.
-스택은 여러 레지스터를 한꺼번에 저장(push)하거나 복원(pop)해야 하기 때문에 이 두 명령이 특히 유용하다.
+이번 글에서는 `LDM`과 `STM`을 이용해 여러 워드를 한 번에 다루는 방법을 살펴보았습니다. 
+다음 포스팅에서는 스택 메모리에서 `LDM`과 `STM`이 어떻게 사용되는지를 함께 알아보겠습니다. 
+스택은 여러 레지스터를 한꺼번에 저장(push)하거나 복원(pop)해야 하기 때문에 이 두 명령이 특히 유용합니다.
