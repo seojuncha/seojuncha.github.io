@@ -69,7 +69,7 @@ minima:
   skin: dark
   nav_pages:
     - about.md
-  show_excerpts: true
+  # show_excerpts: true
   social_links:
     - title: Github Repository
       icon: github
