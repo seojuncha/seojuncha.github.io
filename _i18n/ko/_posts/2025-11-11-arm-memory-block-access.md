@@ -88,7 +88,7 @@ ARM은 이러한 연속된 메모리 블럭을 효율적으로 다루기 위해 
 <figure style="text-align: center;">
   <img src="/assets/img/ldm-comma-seperated-registers.png" alt="LDM 명령의 쉼표 구분 레지스터 목록" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  `LDM r0, {r1, r2}` 명령은 연속된 두 워드를 각각 R1과 R2에 불러옵니다.
+  <code>ldm r0, {r1, r2}</code> 명령은 연속된 두 워드를 각각 R1과 R2에 불러옵니다.
   </figcaption>
 </figure>
 
@@ -106,7 +106,7 @@ ARM은 이러한 연속된 메모리 블럭을 효율적으로 다루기 위해 
 <figure style="text-align: center;">
   <img src="/assets/img/ldm-range-registers.png" alt="LDM 명령의 연속 레지스터 목록" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-   `LDM r0, {r1-r4}` 명령은 4개의 연속된 워드를 메모리에서 읽어 R1부터 R4까지 순서대로 저장합니다. 
+   <code>ldm r0, {r1-r4}</code> 명령은 4개의 연속된 워드를 메모리에서 읽어 R1부터 R4까지 순서대로 저장합니다. 
   </figcaption>
 </figure>
 
@@ -121,9 +121,9 @@ ARM은 이러한 연속된 메모리 블럭을 효율적으로 다루기 위해 
 - `R7` ← Mem[`0x8008`] 
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ldm-range-comma-seperated-registers.png" alt="LDM 명령의 복합 레지스터 목록" style="display: block; margin: auto;" />
+  <img src="/assets/img/ldm-mixed-registers.png" alt="LDM 명령의 복합 레지스터 목록" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-   `LDM r0, {r1-r2, r7}` 명령은 비연속적인 레지스터 목록을 지정해 사용할 수 있습니다. 
+   <code>ldm r0, {r1-r2, r7}</code> 명령은 비연속적인 레지스터 목록을 지정해 사용할 수 있습니다. 
   </figcaption>
 </figure>
  
