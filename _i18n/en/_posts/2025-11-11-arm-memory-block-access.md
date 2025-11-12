@@ -88,7 +88,7 @@ Let’s look at three examples to see how register lists are used.
 <figure style="text-align: center;">
   <img src="/assets/img/ldm-comma-seperated-registers.png" alt="Comma-separated register list in LDM" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  The instruction `LDM r0, {r1, r2}` loads two consecutive words into R1 and R2.
+  The instruction <code>ldm r0, {r1, r2}</code> loads two consecutive words into R1 and R2.
   </figcaption>
 </figure>
 
@@ -105,7 +105,7 @@ Let’s look at three examples to see how register lists are used.
 <figure style="text-align: center;">
   <img src="/assets/img/ldm-range-registers.png" alt="Range register list in LDM" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  The instruction `LDM r0, {r1-r4}` reads four consecutive words and stores them sequentially in R1 to R4.
+  The instruction <code>ldm r0, {r1-r4}</code> reads four consecutive words and stores them sequentially in R1 to R4.
   </figcaption>
 </figure>
 
@@ -119,9 +119,9 @@ Let’s look at three examples to see how register lists are used.
 - `R7` ← Mem[`0x8008`] 
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ldm-range-comma-seperated-registers.png" alt="Mixed register list in LDM" style="display: block; margin: auto;" />
+  <img src="/assets/img/ldm-mixed-registers.png" alt="Mixed register list in LDM" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  The instruction `LDM r0, {r1-r2, r7}` demonstrates that non-consecutive register lists can be specified.
+  The instruction <code>ldm r0, {r1-r2, r7}</code> demonstrates that non-consecutive register lists can be specified.
   </figcaption>
 </figure>
 
@@ -170,10 +170,10 @@ ARM’s `LDM` and `STM` instructions support the following four addressing modes
 
 
 Note:
-- Increment / Decrement is determined by the U-bit.
+- Increment / Decrement is determined by the **U-bit**.
   - Increment (U=1): bottom → top (low → high address)
   - Decrement (U=0): top → bottom (high → low address)
-- After / Before is determined by the P-bit.
+- After / Before is determined by the **P-bit**.
   - After (P=0): included Rn
   - Before (P=1): excluded Rn
 
