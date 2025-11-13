@@ -180,7 +180,7 @@ Note:
 > As shown in the [stack post]({% post_url 2025-11-06-arm-stack-memory %}),
 > it’s easier to visualize memory with higher addresses at the top and lower addresses at the bottom.
 
-#### IA (default):
+#### IA(Increment After) - default
 - start_address = Rn
 - end_addrses = Rn + (# of registers * 4) - 4
 - Rn = Rn + (# of registers * 4)
@@ -195,6 +195,37 @@ Note:
  
 Rn = 0x100C
 ```
+
+**Example: ldmia.s**
+```armasm
+  .text
+  .global _start
+_start:
+  ldr r0, =arr
+  ldmia r0, {r1-r3}
+  b .
+ 
+arr:
+  .word 0x1
+  .word 0x2
+  .word 0x3
+```
+
+**Example: stmia.s**
+```armasm
+  .text
+  .global _start
+_start:
+  mov r0, #0x8000
+  mov r1, #0x1
+  mov r2, #0x2
+  mov r3, #0x3
+ 
+  stmia r0, {r1-r3}
+ 
+  b .
+```
+
 
 <figure style="text-align: center;">
   <img src="/assets/img/ia-addr-mode-in-memory.png" alt="Memory layout in IA addressing mode" style="display: block; margin: auto;" />
