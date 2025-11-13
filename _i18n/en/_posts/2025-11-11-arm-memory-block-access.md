@@ -260,7 +260,9 @@ Rn = 0xFFF4
 ```
 <top & excluded>
 # of registers = 3, Rn = 0x1000
- 0x1000 0x0FFC  : end address
+
+0x1000
+0x0FFC  : end address
 0x0FF8
 0x0FF4  : start address
  
