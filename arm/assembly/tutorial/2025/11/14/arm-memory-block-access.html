@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #11 - Memory Block Access(LDM, STM) | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #11 - Memory Block Access(LDM, STM)" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="In this post, we’ll look at the ARM instructions LDM and STM, which allow reading or writing multiple words at once from memory. In the previous post, we learned that LDR and STR can only handle a single word at a time. However, when working with contiguous memory areas such as arrays or structures, repeatedly using LDR or STR becomes inefficient. To solve this problem, ARM provides LDM (Load Multiple) and STM (Store Multiple), which can operate on memory blocks." />
+<meta property="og:description" content="In this post, we’ll look at the ARM instructions LDM and STM, which allow reading or writing multiple words at once from memory. In the previous post, we learned that LDR and STR can only handle a single word at a time. However, when working with contiguous memory areas such as arrays or structures, repeatedly using LDR or STR becomes inefficient. To solve this problem, ARM provides LDM (Load Multiple) and STM (Store Multiple), which can operate on memory blocks." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-14T09:30:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #11 - Memory Block Access(LDM, STM)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-14T09:30:00+00:00","datePublished":"2025-11-14T09:30:00+00:00","description":"In this post, we’ll look at the ARM instructions LDM and STM, which allow reading or writing multiple words at once from memory. In the previous post, we learned that LDR and STR can only handle a single word at a time. However, when working with contiguous memory areas such as arrays or structures, repeatedly using LDR or STR becomes inefficient. To solve this problem, ARM provides LDM (Load Multiple) and STM (Store Multiple), which can operate on memory blocks.","headline":"ARM Assembly #11 - Memory Block Access(LDM, STM)","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #11 - Memory Block Access(LDM, STM)
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-11-14T09:30:00+00:00"
+        itemprop="datePublished"
+      >
+        Nov 14, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>In this post, we’ll look at the ARM instructions <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code>, which allow reading or writing <strong>multiple words at once</strong> from memory.
+In the previous post, we learned that <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> can only handle <strong>a single word</strong> at a time.<br />
+However, when working with <strong>contiguous memory areas</strong> such as arrays or structures, repeatedly using <code class="language-plaintext highlighter-rouge">LDR</code> or <code class="language-plaintext highlighter-rouge">STR</code> becomes inefficient.
+To solve this problem, ARM provides <code class="language-plaintext highlighter-rouge">LDM</code> (Load Multiple) and <code class="language-plaintext highlighter-rouge">STM</code> (Store Multiple), which can operate on memory blocks.</p>
+
+<h2 id="memory-block">Memory Block</h2>
+
+<p>In ARM programming, it’s very common to handle <strong>a group of contiguous data</strong> such as arrays or structures at once.<br />
+Inside memory, these data are stored consecutively in <strong>word-sized units</strong>.<br />
+This continuous region is called a <strong>memory block</strong>.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/memory-block.png" alt="Memory block composed of consecutive words" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 1. A memory block consists of consecutive words, each mapped to sequential memory addresses.
+  </figcaption>
+</figure>
+
+<p>Memory is actually a <strong>linear address space</strong>, but for visualization, it’s often represented as a <strong>2D grid</strong> for clarity.<br />
+Each cell represents one word (4 bytes) of storage.</p>
+
+<p>As mentioned in the <a href="/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html">previous post</a>, we can access memory word by word using hexadecimal addresses.</p>
+
+<h3 id="inefficiency-of-using-ldrstr">Inefficiency of Using LDR/STR</h3>
+<p>Instructions like <code class="language-plaintext highlighter-rouge">STR</code> and <code class="language-plaintext highlighter-rouge">LDR</code> can only <strong>load or store one word</strong> at a time.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">r0</span><span class="o">]</span>
+</code></pre></div></div>
+<figure style="text-align: center;">
+  <img src="/assets/img/ldr-str-single-access.png" alt="Single word access structure" style="display: block; margin: auto;" /> 
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 2. LDR/STR transfer data in a one-to-one relation between memory and register.
+  </figcaption>
+</figure>
+
+<p>In other words, the relationship between Mem[address] and a register is <strong>one-to-one per word</strong>.
+Although you can manipulate addresses using offsets, you still need to repeat <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> to handle multiple words.
+Such repetition is inefficient when dealing with arrays or structures that occupy contiguous memory.</p>
+
+<h2 id="ldm-and-stm">LDM and STM</h2>
+<p>ARM provides <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> instructions to handle such contiguous memory blocks efficiently.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">LDM</code>: Loads multiple words from memory into registers.</li>
+  <li><code class="language-plaintext highlighter-rouge">STM</code>: Stores the values of multiple registers into memory.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldm Rn, {registers}
+  stm Rn, {registers}
+</code></pre></div></div>
+
+<p>Here,<br />
+<code class="language-plaintext highlighter-rouge">Rn</code> is the base address of the memory block to access.
+<code class="language-plaintext highlighter-rouge">{registers}</code> is a list of registers, separated by commas or defined as a range using a dash (-).</p>
+
+<blockquote>
+  <p>We call <code class="language-plaintext highlighter-rouge">Rn</code> the base address, <strong>not</strong> the start address,
+because the actual start address depends on the addressing mode, which we’ll discuss later.</p>
+</blockquote>
+
+<h3 id="working-with-register-lists">Working with Register Lists</h3>
+<p>Let’s look at three examples to see how register lists are used.</p>
+
+<blockquote>
+  <p>Although only <code class="language-plaintext highlighter-rouge">LDM</code> is used here, <code class="language-plaintext highlighter-rouge">STM</code> works the same way.<br />
+The only difference is that <code class="language-plaintext highlighter-rouge">STM</code> stores register values into memory instead of loading them.</p>
+</blockquote>
+
+<h4 id="example-1-load-two-words-from-memory-0x8000-into-r1-and-r2">Example 1) Load two words from memory 0x8000 into R1 and R2</h4>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
+</ul>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ldm-comma-seperated-registers.png" alt="Comma-separated register list in LDM" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 3. The instruction <code>ldm r0, {r1, r2}</code> loads two consecutive words into R1 and R2.
+  </figcaption>
+</figure>
+
+<h4 id="example-2-load-four-words-from-memory-0x8000-into-r1-to-r4">Example 2) Load four words from memory 0x8000 into R1 to R4</h4>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r4</span><span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R3</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8008</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R4</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x800C</code>]</li>
+</ul>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ldm-range-registers.png" alt="Range register list in LDM" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 4. The instruction <code>ldm r0, {r1-r4}</code> reads four consecutive words and stores them sequentially in R1 to R4.
+  </figcaption>
+</figure>
+
+<h4 id="example-3-load-from-memory-0x8000-into-r1-r2-and-r7">Example 3) Load from memory 0x8000 into R1, R2, and R7</h4>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r7</span><span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R7</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8008</code>]</li>
+</ul>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ldm-mixed-registers.png" alt="Mixed register list in LDM" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 5. The instruction <code>ldm r0, {r1-r2, r7}</code> demonstrates that non-consecutive register lists can be specified.
+  </figcaption>
+</figure>
+
+<h3 id="auto-updating-the-base-address">Auto-Updating the Base Address</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldm Rn!, {registers}
+  stm Rn!, {registers}
+</code></pre></div></div>
+<p>Adding <code class="language-plaintext highlighter-rouge">!</code> after the base register <code class="language-plaintext highlighter-rouge">Rn</code> automatically updates its value to the next address after the operation.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+ 
+  <span class="nb">stm</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r3</span><span class="o">}</span>
+  <span class="err">@</span> <span class="nv">r0</span> <span class="o">=</span> <span class="nv">r0</span> <span class="o">+</span> <span class="o">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">4</span><span class="o">)</span> <span class="o">=</span> <span class="mh">0x8000</span> <span class="o">+</span> <span class="mh">0xC</span> <span class="o">=</span> <span class="mh">0x800C</span>
+</code></pre></div></div>
+<p>In other words, you can store multiple registers and automatically move to the next memory position in one instruction.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we looked at the basic ideas behind <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> and learned how to use them. However, <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> also have a concept called <strong>addressing modes</strong>, which control how memory addresses increase or decrease, and whether the base register is included before or after the access.</p>
+
+<p>Addressing modes make much more sense when explained together with stack memory, so in the next post, we’ll go through them in detail while exploring how the stack works in ARM.</p>
+
+<p>See you in the next post, where we’ll walk through the stack and its addressing modes together.</p>
+
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>

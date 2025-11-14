@@ -1,4 +1,146 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-13T15:04:55+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #10 - Understanding Stack Memory in ARM</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html" rel="alternate" type="text/html" title="ARM Assembly #10 - Understanding Stack Memory in ARM" /><published>2025-11-07T07:00:00+00:00</published><updated>2025-11-07T07:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html"><![CDATA[<p>Today, we’ll learn about <strong>stack memory</strong>, which the CPU uses to handle temporary data.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-14T09:40:21+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #11 - Memory Block Access(LDM, STM)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html" rel="alternate" type="text/html" title="ARM Assembly #11 - Memory Block Access(LDM, STM)" /><published>2025-11-14T09:30:00+00:00</published><updated>2025-11-14T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html"><![CDATA[<p>In this post, we’ll look at the ARM instructions <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code>, which allow reading or writing <strong>multiple words at once</strong> from memory.
+In the previous post, we learned that <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> can only handle <strong>a single word</strong> at a time.<br />
+However, when working with <strong>contiguous memory areas</strong> such as arrays or structures, repeatedly using <code class="language-plaintext highlighter-rouge">LDR</code> or <code class="language-plaintext highlighter-rouge">STR</code> becomes inefficient.
+To solve this problem, ARM provides <code class="language-plaintext highlighter-rouge">LDM</code> (Load Multiple) and <code class="language-plaintext highlighter-rouge">STM</code> (Store Multiple), which can operate on memory blocks.</p>
+
+<h2 id="memory-block">Memory Block</h2>
+
+<p>In ARM programming, it’s very common to handle <strong>a group of contiguous data</strong> such as arrays or structures at once.<br />
+Inside memory, these data are stored consecutively in <strong>word-sized units</strong>.<br />
+This continuous region is called a <strong>memory block</strong>.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/memory-block.png" alt="Memory block composed of consecutive words" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 1. A memory block consists of consecutive words, each mapped to sequential memory addresses.
+  </figcaption>
+</figure>
+
+<p>Memory is actually a <strong>linear address space</strong>, but for visualization, it’s often represented as a <strong>2D grid</strong> for clarity.<br />
+Each cell represents one word (4 bytes) of storage.</p>
+
+<p>As mentioned in the <a href="/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html">previous post</a>, we can access memory word by word using hexadecimal addresses.</p>
+
+<h3 id="inefficiency-of-using-ldrstr">Inefficiency of Using LDR/STR</h3>
+<p>Instructions like <code class="language-plaintext highlighter-rouge">STR</code> and <code class="language-plaintext highlighter-rouge">LDR</code> can only <strong>load or store one word</strong> at a time.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">r0</span><span class="o">]</span>
+</code></pre></div></div>
+<figure style="text-align: center;">
+  <img src="/assets/img/ldr-str-single-access.png" alt="Single word access structure" style="display: block; margin: auto;" /> 
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 2. LDR/STR transfer data in a one-to-one relation between memory and register.
+  </figcaption>
+</figure>
+
+<p>In other words, the relationship between Mem[address] and a register is <strong>one-to-one per word</strong>.
+Although you can manipulate addresses using offsets, you still need to repeat <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> to handle multiple words.
+Such repetition is inefficient when dealing with arrays or structures that occupy contiguous memory.</p>
+
+<h2 id="ldm-and-stm">LDM and STM</h2>
+<p>ARM provides <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> instructions to handle such contiguous memory blocks efficiently.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">LDM</code>: Loads multiple words from memory into registers.</li>
+  <li><code class="language-plaintext highlighter-rouge">STM</code>: Stores the values of multiple registers into memory.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldm Rn, {registers}
+  stm Rn, {registers}
+</code></pre></div></div>
+
+<p>Here,<br />
+<code class="language-plaintext highlighter-rouge">Rn</code> is the base address of the memory block to access.
+<code class="language-plaintext highlighter-rouge">{registers}</code> is a list of registers, separated by commas or defined as a range using a dash (-).</p>
+
+<blockquote>
+  <p>We call <code class="language-plaintext highlighter-rouge">Rn</code> the base address, <strong>not</strong> the start address,
+because the actual start address depends on the addressing mode, which we’ll discuss later.</p>
+</blockquote>
+
+<h3 id="working-with-register-lists">Working with Register Lists</h3>
+<p>Let’s look at three examples to see how register lists are used.</p>
+
+<blockquote>
+  <p>Although only <code class="language-plaintext highlighter-rouge">LDM</code> is used here, <code class="language-plaintext highlighter-rouge">STM</code> works the same way.<br />
+The only difference is that <code class="language-plaintext highlighter-rouge">STM</code> stores register values into memory instead of loading them.</p>
+</blockquote>
+
+<h4 id="example-1-load-two-words-from-memory-0x8000-into-r1-and-r2">Example 1) Load two words from memory 0x8000 into R1 and R2</h4>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
+</ul>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ldm-comma-seperated-registers.png" alt="Comma-separated register list in LDM" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 3. The instruction <code>ldm r0, {r1, r2}</code> loads two consecutive words into R1 and R2.
+  </figcaption>
+</figure>
+
+<h4 id="example-2-load-four-words-from-memory-0x8000-into-r1-to-r4">Example 2) Load four words from memory 0x8000 into R1 to R4</h4>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r4</span><span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R3</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8008</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R4</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x800C</code>]</li>
+</ul>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ldm-range-registers.png" alt="Range register list in LDM" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 4. The instruction <code>ldm r0, {r1-r4}</code> reads four consecutive words and stores them sequentially in R1 to R4.
+  </figcaption>
+</figure>
+
+<h4 id="example-3-load-from-memory-0x8000-into-r1-r2-and-r7">Example 3) Load from memory 0x8000 into R1, R2, and R7</h4>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r7</span><span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
+  <li><code class="language-plaintext highlighter-rouge">R7</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8008</code>]</li>
+</ul>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ldm-mixed-registers.png" alt="Mixed register list in LDM" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 5. The instruction <code>ldm r0, {r1-r2, r7}</code> demonstrates that non-consecutive register lists can be specified.
+  </figcaption>
+</figure>
+
+<h3 id="auto-updating-the-base-address">Auto-Updating the Base Address</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldm Rn!, {registers}
+  stm Rn!, {registers}
+</code></pre></div></div>
+<p>Adding <code class="language-plaintext highlighter-rouge">!</code> after the base register <code class="language-plaintext highlighter-rouge">Rn</code> automatically updates its value to the next address after the operation.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+ 
+  <span class="nb">stm</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r3</span><span class="o">}</span>
+  <span class="err">@</span> <span class="nv">r0</span> <span class="o">=</span> <span class="nv">r0</span> <span class="o">+</span> <span class="o">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">4</span><span class="o">)</span> <span class="o">=</span> <span class="mh">0x8000</span> <span class="o">+</span> <span class="mh">0xC</span> <span class="o">=</span> <span class="mh">0x800C</span>
+</code></pre></div></div>
+<p>In other words, you can store multiple registers and automatically move to the next memory position in one instruction.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we looked at the basic ideas behind <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> and learned how to use them. However, <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> also have a concept called <strong>addressing modes</strong>, which control how memory addresses increase or decrease, and whether the base register is included before or after the access.</p>
+
+<p>Addressing modes make much more sense when explained together with stack memory, so in the next post, we’ll go through them in detail while exploring how the stack works in ARM.</p>
+
+<p>See you in the next post, where we’ll walk through the stack and its addressing modes together.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="memory block" /><category term="arm ldm" /><category term="arm stm" /><summary type="html"><![CDATA[In this post, we’ll look at the ARM instructions LDM and STM, which allow reading or writing multiple words at once from memory. In the previous post, we learned that LDR and STR can only handle a single word at a time. However, when working with contiguous memory areas such as arrays or structures, repeatedly using LDR or STR becomes inefficient. To solve this problem, ARM provides LDM (Load Multiple) and STM (Store Multiple), which can operate on memory blocks.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #10 - Understanding Stack Memory in ARM</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html" rel="alternate" type="text/html" title="ARM Assembly #10 - Understanding Stack Memory in ARM" /><published>2025-11-07T07:00:00+00:00</published><updated>2025-11-07T07:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html"><![CDATA[<p>Today, we’ll learn about <strong>stack memory</strong>, which the CPU uses to handle temporary data.
 Building on what we learned about memory access instructions in previous posts, we’ll prepare for the next topic — block memory access using <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code>.</p>
 
 <p><strong>Previous Posts:</strong></p>
@@ -2311,193 +2453,4 @@ It appears in almost every low-level system, from simple addition inside a CPU t
   <li>Debug arithmetic bugs more effectively</li>
   <li>Write safer low-level code for embedded systems and compilers</li>
   <li>Optimize algorithms that rely on precise bit-level operations</li>
-</ul>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="computer" /><category term="arithmetic" /><category term="carry" /><category term="binary operation" /><category term="arithmetic operation" /><category term="binary arithmetic" /><summary type="html"><![CDATA[Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore the definition and concept of Carry, how it works in binary and decimal arithmetic, and how programming languages handle Carry.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html" rel="alternate" type="text/html" title="ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation" /><published>2025-09-15T12:53:00+00:00</published><updated>2025-09-15T12:53:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"><![CDATA[<p>One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations.</p>
-
-<p>In arithmetic operations, it’s important to consider whether a number is signed or unsigned. In the <a href="/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html">previous post</a>, we explored logical shifts for bit-level manipulation.<br />
-This time, we’ll look at arithmetic right shifts using the <code class="language-plaintext highlighter-rouge">asr</code> instruction and how they preserve the sign of a number.</p>
-
-<h2 id="arithmetic-shift-in-arm">Arithmetic Shift in ARM</h2>
-
-<p>ARM provides a single instruction for arithmetic shift:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: left">Instruction</th>
-      <th style="text-align: left">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">asr</code></td>
-      <td style="text-align: left">Arithmetic Shift Right</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>You can use <code class="language-plaintext highlighter-rouge">asr</code> in two ways:</p>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">asr #&lt;imm&gt;</code>: Shift by an immediate value</li>
-  <li><code class="language-plaintext highlighter-rouge">asr &lt;Rs&gt;</code>: Shift by the value in a register</li>
-</ul>
-
-<h3 id="how-sign-is-preserved">How Sign Is Preserved</h3>
-<p>To preserve the sign of a number during an arithmetic shift,<br />
-<strong>“The shift-in bits are filled with the value of the original sign bit.”</strong></p>
-
-<p>That means:</p>
-<ul>
-  <li>If the most significant bit (MSB) is <code class="language-plaintext highlighter-rouge">0</code>, the shifted-in bits become <code class="language-plaintext highlighter-rouge">0</code></li>
-  <li>If the MSB is <code class="language-plaintext highlighter-rouge">1</code>, the shifted-in bits become <code class="language-plaintext highlighter-rouge">1</code></li>
-</ul>
-
-<p><strong>Case: MSB is 0</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Before (32-bit):  
-0 1 0 1 1 1 0 0 ...  
-
-ASR #3 →  
-
-After (32-bit):  
-0 0 0 0 1 0 1 1 ...
-^ ^ ^  
-| | |  
-+---- Sign-preserving fill: 0
-</code></pre></div></div>
-
-<p><strong>Case: MSB is 1</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Before (32-bit):  
-1 0 1 0 0 0 1 1 ...
-
-ASR #3 →  
-
-After (32-bit):  
-1 1 1 1 0 1 0 ...
-^ ^ ^  
-| | |  
-+---- Sign-preserving fill: 1
-</code></pre></div></div>
-
-<h3 id="asr-instruction-example">ASR Instruction Example</h3>
-
-<p><strong>asr.s</strong></p>
-
-<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">32</span>         <span class="no">@</span> <span class="o">-</span><span class="mi">32</span> <span class="o">=</span> <span class="mh">0xffffffe0</span>
-</span><span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">asr</span> <span class="o">#</span><span class="mi">1</span>   <span class="no">@</span> <span class="nv">R1</span> <span class="o">=</span> <span class="mh">0xfffffff0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">16</span>
-</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
-
-<p><code class="language-plaintext highlighter-rouge">-32</code> is represented as <code class="language-plaintext highlighter-rouge">0xffffffe0</code> in hexadecimal.</p>
-
-<p>After a 1-bit arithmetic shift right:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0xffffffe0 &gt;&gt; 1 = 0xfffffff0 (-16)
-</code></pre></div></div>
-<p>This is equivalent to dividing by 2, while preserving the sign:<br />
-<code class="language-plaintext highlighter-rouge">-32 / 2 = -16</code></p>
-
-<h2 id="why-only-right-arithmetic-shift">Why Only Right Arithmetic Shift?</h2>
-<p>There is no left arithmetic shift because <strong>left shifting changes the MSB</strong>, and that may be intentional.<br />
-In other words, it doesn’t make sense to “preserve the sign” when you’re introducing new bits into the sign position.</p>
-
-<p><strong>left-shift-for-negative.s</strong></p>
-
-<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x40000000</span>
-</span><span class="hll">  <span class="nb">movs</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">1</span>
-</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
-
-<p>Shifting <code class="language-plaintext highlighter-rouge">0x40000000</code> left by 1 gives <code class="language-plaintext highlighter-rouge">0x80000000</code>. Here’s the breakdown:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">Binary</th>
-      <th style="text-align: center">Hex</th>
-      <th style="text-align: center">Decimal</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0b0100…</td>
-      <td style="text-align: center">0x40000000</td>
-      <td style="text-align: center">1073741824</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0b1000…</td>
-      <td style="text-align: center">0x80000000</td>
-      <td style="text-align: center">2147483648 or -2147483648</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>This result can be interpreted as either positive or negative, depending on whether you’re treating it as a signed or unsigned integer.</p>
-
-<p>To help the programmer decide, the ARM CPU sets the <strong>N (Negative)</strong> flag in the CPSR register when the result has MSB = 1.<br />
-This lets you check the CPSR and decide how to interpret the result.</p>
-
-<blockquote>
-  <p>Later, we’ll also explore the <strong>V (Overflow)</strong> flag used in arithmetic operations like <code class="language-plaintext highlighter-rouge">add</code> and <code class="language-plaintext highlighter-rouge">sub</code>.
-But for now, since we used <code class="language-plaintext highlighter-rouge">lsl</code>, only the Negative flag is relevant.
-We’ll discuss flags in more detail in upcoming posts on arithmetic instructions.</p>
-</blockquote>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/non-add-sub-v-left-unchanged.png" alt="ARM manual: overflow flag not updated on logical shift" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">The ARM manual states that overflow flags are generally not updated for non-add/sub operations like logical shifts.</figcaption>
-</figure>
-
-<p>In short: left shifts in ARM are always logical (<code class="language-plaintext highlighter-rouge">lsl</code>).<br />
-There’s no such thing as an “arithmetic left shift” because it doesn’t make sense to preserve the sign when the sign bit itself is being shifted.</p>
-
-<h2 id="checking-flags-in-gdb">Checking Flags in GDB</h2>
-<p>Let’s compile and run the <code class="language-plaintext highlighter-rouge">left-shift-for-negative.s</code> example and check the CPSR flags in GDB.</p>
-
-<h3 id="1-compile">1. Compile</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="se">\</span>
-    <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="se">\</span>
-    <span class="nt">-nostdlib</span> <span class="se">\</span>
-    left-shift-for-negative.s <span class="se">\</span>
-    <span class="nt">-o</span> left-shift-for-negative.elf
-</code></pre></div></div>
-<h4 id="2-ruin-in-qemu">2. Ruin in QEMU</h4>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>qemu-system-arm <span class="se">\</span>
-    <span class="nt">-machine</span> versatilepb <span class="se">\</span>
-    <span class="nt">-nographic</span> <span class="se">\</span>
-    <span class="nt">-S</span> <span class="se">\</span>
-    <span class="nt">-s</span> <span class="se">\</span>
-    <span class="nt">-kernel</span> left-shift-for-negative.elf
-</code></pre></div></div>
-<h4 id="3-connect-gdb">3. Connect GDB</h4>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gdb-multiarch left-shift-for-negative.elf
-</code></pre></div></div>
-
-<figure class="highlight"><pre><code class="language-gdb" data-lang="gdb">(gdb) target remote :1234
-0x00010000 in _start ()    
-(gdb) si                   # mov r0, #0x40000000 
-0x00010004 in _start ()    
-(gdb) p ($cpsr &gt;&gt; 31) &amp; 1
-$2 = 0
-<span class="hll">(gdb) si                   # movs r1, r0, lsl #1
-</span>0x00010008 in _start ()
-<span class="hll">(gdb) p ($cpsr &gt;&gt; 31) &amp; 1
-</span><span class="hll">$2 = 1
-</span></code></pre></figure>
-
-<p>The second instruction(<code class="language-plaintext highlighter-rouge">movs r1, r0, lsl #1</code>) set the N (Negative) flag because the result of the shift was interpreted as a negative number.</p>
-
-<h2 id="summary">Summary</h2>
-<p>In this post, we learned:</p>
-
-<ul>
-  <li>How to use the <code class="language-plaintext highlighter-rouge">asr</code> instruction for arithmetic right shifts</li>
-  <li>Why there is no <code class="language-plaintext highlighter-rouge">asl</code> (arithmetic left shift)</li>
-  <li>How to check the Negative flag using GDB</li>
-</ul>
-
-<p>In the next chapter, we’ll explore the final type of shift:
-rotate right (<code class="language-plaintext highlighter-rouge">ror</code>) and rotate with extend (<code class="language-plaintext highlighter-rouge">rrx</code>), which are used to rotate bits circularly.</p>
-
-<p>Let me know if you found any mistakes or suggestions for improvement!</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="Assembly" /><category term="ASR" /><category term="ARM" /><category term="QEMU" /><category term="GDB" /><summary type="html"><![CDATA[One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations.]]></summary></entry></feed>
+</ul>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="computer" /><category term="arithmetic" /><category term="carry" /><category term="binary operation" /><category term="arithmetic operation" /><category term="binary arithmetic" /><summary type="html"><![CDATA[Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore the definition and concept of Carry, how it works in binary and decimal arithmetic, and how programming languages handle Carry.]]></summary></entry></feed>
