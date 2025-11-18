@@ -3,10 +3,9 @@ layout: post
 lang: en
 ref: "arm-stack-address-modes"
 title: "ARM Assembly #12 - Stack Memory and Addressing Mdoes"
-date: 2025-11-17 00:00:00 +0900
+date: 2025-11-18 22:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm ldm", "arm stm", "addressing modes", "stack memory"]
-published: false
 ---
 
 In this post, we will explore how the various addressing modes of `LDM` and `STM` are used for PUSH and POP operations on stack memory.
@@ -79,7 +78,7 @@ Rn = 0x100C
 ```
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/ib-addr-mode-in-memory.png"
     alt="Memory layout of IB addressing mode"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"> 
@@ -108,7 +107,7 @@ Rn = 0x0FF4
 ```
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/da-addr-mode-in-memory.png"
     alt="Memory layout of DA addressing mode"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -136,7 +135,7 @@ Rn = 0x0FF4
 ```
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/db-addr-mode-in-memory.png"
     alt="Memory layout of DB addressing mode"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -190,7 +189,7 @@ In this case, since both `STMIA` and `LDMIA` use the same addressing mode,
 they store data into a memory block and then read back from the exact same addresses.
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/memory-access-with-same-address-mode.png"
     alt="STM and LDM memory access with same addressing mode"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -200,15 +199,6 @@ they store data into a memory block and then read back from the exact same addre
 
 However, stack memory does not operate this way.
 In a stack, PUSH and POP proceed **in opposite directions**, so you *cannot* simply use the same addressing mode.
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
-    alt="Opposite address directions of PUSH and POP in an FD stack"
-    style="display: block; margin: auto;" />
-    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In an FD stack, PUSH moves downward in memory while POP moves upward.
-    </figcaption>
-</figure>
 
 ## Stack-Specific Addressing Modes: FD, FA, ED, EA
 ARM introduces stack-specific names—FD, FA, ED, EA—for handling stack operations.
@@ -250,7 +240,7 @@ The actual memory locations used are as follows.
 |  `0x7FFC` | `0x3`(`R3`) |
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/push-address-mode-in-fd-stack.png"
     alt="PUSH memory layout with STMDB in an FD stack"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -279,7 +269,7 @@ The load order is as follows.
 After the POP, the `SP` returns to `0x8000`.
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/pop-address-mode-in-fd-stack.png"
     alt="POP memory layout with LDMIA in an FD stack"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -294,7 +284,7 @@ As we have seen, stack address modes are essentially aliases attached to IA/IB/D
 
 ### For STM (PUSH)
 
-| Non-stack address mode | Stack address mode |
+| Non-stack Address Mode | Stack Address Mode |
 |--|--|
 | IA | EA |
 | IB | FA |
@@ -303,7 +293,7 @@ As we have seen, stack address modes are essentially aliases attached to IA/IB/D
 
 ### For LDM (POP)
 
-| Non-stack address mode | Stack address mode |
+| Non-stack Address Mode | Stack Address Mode |
 |--|--|
 | IA | FD |
 | IB | ED |

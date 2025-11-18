@@ -3,10 +3,9 @@ layout: post
 lang: ko 
 ref: "arm-stack-address-modes"
 title: "ARM Assembly #12 - 스택메모리와 주소모드"
-date: 2025-11-17 00:00:00 +0900
+date: 2025-11-18 22:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm ldm", "arm stm", "addressing modes", "stack memory"]
-published: false
 ---
 
 LDM과 STM의 다양한 주소 모드를 스택 메모리의 PUSH/POP 동작에서는 어떻게 활용할 수 있을지 살펴보겠습니다.  
@@ -84,7 +83,7 @@ Rn = 0x100C
 ```
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/ib-addr-mode-in-memory.png"
     alt="IB 주소 모드 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -113,7 +112,7 @@ Rn = 0x0FF4
 ```
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/da-addr-mode-in-memory.png"
     alt="DA 주소 모드 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -141,7 +140,7 @@ Rn = 0x0FF4
 ```
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/db-addr-mode-in-memory.png"
     alt="DB 주소 모드 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -194,7 +193,7 @@ Rn = 0x0FF4
 같은 메모리 블럭에 데이터를 저장하고 그 자리에서 그대로 다시 읽어오게 됩니다.
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/memory-access-with-same-address-mode.png"
     alt="동일 주소 모드를 사용하는 STM과 LDM 메모리 접근"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -205,15 +204,6 @@ Rn = 0x0FF4
 
 하지만 스택 메모리는 이렇게 동작하지 않습니다.
 스택에서는 PUSH와 POP이 서로 반대 방향으로 진행되기 때문에, 같은 주소 모드를 그대로 사용할 수 없습니다.
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
-    alt="FD 스택에서 PUSH와 POP의 반대 방향 주소 접근"
-    style="display: block; margin: auto;" />
-    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    FD 스택에서 PUSH는 주소가 감소하는 방향으로, POP은 주소가 증가하는 방향으로 진행합니다.
-    </figcaption>
-</figure>
 
 ## 스택용 주소 모드: FD, FA, ED, EA
 ARM은 스택을 다루기 위해 FD, FA, ED, EA 라는 스택 전용 주소 모드 이름을 추가로 제공합니다.
@@ -253,7 +243,7 @@ SP는 `0x8000`에서 `0x7FF4`로 이동합니다.
 |  `0x7FFC` | `0x3`(R1) |
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/push-address-mode-in-fd-stack.png"
     alt="FD 스택에서 STMDB에 의한 PUSH 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
@@ -282,7 +272,7 @@ FD 스택에서 POP 동작은 일반 주소 모드로는 `ldmia sp!`, 스택 주
 POP 이후에는 SP가 다시 `0x8000`으로 되돌아옵니다.
 
 <figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png"
+  <img src="/assets/img/pop-address-mode-in-fd-stack.png"
     alt="FD 스택에서 LDMIA에 의한 POP 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
