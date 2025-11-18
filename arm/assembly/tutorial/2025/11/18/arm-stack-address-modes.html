@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #12 - Stack Memory and Addressing Mdoes | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #12 - Stack Memory and Addressing Mdoes" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="In this post, we will explore how the various addressing modes of LDM and STM are used for PUSH and POP operations on stack memory. In the previous post, we only covered how to use LDM/STM to read and write multiple words at once. In this post, we will build on that by connecting addressing modes with the stack structure." />
+<meta property="og:description" content="In this post, we will explore how the various addressing modes of LDM and STM are used for PUSH and POP operations on stack memory. In the previous post, we only covered how to use LDM/STM to read and write multiple words at once. In this post, we will build on that by connecting addressing modes with the stack structure." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-18T13:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #12 - Stack Memory and Addressing Mdoes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-18T13:00:00+00:00","datePublished":"2025-11-18T13:00:00+00:00","description":"In this post, we will explore how the various addressing modes of LDM and STM are used for PUSH and POP operations on stack memory. In the previous post, we only covered how to use LDM/STM to read and write multiple words at once. In this post, we will build on that by connecting addressing modes with the stack structure.","headline":"ARM Assembly #12 - Stack Memory and Addressing Mdoes","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #12 - Stack Memory and Addressing Mdoes
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-11-18T13:00:00+00:00"
+        itemprop="datePublished"
+      >
+        Nov 18, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>In this post, we will explore how the various addressing modes of <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> are used for PUSH and POP operations on stack memory.
+In the previous post, we only covered how to use <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> to read and write multiple words at once.<br />
+In this post, we will build on that by connecting addressing modes with the stack structure.</p>
+
+<h2 id="what-are-addressing-modes">What Are Addressing Modes?</h2>
+<p>In the previous post, all examples assumed that memory addresses moved <strong>upwards (increasing)</strong> during <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> execution.<br />
+However, in practice, memory addresses may <strong>increase or decrease</strong>, depending on the situation. You can also control whether the memory block starts <strong>at the address pointed to by the base register (<code class="language-plaintext highlighter-rouge">Rn</code>)</strong> or <strong>at the next address</strong>.</p>
+
+<p>These two aspects—direction and starting position—are defined by ARM’s <strong>addressing modes</strong>.</p>
+<h2 id="the-four-addressing-modes-ia-ib-da-db">The Four Addressing Modes: IA, IB, DA, DB</h2>
+<p>ARM’s LDM/STM instructions provide the following four addressing modes.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Address Mode</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IA</td>
+      <td>Increment After</td>
+    </tr>
+    <tr>
+      <td>IB</td>
+      <td>Increment Before</td>
+    </tr>
+    <tr>
+      <td>DA</td>
+      <td>Decrement After</td>
+    </tr>
+    <tr>
+      <td>DB</td>
+      <td>Decrement Before</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Increment / Decrement</strong> describe whether addresses move <strong>upwards or downwards</strong>.<br />
+<strong>Before / After</strong> determine whether the address in the base register (<code class="language-plaintext highlighter-rouge">Rn</code>) is <strong>included in or excluded from</strong> the accessed memory block.</p>
+
+<h2 id="ia-increment-after-default">IA (Increment After, Default)</h2>
+<ul>
+  <li><strong>Increment</strong>: moves from a lower address to a higher address.</li>
+  <li><strong>After</strong>: includes the base address (<code class="language-plaintext highlighter-rouge">Rn</code>) as the starting address.</li>
+</ul>
+
+<h4 id="address-computation">Address Computation</h4>
+<ul>
+  <li>start address = <code class="language-plaintext highlighter-rouge">Rn</code></li>
+  <li>end adderss = <code class="language-plaintext highlighter-rouge">Rn + (count of registers × 4) − 4</code></li>
+  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn + (count of registers × 4)</code></li>
+</ul>
+
+<p>For example, if the register list contains 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1008  : end address
+0x1004
+0x1000  : start address
+
+Rn = 0x100C
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ia-addr-mode-in-memory.png" alt="Memory layout of IA addressing mode" style="display: block; margin: auto;" /> 
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In IA mode, the memory block starts at the base register and progresses upward through consecutive words.
+    </figcaption>
+</figure>
+
+<h2 id="ib-increment-before">IB (Increment Before)</h2>
+<ul>
+  <li><strong>Increment</strong>: moves from a lower address to a higher address.</li>
+  <li><strong>Before</strong>: starts from the address immediately after <code class="language-plaintext highlighter-rouge">Rn</code>.</li>
+</ul>
+
+<h4 id="address-computation-1">Address Computation</h4>
+<ul>
+  <li>start address = <code class="language-plaintext highlighter-rouge">Rn + 4</code></li>
+  <li>end address = <code class="language-plaintext highlighter-rouge">Rn + (count of registers × 4)</code></li>
+  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn + (count of registers × 4)</code></li>
+</ul>
+
+<p>For example, if there are 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x100C  : end address
+0x1008
+0x1004  : start address
+0x1000
+
+Rn = 0x100C
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ib-addr-mode-in-memory.png" alt="Memory layout of IB addressing mode" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"> 
+    In IB mode, the memory block starts just after the base address and moves upward through memory.
+    </figcaption>
+</figure>
+
+<h2 id="da-decrement-after">DA (Decrement After)</h2>
+<ul>
+  <li><strong>Decrement</strong>: moves from a higher address to a lower address.</li>
+  <li><strong>After</strong>: includes the base address (<code class="language-plaintext highlighter-rouge">Rn</code>) as the top of the block.</li>
+</ul>
+
+<h4 id="address-computation-2">Address Computation</h4>
+<ul>
+  <li>start address = <code class="language-plaintext highlighter-rouge">Rn − (count of registers × 4) + 4</code></li>
+  <li>end address = <code class="language-plaintext highlighter-rouge">Rn</code></li>
+  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn − (count of registers × 4)</code></li>
+</ul>
+
+<p>For example, if there are 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1000  : end address
+0x0FFC
+0x0FF8  : start address
+0x0FF4
+0x0FF0
+
+Rn = 0x0FF4
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/da-addr-mode-in-memory.png" alt="Memory layout of DA addressing mode" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In DA mode, the memory block includes the base address at the top and moves downward through consecutive words.
+    </figcaption>
+</figure>
+
+<h2 id="db-decrement-before">DB (Decrement Before)</h2>
+<ul>
+  <li><strong>Decrement</strong>: moves from a higher address to a lower address.</li>
+  <li><strong>Before</strong>: starts below the base address (<code class="language-plaintext highlighter-rouge">Rn</code>).</li>
+</ul>
+
+<h4 id="address-computation-3">Address Computation</h4>
+<ul>
+  <li>start addreess = <code class="language-plaintext highlighter-rouge">Rn − (count of registers × 4)</code></li>
+  <li>end address = <code class="language-plaintext highlighter-rouge">Rn − 4</code></li>
+  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn − (count of registers × 4)</code></li>
+</ul>
+
+<p>For example, if there are 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1000
+0x0FFC  : end address
+0x0FF8
+0x0FF4  : start address
+
+Rn = 0x0FF4
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/db-addr-mode-in-memory.png" alt="Memory layout of DB addressing mode" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In DB mode, the memory block starts below the base address and is often used for descending stack-like layouts.
+    </figcaption>
+</figure>
+
+<h2 id="how-addressing-modes-are-written-in-actual-arm-syntax">How Addressing Modes Are Written in Actual ARM Syntax</h2>
+<p>It’s important to understand addressing modes conceptually, but in actual ARM assembly, addressing modes are applied as suffixes attached to the instruction.</p>
+
+<p>For example, IA, IB, DA, and DB are written like this:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">ldmia</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="nb">ldmdb</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="nb">stmia</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="nb">stmdb</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li>The two-letter mode (IA/IB/DA/DB) comes immediately after LDM/STM.</li>
+</ul>
+
+<p>In other words, there is no space or dot — the instruction literally becomes LDMIA, LDMDB, etc.</p>
+
+<blockquote>
+  <p>The <code class="language-plaintext highlighter-rouge">!</code> for write-back is separate from the addressing mode
+In this example:</p>
+  <div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldmia</span> <span class="nb">r0</span><span class="err">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div>  </div>
+  <ul>
+    <li><strong>IA</strong> is the addressing mode (how memory is accessed),</li>
+    <li><strong>!</strong> means the base register(<code class="language-plaintext highlighter-rouge">R0</code>) is automatically updated.</li>
+  </ul>
+</blockquote>
+
+<h2 id="stm-and-ldm-with-the-same-addressing-mode">STM and LDM with the Same Addressing Mode</h2>
+<p>Now let’s see how data moves between memory and registers when <code class="language-plaintext highlighter-rouge">STM</code> and <code class="language-plaintext highlighter-rouge">LDM</code> use the same addressing mode.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+
+  <span class="nb">stmia</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
+
+  <span class="nb">ldmia</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+
+<p>In this case, since both <code class="language-plaintext highlighter-rouge">STMIA</code> and <code class="language-plaintext highlighter-rouge">LDMIA</code> use the same addressing mode,
+they store data into a memory block and then read back from the exact same addresses.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/memory-access-with-same-address-mode.png" alt="STM and LDM memory access with same addressing mode" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    When using the same addressing mode, STM and LDM access the same memory region for both storing and loading.
+    </figcaption>
+</figure>
+
+<p>However, stack memory does not operate this way.
+In a stack, PUSH and POP proceed <strong>in opposite directions</strong>, so you <em>cannot</em> simply use the same addressing mode.</p>
+
+<h2 id="stack-specific-addressing-modes-fd-fa-ed-ea">Stack-Specific Addressing Modes: FD, FA, ED, EA</h2>
+<p>ARM introduces stack-specific names—FD, FA, ED, EA—for handling stack operations.
+These are not new behaviors, but aliases of IA/IB/DA/DB, renamed from a stack perspective.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Stack Mode</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>FD</td>
+      <td>Full Descending</td>
+    </tr>
+    <tr>
+      <td>FA</td>
+      <td>Full Ascending</td>
+    </tr>
+    <tr>
+      <td>ED</td>
+      <td>Empty Descending</td>
+    </tr>
+    <tr>
+      <td>EA</td>
+      <td>Empty Ascending</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Full / Empty</strong> indicate whether the stack pointer (<code class="language-plaintext highlighter-rouge">SP</code>) points to a full location (last stored data) or an empty slot after PUSH/POP. <br />
+<strong>Ascending / Descending</strong> describe whether the stack grows toward higher addresses (Ascending) or toward lower addresses (Descending) when pushing.</p>
+
+<h3 id="example-push-on-an-fd-stack">Example: PUSH on an FD Stack</h3>
+<p>The most common stack structure in ARM is the Full Descending (FD) stack.
+PUSH on an FD stack can be implemented as follows.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+
+  <span class="nb">stmdb</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="err">@</span> <span class="nv">R1</span> <span class="o">-&gt;</span> <span class="o">[</span><span class="mh">0x7FF4</span><span class="o">],</span> <span class="nv">R2</span> <span class="o">-&gt;</span> <span class="o">[</span><span class="mh">0x7FF8</span><span class="o">],</span> <span class="nv">R3</span> <span class="o">-&gt;</span> <span class="o">[</span><span class="mh">0x7FFC</span><span class="o">]</span>
+  <span class="err">@</span> <span class="nv">sp</span> <span class="o">=</span> <span class="mh">0x7FF4</span>
+</code></pre></div></div>
+
+<p>Here, <code class="language-plaintext highlighter-rouge">stmdb sp!, {r1-r3}</code> behaves the same as <code class="language-plaintext highlighter-rouge">stmfd sp!, {r1-r3}</code> in terms of stack mode naming.
+The <code class="language-plaintext highlighter-rouge">SP</code> moves from <code class="language-plaintext highlighter-rouge">0x8000</code> to 0<code class="language-plaintext highlighter-rouge">x7FF4</code>.
+The actual memory locations used are as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF4</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x1</code>(<code class="language-plaintext highlighter-rouge">R1</code>)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF8</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x2</code>(<code class="language-plaintext highlighter-rouge">R2</code>)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FFC</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x3</code>(<code class="language-plaintext highlighter-rouge">R3</code>)</td>
+    </tr>
+  </tbody>
+</table>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/push-address-mode-in-fd-stack.png" alt="PUSH memory layout with STMDB in an FD stack" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In an FD stack, STMDB (STMFD) moves the SP downward, storing new data at lower addresses.
+    </figcaption>
+</figure>
+
+<h3 id="example-pop-on-an-fd-stack">Example: POP on an FD Stack</h3>
+<p>Now let’s see how to restore values from an FD stack using POP.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">@</span> <span class="nv">Assume</span> <span class="nv">STMDB</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span> <span class="nv">has</span> <span class="nv">already</span> <span class="nv">been</span> <span class="nv">executed</span><span class="mf">.</span>
+
+  <span class="nb">ldmia</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+
+<p>On an FD stack, POP is implemented as <code class="language-plaintext highlighter-rouge">ldmia sp!</code> in general addressing mode terms, or <code class="language-plaintext highlighter-rouge">ldmfd sp!</code> in stack mode naming.
+The load order is as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>Register</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF4</code></td>
+      <td><code class="language-plaintext highlighter-rouge">R1</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF8</code></td>
+      <td><code class="language-plaintext highlighter-rouge">R2</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FFC</code></td>
+      <td><code class="language-plaintext highlighter-rouge">R3</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>After the POP, the <code class="language-plaintext highlighter-rouge">SP</code> returns to <code class="language-plaintext highlighter-rouge">0x8000</code>.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/pop-address-mode-in-fd-stack.png" alt="POP memory layout with LDMIA in an FD stack" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In an FD stack, LDMIA (LDMFD) loads values from the lowest address upward and moves the SP back upward.
+    </figcaption>
+</figure>
+
+<p>Thus, in an FD stack, using <code class="language-plaintext highlighter-rouge">STMDB</code> for PUSH and <code class="language-plaintext highlighter-rouge">LDMIA</code> for POP ensures that both operations work correctly on the same stack memory block.</p>
+
+<h2 id="comparison-normal-address-modes-vs-stack-address-modes">Comparison: Normal Address Modes vs Stack Address Modes</h2>
+<p>As we have seen, stack address modes are essentially aliases attached to IA/IB/DA/DB.</p>
+
+<h3 id="for-stm-push">For STM (PUSH)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Non-stack Address Mode</th>
+      <th>Stack Address Mode</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IA</td>
+      <td>EA</td>
+    </tr>
+    <tr>
+      <td>IB</td>
+      <td>FA</td>
+    </tr>
+    <tr>
+      <td>DA</td>
+      <td>ED</td>
+    </tr>
+    <tr>
+      <td>DB</td>
+      <td>FD</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="for-ldm-pop">For LDM (POP)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Non-stack Address Mode</th>
+      <th>Stack Address Mode</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IA</td>
+      <td>FD</td>
+    </tr>
+    <tr>
+      <td>IB</td>
+      <td>ED</td>
+    </tr>
+    <tr>
+      <td>DA</td>
+      <td>FA</td>
+    </tr>
+    <tr>
+      <td>DB</td>
+      <td>EA</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In real ARM code, you will often see stack modes like <code class="language-plaintext highlighter-rouge">STMFD</code>, <code class="language-plaintext highlighter-rouge">LDMFD</code>,
+but it is also common to use general addressing modes directly, such as <code class="language-plaintext highlighter-rouge">STMDB sp!</code> and <code class="language-plaintext highlighter-rouge">LDMIA sp!</code>.</p>
+
+<p>Whichever syntax you choose, the behavior is the same, so at the tutorial stage it is more important to become comfortable with the general addressing modes.</p>
+
+<h2 id="summary">Summary</h2>
+<p>In this post, we explored what addressing modes in <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> mean and how they are related to stack PUSH and POP operations.</p>
+
+<p>Addressing modes are not just syntactic options; they are tools for precisely controlling the direction and range of memory access.
+Once you understand them, you can use <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> far more flexibly, not only for stacks but also for various memory block operations.</p>
+
+<p>In the next post, we will look at the branch instruction <code class="language-plaintext highlighter-rouge">B</code>, which controls the flow of execution.</p>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>

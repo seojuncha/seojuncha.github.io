@@ -1,4 +1,417 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-17T10:54:28+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #11 - Memory Block Access(LDM, STM)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html" rel="alternate" type="text/html" title="ARM Assembly #11 - Memory Block Access(LDM, STM)" /><published>2025-11-14T09:30:00+00:00</published><updated>2025-11-14T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html"><![CDATA[<p>In this post, we’ll look at the ARM instructions <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code>, which allow reading or writing <strong>multiple words at once</strong> from memory.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-18T13:07:31+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #12 - Stack Memory and Addressing Mdoes</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" rel="alternate" type="text/html" title="ARM Assembly #12 - Stack Memory and Addressing Mdoes" /><published>2025-11-18T13:00:00+00:00</published><updated>2025-11-18T13:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"><![CDATA[<p>In this post, we will explore how the various addressing modes of <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> are used for PUSH and POP operations on stack memory.
+In the previous post, we only covered how to use <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> to read and write multiple words at once.<br />
+In this post, we will build on that by connecting addressing modes with the stack structure.</p>
+
+<h2 id="what-are-addressing-modes">What Are Addressing Modes?</h2>
+<p>In the previous post, all examples assumed that memory addresses moved <strong>upwards (increasing)</strong> during <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> execution.<br />
+However, in practice, memory addresses may <strong>increase or decrease</strong>, depending on the situation. You can also control whether the memory block starts <strong>at the address pointed to by the base register (<code class="language-plaintext highlighter-rouge">Rn</code>)</strong> or <strong>at the next address</strong>.</p>
+
+<p>These two aspects—direction and starting position—are defined by ARM’s <strong>addressing modes</strong>.</p>
+<h2 id="the-four-addressing-modes-ia-ib-da-db">The Four Addressing Modes: IA, IB, DA, DB</h2>
+<p>ARM’s LDM/STM instructions provide the following four addressing modes.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Address Mode</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IA</td>
+      <td>Increment After</td>
+    </tr>
+    <tr>
+      <td>IB</td>
+      <td>Increment Before</td>
+    </tr>
+    <tr>
+      <td>DA</td>
+      <td>Decrement After</td>
+    </tr>
+    <tr>
+      <td>DB</td>
+      <td>Decrement Before</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Increment / Decrement</strong> describe whether addresses move <strong>upwards or downwards</strong>.<br />
+<strong>Before / After</strong> determine whether the address in the base register (<code class="language-plaintext highlighter-rouge">Rn</code>) is <strong>included in or excluded from</strong> the accessed memory block.</p>
+
+<h2 id="ia-increment-after-default">IA (Increment After, Default)</h2>
+<ul>
+  <li><strong>Increment</strong>: moves from a lower address to a higher address.</li>
+  <li><strong>After</strong>: includes the base address (<code class="language-plaintext highlighter-rouge">Rn</code>) as the starting address.</li>
+</ul>
+
+<h4 id="address-computation">Address Computation</h4>
+<ul>
+  <li>start address = <code class="language-plaintext highlighter-rouge">Rn</code></li>
+  <li>end adderss = <code class="language-plaintext highlighter-rouge">Rn + (count of registers × 4) − 4</code></li>
+  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn + (count of registers × 4)</code></li>
+</ul>
+
+<p>For example, if the register list contains 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1008  : end address
+0x1004
+0x1000  : start address
+
+Rn = 0x100C
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ia-addr-mode-in-memory.png" alt="Memory layout of IA addressing mode" style="display: block; margin: auto;" /> 
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In IA mode, the memory block starts at the base register and progresses upward through consecutive words.
+    </figcaption>
+</figure>
+
+<h2 id="ib-increment-before">IB (Increment Before)</h2>
+<ul>
+  <li><strong>Increment</strong>: moves from a lower address to a higher address.</li>
+  <li><strong>Before</strong>: starts from the address immediately after <code class="language-plaintext highlighter-rouge">Rn</code>.</li>
+</ul>
+
+<h4 id="address-computation-1">Address Computation</h4>
+<ul>
+  <li>start address = <code class="language-plaintext highlighter-rouge">Rn + 4</code></li>
+  <li>end address = <code class="language-plaintext highlighter-rouge">Rn + (count of registers × 4)</code></li>
+  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn + (count of registers × 4)</code></li>
+</ul>
+
+<p>For example, if there are 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x100C  : end address
+0x1008
+0x1004  : start address
+0x1000
+
+Rn = 0x100C
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ib-addr-mode-in-memory.png" alt="Memory layout of IB addressing mode" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"> 
+    In IB mode, the memory block starts just after the base address and moves upward through memory.
+    </figcaption>
+</figure>
+
+<h2 id="da-decrement-after">DA (Decrement After)</h2>
+<ul>
+  <li><strong>Decrement</strong>: moves from a higher address to a lower address.</li>
+  <li><strong>After</strong>: includes the base address (<code class="language-plaintext highlighter-rouge">Rn</code>) as the top of the block.</li>
+</ul>
+
+<h4 id="address-computation-2">Address Computation</h4>
+<ul>
+  <li>start address = <code class="language-plaintext highlighter-rouge">Rn − (count of registers × 4) + 4</code></li>
+  <li>end address = <code class="language-plaintext highlighter-rouge">Rn</code></li>
+  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn − (count of registers × 4)</code></li>
+</ul>
+
+<p>For example, if there are 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1000  : end address
+0x0FFC
+0x0FF8  : start address
+0x0FF4
+0x0FF0
+
+Rn = 0x0FF4
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/da-addr-mode-in-memory.png" alt="Memory layout of DA addressing mode" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In DA mode, the memory block includes the base address at the top and moves downward through consecutive words.
+    </figcaption>
+</figure>
+
+<h2 id="db-decrement-before">DB (Decrement Before)</h2>
+<ul>
+  <li><strong>Decrement</strong>: moves from a higher address to a lower address.</li>
+  <li><strong>Before</strong>: starts below the base address (<code class="language-plaintext highlighter-rouge">Rn</code>).</li>
+</ul>
+
+<h4 id="address-computation-3">Address Computation</h4>
+<ul>
+  <li>start addreess = <code class="language-plaintext highlighter-rouge">Rn − (count of registers × 4)</code></li>
+  <li>end address = <code class="language-plaintext highlighter-rouge">Rn − 4</code></li>
+  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn − (count of registers × 4)</code></li>
+</ul>
+
+<p>For example, if there are 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1000
+0x0FFC  : end address
+0x0FF8
+0x0FF4  : start address
+
+Rn = 0x0FF4
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/db-addr-mode-in-memory.png" alt="Memory layout of DB addressing mode" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In DB mode, the memory block starts below the base address and is often used for descending stack-like layouts.
+    </figcaption>
+</figure>
+
+<h2 id="how-addressing-modes-are-written-in-actual-arm-syntax">How Addressing Modes Are Written in Actual ARM Syntax</h2>
+<p>It’s important to understand addressing modes conceptually, but in actual ARM assembly, addressing modes are applied as suffixes attached to the instruction.</p>
+
+<p>For example, IA, IB, DA, and DB are written like this:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">ldmia</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="nb">ldmdb</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="nb">stmia</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="nb">stmdb</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li>The two-letter mode (IA/IB/DA/DB) comes immediately after LDM/STM.</li>
+</ul>
+
+<p>In other words, there is no space or dot — the instruction literally becomes LDMIA, LDMDB, etc.</p>
+
+<blockquote>
+  <p>The <code class="language-plaintext highlighter-rouge">!</code> for write-back is separate from the addressing mode
+In this example:</p>
+  <div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldmia</span> <span class="nb">r0</span><span class="err">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div>  </div>
+  <ul>
+    <li><strong>IA</strong> is the addressing mode (how memory is accessed),</li>
+    <li><strong>!</strong> means the base register(<code class="language-plaintext highlighter-rouge">R0</code>) is automatically updated.</li>
+  </ul>
+</blockquote>
+
+<h2 id="stm-and-ldm-with-the-same-addressing-mode">STM and LDM with the Same Addressing Mode</h2>
+<p>Now let’s see how data moves between memory and registers when <code class="language-plaintext highlighter-rouge">STM</code> and <code class="language-plaintext highlighter-rouge">LDM</code> use the same addressing mode.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+
+  <span class="nb">stmia</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
+
+  <span class="nb">ldmia</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+
+<p>In this case, since both <code class="language-plaintext highlighter-rouge">STMIA</code> and <code class="language-plaintext highlighter-rouge">LDMIA</code> use the same addressing mode,
+they store data into a memory block and then read back from the exact same addresses.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/memory-access-with-same-address-mode.png" alt="STM and LDM memory access with same addressing mode" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    When using the same addressing mode, STM and LDM access the same memory region for both storing and loading.
+    </figcaption>
+</figure>
+
+<p>However, stack memory does not operate this way.
+In a stack, PUSH and POP proceed <strong>in opposite directions</strong>, so you <em>cannot</em> simply use the same addressing mode.</p>
+
+<h2 id="stack-specific-addressing-modes-fd-fa-ed-ea">Stack-Specific Addressing Modes: FD, FA, ED, EA</h2>
+<p>ARM introduces stack-specific names—FD, FA, ED, EA—for handling stack operations.
+These are not new behaviors, but aliases of IA/IB/DA/DB, renamed from a stack perspective.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Stack Mode</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>FD</td>
+      <td>Full Descending</td>
+    </tr>
+    <tr>
+      <td>FA</td>
+      <td>Full Ascending</td>
+    </tr>
+    <tr>
+      <td>ED</td>
+      <td>Empty Descending</td>
+    </tr>
+    <tr>
+      <td>EA</td>
+      <td>Empty Ascending</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Full / Empty</strong> indicate whether the stack pointer (<code class="language-plaintext highlighter-rouge">SP</code>) points to a full location (last stored data) or an empty slot after PUSH/POP. <br />
+<strong>Ascending / Descending</strong> describe whether the stack grows toward higher addresses (Ascending) or toward lower addresses (Descending) when pushing.</p>
+
+<h3 id="example-push-on-an-fd-stack">Example: PUSH on an FD Stack</h3>
+<p>The most common stack structure in ARM is the Full Descending (FD) stack.
+PUSH on an FD stack can be implemented as follows.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+
+  <span class="nb">stmdb</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="err">@</span> <span class="nv">R1</span> <span class="o">-&gt;</span> <span class="o">[</span><span class="mh">0x7FF4</span><span class="o">],</span> <span class="nv">R2</span> <span class="o">-&gt;</span> <span class="o">[</span><span class="mh">0x7FF8</span><span class="o">],</span> <span class="nv">R3</span> <span class="o">-&gt;</span> <span class="o">[</span><span class="mh">0x7FFC</span><span class="o">]</span>
+  <span class="err">@</span> <span class="nv">sp</span> <span class="o">=</span> <span class="mh">0x7FF4</span>
+</code></pre></div></div>
+
+<p>Here, <code class="language-plaintext highlighter-rouge">stmdb sp!, {r1-r3}</code> behaves the same as <code class="language-plaintext highlighter-rouge">stmfd sp!, {r1-r3}</code> in terms of stack mode naming.
+The <code class="language-plaintext highlighter-rouge">SP</code> moves from <code class="language-plaintext highlighter-rouge">0x8000</code> to 0<code class="language-plaintext highlighter-rouge">x7FF4</code>.
+The actual memory locations used are as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF4</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x1</code>(<code class="language-plaintext highlighter-rouge">R1</code>)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF8</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x2</code>(<code class="language-plaintext highlighter-rouge">R2</code>)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FFC</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x3</code>(<code class="language-plaintext highlighter-rouge">R3</code>)</td>
+    </tr>
+  </tbody>
+</table>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/push-address-mode-in-fd-stack.png" alt="PUSH memory layout with STMDB in an FD stack" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In an FD stack, STMDB (STMFD) moves the SP downward, storing new data at lower addresses.
+    </figcaption>
+</figure>
+
+<h3 id="example-pop-on-an-fd-stack">Example: POP on an FD Stack</h3>
+<p>Now let’s see how to restore values from an FD stack using POP.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">@</span> <span class="nv">Assume</span> <span class="nv">STMDB</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span> <span class="nv">has</span> <span class="nv">already</span> <span class="nv">been</span> <span class="nv">executed</span><span class="mf">.</span>
+
+  <span class="nb">ldmia</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+
+<p>On an FD stack, POP is implemented as <code class="language-plaintext highlighter-rouge">ldmia sp!</code> in general addressing mode terms, or <code class="language-plaintext highlighter-rouge">ldmfd sp!</code> in stack mode naming.
+The load order is as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>Register</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF4</code></td>
+      <td><code class="language-plaintext highlighter-rouge">R1</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF8</code></td>
+      <td><code class="language-plaintext highlighter-rouge">R2</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FFC</code></td>
+      <td><code class="language-plaintext highlighter-rouge">R3</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>After the POP, the <code class="language-plaintext highlighter-rouge">SP</code> returns to <code class="language-plaintext highlighter-rouge">0x8000</code>.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/pop-address-mode-in-fd-stack.png" alt="POP memory layout with LDMIA in an FD stack" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    In an FD stack, LDMIA (LDMFD) loads values from the lowest address upward and moves the SP back upward.
+    </figcaption>
+</figure>
+
+<p>Thus, in an FD stack, using <code class="language-plaintext highlighter-rouge">STMDB</code> for PUSH and <code class="language-plaintext highlighter-rouge">LDMIA</code> for POP ensures that both operations work correctly on the same stack memory block.</p>
+
+<h2 id="comparison-normal-address-modes-vs-stack-address-modes">Comparison: Normal Address Modes vs Stack Address Modes</h2>
+<p>As we have seen, stack address modes are essentially aliases attached to IA/IB/DA/DB.</p>
+
+<h3 id="for-stm-push">For STM (PUSH)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Non-stack Address Mode</th>
+      <th>Stack Address Mode</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IA</td>
+      <td>EA</td>
+    </tr>
+    <tr>
+      <td>IB</td>
+      <td>FA</td>
+    </tr>
+    <tr>
+      <td>DA</td>
+      <td>ED</td>
+    </tr>
+    <tr>
+      <td>DB</td>
+      <td>FD</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="for-ldm-pop">For LDM (POP)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Non-stack Address Mode</th>
+      <th>Stack Address Mode</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IA</td>
+      <td>FD</td>
+    </tr>
+    <tr>
+      <td>IB</td>
+      <td>ED</td>
+    </tr>
+    <tr>
+      <td>DA</td>
+      <td>FA</td>
+    </tr>
+    <tr>
+      <td>DB</td>
+      <td>EA</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In real ARM code, you will often see stack modes like <code class="language-plaintext highlighter-rouge">STMFD</code>, <code class="language-plaintext highlighter-rouge">LDMFD</code>,
+but it is also common to use general addressing modes directly, such as <code class="language-plaintext highlighter-rouge">STMDB sp!</code> and <code class="language-plaintext highlighter-rouge">LDMIA sp!</code>.</p>
+
+<p>Whichever syntax you choose, the behavior is the same, so at the tutorial stage it is more important to become comfortable with the general addressing modes.</p>
+
+<h2 id="summary">Summary</h2>
+<p>In this post, we explored what addressing modes in <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> mean and how they are related to stack PUSH and POP operations.</p>
+
+<p>Addressing modes are not just syntactic options; they are tools for precisely controlling the direction and range of memory access.
+Once you understand them, you can use <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> far more flexibly, not only for stacks but also for various memory block operations.</p>
+
+<p>In the next post, we will look at the branch instruction <code class="language-plaintext highlighter-rouge">B</code>, which controls the flow of execution.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm ldm" /><category term="arm stm" /><category term="addressing modes" /><category term="stack memory" /><summary type="html"><![CDATA[In this post, we will explore how the various addressing modes of LDM and STM are used for PUSH and POP operations on stack memory. In the previous post, we only covered how to use LDM/STM to read and write multiple words at once. In this post, we will build on that by connecting addressing modes with the stack structure.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #11 - Memory Block Access(LDM, STM)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html" rel="alternate" type="text/html" title="ARM Assembly #11 - Memory Block Access(LDM, STM)" /><published>2025-11-14T09:30:00+00:00</published><updated>2025-11-14T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html"><![CDATA[<p>In this post, we’ll look at the ARM instructions <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code>, which allow reading or writing <strong>multiple words at once</strong> from memory.
 In the previous post, we learned that <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> can only handle <strong>a single word</strong> at a time.<br />
 However, when working with <strong>contiguous memory areas</strong> such as arrays or structures, repeatedly using <code class="language-plaintext highlighter-rouge">LDR</code> or <code class="language-plaintext highlighter-rouge">STR</code> becomes inefficient.
 To solve this problem, ARM provides <code class="language-plaintext highlighter-rouge">LDM</code> (Load Multiple) and <code class="language-plaintext highlighter-rouge">STM</code> (Store Multiple), which can operate on memory blocks.</p>
@@ -2206,251 +2619,4 @@ Because you can easily <strong>simulate rotate-left</strong> using a combination
   <li><code class="language-plaintext highlighter-rouge">rol</code> is not an instruction but can be emulated using <code class="language-plaintext highlighter-rouge">lsl</code> + <code class="language-plaintext highlighter-rouge">ror</code></li>
 </ul>
 
-<p>In the next post, we’ll explore how these shift operations integrate with real arithmetic instructions (<code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>) and how they affect <strong>Carry and Overflow</strong> flags.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="ror" /><category term="rrx" /><category term="arm" /><category term="assembly" /><category term="rotate shift" /><summary type="html"><![CDATA[In this post, we’ll explore the final topic in ARM’s shift operations — Rotate Shift. The ARMv4 architecture provides two rotate instructions: ror (Rotate Right) and rrx (Rotate Right with eXtend).]]></summary></entry><entry xml:lang="en"><title type="html">Understanding Carry in Arithmetic</title><link href="https://seojuncha.github.io/computer/arithmetic/2025/09/16/what-is-carry.html" rel="alternate" type="text/html" title="Understanding Carry in Arithmetic" /><published>2025-09-16T02:45:00+00:00</published><updated>2025-09-16T02:45:00+00:00</updated><id>https://seojuncha.github.io/computer/arithmetic/2025/09/16/what-is-carry</id><content type="html" xml:base="https://seojuncha.github.io/computer/arithmetic/2025/09/16/what-is-carry.html"><![CDATA[<p>Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore <strong>the definition and concept of Carry</strong>, <strong>how it works in binary and decimal arithmetic</strong>, and <strong>how programming languages handle Carry</strong>.</p>
-
-<p>Example: When unsigned int exceeds its maximum range:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">4294967295</span><span class="p">;</span>   <span class="cm">/* maximum value (32-bit unsigned integer) */</span>
-<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>        <span class="cm">/* Overflow: c has 0 */</span>
-</code></pre></div></div>
-
-<h2 id="what-is-carry">What is Carry?</h2>
-<p>Let’s start with the concept of carrying in decimal addition:</p>
-
-\[5 + 4 = 9\]
-
-<p>No carry is generated when <code class="language-plaintext highlighter-rouge">5 + 4 = 9</code>, as the result fits within a single digit. Carry occurs when the sum exceeds the value that a single digit can represent. For example:</p>
-
-\[9 + 5 = 14 \; (Carry)\]
-
-<p>Here, <code class="language-plaintext highlighter-rouge">9 + 5</code> results in <code class="language-plaintext highlighter-rouge">14</code>, where the ones place overflows into the tens place.</p>
-
-<p>The same principle applies to binary addition. In binary, the maximum value a single digit can represent is 1. When adding <code class="language-plaintext highlighter-rouge">1 + 1</code>, carry is generated:</p>
-
-\[\begin{aligned}
-&amp;0 + 0 = 0  \; (No Carry) \newline
-&amp;1 + 0 = 1  \; (No Carry) \newline
-&amp;1 + 1 = 10 \; (Carry)
-\end{aligned}\]
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 + 1 = 10 (Carry generated)
-=&gt; In binary addition, carry is handled as a 1 passed to the next higher bit.
-</code></pre></div></div>
-
-<p>Carry is important because it <strong>occurs when the sum exceeds the capacity of a fixed-width space</strong>. For example, in a 4-bit memory, the maximum binary value <code class="language-plaintext highlighter-rouge">1111</code> overflows to <code class="language-plaintext highlighter-rouge">10000</code>.</p>
-
-<h2 id="carry-in-and-carry-out">Carry in and Carry out</h2>
-<p><strong><em>Carry in</em></strong> is the carry value passed from a lower bit operation, and <strong><em>Carry out</em></strong> is the carry value resulting from the current bit operation. This process is typically handled by a hardware <a href="https://en.wikipedia.org/wiki/Adder_(electronics)#Full_adder">Full Adder</a> circuit.</p>
-
-<p><em>Carry in</em> ensures continuity and accuracy in multi-bit operations.</p>
-
-<p><strong>Example</strong>: Adding <code class="language-plaintext highlighter-rouge">13</code> and <code class="language-plaintext highlighter-rouge">7</code> in a <code class="language-plaintext highlighter-rouge">4-bit</code> space</p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text"><span class="hll">carry in   :  1   1   1   1   0
-</span>13 (1101)  :      1   1   0   1
-7  (0111)  :      0   1   1   1
---------------------------------
-sum        :  1   0   1   0   0
-<span class="hll">carry out  :  0   1   1   1   1
-</span></code></pre></figure>
-
-<p>Carry occurs when the sum exceeds the capacity of a bit. The result here is <code class="language-plaintext highlighter-rouge">13 + 7 = 20 (0b10100)</code>.</p>
-
-<h2 id="carry-in-arithmetic-operations">Carry in Arithmetic Operations</h2>
-<p>Let’s analyze carry in basic arithmetic operations like addition and subtraction.</p>
-
-<h3 id="binary-addition">Binary Addition</h3>
-<p>Addition in binary operates similarly regardless of whether the numbers are signed or unsigned.</p>
-
-<p><strong>Example 1:</strong> Unsigned <code class="language-plaintext highlighter-rouge">3 + 9</code> in 4-bit space</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0011
-+ 1001
-------
-  1100  = 12 in Decimal
-</code></pre></div></div>
-
-<p><strong>Example 2:</strong> Signed <code class="language-plaintext highlighter-rouge">3 + 2</code> in 4-bit space</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0011
-+ 0010
-------
-  0101  = 5 in Decimal
-</code></pre></div></div>
-<blockquote>
-  <p>For signed integers in 4-bit space, the maximum positive value is 7. Results exceeding this will be discussed in the later post.</p>
-</blockquote>
-
-<h3 id="binary-subtraction">Binary Subtraction</h3>
-<p>In computers, subtraction is performed by adding the two’s complement of the subtrahend.</p>
-
-\[7 - 3 = 7 + (-3)\]
-
-<p>For example, in 4-bit space:<br />
-Represent <code class="language-plaintext highlighter-rouge">-3</code> as <code class="language-plaintext highlighter-rouge">two's complement of 3</code>:</p>
-<ul>
-  <li>3 = 0011</li>
-  <li>-3 = 1101</li>
-</ul>
-
-<p><strong>Example 1:</strong> <code class="language-plaintext highlighter-rouge">7 - 3</code></p>
-<ul>
-  <li>7 = 0111</li>
-  <li>3 = 0011
-    <ul>
-      <li>-3 = 1101</li>
-    </ul>
-  </li>
-</ul>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0111   (7 in binary)
-+ 1101   (-3 in binary)
--------
- 10100  = 4 (ignore carry)
-</code></pre></div></div>
-<p><strong>Example 2:</strong> <code class="language-plaintext highlighter-rouge">3 - 7</code></p>
-<ul>
-  <li>3 = 0011</li>
-  <li>7 = 0111
-    <ul>
-      <li>-7 = 1001</li>
-    </ul>
-  </li>
-</ul>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0011   (3 in binary)
-+ 1001   (-7 in binary)
--------
-  1100  = (interpret based on signed/unsigned)
-</code></pre></div></div>
-<p>For unsigned integers:</p>
-<ul>
-  <li>1100 = 12</li>
-</ul>
-
-<p>For signed integers:</p>
-<ul>
-  <li>1100 = -4</li>
-</ul>
-
-<h2 id="carry-in-shift-operations">Carry in Shift Operations</h2>
-<p>Carry is also relevant in shift operations, which move bits left or right. The behavior depends on the direction of the shift:</p>
-<ul>
-  <li><strong>Left Shift</strong>: Carry occurs if the MSB is exceeded.</li>
-  <li><strong>Right Shift</strong>: Carry occurs if the LSB is exceeded.</li>
-</ul>
-
-<p>Example of Left Shift:<br />
-Left shifts are used to double the value of a binary number, while right shifts are used to halve it. However, without considering the carry, data loss may occur.</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">value</span> <span class="o">=</span> <span class="mb">0b0111</span>           <span class="c1"># 7 in binary
-</span><span class="n">left_shift</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span>  <span class="c1"># Shift left by 2 bits
-</span><span class="n">carry</span> <span class="o">=</span> <span class="n">left_shift</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span>  <span class="c1"># Extract carry from MSB
-</span><span class="nf">print</span><span class="p">(</span><span class="nf">bin</span><span class="p">(</span><span class="n">carry</span><span class="p">))</span>        <span class="c1"># Outputs: 0b1
-</span></code></pre></div></div>
-
-<p>Left Shift Example (4-bit):</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0111 &lt;&lt; 1 = (0)1110 (No Carry)
-0111 &lt;&lt; 2 = (1)1100 (Carry)
-</code></pre></div></div>
-
-<p>Right Shift Example (4-bit):</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0110 &gt;&gt; 1 = 0011(0)  (No Carry)
-0110 &gt;&gt; 2 = 0001(1)  (Carry)
-</code></pre></div></div>
-
-<h3 id="utilizing-carry-in-shift-operations">Utilizing Carry in Shift Operations</h3>
-<p>The carry in shift operations is often used in tasks such as circular data shifts (Circular Shift) or <a href="https://en.wikipedia.org/wiki/Cyclic_redundancy_check">CRC (Cyclic Redundancy Check)</a> calculations.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">circular_left_shift</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">bits</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
-    <span class="nf">return </span><span class="p">((</span><span class="n">value</span> <span class="o">&lt;&lt;</span> <span class="n">bits</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="n">bits</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-</code></pre></div></div>
-
-<h2 id="programming-examples">Programming Examples</h2>
-
-<h3 id="example-1-detecting-carry-in-python">Example 1: Detecting Carry in Python</h3>
-<p>Here’s a Python function to detect carry:</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">has_carry</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">bits</span><span class="p">):</span>
-  <span class="sh">"""</span><span class="s">
-  Detects if carry occurs beyond a given bit width.
-  </span><span class="sh">"""</span>
-  <span class="k">return</span> <span class="nf">bool</span><span class="p">(</span><span class="n">value</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bits</span><span class="p">))</span>
-</code></pre></div></div>
-
-<p>Example:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">5</span>
-
-<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">a</span><span class="si">:</span><span class="mi">05</span><span class="n">b</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">b</span><span class="si">:</span><span class="mi">05</span><span class="n">b</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="si">:</span><span class="mi">05</span><span class="n">b</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="nf">has_carry</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="nf">print</span><span class="p">(</span><span class="nf">has_carry</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-</code></pre></div></div>
-
-<p>Output:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01101
-00101
-10010
-True
-False
-</code></pre></div></div>
-
-<h3 id="example-2-unsigned-integer-carry-in-c">Example 2: Unsigned Integer Carry in C</h3>
-<p>This C example demonstrates how carry affects unsigned integers:</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">uint8_t</span> <span class="n">ui8</span> <span class="o">=</span> <span class="n">UINT8_MAX</span><span class="p">;</span> <span class="c1">// 8-bit max value = 255</span>
-  <span class="kt">uint8_t</span> <span class="n">ui8_plus_one</span> <span class="o">=</span> <span class="n">UINT8_MAX</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// Carry wraps to 0</span>
-  <span class="kt">uint8_t</span> <span class="n">ui8_plus_two</span> <span class="o">=</span> <span class="n">UINT8_MAX</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>  <span class="c1">// Carry wraps to 1</span>
-
-  <span class="kt">uint16_t</span> <span class="n">ui16</span> <span class="o">=</span> <span class="n">UINT8_MAX</span><span class="p">;</span>  <span class="c1">// Expand to 16-bit</span>
-  <span class="kt">uint16_t</span> <span class="n">ui16_plus_one</span> <span class="o">=</span> <span class="n">UINT8_MAX</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// 256</span>
-  <span class="kt">uint16_t</span> <span class="n">ui16_plus_two</span> <span class="o">=</span> <span class="n">UINT8_MAX</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>  <span class="c1">// 257</span>
-
-  <span class="n">printf</span><span class="p">(</span><span class="s">"8-bit Memory</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%02X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8</span><span class="p">,</span> <span class="n">ui8</span><span class="p">);</span>  <span class="c1">// 255</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%02X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8_plus_one</span><span class="p">,</span> <span class="n">ui8_plus_one</span><span class="p">);</span>  <span class="c1">// 0</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%02X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8_plus_two</span><span class="p">,</span> <span class="n">ui8_plus_two</span><span class="p">);</span>  <span class="c1">// 1</span>
-
-  <span class="n">printf</span><span class="p">(</span><span class="s">"16-bit Memory</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%04X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui16</span><span class="p">,</span> <span class="n">ui16</span><span class="p">);</span>  <span class="c1">// 255</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%04X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui16_plus_one</span><span class="p">,</span> <span class="n">ui16_plus_one</span><span class="p">);</span>  <span class="c1">// 256</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"  %u [0x%04X]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui16_plus_two</span><span class="p">,</span> <span class="n">ui16_plus_two</span><span class="p">);</span>  <span class="c1">// 257</span>
-
-  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Output:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>8-bit Memory
-  255 [0xFF]
-  0 [0x00]
-  1 [0x01]
-16-bit Memory
-  255 [0x00FF]
-  256 [0x0100]
-  257 [0x0101]
-</code></pre></div></div>
-<p>In this case, the compiler makes the warning message.</p>
-
-<p>Compiler Warning:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>carry.c: In function ‘main’:
-carry.c:6:26: warning: unsigned conversion from ‘int’ to ‘uint8_t’ {aka ‘unsigned char’} changes value from ‘256’ to ‘0’ [-Woverflow]
-    6 |   uint8_t ui8_plus_one = UINT8_MAX + 1;
-      |                          ^~~~~~~~~
-carry.c:7:26: warning: unsigned conversion from ‘int’ to ‘uint8_t’ {aka ‘unsigned char’} changes value from ‘257’ to ‘1’ [-Woverflow]
-    7 |   uint8_t ui8_plus_two = UINT8_MAX + 2;
-      |                          ^~~~~~~~~
-</code></pre></div></div>
-
-<h2 id="conclusion">Conclusion</h2>
-<p>Carry is not just a small detail in arithmetic—it is one of the <strong>core mechanisms that guarantee correctness in binary operations</strong>.<br />
-It appears in almost every low-level system, from simple addition inside a CPU to advanced cryptographic algorithms and error-detection methods like CRC.</p>
-
-<p>By understanding Carry, developers and engineers can:</p>
-<ul>
-  <li>Debug arithmetic bugs more effectively</li>
-  <li>Write safer low-level code for embedded systems and compilers</li>
-  <li>Optimize algorithms that rely on precise bit-level operations</li>
-</ul>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="computer" /><category term="arithmetic" /><category term="carry" /><category term="binary operation" /><category term="arithmetic operation" /><category term="binary arithmetic" /><summary type="html"><![CDATA[Carry is a fundamental concept in computer arithmetic. It ensures the accuracy of operations and plays a critical role in hardware and software design, debugging, and advanced algorithm optimization. Especially in systems with limited bit space, understanding how Carry works is essential. In this article, we will explore the definition and concept of Carry, how it works in binary and decimal arithmetic, and how programming languages handle Carry.]]></summary></entry></feed>
+<p>In the next post, we’ll explore how these shift operations integrate with real arithmetic instructions (<code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>) and how they affect <strong>Carry and Overflow</strong> flags.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="ror" /><category term="rrx" /><category term="arm" /><category term="assembly" /><category term="rotate shift" /><summary type="html"><![CDATA[In this post, we’ll explore the final topic in ARM’s shift operations — Rotate Shift. The ARMv4 architecture provides two rotate instructions: ror (Rotate Right) and rrx (Rotate Right with eXtend).]]></summary></entry></feed>

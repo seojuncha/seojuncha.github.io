@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #12 - 스택메모리와 주소모드 | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #12 - 스택메모리와 주소모드" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="ko" />
+<meta name="description" content="LDM과 STM의 다양한 주소 모드를 스택 메모리의 PUSH/POP 동작에서는 어떻게 활용할 수 있을지 살펴보겠습니다." />
+<meta property="og:description" content="LDM과 STM의 다양한 주소 모드를 스택 메모리의 PUSH/POP 동작에서는 어떻게 활용할 수 있을지 살펴보겠습니다." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-18T13:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #12 - 스택메모리와 주소모드" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-18T13:00:00+00:00","datePublished":"2025-11-18T13:00:00+00:00","description":"LDM과 STM의 다양한 주소 모드를 스택 메모리의 PUSH/POP 동작에서는 어떻게 활용할 수 있을지 살펴보겠습니다.","headline":"ARM Assembly #12 - 스택메모리와 주소모드","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #12 - 스택메모리와 주소모드
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-11-18T13:00:00+00:00"
+        itemprop="datePublished"
+      >
+        Nov 18, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">한국어</span>
+      <a class="lang-pill" href="/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"
+        >EN</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>LDM과 STM의 다양한 주소 모드를 스택 메모리의 PUSH/POP 동작에서는 어떻게 활용할 수 있을지 살펴보겠습니다.</p>
+
+<p>앞선 포스팅에서는 <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code>을 이용해 여러 워드를 한 번에 읽고 쓰는 방법까지만 다뤘습니다. 
+이번 글에서는 그 연장선에서, 주소 모드 개념과 스택 구조를 연결해서 정리해보겠습니다.</p>
+
+<h2 id="주소-모드란">주소 모드란?</h2>
+<p>앞선 포스팅에서 사용한 예제들은 모두 <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> 실행 시 <strong>메모리 주소가 아래에서 위로(증가하는 방향)</strong> 으로만 움직였습니다.<br />
+하지만 실제로는 상황에 따라 <strong>메모리 주소가 증가할 수도 있고, 감소할 수도 있습니다.</strong><br />
+또한 베이스 레지스터(<code class="language-plaintext highlighter-rouge">Rn</code>)가 가리키는 주소를 <strong>포함한 위치에서 시작할지</strong>, 아니면 <strong>그 다음 주소부터 시작할지</strong>도 제어할 수 있습니다.</p>
+
+<p>이렇게 메모리의 진행 방향과 시작 위치를 정의하는 것이 바로 ARM의 <strong>주소 모드(Addressing Mode)</strong> 입니다.</p>
+
+<h2 id="4개의-주소-모드-ia-ib-da-db">4개의 주소 모드: IA, IB, DA, DB</h2>
+<p>ARM의 <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> 명령은 다음 네 가지 주소 모드를 제공합니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>주소 모드</th>
+      <th>설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IA</td>
+      <td>Increment After (증가 후)</td>
+    </tr>
+    <tr>
+      <td>IB</td>
+      <td>Increment Before (증가 전)</td>
+    </tr>
+    <tr>
+      <td>DA</td>
+      <td>Decrement After (감소 후)</td>
+    </tr>
+    <tr>
+      <td>DB</td>
+      <td>Decrement Before (감소 전)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Increment / Decrement</strong> 는 주소가 <strong>위로 증가하는지, 아래로 감소하는지</strong>를 의미합니다.<br />
+<strong>Before / After</strong> 는 베이스 레지스터(<code class="language-plaintext highlighter-rouge">Rn</code>)가 가리키는 주소를 <strong>메모리 블럭에 포함할지 말지를</strong> 결정합니다.</p>
+
+<h2 id="ia-increment-after-기본값">IA (Increment After, 기본값)</h2>
+<ul>
+  <li>증가(Increment): 낮은 주소에서 높은 주소로 진행합니다.</li>
+  <li>후(After): 베이스 주소(<code class="language-plaintext highlighter-rouge">Rn</code>)를 포함해 그 위치부터 시작합니다.</li>
+</ul>
+
+<h4 id="참조-주소-계산">참조 주소 계산</h4>
+<ul>
+  <li>시작 주소 = <code class="language-plaintext highlighter-rouge">Rn</code></li>
+  <li>끝 주소 = <code class="language-plaintext highlighter-rouge">Rn + (레지스터 수 × 4) − 4</code></li>
+  <li>실행 후 <code class="language-plaintext highlighter-rouge">Rn = Rn + (레지스터 수 × 4)</code></li>
+</ul>
+
+<p>예를 들어, 레지스터 목록 개수가 3개이고 <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>이라면 다음과 같습니다.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1008  : end address
+0x1004
+0x1000  : start address
+
+Rn = 0x100C
+</code></pre></div></div>
+<figure style="text-align: center;">
+  <img src="/assets/img/ia-addr-mode-in-memory.png" alt="IA 주소 모드 메모리 배치" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    IA 주소 모드는 베이스 레지스터가 가리키는 주소에서 시작해, 위쪽으로 주소를 증가시키면서 연속된 워드를 참조합니다.
+    </figcaption>
+</figure>
+
+<h2 id="ib-increment-before">IB (Increment Before)</h2>
+<ul>
+  <li>증가(Increment): 낮은 주소에서 높은 주소로 진행합니다.</li>
+  <li>전(Before): 베이스 주소(Rn) 바로 다음 주소부터 시작합니다.</li>
+</ul>
+
+<h4 id="참조-주소-계산-1">참조 주소 계산</h4>
+<ul>
+  <li>시작 주소 = <code class="language-plaintext highlighter-rouge">Rn + 4</code></li>
+  <li>끝 주소 = <code class="language-plaintext highlighter-rouge">Rn + (레지스터 수 × 4)</code></li>
+  <li>실행 후 <code class="language-plaintext highlighter-rouge">Rn = Rn + (레지스터 수 × 4)</code></li>
+</ul>
+
+<p>예를 들어, 레지스터 목록 개수가 3개이고 <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>이라면 다음과 같습니다.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x100C  : end address
+0x1008
+0x1004  : start address
+0x1000
+
+Rn = 0x100C
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/ib-addr-mode-in-memory.png" alt="IB 주소 모드 메모리 배치" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    IB 주소 모드는 베이스 주소 바로 다음 위치에서 시작해, 위쪽으로 주소를 증가시키며 워드를 참조합니다.
+    </figcaption>
+</figure>
+
+<h2 id="da-decrement-after">DA (Decrement After)</h2>
+<ul>
+  <li>감소(Decrement): 높은 주소에서 낮은 주소로 진행합니다.</li>
+  <li>후(After): 베이스 주소(Rn)를 포함해 그 위치까지를 범위로 사용합니다.</li>
+</ul>
+
+<h4 id="참조-주소-계산-2">참조 주소 계산</h4>
+<ul>
+  <li>시작 주소 = <code class="language-plaintext highlighter-rouge">Rn − (레지스터 수 × 4) + 4</code></li>
+  <li>끝 주소 = <code class="language-plaintext highlighter-rouge">Rn</code></li>
+  <li>실행 후 <code class="language-plaintext highlighter-rouge">Rn = Rn − (레지스터 수 × 4)</code></li>
+</ul>
+
+<p>예를 들어, 레지스터 목록 개수가 3개이고 <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>이라면 다음과 같습니다.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1000  : end address
+0x0FFC
+0x0FF8  : start address
+0x0FF4
+0x0FF0
+
+Rn = 0x0FF4
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/da-addr-mode-in-memory.png" alt="DA 주소 모드 메모리 배치" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    DA 주소 모드는 베이스 주소를 포함한 위쪽 주소에서 시작해, 아래 방향으로 연속된 워드를 참조합니다.
+    </figcaption>
+</figure>
+
+<h2 id="db-decrement-before">DB (Decrement Before)</h2>
+<ul>
+  <li>감소(Decrement): 높은 주소에서 낮은 주소로 진행합니다.</li>
+  <li>전(Before): 베이스 주소(Rn) 바로 아래 주소부터 시작합니다.</li>
+</ul>
+
+<h4 id="참조-주소-계산-3">참조 주소 계산</h4>
+<ul>
+  <li>시작 주소 = <code class="language-plaintext highlighter-rouge">Rn − (레지스터 수 × 4)</code></li>
+  <li>끝 주소 = <code class="language-plaintext highlighter-rouge">Rn − 4</code></li>
+  <li>실행 후 <code class="language-plaintext highlighter-rouge">Rn = Rn − (레지스터 수 × 4)</code></li>
+</ul>
+
+<p>예를 들어, 레지스터 목록 개수가 3개이고 <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>이라면 다음과 같습니다.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1000
+0x0FFC  : end address
+0x0FF8
+0x0FF4  : start address
+
+Rn = 0x0FF4
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/db-addr-mode-in-memory.png" alt="DB 주소 모드 메모리 배치" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    DB 주소 모드는 베이스 주소 아래에서 시작해, 아래 방향으로 연속된 워드를 참조하는 감소 스택 구조에 자주 사용됩니다.
+    </figcaption>
+</figure>
+
+<h2 id="실전-문법에서-주소-모드는-이렇게-표기합니다">실전 문법에서 주소 모드는 이렇게 표기합니다</h2>
+<p>주소 모드를 개념적으로 이해하는 것도 중요하지만,
+실제로 ARM 어셈블리를 작성할 때는 주소 모드를 명령어 뒤에 접미사(suffix) 형태로 붙여서 사용합니다.</p>
+
+<p>예를 들어 IA, IB, DA, DB는 다음과 같이 표기됩니다:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">ldmia</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="nb">ldmdb</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="nb">stmia</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+  <span class="nb">stmdb</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li>LDM/STM 뒤에 바로 주소 모드 두 글자(IA/IB/DA/DB) 를 붙입니다.</li>
+</ul>
+
+<p>즉, 띄어쓰기나 점(.)을 사용하지 않고 명령어 이름 자체가 LDMIA, LDMDB 같은 형태가 됩니다.</p>
+
+<blockquote>
+  <p>자동 갱신(<code class="language-plaintext highlighter-rouge">!</code>)은 주소 모드와는 별개입니다!<br />
+여기서</p>
+  <div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">ldmia</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div>  </div>
+  <ul>
+    <li>IA는 주소 모드 (메모리가 어떤 방향으로 접근되는지)</li>
+    <li><strong>!</strong>는 베이스 레지스터(R0)를 자동으로 증가/감소시키는 기능입니다.</li>
+  </ul>
+</blockquote>
+
+<h2 id="동일-주소-모드에서의-stm과-ldm">동일 주소 모드에서의 STM과 LDM</h2>
+<p>이제 일반 주소 모드에서 STM과 LDM을 같은 모드로 사용했을 때, 메모리와 레지스터 사이의 데이터 이동을 살펴보겠습니다.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+
+  <span class="nb">stmia</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
+
+  <span class="nb">ldmia</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+
+<p>이 경우에는 <code class="language-plaintext highlighter-rouge">STMIA</code>와 <code class="language-plaintext highlighter-rouge">LDMIA</code>가 동일한 주소 모드를 사용하므로,
+같은 메모리 블럭에 데이터를 저장하고 그 자리에서 그대로 다시 읽어오게 됩니다.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/memory-access-with-same-address-mode.png" alt="동일 주소 모드를 사용하는 STM과 LDM 메모리 접근" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    동일한 주소 모드를 사용하면 STM과 LDM은 같은 메모리 영역을 기준으로 데이터를 저장하고 다시 불러옵니다.
+    </figcaption>
+</figure>
+
+<p>하지만 스택 메모리는 이렇게 동작하지 않습니다.
+스택에서는 PUSH와 POP이 서로 반대 방향으로 진행되기 때문에, 같은 주소 모드를 그대로 사용할 수 없습니다.</p>
+
+<h2 id="스택용-주소-모드-fd-fa-ed-ea">스택용 주소 모드: FD, FA, ED, EA</h2>
+<p>ARM은 스택을 다루기 위해 FD, FA, ED, EA 라는 스택 전용 주소 모드 이름을 추가로 제공합니다.
+이 모드들은 새로운 동작이 아니라, 앞에서 본 IA/IB/DA/DB를 스택 관점에서 다시 이름 붙인 별칭 입니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>스택 모드</th>
+      <th>의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>FD</td>
+      <td>Full Descending</td>
+    </tr>
+    <tr>
+      <td>FA</td>
+      <td>Full Ascending</td>
+    </tr>
+    <tr>
+      <td>ED</td>
+      <td>Empty Descending</td>
+    </tr>
+    <tr>
+      <td>EA</td>
+      <td>Empty Ascending</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Full / Empty</strong>는 PUSH(STM), POP(LDM) 이후에 스택 포인터(SP)가 가리키는 위치가 데이터 위인지, 비어 있는 위치인지를 의미합니다.<br />
+<strong>Ascending / Descending</strong>은 PUSH 했을 때 스택이 주소가 증가하는 방향으로 자라는지(Ascending), 감소하는 방향으로 자라는지(Descending) 를 의미합니다.</p>
+
+<h3 id="예시-fd-스택의-push">예시: FD 스택의 PUSH</h3>
+<p>ARM에서 가장 일반적으로 사용하는 스택 구조는 Full Descending( FD ) 스택입니다.
+FD 스택에서 PUSH는 다음과 같이 구현할 수 있습니다.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
+  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
+  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
+
+  <span class="nb">stmdb</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+
+<p>여기서 <code class="language-plaintext highlighter-rouge">stmdb sp!, {r1-r3}</code> 는 스택 모드 이름으로는 <code class="language-plaintext highlighter-rouge">stmfd sp!, {r1-r3}</code>와 동일한 동작을 합니다.
+SP는 <code class="language-plaintext highlighter-rouge">0x8000</code>에서 <code class="language-plaintext highlighter-rouge">0x7FF4</code>로 이동합니다.
+실제 메모리에 저장되는 위치는 다음과 같습니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>주소</th>
+      <th>값(레지스터)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF4</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x1</code>(R1)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF8</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x2</code>(R1)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FFC</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x3</code>(R1)</td>
+    </tr>
+  </tbody>
+</table>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/push-address-mode-in-fd-stack.png" alt="FD 스택에서 STMDB에 의한 PUSH 메모리 배치" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    FD 스택에서 STMDB(SMFD)는 SP를 위쪽 주소에서 아래 방향으로 이동시키며, 새로운 데이터는 더 낮은 주소에 저장됩니다.
+    </figcaption>
+</figure>
+
+<h3 id="예시-fd-스택의-pop">예시: FD 스택의 POP</h3>
+<p>이번에는 FD 스택에 저장된 값을 POP으로 되돌려 받는 동작을 살펴보겠습니다.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">@</span> <span class="err">앞에서</span> <span class="nv">STMDB</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span><span class="err">가</span> <span class="err">실행되어</span> <span class="err">있다고</span> <span class="err">가정합니다</span><span class="mf">.</span>
+
+  <span class="nb">ldmia</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
+</code></pre></div></div>
+
+<p>FD 스택에서 POP 동작은 일반 주소 모드로는 <code class="language-plaintext highlighter-rouge">ldmia sp!</code>, 스택 주소 모드 이름으로는 <code class="language-plaintext highlighter-rouge">ldmfd sp!</code>와 같습니다.
+로드 순서는 다음과 같습니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>주소</th>
+      <th>레지스터</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF4</code></td>
+      <td><code class="language-plaintext highlighter-rouge">R1</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FF8</code></td>
+      <td><code class="language-plaintext highlighter-rouge">R2</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">0x7FFC</code></td>
+      <td><code class="language-plaintext highlighter-rouge">R3</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>POP 이후에는 SP가 다시 <code class="language-plaintext highlighter-rouge">0x8000</code>으로 되돌아옵니다.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/pop-address-mode-in-fd-stack.png" alt="FD 스택에서 LDMIA에 의한 POP 메모리 배치" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    FD 스택에서 LDMIA(LDMFD)는 가장 낮은 주소부터 순서대로 레지스터에 값을 불러오며, SP를 다시 위쪽 주소로 이동시킵니다.
+    </figcaption>
+</figure>
+
+<p>이처럼 FD 스택에서는 PUSH에 <code class="language-plaintext highlighter-rouge">STMDB</code>, POP에 <code class="language-plaintext highlighter-rouge">LDMIA</code> 를 사용해야, 같은 스택 메모리 블럭을 기준으로 올바르게 동작합니다.</p>
+
+<h2 id="일반-주소-모드와-스택-주소-모드-비교">일반 주소 모드와 스택 주소 모드 비교</h2>
+<p>앞에서 살펴본 것처럼, 스택 주소 모드는 결국 IA/IB/DA/DB에 붙여진 별칭입니다.</p>
+
+<h3 id="stm-기준-push">STM 기준 (PUSH)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>일반 주소모드</th>
+      <th>스택 주소모드</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IA</td>
+      <td>EA</td>
+    </tr>
+    <tr>
+      <td>IB</td>
+      <td>FA</td>
+    </tr>
+    <tr>
+      <td>DA</td>
+      <td>ED</td>
+    </tr>
+    <tr>
+      <td>DB</td>
+      <td>FD</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="ldm-기준-pop">LDM 기준 (POP)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>일반 주소모드</th>
+      <th>스택 주소모드</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IA</td>
+      <td>FD</td>
+    </tr>
+    <tr>
+      <td>IB</td>
+      <td>ED</td>
+    </tr>
+    <tr>
+      <td>DA</td>
+      <td>FA</td>
+    </tr>
+    <tr>
+      <td>DB</td>
+      <td>EA</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>실제로 ARM 코드에서는 <code class="language-plaintext highlighter-rouge">STMFD</code>, <code class="language-plaintext highlighter-rouge">LDMFD</code>처럼 스택용 주소 모드를 직접 쓰기도 하고,
+직접 <code class="language-plaintext highlighter-rouge">STMDB sp!</code>, <code class="language-plaintext highlighter-rouge">LDMIA sp!</code> 형태로 일반 주소 모드를 사용하는 경우도 많습니다.</p>
+
+<p>어느 쪽을 사용하든 동작은 동일하므로, 튜토리얼 단계에서는 일반 주소 모드에 익숙해지는 것이 더 중요합니다.</p>
+
+<h2 id="마무리">마무리</h2>
+<p>이번 포스팅에서는 <code class="language-plaintext highlighter-rouge">LDM</code>과 <code class="language-plaintext highlighter-rouge">STM</code>에서 제공하는 주소 모드가 어떤 의미를 가지는지,
+그리고 이 주소 모드가 스택 메모리의 PUSH/POP 동작과 어떻게 연결되는지를 살펴봤습니다.</p>
+
+<p>주소 모드는 단순히 문법 옵션이 아니라, 메모리의 방향과 범위를 정밀하게 제어하기 위한 도구입니다.
+이를 이해하면, 스택뿐만 아니라 다양한 메모리 블럭 처리에서도 <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code>을 훨씬 더 유연하게 활용하실 수 있습니다.</p>
+
+<p>다음 포스팅에서는 실행 흐름을 제어하기 위한 분기 명령어 <code class="language-plaintext highlighter-rouge">B</code>를 살펴보겠습니다.</p>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
