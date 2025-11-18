@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-stack-address-modes"
-title: "ARM Assembly #12 - Stack Memory and Addressing Mdoes"
+title: "ARM Assembly #12 - Stack Memory and Addressing Modes"
 date: 2025-11-18 22:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm ldm", "arm stm", "addressing modes", "stack memory"]
