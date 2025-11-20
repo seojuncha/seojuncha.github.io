@@ -8,7 +8,7 @@ categories: ["arm", "assembly", "tutorial"]
 tags: ["arm ldm", "arm stm", "addressing modes", "stack memory"]
 ---
 
-LDM과 STM의 다양한 주소 모드를 스택 메모리의 PUSH/POP 동작에서는 어떻게 활용할 수 있을지 살펴보겠습니다.  
+`LDM`과 `STM`의 다양한 주소 모드를 스택 메모리의 PUSH/POP 동작에서는 어떻게 활용할 수 있을지 살펴보겠습니다.  
 
 앞선 포스팅에서는 `LDM`/`STM`을 이용해 여러 워드를 한 번에 읽고 쓰는 방법까지만 다뤘습니다. 
 이번 글에서는 그 연장선에서, 주소 모드 개념과 스택 구조를 연결해서 정리해보겠습니다.  
