@@ -3,20 +3,30 @@ layout: post
 lang: en
 ref: "arm-basic-branch"
 title: "ARM Assembly #13 - Branching Execution Flow with the B Instruction"
-date: 2025-11-18 22:00:00 +0900
+date: 2025-11-23 10:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm b", "arm branch instruction"]
-published: false
 ---
-In this post, we will explore how the B instruction is used for branching, along with practical examples.
-The B instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.
+In this post, we will explore how the `B` instruction is used for branching, along with practical examples.
+The `B` instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.
 
-- [Example Code](https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s)
-- [YouTube]()
+
+<figure style="text-align: center;">
+  <a href="https://youtu.be/BZamp0G0viA" target="_blank">
+  <img src="/assets/img/ARM Assembly - Basic Branch Instruction.png"
+    alt="Youtube Video to explain ARM B instruction"
+    style="display: block; margin: auto;" /> 
+  </a>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
+  </figcaption>
+</figure>
+
+- [Sample Code in GitHub](https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s)
 
 ## Why Do We Use the B Instruction?
-The B instruction simply moves the execution flow to another position.
-It does not return like a function call; its behavior is similar to the goto statement in C.
+The `B` instruction simply moves the execution flow to another position.
+It does not return like a function call; its behavior is similar to the `goto` statement in C.
 
 Typical uses include:
 - Implementing loops
@@ -78,7 +88,7 @@ foo:
 4. `b _start` → jumps back to _start
 5. executes again
 
-Thus, the value of R0 repeats as 2 → 5 → 2 → 5 indefinitely.
+Thus, the value of `R0` repeats as 2 → 5 → 2 → 5 indefinitely.
 The instruction `mov r1, r0` is never executed due to the branch.
 
 ## Debugging: Observing PC Changes with GDB

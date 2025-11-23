@@ -3,21 +3,30 @@ layout: post
 lang: ko
 ref: "arm-basic-branch"
 title: "ARM 어셈블리 #13 - B 명령어로 실행 흐름 분기하기"
-date: 2025-11-18 22:00:00 +0900
+date: 2025-11-23 10:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm b", "arm branch instruction"]
-published: false
 ---
 
 이번 포스팅에서는 명령어 분기를 위한 B 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다.
 B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다.
 
-- [예제 코드](https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s)
-- [YouTube 영상]()
+<figure style="text-align: center;">
+  <a href="https://youtu.be/BZamp0G0viA" target="_blank">
+  <img src="/assets/img/ARM Assembly - Basic Branch Instruction.png"
+    alt="Youtube Video to explain ARM B instruction"
+    style="display: block; margin: auto;" /> 
+  </a>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
+  </figcaption>
+</figure>
+
+- [GitHub 예제 코드](https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s)
 
 ## 왜 B 명령어를 사용할까?
 B 명령어는 단순히 코드의 흐름을 다른 위치로 옮기기 위한 명령어입니다.
-함수 호출처럼 되돌아오는 개념은 없으며, C 언어의 goto와 거의 동일한 수준의 동작을 수행합니다.
+함수 호출처럼 되돌아오는 개념은 없으며, C 언어의 `goto`와 거의 동일한 수준의 동작을 수행합니다.
 
 사용 예는 다음과 같습니다:
 - 루프 구현
@@ -45,7 +54,7 @@ CPU는 프로그램 카운터(PC)에 다음 실행할 명령어의 주소를 저
     instructions
 ```
 레이블 이름 뒤에는 반드시 콜론(:)을 붙여야 합니다.
-레이블의 주소는 레이블 아래 첫 번째 명령어의 주소입니다.
+**레이블의 주소는 레이블 아래 첫 번째 명령어의 주소입니다.**
 
 예:
 ```armasm
@@ -92,6 +101,6 @@ foo:
 특히 b foo 명령어가 실행될 때, PC가 정확히 레이블의 주소로 변경되는 것을 확인할 수 있습니다.
 
 ## 마무리
-이번 포스팅에서는 ARMv4에서 가장 기본적인 분기 명령어인 `B`를 살펴보았습니다.
+이번 포스팅에서는 ARMv4에서 **가장 기본적인 분기 명령어**인 `B`를 살펴보았습니다.
 다음 포스팅에서는 함수 호출에 사용되는 `BL` 명령어를 다뤄보겠습니다.
 BL은 되돌아올 주소를 자동으로 `LR` 레지스터에 저장한다는 점에서 구조적으로 중요한 차이를 가집니다.

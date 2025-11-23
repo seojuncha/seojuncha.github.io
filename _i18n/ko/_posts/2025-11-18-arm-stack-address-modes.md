@@ -58,7 +58,7 @@ Rn = 0x100C
     alt="IA 주소 모드 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    IA 주소 모드는 베이스 레지스터가 가리키는 주소에서 시작해, 위쪽으로 주소를 증가시키면서 연속된 워드를 참조합니다.
+    그림 1. IA 주소 모드는 베이스 레지스터가 가리키는 주소에서 시작해, 위쪽으로 주소를 증가시키면서 연속된 워드를 참조합니다.
     </figcaption>
 </figure>
 
@@ -87,7 +87,7 @@ Rn = 0x100C
     alt="IB 주소 모드 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    IB 주소 모드는 베이스 주소 바로 다음 위치에서 시작해, 위쪽으로 주소를 증가시키며 워드를 참조합니다.
+    그림 2. IB 주소 모드는 베이스 주소 바로 다음 위치에서 시작해, 위쪽으로 주소를 증가시키며 워드를 참조합니다.
     </figcaption>
 </figure>
 
@@ -116,7 +116,7 @@ Rn = 0x0FF4
     alt="DA 주소 모드 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    DA 주소 모드는 베이스 주소를 포함한 위쪽 주소에서 시작해, 아래 방향으로 연속된 워드를 참조합니다.
+    그림 3.  DA 주소 모드는 베이스 주소를 포함한 위쪽 주소에서 시작해, 아래 방향으로 연속된 워드를 참조합니다.
     </figcaption>
 </figure>
 
@@ -144,7 +144,7 @@ Rn = 0x0FF4
     alt="DB 주소 모드 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    DB 주소 모드는 베이스 주소 아래에서 시작해, 아래 방향으로 연속된 워드를 참조하는 감소 스택 구조에 자주 사용됩니다.
+    그림 4. DB 주소 모드는 베이스 주소 아래에서 시작해, 아래 방향으로 연속된 워드를 참조하는 감소 스택 구조에 자주 사용됩니다.
     </figcaption>
 </figure>
 
@@ -197,7 +197,7 @@ Rn = 0x0FF4
     alt="동일 주소 모드를 사용하는 STM과 LDM 메모리 접근"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    동일한 주소 모드를 사용하면 STM과 LDM은 같은 메모리 영역을 기준으로 데이터를 저장하고 다시 불러옵니다.
+    그림  5. 일한 주소 모드를 사용하면 STM과 LDM은 같은 메모리 영역을 기준으로 데이터를 저장하고 다시 불러옵니다.
     </figcaption>
 </figure>
 
@@ -247,7 +247,7 @@ SP는 `0x8000`에서 `0x7FF4`로 이동합니다.
     alt="FD 스택에서 STMDB에 의한 PUSH 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    FD 스택에서 STMDB(SMFD)는 SP를 위쪽 주소에서 아래 방향으로 이동시키며, 새로운 데이터는 더 낮은 주소에 저장됩니다.
+    그림 6. FD 스택에서 STMDB(SMFD)는 SP를 위쪽 주소에서 아래 방향으로 이동시키며, 새로운 데이터는 더 낮은 주소에 저장됩니다.
     </figcaption>
 </figure>
 
@@ -276,7 +276,7 @@ POP 이후에는 SP가 다시 `0x8000`으로 되돌아옵니다.
     alt="FD 스택에서 LDMIA에 의한 POP 메모리 배치"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    FD 스택에서 LDMIA(LDMFD)는 가장 낮은 주소부터 순서대로 레지스터에 값을 불러오며, SP를 다시 위쪽 주소로 이동시킵니다.
+    그림 7. FD 스택에서 LDMIA(LDMFD)는 가장 낮은 주소부터 순서대로 레지스터에 값을 불러오며, SP를 다시 위쪽 주소로 이동시킵니다.
     </figcaption>
 </figure>
 

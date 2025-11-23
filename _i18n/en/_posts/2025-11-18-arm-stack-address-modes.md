@@ -54,7 +54,7 @@ Rn = 0x100C
     alt="Memory layout of IA addressing mode"
     style="display: block; margin: auto;" /> 
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In IA mode, the memory block starts at the base register and progresses upward through consecutive words.
+    Figure 1. In IA mode, the memory block starts at the base register and progresses upward through consecutive words.
     </figcaption>
 </figure>
 
@@ -82,7 +82,7 @@ Rn = 0x100C
     alt="Memory layout of IB addressing mode"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"> 
-    In IB mode, the memory block starts just after the base address and moves upward through memory.
+    Figure 2. In IB mode, the memory block starts just after the base address and moves upward through memory.
     </figcaption>
 </figure>
 
@@ -111,7 +111,7 @@ Rn = 0x0FF4
     alt="Memory layout of DA addressing mode"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In DA mode, the memory block includes the base address at the top and moves downward through consecutive words.
+    Figure 3. In DA mode, the memory block includes the base address at the top and moves downward through consecutive words.
     </figcaption>
 </figure>
 
@@ -139,7 +139,7 @@ Rn = 0x0FF4
     alt="Memory layout of DB addressing mode"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In DB mode, the memory block starts below the base address and is often used for descending stack-like layouts.
+    Figure 4. In DB mode, the memory block starts below the base address and is often used for descending stack-like layouts.
     </figcaption>
 </figure>
 
@@ -193,7 +193,7 @@ they store data into a memory block and then read back from the exact same addre
     alt="STM and LDM memory access with same addressing mode"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    When using the same addressing mode, STM and LDM access the same memory region for both storing and loading.
+    Figure 5. When using the same addressing mode, STM and LDM access the same memory region for both storing and loading.
     </figcaption>
 </figure>
 
@@ -244,7 +244,7 @@ The actual memory locations used are as follows.
     alt="PUSH memory layout with STMDB in an FD stack"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In an FD stack, STMDB (STMFD) moves the SP downward, storing new data at lower addresses.
+    Figure 6. In an FD stack, STMDB (STMFD) moves the SP downward, storing new data at lower addresses.
     </figcaption>
 </figure>
 
@@ -273,7 +273,7 @@ After the POP, the `SP` returns to `0x8000`.
     alt="POP memory layout with LDMIA in an FD stack"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In an FD stack, LDMIA (LDMFD) loads values from the lowest address upward and moves the SP back upward.
+    Figure 7. In an FD stack, LDMIA (LDMFD) loads values from the lowest address upward and moves the SP back upward.
     </figcaption>
 </figure>
 
