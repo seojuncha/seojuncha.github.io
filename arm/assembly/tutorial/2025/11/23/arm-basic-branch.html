@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>ARM Assembly #13 - Branching Execution Flow with the B Instruction | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="ARM Assembly #13 - Branching Execution Flow with the B Instruction" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="In this post, we will explore how the B instruction is used for branching, along with practical examples. The B instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure." />
+<meta property="og:description" content="In this post, we will explore how the B instruction is used for branching, along with practical examples. The B instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure." />
+<link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" />
+<meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-23T01:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="ARM Assembly #13 - Branching Execution Flow with the B Instruction" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-23T01:00:00+00:00","datePublished":"2025-11-23T01:00:00+00:00","description":"In this post, we will explore how the B instruction is used for branching, along with practical examples. The B instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.","headline":"ARM Assembly #13 - Branching Execution Flow with the B Instruction","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      ARM Assembly #13 - Branching Execution Flow with the B Instruction
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-11-23T01:00:00+00:00"
+        itemprop="datePublished"
+      >
+        Nov 23, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>In this post, we will explore how the <code class="language-plaintext highlighter-rouge">B</code> instruction is used for branching, along with practical examples.
+The <code class="language-plaintext highlighter-rouge">B</code> instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.</p>
+
+<figure style="text-align: center;">
+  <a href="https://youtu.be/BZamp0G0viA" target="_blank">
+  <img src="/assets/img/ARM Assembly - Basic Branch Instruction.png" alt="Youtube Video to explain ARM B instruction" style="display: block; margin: auto;" /> 
+  </a>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
+  </figcaption>
+</figure>
+
+<ul>
+  <li><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">Sample Code in GitHub</a></li>
+</ul>
+
+<h2 id="why-do-we-use-the-b-instruction">Why Do We Use the B Instruction?</h2>
+<p>The <code class="language-plaintext highlighter-rouge">B</code> instruction simply moves the execution flow to another position.
+It does not return like a function call; its behavior is similar to the <code class="language-plaintext highlighter-rouge">goto</code> statement in C.</p>
+
+<p>Typical uses include:</p>
+<ul>
+  <li>Implementing loops</li>
+  <li>Skipping specific code blocks</li>
+  <li>Simple control flow switching</li>
+</ul>
+
+<h2 id="how-execution-flow-branching-works">How Execution Flow Branching Works</h2>
+<p>The CPU stores the address of the next instruction in the Program Counter (PC).
+A branch instruction changes the PC to another address, altering where the CPU fetches the next instruction.</p>
+
+<blockquote>
+  <p>Note: In ARMv4’s pipeline, the PC appears as current instruction address + 8 bytes.
+However, the assembler handles branch offset calculation, so this does not affect typical coding.</p>
+</blockquote>
+
+<h2 id="branch-instruction-b">Branch Instruction: B</h2>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">b</span> <span class="nb">label</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">b label</code> simply jumps to the address indicated by the label.
+Internally, this is equivalent to updating the PC with the label’s address.</p>
+
+<h2 id="understanding-labels">Understanding Labels</h2>
+<p>A label gives a name to a specific instruction address.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">label</span><span class="err">:</span>
+    <span class="nb">instructions</span>
+</code></pre></div></div>
+
+<p>A colon (:) must be placed after the label name.
+The label’s address is the address of the first instruction below it.</p>
+
+<p>Example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">foo</span><span class="err">:</span>
+    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10000</span>
+    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10004</span>
+</code></pre></div></div>
+<p>Here, the address of foo is <code class="language-plaintext highlighter-rouge">0x10000</code>.</p>
+
+<h2 id="example-code">Example Code</h2>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+  <span class="nb">b</span>   <span class="nv">foo</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>     <span class="no">@</span> <span class="nv">never</span> <span class="nv">executed</span>
+<span class="nl">foo</span><span class="err">:</span>
+  <span class="nb">add</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+  <span class="nb">b</span>   <span class="nv">_start</span>
+</code></pre></div></div>
+
+<p><strong>Execution Flow</strong></p>
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #2</code></li>
+  <li><code class="language-plaintext highlighter-rouge">b foo</code> → jumps to foo</li>
+  <li><code class="language-plaintext highlighter-rouge">add r0, r0, #3</code></li>
+  <li><code class="language-plaintext highlighter-rouge">b _start</code> → jumps back to _start</li>
+  <li>executes again</li>
+</ol>
+
+<p>Thus, the value of <code class="language-plaintext highlighter-rouge">R0</code> repeats as 2 → 5 → 2 → 5 indefinitely.
+The instruction <code class="language-plaintext highlighter-rouge">mov r1, r0</code> is never executed due to the branch.</p>
+
+<h2 id="debugging-observing-pc-changes-with-gdb">Debugging: Observing PC Changes with GDB</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> target remote :1234
+<span class="o">(</span>gdb<span class="o">)</span> b _start
+<span class="o">(</span>gdb<span class="o">)</span> b foo
+<span class="o">(</span>gdb<span class="o">)</span> display/i <span class="nv">$pc</span>
+<span class="o">(</span>gdb<span class="o">)</span> c
+<span class="o">(</span>gdb<span class="o">)</span> si
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">display/i $pc</code> is useful for watching how the PC changes step-by-step.
+You can clearly see the PC jump directly to the label when executing <code class="language-plaintext highlighter-rouge">b foo</code>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we explored the basic unconditional branch instruction <code class="language-plaintext highlighter-rouge">B</code> in ARMv4.
+In the next post, we will look at <code class="language-plaintext highlighter-rouge">BL</code>, the instruction used for function calls.
+BL automatically stores the return address in the Link Register (<code class="language-plaintext highlighter-rouge">LR</code>), making it essential for implementing function calls.</p>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>

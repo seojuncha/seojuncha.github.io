@@ -1,4 +1,103 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-21T10:28:44+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #12 - Stack Memory and Addressing Modes</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" rel="alternate" type="text/html" title="ARM Assembly #12 - Stack Memory and Addressing Modes" /><published>2025-11-18T13:00:00+00:00</published><updated>2025-11-18T13:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"><![CDATA[<p>In this post, we will explore how the various addressing modes of <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> are used for PUSH and POP operations on stack memory.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-23T01:44:08+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #13 - Branching Execution Flow with the B Instruction</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" rel="alternate" type="text/html" title="ARM Assembly #13 - Branching Execution Flow with the B Instruction" /><published>2025-11-23T01:00:00+00:00</published><updated>2025-11-23T01:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"><![CDATA[<p>In this post, we will explore how the <code class="language-plaintext highlighter-rouge">B</code> instruction is used for branching, along with practical examples.
+The <code class="language-plaintext highlighter-rouge">B</code> instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.</p>
+
+<figure style="text-align: center;">
+  <a href="https://youtu.be/BZamp0G0viA" target="_blank">
+  <img src="/assets/img/ARM Assembly - Basic Branch Instruction.png" alt="Youtube Video to explain ARM B instruction" style="display: block; margin: auto;" /> 
+  </a>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
+  </figcaption>
+</figure>
+
+<ul>
+  <li><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">Sample Code in GitHub</a></li>
+</ul>
+
+<h2 id="why-do-we-use-the-b-instruction">Why Do We Use the B Instruction?</h2>
+<p>The <code class="language-plaintext highlighter-rouge">B</code> instruction simply moves the execution flow to another position.
+It does not return like a function call; its behavior is similar to the <code class="language-plaintext highlighter-rouge">goto</code> statement in C.</p>
+
+<p>Typical uses include:</p>
+<ul>
+  <li>Implementing loops</li>
+  <li>Skipping specific code blocks</li>
+  <li>Simple control flow switching</li>
+</ul>
+
+<h2 id="how-execution-flow-branching-works">How Execution Flow Branching Works</h2>
+<p>The CPU stores the address of the next instruction in the Program Counter (PC).
+A branch instruction changes the PC to another address, altering where the CPU fetches the next instruction.</p>
+
+<blockquote>
+  <p>Note: In ARMv4’s pipeline, the PC appears as current instruction address + 8 bytes.
+However, the assembler handles branch offset calculation, so this does not affect typical coding.</p>
+</blockquote>
+
+<h2 id="branch-instruction-b">Branch Instruction: B</h2>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">b</span> <span class="nb">label</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">b label</code> simply jumps to the address indicated by the label.
+Internally, this is equivalent to updating the PC with the label’s address.</p>
+
+<h2 id="understanding-labels">Understanding Labels</h2>
+<p>A label gives a name to a specific instruction address.</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">label</span><span class="err">:</span>
+    <span class="nb">instructions</span>
+</code></pre></div></div>
+
+<p>A colon (:) must be placed after the label name.
+The label’s address is the address of the first instruction below it.</p>
+
+<p>Example:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">foo</span><span class="err">:</span>
+    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10000</span>
+    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10004</span>
+</code></pre></div></div>
+<p>Here, the address of foo is <code class="language-plaintext highlighter-rouge">0x10000</code>.</p>
+
+<h2 id="example-code">Example Code</h2>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+  <span class="nb">b</span>   <span class="nv">foo</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>     <span class="no">@</span> <span class="nv">never</span> <span class="nv">executed</span>
+<span class="nl">foo</span><span class="err">:</span>
+  <span class="nb">add</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+  <span class="nb">b</span>   <span class="nv">_start</span>
+</code></pre></div></div>
+
+<p><strong>Execution Flow</strong></p>
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #2</code></li>
+  <li><code class="language-plaintext highlighter-rouge">b foo</code> → jumps to foo</li>
+  <li><code class="language-plaintext highlighter-rouge">add r0, r0, #3</code></li>
+  <li><code class="language-plaintext highlighter-rouge">b _start</code> → jumps back to _start</li>
+  <li>executes again</li>
+</ol>
+
+<p>Thus, the value of <code class="language-plaintext highlighter-rouge">R0</code> repeats as 2 → 5 → 2 → 5 indefinitely.
+The instruction <code class="language-plaintext highlighter-rouge">mov r1, r0</code> is never executed due to the branch.</p>
+
+<h2 id="debugging-observing-pc-changes-with-gdb">Debugging: Observing PC Changes with GDB</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> target remote :1234
+<span class="o">(</span>gdb<span class="o">)</span> b _start
+<span class="o">(</span>gdb<span class="o">)</span> b foo
+<span class="o">(</span>gdb<span class="o">)</span> display/i <span class="nv">$pc</span>
+<span class="o">(</span>gdb<span class="o">)</span> c
+<span class="o">(</span>gdb<span class="o">)</span> si
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">display/i $pc</code> is useful for watching how the PC changes step-by-step.
+You can clearly see the PC jump directly to the label when executing <code class="language-plaintext highlighter-rouge">b foo</code>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we explored the basic unconditional branch instruction <code class="language-plaintext highlighter-rouge">B</code> in ARMv4.
+In the next post, we will look at <code class="language-plaintext highlighter-rouge">BL</code>, the instruction used for function calls.
+BL automatically stores the return address in the Link Register (<code class="language-plaintext highlighter-rouge">LR</code>), making it essential for implementing function calls.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm b" /><category term="arm branch instruction" /><summary type="html"><![CDATA[In this post, we will explore how the B instruction is used for branching, along with practical examples. The B instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #12 - Stack Memory and Addressing Modes</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" rel="alternate" type="text/html" title="ARM Assembly #12 - Stack Memory and Addressing Modes" /><published>2025-11-18T13:00:00+00:00</published><updated>2025-11-18T13:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"><![CDATA[<p>In this post, we will explore how the various addressing modes of <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> are used for PUSH and POP operations on stack memory.
 In the previous post, we only covered how to use <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> to read and write multiple words at once.<br />
 In this post, we will build on that by connecting addressing modes with the stack structure.</p>
 
@@ -64,7 +163,7 @@ Rn = 0x100C
 <figure style="text-align: center;">
   <img src="/assets/img/ia-addr-mode-in-memory.png" alt="Memory layout of IA addressing mode" style="display: block; margin: auto;" /> 
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In IA mode, the memory block starts at the base register and progresses upward through consecutive words.
+    Figure 1. In IA mode, the memory block starts at the base register and progresses upward through consecutive words.
     </figcaption>
 </figure>
 
@@ -93,7 +192,7 @@ Rn = 0x100C
 <figure style="text-align: center;">
   <img src="/assets/img/ib-addr-mode-in-memory.png" alt="Memory layout of IB addressing mode" style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"> 
-    In IB mode, the memory block starts just after the base address and moves upward through memory.
+    Figure 2. In IB mode, the memory block starts just after the base address and moves upward through memory.
     </figcaption>
 </figure>
 
@@ -123,7 +222,7 @@ Rn = 0x0FF4
 <figure style="text-align: center;">
   <img src="/assets/img/da-addr-mode-in-memory.png" alt="Memory layout of DA addressing mode" style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In DA mode, the memory block includes the base address at the top and moves downward through consecutive words.
+    Figure 3. In DA mode, the memory block includes the base address at the top and moves downward through consecutive words.
     </figcaption>
 </figure>
 
@@ -152,7 +251,7 @@ Rn = 0x0FF4
 <figure style="text-align: center;">
   <img src="/assets/img/db-addr-mode-in-memory.png" alt="Memory layout of DB addressing mode" style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In DB mode, the memory block starts below the base address and is often used for descending stack-like layouts.
+    Figure 4. In DB mode, the memory block starts below the base address and is often used for descending stack-like layouts.
     </figcaption>
 </figure>
 
@@ -205,7 +304,7 @@ they store data into a memory block and then read back from the exact same addre
 <figure style="text-align: center;">
   <img src="/assets/img/memory-access-with-same-address-mode.png" alt="STM and LDM memory access with same addressing mode" style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    When using the same addressing mode, STM and LDM access the same memory region for both storing and loading.
+    Figure 5. When using the same addressing mode, STM and LDM access the same memory region for both storing and loading.
     </figcaption>
 </figure>
 
@@ -290,7 +389,7 @@ The actual memory locations used are as follows.</p>
 <figure style="text-align: center;">
   <img src="/assets/img/push-address-mode-in-fd-stack.png" alt="PUSH memory layout with STMDB in an FD stack" style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In an FD stack, STMDB (STMFD) moves the SP downward, storing new data at lower addresses.
+    Figure 6. In an FD stack, STMDB (STMFD) moves the SP downward, storing new data at lower addresses.
     </figcaption>
 </figure>
 
@@ -333,7 +432,7 @@ The load order is as follows.</p>
 <figure style="text-align: center;">
   <img src="/assets/img/pop-address-mode-in-fd-stack.png" alt="POP memory layout with LDMIA in an FD stack" style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    In an FD stack, LDMIA (LDMFD) loads values from the lowest address upward and moves the SP back upward.
+    Figure 7. In an FD stack, LDMIA (LDMFD) loads values from the lowest address upward and moves the SP back upward.
     </figcaption>
 </figure>
 
@@ -2483,140 +2582,4 @@ A partial block diagram of the ARM7TDMI. The second operand is always passed thr
 
 <hr />
 <p>This concludes our deep dive into shifter operands in ARM assembly.
-Let me know in the comments if you want a breakdown of shift operation opcodes or internal instruction encoding!</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="shifter-operand" /><summary type="html"><![CDATA[In this post, we’ll take a complete look at Shifter Operands used in ARM’s Data Processing Instructions. Shifter operands are not optional—they are fundamental components of all data processing instructions.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #4 - How to Rotate Bits with ROR and RRX</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html" rel="alternate" type="text/html" title="ARM Assembly #4 - How to Rotate Bits with ROR and RRX" /><published>2025-09-17T13:40:00+00:00</published><updated>2025-09-17T13:40:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"><![CDATA[<p>In this post, we’ll explore the final topic in ARM’s shift operations — <strong>Rotate Shift</strong>.<br />
-The ARMv4 architecture provides two rotate instructions: <code class="language-plaintext highlighter-rouge">ror</code> (Rotate Right) and <code class="language-plaintext highlighter-rouge">rrx</code> (Rotate Right with eXtend).</p>
-
-<p>Unlike logical or arithmetic shifts, rotate instructions <strong>wrap the shifted-out bits around and insert them back</strong> on the other side.</p>
-
-<h2 id="rotate-shift-instructions-in-arm">Rotate Shift Instructions in ARM</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">Instruction</th>
-      <th style="text-align: center">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">ror</code></td>
-      <td style="text-align: center">Rotate Right</td>
-    </tr>
-    <tr>
-      <td style="text-align: center"><code class="language-plaintext highlighter-rouge">rrx</code></td>
-      <td style="text-align: center">Rotate Right with eXtend</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Just like other shift operators, <code class="language-plaintext highlighter-rouge">ror</code> accepts either an immediate or a register for the shift amount:</p>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">ror #&lt;imm&gt;</code>: rotates right by an immediate value</li>
-  <li><code class="language-plaintext highlighter-rouge">ror &lt;Rs&gt;</code>: rotates right by the value in a register</li>
-</ul>
-
-<p>On the other hand, <code class="language-plaintext highlighter-rouge">rrx</code> does <strong>not</strong> take any operand and <strong>always rotates by 1 bit</strong>, using the <strong>Carry flag in CPSR</strong> to extend the operation to 33 bits.</p>
-
-<h2 id="ror-rotate-right">ROR: Rotate Right</h2>
-<p>The <code class="language-plaintext highlighter-rouge">ror</code> instruction shifts all bits to the right, and the bits shifted out from the LSB side are <strong>re-inserted into the MSB side</strong>.<br />
-In other words, it’s a <strong>bit-preserving, circular move</strong>.</p>
-
-<p><strong>ror.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x96</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">ror</span> <span class="o">#</span><span class="mi">4</span>
-</code></pre></div></div>
-
-<p>Here, <code class="language-plaintext highlighter-rouge">R0 = 0x96</code> → <code class="language-plaintext highlighter-rouge">0b0000...1001_0110</code>
-After <code class="language-plaintext highlighter-rouge">ror #4</code>, the lower 4 bits <code class="language-plaintext highlighter-rouge">0110</code> are wrapped around and placed at the MSB:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Before:   0b0000_0000_0000_0000_0000_0000_1001_0110 = 0x96
-After:    0b0110_0000_0000_0000_0000_0000_0000_1001 = 0x60000009
-</code></pre></div></div>
-
-<h2 id="rrx-rotate-right-with-extend">RRX: Rotate Right with Extend</h2>
-<p><code class="language-plaintext highlighter-rouge">rrx</code> behaves similarly to <code class="language-plaintext highlighter-rouge">ror #1</code>, but with one major difference — it includes the <strong>CPSR’s Carry flag</strong> and performs a <strong>33-bit rotation</strong>:</p>
-
-<ul>
-  <li>The LSB is shifted into the <strong>Carry flag</strong></li>
-  <li>The current Carry flag value is shifted into the <strong>MSB</strong></li>
-</ul>
-
-<p><strong>rrx.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x69</span>
-  <span class="nb">movs</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">rrx</span>
-  <span class="nb">movs</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="nb">rrx</span>
-  <span class="nb">b</span> <span class="mf">.</span>
-</code></pre></div></div>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Initial:   0b0000_0000_0000_0000_0000_0000_0110_1001 = 0x69
-
-[rrx/C=0]: 0b0000_0000_0000_0000_0000_0000_0011_0100 -&gt; R1=0x34, C=1
-[rrx/C=1]: 0b1000_0000_0000_0000_0000_0000_0001_1010 -&gt; R2=0x8000001a, C=0
-</code></pre></div></div>
-
-<h3 id="checking-carry-flag-in-gdb">Checking Carry Flag in GDB</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="nt">-nostdlib</span> rrx.s <span class="nt">-o</span> rrx.elf
-<span class="nv">$ </span>qemu-system-arm <span class="nt">-machine</span> versatilepb <span class="nt">-nographic</span> <span class="nt">-S</span> <span class="nt">-s</span> <span class="nt">-kernel</span> rrx.elf
-<span class="nv">$ </span>gdb-multiarch rrx.elf
-</code></pre></div></div>
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">(</span>gdb<span class="o">)</span> target remote :1234
-<span class="o">(</span>gdb<span class="o">)</span> si                          <span class="c"># Executes: mov r0, #0x69</span>
-0x00010004 <span class="k">in </span>_start <span class="o">()</span>
-<span class="o">(</span>gdb<span class="o">)</span> i r r0
-r0             0x69     105
-<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1         <span class="c"># Check initial Carry Flag</span>
-<span class="nv">$3</span> <span class="o">=</span> 0
-<span class="o">(</span>gdb<span class="o">)</span> si                          <span class="c"># Executes: movs r1, r0, rrx</span>
-0x00010008 <span class="k">in </span>_start <span class="o">()</span>
-<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
-<span class="hll"><span class="nv">$4</span> <span class="o">=</span> 1
-</span><span class="o">(</span>gdb<span class="o">)</span> i r r1
-r1             0x34     52
-<span class="o">(</span>gdb<span class="o">)</span> si                          <span class="c"># Executes: movs r2, r1, rrx</span>
-0x0001000c <span class="k">in </span>_start <span class="o">()</span>
-<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
-<span class="hll"><span class="nv">$5</span> <span class="o">=</span> 0
-</span><span class="o">(</span>gdb<span class="o">)</span> i r r0 r1 r2
-r0             0x69     105
-r1             0x34     52
-r2             0x8000001a       <span class="nt">-2147483622</span></code></pre></figure>
-
-<h2 id="why-is-there-no-rotate-left-rol">Why is there no Rotate Left (ROL)?</h2>
-<p>ARM does not include a ROL instruction. Why?
-Because you can easily <strong>simulate rotate-left</strong> using a combination of <code class="language-plaintext highlighter-rouge">lsl</code> and <code class="language-plaintext highlighter-rouge">ror</code>.</p>
-
-<h3 id="simulated-rol-using-lsl-and-ror">Simulated ROL using LSL and ROR</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">@</span> <span class="nv">ROL</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="nv">n</span>
-  <span class="nb">lsl</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="nv">n</span>           <span class="no">@</span> <span class="nv">Logical</span> <span class="nv">sfhit</span> <span class="nv">left</span>
-  <span class="nb">ror</span> <span class="nv">r3</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#(</span><span class="mi">32</span> <span class="o">-</span> <span class="nv">n</span><span class="o">)</span>    <span class="no">@</span> <span class="nv">Rotate</span> <span class="nv">right</span> <span class="nv">the</span> <span class="nv">remaining</span> <span class="nv">bits</span>
-  <span class="nb">orr</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r3</span>           <span class="no">@</span> <span class="nv">Combine</span> <span class="nv">both</span> <span class="nv">halves</span>
-</code></pre></div></div>
-
-<p>For example, if <code class="language-plaintext highlighter-rouge">r0 = 0x80000001</code> and <code class="language-plaintext highlighter-rouge">n=1</code>:</p>
-<ul>
-  <li>LSL → <code class="language-plaintext highlighter-rouge">0x00000002</code></li>
-  <li>ROR(31) → <code class="language-plaintext highlighter-rouge">0x40000000</code></li>
-  <li>ORR → <code class="language-plaintext highlighter-rouge">0x40000002</code> (Valid rotate-left result)</li>
-</ul>
-
-<blockquote>
-  <p><code class="language-plaintext highlighter-rouge">orr</code> performs bitwise OR between the two shifted values.</p>
-</blockquote>
-
-<h2 id="summary">Summary</h2>
-<p>In this post, we’ve covered ARM’s rotate shift instructions:</p>
-
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">ror</code>: circular right shift that preserves all bits</li>
-  <li><code class="language-plaintext highlighter-rouge">rrx</code>: 1-bit circular shift with carry extension</li>
-  <li><code class="language-plaintext highlighter-rouge">rol</code> is not an instruction but can be emulated using <code class="language-plaintext highlighter-rouge">lsl</code> + <code class="language-plaintext highlighter-rouge">ror</code></li>
-</ul>
-
-<p>In the next post, we’ll explore how these shift operations integrate with real arithmetic instructions (<code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>) and how they affect <strong>Carry and Overflow</strong> flags.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="ror" /><category term="rrx" /><category term="arm" /><category term="assembly" /><category term="rotate shift" /><summary type="html"><![CDATA[In this post, we’ll explore the final topic in ARM’s shift operations — Rotate Shift. The ARMv4 architecture provides two rotate instructions: ror (Rotate Right) and rrx (Rotate Right with eXtend).]]></summary></entry></feed>
+Let me know in the comments if you want a breakdown of shift operation opcodes or internal instruction encoding!</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="shifter-operand" /><summary type="html"><![CDATA[In this post, we’ll take a complete look at Shifter Operands used in ARM’s Data Processing Instructions. Shifter operands are not optional—they are fundamental components of all data processing instructions.]]></summary></entry></feed>
