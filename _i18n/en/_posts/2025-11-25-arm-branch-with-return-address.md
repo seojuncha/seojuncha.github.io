@@ -87,15 +87,6 @@ foo:
 This example shows a simple flow where the subroutine foo adds `3` to `R0` and returns the result to be stored in `R1`.
 Without `mov pc, lr`, the result would never be written to `R1` and the program flow would not continue properly.
 
-<figure style="text-align: center;">
-  <img src="/assets/img/control-flow-with-pc-and-lr.png"
-    alt="Control-flow diagram showing return mechanism using BL and mov pc, lr"
-    style="display: block; margin: auto;" /> 
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  Figure 2. This diagram illustrates how BL stores the return address in LR and how <code>mov pc, lr</code> restores execution flow after the subroutine completes.
-  </figcaption>
-</figure>
-
 ### Debugging
 ```bash
 (gdb) target remote :1234
@@ -103,7 +94,7 @@ Without `mov pc, lr`, the result would never be written to `R1` and the program 
 (gdb) display/i $lr
 ```
 
-By inspecting `PC` and `LR` right after `bl foo`, you can clearly see that BL stores the next instruction’s address in `LR`.
+By inspecting `PC` and `LR` right after `bl foo`, you can clearly see that `BL` stores the next instruction’s address in `LR`.
 In particular, if `LR` matches the address of `mov r1, r0`, the behavior of `BL` becomes very intuitive.
 
 ## Conclusion

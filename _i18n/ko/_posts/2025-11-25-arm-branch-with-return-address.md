@@ -35,7 +35,7 @@ published : false
   bl label
 ```
 문법은 `b label`과 동일하지만 내부 동작이 다릅니다.
-`bl label`을 실행하면 label 위치로 점프하면서, **해당 BL 다음 명령어의 주소(복귀 주소)**를 `LR`에 저장합니다.
+`bl label`을 실행하면 label 위치로 점프하면서, **해당 `BL` 다음 명령어의 주소(복귀 주소)**를 `LR`에 저장합니다.
 이후 서브루틴 코드가 끝나면 `LR`에 저장된 주소를 `PC`로 로드하여 원래 실행 흐름으로 돌아갑니다.
 
 <figure style="text-align: center;">
@@ -81,22 +81,13 @@ foo:
 
 ### 실행 흐름
 1. `mov r0, #2` → R0 = 2
-2. `bl foo` → PC = foo, LR = mov r1, r0의 주소
+2. `bl foo` → PC = foo, LR = `mov r1, r0`의 주소
 3. `add r0, r0, #3` → R0 = 5
-4. `mov pc, lr` → PC가 mov r1, r0로 점프
+4. `mov pc, lr` → PC가 `mov r1, r0`로 점프
 5. `mov r1, r0` 실행
 
-이 예제는 서브루틴 foo에서 `R0`에 `3`을 더한 후, 그 값을 `R1`에 저장하는 간단한 흐름입니다.
-만약 `mov pc, lr`이 없다면 R1에 결과값이 저장되지 못하고 프로그램 흐름이 중단됩니다.
-
-<figure style="text-align: center;">
-  <img src="/assets/img/control-flow-with-pc-and-lr.png"
-    alt="BL과 mov pc, lr을 이용한 실행 흐름 복귀 구조 다이어그램"
-    style="display: block; margin: auto;" /> 
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  그림 2. BL이 복귀 주소를 LR에 저장하고, 서브루틴 종료 시 PC에 LR을 로드하여 원래 실행 흐름으로 돌아가는 구조를 나타냅니다.
-  </figcaption>
-</figure>
+이 예제는 서브루틴 `foo`에서 `R0`에 `3`을 더한 후, 그 값을 `R1`에 저장하는 간단한 흐름입니다.
+만약 `mov pc, lr`이 없다면 `R1`에 결과값이 저장되지 못하고 프로그램 흐름이 중단됩니다.
 
 ### 디버깅
 ```bash
