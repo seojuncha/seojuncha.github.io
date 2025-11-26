@@ -1,4 +1,89 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-26T09:38:38+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #13 - Branching Execution Flow with the B Instruction</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" rel="alternate" type="text/html" title="ARM Assembly #13 - Branching Execution Flow with the B Instruction" /><published>2025-11-23T01:00:00+00:00</published><updated>2025-11-23T01:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"><![CDATA[<p>In this post, we will explore how the <code class="language-plaintext highlighter-rouge">B</code> instruction is used for branching, along with practical examples.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-26T09:54:53+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #14 - Using the BL Instruction That Automatically Saves the Return Address</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html" rel="alternate" type="text/html" title="ARM Assembly #14 - Using the BL Instruction That Automatically Saves the Return Address" /><published>2025-11-26T09:30:00+00:00</published><updated>2025-11-26T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html"><![CDATA[<p>The <code class="language-plaintext highlighter-rouge">BL</code> instruction is an extended version of the <code class="language-plaintext highlighter-rouge">B</code> instruction described in the <a href="/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html">previous post</a>, adding function-call capability.
+While the <code class="language-plaintext highlighter-rouge">B</code> instruction simply jumps to a target label, the <code class="language-plaintext highlighter-rouge">BL</code> instruction <strong>automatically stores the return address in the <code class="language-plaintext highlighter-rouge">LR</code></strong> (Register <code class="language-plaintext highlighter-rouge">R14</code>) so execution can return after the branch.
+For this reason, <code class="language-plaintext highlighter-rouge">BL</code> is a core mechanism for implementing function calls in ARM and forms the foundation for concepts like the stack, calling conventions, and frame pointers.</p>
+
+<figure style="text-align: center;">
+  <a href="https://youtu.be/cMMjuVVKaS0" target="_blank">
+  <img src="/assets/img/ARM Assembly - bl instruction.png" alt="Youtube Video to explain ARM BL instruction" style="display: block; margin: auto;" /> 
+  </a>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
+  </figcaption>
+</figure>
+
+<p><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch-with-link.s"><strong>GitHub Sample Code</strong></a></p>
+
+<h2 id="why-we-need-to-store-the-return-address">Why We Need to Store the Return Address</h2>
+<p>When a function finishes executing, it must return to the point where it was called.
+If the return address is not stored, the CPU won’t know which instruction to execute next, so the address must be saved somewhere.</p>
+
+<h2 id="the-bl-instruction">The BL Instruction</h2>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">bl</span> <span class="nv">label</span>
+</code></pre></div></div>
+<p>The syntax looks identical to <code class="language-plaintext highlighter-rouge">b label</code>, but the internal behavior is different.
+When executing <code class="language-plaintext highlighter-rouge">bl label</code>, the CPU jumps to the label and simultaneously stores the address of the next instruction (the return address) into <code class="language-plaintext highlighter-rouge">LR</code>.
+After the subroutine finishes, the value stored in <code class="language-plaintext highlighter-rouge">LR</code> is loaded back into <code class="language-plaintext highlighter-rouge">PC</code> to restore the original control flow.</p>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/bl-with-lr-and-pc.png" alt="Diagram of PC and LR behavior during BL instruction execution" style="display: block; margin: auto;" /> 
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  Figure 1. When the BL instruction executes, the PC jumps to the subroutine while the LR stores the return address for later execution.
+  </figcaption>
+</figure>
+
+<h2 id="the-lr-link-register">The LR (Link Register)</h2>
+<p>ARM uses the <code class="language-plaintext highlighter-rouge">LR</code> as a dedicated register to temporarily store the return address when making function calls.
+In ARMv4, register <code class="language-plaintext highlighter-rouge">R14</code> is used as the <code class="language-plaintext highlighter-rouge">LR</code>.</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">bl</span> <span class="nv">foo</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>   <span class="no">@</span> <span class="nv">LR</span> <span class="nv">has</span> <span class="nv">this</span> <span class="nv">instruction</span> <span class="nv">address</span><span class="mf">.</span>
+</code></pre></div></div>
+
+<p>When the subroutine finishes, execution must return using the value stored in <code class="language-plaintext highlighter-rouge">LR</code> by writing it into <code class="language-plaintext highlighter-rouge">PC</code>.</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">pc</span><span class="o">,</span> <span class="nv">lr</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Since ARMv4 does not support the <code class="language-plaintext highlighter-rouge">bx</code> instruction, returning is done using <code class="language-plaintext highlighter-rouge">mov pc, lr</code>.
+Starting from ARMv5, <code class="language-plaintext highlighter-rouge">bx lr</code> became the standard return instruction.</p>
+</blockquote>
+
+<h2 id="example-code">Example Code</h2>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+  <span class="nb">bl</span> <span class="nv">foo</span>
+  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
+  <span class="nb">b</span> <span class="mf">.</span>
+<span class="nl">foo</span><span class="err">:</span>
+  <span class="nb">add</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
+  <span class="nb">mov</span> <span class="nv">pc</span><span class="o">,</span> <span class="nv">lr</span>
+</code></pre></div></div>
+
+<h3 id="execution-flow">Execution Flow</h3>
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">mov r0, #2</code> → R0 = 2</li>
+  <li><code class="language-plaintext highlighter-rouge">bl foo</code> → PC = foo, LR = address of <code class="language-plaintext highlighter-rouge">mov r1, r0</code></li>
+  <li><code class="language-plaintext highlighter-rouge">add r0, r0, #3</code> → R0 = 5</li>
+  <li><code class="language-plaintext highlighter-rouge">mov pc, lr</code> → PC jumps to <code class="language-plaintext highlighter-rouge">mov r1, r0</code></li>
+  <li>run <code class="language-plaintext highlighter-rouge">mov r1, r0</code></li>
+</ol>
+
+<p>This example shows a simple flow where the subroutine foo adds <code class="language-plaintext highlighter-rouge">3</code> to <code class="language-plaintext highlighter-rouge">R0</code> and returns the result to be stored in <code class="language-plaintext highlighter-rouge">R1</code>.
+Without <code class="language-plaintext highlighter-rouge">mov pc, lr</code>, the result would never be written to <code class="language-plaintext highlighter-rouge">R1</code> and the program flow would not continue properly.</p>
+
+<h3 id="debugging">Debugging</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> target remote :1234
+<span class="o">(</span>gdb<span class="o">)</span> display/i <span class="nv">$pc</span>
+<span class="o">(</span>gdb<span class="o">)</span> display/i <span class="nv">$lr</span>
+</code></pre></div></div>
+
+<p>By inspecting <code class="language-plaintext highlighter-rouge">PC</code> and <code class="language-plaintext highlighter-rouge">LR</code> right after <code class="language-plaintext highlighter-rouge">bl foo</code>, you can clearly see that <code class="language-plaintext highlighter-rouge">BL</code> stores the next instruction’s address in <code class="language-plaintext highlighter-rouge">LR</code>.
+In particular, if <code class="language-plaintext highlighter-rouge">LR</code> matches the address of <code class="language-plaintext highlighter-rouge">mov r1, r0</code>, the behavior of <code class="language-plaintext highlighter-rouge">BL</code> becomes very intuitive.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In the next post, we’ll examine condition codes for conditional execution.
+Until now, every instruction executed unconditionally, but ARM allows adding two-letter condition codes so instructions run only under specific conditions.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm bl" /><category term="arm branch instruction" /><category term="link register" /><category term="arm lr" /><summary type="html"><![CDATA[The BL instruction is an extended version of the B instruction described in the previous post, adding function-call capability. While the B instruction simply jumps to a target label, the BL instruction automatically stores the return address in the LR (Register R14) so execution can return after the branch. For this reason, BL is a core mechanism for implementing function calls in ARM and forms the foundation for concepts like the stack, calling conventions, and frame pointers.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #13 - Branching Execution Flow with the B Instruction</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" rel="alternate" type="text/html" title="ARM Assembly #13 - Branching Execution Flow with the B Instruction" /><published>2025-11-23T01:00:00+00:00</published><updated>2025-11-23T01:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"><![CDATA[<p>In this post, we will explore how the <code class="language-plaintext highlighter-rouge">B</code> instruction is used for branching, along with practical examples.
 The <code class="language-plaintext highlighter-rouge">B</code> instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.</p>
 
 <figure style="text-align: center;">
@@ -2339,247 +2424,4 @@ INT8_MAX: 127
   <li><strong>Unsigned Binary</strong>: Represents only positive values (e.g., memory addresses, timers).</li>
 </ul>
 
-<p><strong>Did this article help you? Leave your questions or feedback in the comments below!</strong></p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="signed binary" /><category term="unsigned binary" /><category term="binary representation" /><summary type="html"><![CDATA[In this article, we will explore the differences between Signed Binary and Unsigned Binary, their respective representation methods, and considerations when programming in C.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #5 - A Complete Guide to Shifter Operands</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand.html" rel="alternate" type="text/html" title="ARM Assembly #5 - A Complete Guide to Shifter Operands" /><published>2025-09-25T14:10:00+00:00</published><updated>2025-09-25T14:10:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/09/25/arm-sfhiter-operand.html"><![CDATA[<p>In this post, we’ll take a complete look at <strong>Shifter Operands</strong> used in ARM’s <strong>Data Processing Instructions</strong>. 
-Shifter operands are not optional—they are <strong>fundamental components</strong> of all data processing instructions.</p>
-
-<p>We’ll focus on three key aspects:</p>
-
-<ol>
-  <li>Types and syntax of shifter operands</li>
-  <li>How immediate values are encoded and what limitations they have</li>
-  <li>Why ARM supports shifter operands at all</li>
-</ol>
-
-<h2 id="how-shifter-operands-are-used">How Shifter Operands Are Used</h2>
-
-<p>Instructions like <code class="language-plaintext highlighter-rouge">mov</code>, <code class="language-plaintext highlighter-rouge">add</code>, and <code class="language-plaintext highlighter-rouge">sub</code> always use at least one <strong>shifter operand</strong>.<br />
-A typical data processing instruction includes:</p>
-
-<ul>
-  <li>Destination register (<code class="language-plaintext highlighter-rouge">Rd</code>)</li>
-  <li>Input register (<code class="language-plaintext highlighter-rouge">Rn</code>)</li>
-  <li>Shifter operand (<code class="language-plaintext highlighter-rouge">Shifter Operand</code>)</li>
-</ul>
-
-<figure>
-  <img src="/assets/img/arm-data-processing-table.png" style="display: block; margin: auto;" alt="ARM Data Processing Instruction Table" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    A summary of ARM's <b>Data Processing Instructions</b>.  
-    All of them use a <code>shifter_operand</code> and may combine it with <code>Rn</code> to produce a result in <code>Rd</code>, or simply update condition flags.
-  </figcaption>
-</figure>
-
-<h3 id="instruction-format">Instruction Format</h3>
-
-<ul>
-  <li>Unary instructions (<code class="language-plaintext highlighter-rouge">mov</code>, <code class="language-plaintext highlighter-rouge">mvn</code>):</li>
-</ul>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;instruction&gt; &lt;Rd&gt;, &lt;Shifter Operand&gt;
-</code></pre></div></div>
-
-<ul>
-  <li>Binary instructions (<code class="language-plaintext highlighter-rouge">add</code>, <code class="language-plaintext highlighter-rouge">sub</code>, <code class="language-plaintext highlighter-rouge">and</code>, etc.):</li>
-</ul>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;instruction&gt; &lt;Rd&gt;, &lt;Rn&gt;, &lt;Shifter Operand&gt;
-</code></pre></div></div>
-
-<p>In other words:</p>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">mov</code> and <code class="language-plaintext highlighter-rouge">mvn</code> store the shifter operand’s value (or its bitwise negation) into <code class="language-plaintext highlighter-rouge">Rd</code></li>
-  <li>Other instructions compute <code class="language-plaintext highlighter-rouge">Rn op ShifterOperand</code>, storing the result in <code class="language-plaintext highlighter-rouge">Rd</code></li>
-</ul>
-
-<h2 id="types-of-shifter-operands">Types of Shifter Operands</h2>
-
-<p>Shifter operands can take one of the following forms:</p>
-
-<ul>
-  <li><strong>Immediate constant</strong>
-    <ul>
-      <li><code class="language-plaintext highlighter-rouge">#&lt;immediate&gt;</code></li>
-    </ul>
-  </li>
-  <li><strong>Register value</strong>
-    <ul>
-      <li><code class="language-plaintext highlighter-rouge">&lt;Rm&gt;</code></li>
-    </ul>
-  </li>
-  <li><strong>Shifted register</strong>
-    <ul>
-      <li>Logical shift left: <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;, lsl #&lt;shift_imm&gt;</code> or <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;, lsl &lt;Rs&gt;</code></li>
-      <li>Logical shift right: <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;, lsr #&lt;shift_imm&gt;</code> or <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;, lsr &lt;Rs&gt;</code></li>
-      <li>Arithmetic shift right: <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;, asr #&lt;shift_imm&gt;</code> or <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;, asr &lt;Rs&gt;</code></li>
-      <li>Rotate: <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;, ror #&lt;shift_imm&gt;</code> / <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;, ror &lt;Rs&gt;</code> / <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;, rrx</code></li>
-    </ul>
-  </li>
-</ul>
-
-<p>Here, <code class="language-plaintext highlighter-rouge">&lt;Rm&gt;</code> is the operand register used in the operation.</p>
-
-<p>You can plug these into the <code class="language-plaintext highlighter-rouge">&lt;Shifter Operand&gt;</code> position in any data-processing instruction.</p>
-
-<p>Example:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># mov r0, r1
-  &lt;instruction&gt; &lt;Rd&gt;, &lt;Shifter Operand&gt;
-  &lt;instruction&gt; &lt;Rd&gt;, &lt;Rm&gt;
-       mov       r0    r1
- 
-# add r0, r1, r0, lsl #2
-  &lt;instruction&gt; &lt;Rd&gt;, &lt;Rn&gt;, &lt;Shifter Operand&gt;
-  &lt;instruction&gt; &lt;Rd&gt;, &lt;Rn&gt;, &lt;Rm&gt; lsl #&lt;shift_imm&gt;
-       add       r0    r1    r0         #2
-</code></pre></div></div>
-
-<h3 id="valid-and-invalid-syntax-examples">Valid and Invalid Syntax Examples</h3>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">mov</span> <span class="nb">r0</span><span class="err">,</span> <span class="nv">r1</span>           <span class="no">@</span> <span class="nv">Valid</span> <span class="o">(&lt;</span><span class="nv">Rd</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">&lt;</span><span class="nv">Rm</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nv">r1</span><span class="o">)</span>
-<span class="nl">mov</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">#</span><span class="mh">0xff</span>        <span class="no">@</span> <span class="nv">Valid</span> <span class="o">(&lt;</span><span class="nv">Rd</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">&lt;</span><span class="nv">Shifter</span> <span class="nv">Operand</span><span class="o">&gt;</span> <span class="o">=</span> <span class="mh">0xff</span><span class="o">)</span>
-<span class="nl">mov</span> <span class="nb">r0</span><span class="err">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span>   <span class="no">@</span> <span class="nv">Valid</span> <span class="o">(&lt;</span><span class="nv">Rd</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">&lt;</span><span class="nv">Sfhiter</span> <span class="nv">Operand</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">)</span>
-<span class="nl">add</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">#</span><span class="mi">1</span>           <span class="no">@</span> <span class="nv">Invalid</span> <span class="o">(&lt;</span><span class="nv">Rd</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">missing</span> <span class="o">&lt;</span><span class="nv">Rn</span><span class="o">&gt;)</span>
-</code></pre></div></div>
-
-<h2 id="immediate-value-limitations">Immediate Value Limitations</h2>
-<p>When using an immediate (#<immediate>) as a shifter operand, there’s an important limitation.
-You can’t represent all 32-bit values—even though ARM is a 32-bit architecture.</immediate></p>
-
-<p>Example:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x101</span>
-  <span class="nb">b</span> <span class="mf">.</span>
-</code></pre></div></div>
-
-<p>This causes an error:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>imm.s: Assembler messages:
-imm.s:4: Error: invalid constant (101) after fixup
-</code></pre></div></div>
-
-<h3 id="immediate-value-encoding">Immediate Value Encoding</h3>
-<p>Immediate values in shifter operands are encoded in <strong>12 bits</strong> total:</p>
-<ul>
-  <li>8-bit constant (imm8)</li>
-  <li>4-bit rotation (rotate_imm)</li>
-</ul>
-
-<p>Actual rotation is <code class="language-plaintext highlighter-rouge">rotate_imm * 2</code> bits (even numbers only)</p>
-
-<p>The final value is computed like this:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#&lt;immediate&gt; = #&lt;imm8&gt; ROR (2 * #&lt;rotate_imm&gt;)
-</code></pre></div></div>
-
-<p>That means <strong>you can only represent values that can be formed by rotating an 8-bit number.</strong></p>
-<blockquote>
-  <p>Constraints:</p>
-  <ul>
-    <li>0x00 &lt;= imm8 &lt;= 0xff</li>
-    <li>0 &lt;= rotate_imm &lt;= 15</li>
-    <li>Effective rotation = 2 * rotate_imm</li>
-  </ul>
-</blockquote>
-
-<h3 id="example-valid-immediate">Example: Valid Immediate</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">mov</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">#</span><span class="mh">0x104</span>
-</code></pre></div></div>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">0x104</code> = <code class="language-plaintext highlighter-rouge">0b0000_0000_0000_0000_0000_0001_0000_0100</code></li>
-  <li>Can’t be stored directly in 8 bits, but:</li>
-  <li>If you rotate it <strong>left by 2</strong> (== right by 30), the resulting 8-bit pattern(<code class="language-plaintext highlighter-rouge">0100_0001</code>) is valid</li>
-  <li>Therefore, <code class="language-plaintext highlighter-rouge">imm8=0x41</code>, <code class="language-plaintext highlighter-rouge">rotate_imm=15</code> → valid encoding</li>
-</ul>
-
-<h3 id="example-invalid-immediate">Example: Invalid Immediate</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">mov</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">#</span><span class="mh">0x101</span>
-</code></pre></div></div>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">0x101</code>=<code class="language-plaintext highlighter-rouge">0b0000_0000_0000_0000_0000_0001_0000_0001</code></li>
-  <li>No rotation of 8-bit values can produce this → invalid</li>
-</ul>
-
-<h3 id="what-to-do-with-unrepresentable-constants">What to Do with Unrepresentable Constants?</h3>
-<p>Use a <strong>literal pool</strong>.</p>
-
-<p><strong>literal-pool.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">=</span><span class="mh">0x101</span>   <span class="no">@</span> <span class="nv">The</span> <span class="nv">assembler</span> <span class="nv">places</span> <span class="mh">0x101</span> <span class="nv">nearby</span> <span class="nv">and</span> <span class="nv">loads</span> <span class="nv">it</span>
-  <span class="nb">b</span> <span class="mf">.</span>
-</code></pre></div></div>
-<p>Compile:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="se">\</span>
-    <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="se">\</span>
-    <span class="nt">-nostdlib</span> <span class="se">\</span>
-    literal-pool.s <span class="se">\</span>
-    <span class="nt">-o</span> literal-pool.elf
-</code></pre></div></div>
-<p>Disassembled:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-objdump <span class="nt">-D</span> literal-pool.elf
-00010000 &lt;_start&gt;:
-   10000:       e51f0000        ldr     r0, <span class="o">[</span>pc, <span class="c">#-0]   @ 10008 &lt;_start+0x8&gt;</span>
-</code></pre></div></div>
-<blockquote>
-  <p>We’ll explore literal pools in more detail in a future post.</p>
-</blockquote>
-
-<h4 id="example-in-c-when-constants-cant-be-encoded">Example in C: When Constants Can’t Be Encoded</h4>
-
-<p><strong>invalid-imm.c</strong></p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mh">0x101</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">x</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Compile:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="nt">-fomit-frame-pointer</span> <span class="nt">-nostdlib</span> <span class="nt">-S</span> invalid-imm.c
-</code></pre></div></div>
-
-<p>Assembly output:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">main</span><span class="err">:</span>
-  <span class="nb">sub</span> <span class="nv">sp</span><span class="o">,</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mi">8</span>
-  <span class="nb">ldr</span> <span class="nv">r3</span><span class="o">,</span> <span class="mf">.</span><span class="nv">L3</span>
-  <span class="err">@...</span>
-<span class="err">.</span><span class="nl">L3</span><span class="err">:</span>
-  <span class="err">.</span><span class="nb">word</span> <span class="mi">257</span>
-</code></pre></div></div>
-<p>The constant is stored in a literal pool and loaded with <code class="language-plaintext highlighter-rouge">ldr</code>.</p>
-
-<h2 id="why-use-this-encoding">Why Use This Encoding?</h2>
-<p>If ARM allowed 32-bit immediate constants in every instruction, the instruction size would need to increase to 64 bits.
-That would violate the compact RISC design of ARM.</p>
-
-<p>Most common constants in real code are:</p>
-
-<ul>
-  <li>Small values (0, 1, 255)</li>
-  <li>Bitmasks (0xff00, 0x8000)</li>
-  <li>Address offsets</li>
-</ul>
-
-<p>These are often representable via rotate encoding.
-The result is <strong>compact, expressive, and efficient</strong>.</p>
-
-<h2 id="why-do-shifter-operands-exist">Why Do Shifter Operands Exist?</h2>
-<p>ARM instructions pass the second operand through a <strong>Barrel Shifter</strong> before going to the ALU.</p>
-
-<figure>
-  <img src="/assets/img/arm-barrel-shifter.png" style="display: block; margin: auto;" alt="ARM Barrel Shifter Diagram" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-A partial block diagram of the ARM7TDMI. The second operand is always passed through a <b>Barrel Shifter</b> before entering the ALU. This allows shift and arithmetic/logic operations to happen in a single instruction.
-  </figcaption>
-</figure>
-
-<p>This hardware design allows:</p>
-
-<ul>
-  <li>Fewer instructions</li>
-  <li>Higher code density</li>
-  <li>Better performance</li>
-</ul>
-
-<hr />
-<p>This concludes our deep dive into shifter operands in ARM assembly.
-Let me know in the comments if you want a breakdown of shift operation opcodes or internal instruction encoding!</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="shifter-operand" /><summary type="html"><![CDATA[In this post, we’ll take a complete look at Shifter Operands used in ARM’s Data Processing Instructions. Shifter operands are not optional—they are fundamental components of all data processing instructions.]]></summary></entry></feed>
+<p><strong>Did this article help you? Leave your questions or feedback in the comments below!</strong></p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="signed binary" /><category term="unsigned binary" /><category term="binary representation" /><summary type="html"><![CDATA[In this article, we will explore the differences between Signed Binary and Unsigned Binary, their respective representation methods, and considerations when programming in C.]]></summary></entry></feed>
