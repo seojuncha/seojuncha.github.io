@@ -3,7 +3,7 @@ layout: post
 lang: ko
 ref: "arm-branch-with-return-address"
 title: "ARM 어셈블리 #14 - 복귀주소를 자동 저장하는 BL 명령어 활용"
-date: 2025-11-23 10:00:00 +0900
+date: 2025-11-26 18:30:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm bl", "arm branch instruction", "link register", "arm lr"]
 published : false
@@ -14,8 +14,8 @@ published : false
 따라서 `BL`은 ARM에서 함수 호출을 구현하는 핵심 매커니즘이며, 스택, 함수 호출 규약, 프레임 포인터 등 이후에 배우게 될 개념들의 기반이 됩니다.
 
 <figure style="text-align: center;">
-  <a href="https://youtu.be/BZamp0G0viA" target="_blank">
-  <img src="/assets/img/"
+  <a href="https://youtu.be/cMMjuVVKaS0" target="_blank">
+  <img src="/assets/img/ARM Assembly - bl instruction.png"
     alt="Youtube Video to explain ARM BL instruction"
     style="display: block; margin: auto;" /> 
   </a>
