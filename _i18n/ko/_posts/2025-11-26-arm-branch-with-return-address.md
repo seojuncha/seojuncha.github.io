@@ -6,7 +6,6 @@ title: "ARM 어셈블리 #14 - 복귀주소를 자동 저장하는 BL 명령어 
 date: 2025-11-26 18:30:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm bl", "arm branch instruction", "link register", "arm lr"]
-published : false
 ---
 
 `BL` 명령은 [이전 포스팅]({% post_url 2025-11-23-arm-basic-branch %})에서 설명한 `B` 명령에 함수 호출 기능을 더한 명령어입니다.

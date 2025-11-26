@@ -6,7 +6,6 @@ title: "ARM Assembly #14 - Using the BL Instruction That Automatically Saves the
 date: 2025-11-26 18:30:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm bl", "arm branch instruction", "link register", "arm lr"]
-published: false
 ---
 
 The `BL` instruction is an extended version of the `B` instruction described in the [previous post]({% post_url 2025-11-23-arm-basic-branch %}), adding function-call capability.
