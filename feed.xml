@@ -1,4 +1,103 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-26T09:54:53+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #14 - Using the BL Instruction That Automatically Saves the Return Address</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html" rel="alternate" type="text/html" title="ARM Assembly #14 - Using the BL Instruction That Automatically Saves the Return Address" /><published>2025-11-26T09:30:00+00:00</published><updated>2025-11-26T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html"><![CDATA[<p>The <code class="language-plaintext highlighter-rouge">BL</code> instruction is an extended version of the <code class="language-plaintext highlighter-rouge">B</code> instruction described in the <a href="/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html">previous post</a>, adding function-call capability.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-11-27T11:23:37+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html" rel="alternate" type="text/html" title="ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags" /><published>2025-11-27T11:20:00+00:00</published><updated>2025-11-27T11:20:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"><![CDATA[<p>Until now, every instruction we examined executed unconditionally once its turn came.
+However, the ARM architecture provides a unique feature: it can <strong>execute an instruction only when a specific condition is met</strong>, using the <strong>condition flags</strong> stored in the <code class="language-plaintext highlighter-rouge">CPSR</code> register.</p>
+
+<p>This allows ARM to implement conditional logic without using branch instructions, which is one of the architecture’s defining characteristics.
+Reducing branches also helps maintain pipeline efficiency.</p>
+
+<h2 id="cpsr-current-program-status-register">CPSR (Current Program Status Register)</h2>
+<p>The <code class="language-plaintext highlighter-rouge">CPSR</code> register stores the CPU’s program state and contains four condition flags in its upper 4 bits:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Bit</th>
+      <th>Flag</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>31</td>
+      <td>N</td>
+      <td>Negative result</td>
+    </tr>
+    <tr>
+      <td>30</td>
+      <td>Z</td>
+      <td>Zero result</td>
+    </tr>
+    <tr>
+      <td>29</td>
+      <td>C</td>
+      <td>Carry</td>
+    </tr>
+    <tr>
+      <td>28</td>
+      <td>V</td>
+      <td>Overflow</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>To update these flags, the instruction must include the <code class="language-plaintext highlighter-rouge">s</code> suffix, such as <code class="language-plaintext highlighter-rouge">adds</code>, <code class="language-plaintext highlighter-rouge">subs</code>, or <code class="language-plaintext highlighter-rouge">movs</code>.</p>
+
+<h2 id="condition-flags">Condition Flags</h2>
+<p>Almost every ARM instruction can be made conditional.
+By appending a two-letter condition code (e.g., <code class="language-plaintext highlighter-rouge">EQ</code>, <code class="language-plaintext highlighter-rouge">NE</code>, <code class="language-plaintext highlighter-rouge">MI</code>), the instruction will execute only when the corresponding <code class="language-plaintext highlighter-rouge">CPSR</code> flags match the condition.</p>
+
+<figure style="text-align: center;"> 
+  <img src="/assets/img/condition-code-table-in-arm-document.png" alt="ARM condition code table" style="display: block; margin: auto;" /> 
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"> 
+  Figure 1. Condition code summary from the ARM Architecture Reference Manual
+  </figcaption> 
+</figure>
+
+<h2 id="instruction--condition">Instruction + Condition</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{instruction}{condition}
+</code></pre></div></div>
+
+<p>To execute an instruction only <strong>when the previous result is negative</strong>:</p>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">movmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">MI</code>(Minus) executes only when the <code class="language-plaintext highlighter-rouge">N</code> flag is <code class="language-plaintext highlighter-rouge">1</code>, meaning the previous result was negative.</p>
+
+<h2 id="example-code">Example Code</h2>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">movs</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">1</span>
+  <span class="nb">addmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
+  <span class="nb">addpl</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>
+  <span class="nb">b</span> <span class="mf">.</span>
+</code></pre></div></div>
+
+<p>This code performs:</p>
+<ul>
+  <li>Add <code class="language-plaintext highlighter-rouge">5</code> when the value is negative</li>
+  <li>Add <code class="language-plaintext highlighter-rouge">1</code> when the value is zero or positive</li>
+</ul>
+
+<p>Equivalent C code:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">r0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="n">r0</span> <span class="o">+=</span> <span class="p">(</span><span class="n">r0</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="mi">5</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="debugging-cpsr-flags">Debugging CPSR Flags</h2>
+<p>Use GDB to inspect <code class="language-plaintext highlighter-rouge">CPSR</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> p/x <span class="nv">$cpsr</span>
+</code></pre></div></div>
+
+<p>Extract each flag:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 31<span class="o">)</span> &amp; 1   <span class="c"># N</span>
+p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 30<span class="o">)</span> &amp; 1   <span class="c"># Z</span>
+p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1   <span class="c"># C</span>
+p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 28<span class="o">)</span> &amp; 1   <span class="c"># V</span>
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we explored conditional execution using <code class="language-plaintext highlighter-rouge">CPSR</code> flags and condition codes.
+In the next article, we will cover conditional branches using <code class="language-plaintext highlighter-rouge">CMP</code>/<code class="language-plaintext highlighter-rouge">CMN</code> and discuss how to choose between conditional execution and branching.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="condition flags" /><category term="arm cpsr" /><summary type="html"><![CDATA[Until now, every instruction we examined executed unconditionally once its turn came. However, the ARM architecture provides a unique feature: it can execute an instruction only when a specific condition is met, using the condition flags stored in the CPSR register.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #14 - Using the BL Instruction That Automatically Saves the Return Address</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html" rel="alternate" type="text/html" title="ARM Assembly #14 - Using the BL Instruction That Automatically Saves the Return Address" /><published>2025-11-26T09:30:00+00:00</published><updated>2025-11-26T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html"><![CDATA[<p>The <code class="language-plaintext highlighter-rouge">BL</code> instruction is an extended version of the <code class="language-plaintext highlighter-rouge">B</code> instruction described in the <a href="/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html">previous post</a>, adding function-call capability.
 While the <code class="language-plaintext highlighter-rouge">B</code> instruction simply jumps to a target label, the <code class="language-plaintext highlighter-rouge">BL</code> instruction <strong>automatically stores the return address in the <code class="language-plaintext highlighter-rouge">LR</code></strong> (Register <code class="language-plaintext highlighter-rouge">R14</code>) so execution can return after the branch.
 For this reason, <code class="language-plaintext highlighter-rouge">BL</code> is a core mechanism for implementing function calls in ARM and forms the foundation for concepts like the stack, calling conventions, and frame pointers.</p>
 
@@ -1826,602 +1925,4 @@ and <code class="language-plaintext highlighter-rouge">adc</code> correctly incl
       <td style="text-align: center">Performs subtraction in reverse order</td>
     </tr>
   </tbody>
-</table>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="add" /><category term="sub" /><category term="adc" /><category term="sbc" /><category term="rsb" /><category term="rsc" /><summary type="html"><![CDATA[In this post, we’ll explore the basic arithmetic operations in ARM Assembly — addition, subtraction, and their variants that include carry (C flag).]]></summary></entry><entry xml:lang="en"><title type="html">Binary Representation: Signed vs Unsigned</title><link href="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" rel="alternate" type="text/html" title="Binary Representation: Signed vs Unsigned" /><published>2025-09-27T13:00:00+00:00</published><updated>2025-09-27T13:00:00+00:00</updated><id>https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary</id><content type="html" xml:base="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"><![CDATA[<p>In this article, we will explore the <strong>differences between Signed Binary and Unsigned Binary</strong>, <strong>their respective representation methods</strong>, and <strong>considerations when programming in C</strong>.</p>
-
-<p>From the user’s perspective, data types handled by computers can be broadly categorized as either <strong>characters</strong> or <strong>numbers</strong>. However, from the computer’s perspective, even characters are ultimately processed as numbers. Therefore, today, we will focus on the numeric data types, specifically integers, and how they are handled by computers.</p>
-
-<figure>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/ASCII-Table.png" style="display: block; margin: auto;" alt="wiki-ascii-table" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-An ASCII table is used to represent characters as numbers.
-  </figcaption>
-</figure>
-
-<h2 id="concept-of-integers">Concept of Integers</h2>
-<p>Numerical data in computers can be broadly divided into integers and real numbers. In mathematics, numbers are classified based on their characteristics as shown below.</p>
-
-<h3 id="integers-and-real-numbers">Integers and Real Numbers</h3>
-<figure>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Classification_of_Numbers.jpg" style="display: block; margin: auto;" alt="classification-of-real-number" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-Definition of integers within the range of real numbers, which include positive numbers, negative numbers, and zero.
-  </figcaption>
-</figure>
-
-<h3 id="meaning-of-integers-in-computers">Meaning of Integers in Computers</h3>
-<p>All data is stored in a computer’s memory as binary. This means that <strong>storing an integer in a computer’s memory occupies a specific memory space</strong>. In daily life, we use decimal representation, where each digit (e.g., tens, hundreds) can range from 0 to 9, allowing for 10 different values per place (hence the term “decimal”).</p>
-
-<blockquote>
-  <p><strong>Memory Space?</strong><br />
-The term “memory space” is used because data is not always stored in main memory (RAM). For instance, data can also be stored in CPU registers. For convenience, we will use “memory” interchangeably in this article.</p>
-</blockquote>
-
-<p>Computers process all data as binary (0s and 1s). Thus, to represent any data, including numbers, we need a binary representation. However, this is merely a difference in representation; the meaning remains the same. For instance, the number ‘5’ is represented as ‘101’ in binary but remains the same numerical value.</p>
-
-<p>As previously defined, integers consist of positive numbers, negative numbers, and zero. In computers, integers are represented using <strong>Signed Integers</strong> and <strong>Unsigned Integers</strong>.</p>
-
-<ul>
-  <li><strong>Signed Integers</strong> include both positive (+) and negative (-) signs in memory.</li>
-  <li><strong>Unsigned Integers</strong> assume a positive sign by default and only store the magnitude of the number in memory.</li>
-</ul>
-
-<p>This distinction is significant because <strong>the same binary data can represent different values depending on whether it is treated as signed or unsigned</strong>.</p>
-
-<h2 id="unsigned-binary-concept-and-conversion">Unsigned Binary: Concept and Conversion</h2>
-<p>Unsigned Binary represents unsigned integers in binary. Since there is no sign bit, straightforward mathematical conversion between binary and decimal applies.</p>
-
-<blockquote>
-  <p><strong>Natural Numbers</strong><br />
-Unsigned integers are equivalent to natural numbers.</p>
-</blockquote>
-
-<h3 id="concept">Concept</h3>
-
-<p>For example, in a 4-bit space, the binary, decimal, and hexadecimal representations of unsigned integers are as follows:</p>
-
-<p><strong>4-bit Unsigned Binary</strong></p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">Binary (bin)</th>
-      <th style="text-align: center">Decimal (dec)</th>
-      <th style="text-align: center">Hexadecimal (hex)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0000</td>
-      <td style="text-align: center">0</td>
-      <td style="text-align: center">0x0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0001</td>
-      <td style="text-align: center">1</td>
-      <td style="text-align: center">0x1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0010</td>
-      <td style="text-align: center">2</td>
-      <td style="text-align: center">0x2</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0011</td>
-      <td style="text-align: center">3</td>
-      <td style="text-align: center">0x3</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0100</td>
-      <td style="text-align: center">4</td>
-      <td style="text-align: center">0x4</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0101</td>
-      <td style="text-align: center">5</td>
-      <td style="text-align: center">0x5</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0110</td>
-      <td style="text-align: center">6</td>
-      <td style="text-align: center">0x6</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111</td>
-      <td style="text-align: center">7</td>
-      <td style="text-align: center">0x7</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000</td>
-      <td style="text-align: center">8</td>
-      <td style="text-align: center">0x8</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1001</td>
-      <td style="text-align: center">9</td>
-      <td style="text-align: center">0x9</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1010</td>
-      <td style="text-align: center">10</td>
-      <td style="text-align: center">0xA</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1011</td>
-      <td style="text-align: center">11</td>
-      <td style="text-align: center">0xB</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1100</td>
-      <td style="text-align: center">12</td>
-      <td style="text-align: center">0xC</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1101</td>
-      <td style="text-align: center">13</td>
-      <td style="text-align: center">0xD</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1110</td>
-      <td style="text-align: center">14</td>
-      <td style="text-align: center">0xE</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111</td>
-      <td style="text-align: center">15</td>
-      <td style="text-align: center">0xF</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Thus, the decimal range of a 4-bit unsigned integer is $0 \leq \Z \leq 2^4-1$, and the hexadecimal range is from <code class="language-plaintext highlighter-rouge">0x0</code> to <code class="language-plaintext highlighter-rouge">0xF</code>.</p>
-
-<blockquote>
-  <p><strong>Hexadecimal Representation by Bit Size</strong><br />
-Hexadecimal is widely used to represent numbers in computer systems. Here are the maximum hexadecimal values based on bit size:<br />
-4 bits  = 0xF<br />
-8 bits  = 0xFF<br />
-16 bits = 0xFFFF<br />
-32 bits = 0xFFFF_FFFF</p>
-</blockquote>
-
-<h3 id="conversion">Conversion</h3>
-<h4 id="converting-decimal-to-binary">Converting Decimal to Binary</h4>
-<p>To convert a decimal number to binary, use division (/) and modulus (%) operations as follows:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">Division (/)</th>
-      <th style="text-align: center">Modulus (%)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">45 / 2 = 22</td>
-      <td style="text-align: center">45 % 2 = 1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">22 / 2 = 11</td>
-      <td style="text-align: center">22 % 2 = 0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">11 / 2 = 5</td>
-      <td style="text-align: center">11 % 2 = 1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">5 / 2 = 2</td>
-      <td style="text-align: center">5 % 2 = 1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">2 / 2 = 1</td>
-      <td style="text-align: center">2 % 2 = 0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1 / 2 = 0</td>
-      <td style="text-align: center">1 % 2 = 1</td>
-    </tr>
-  </tbody>
-</table>
-
-\[\begin{aligned}
-45_{10} &amp;= 22 \times 2 + 1 \newline
-&amp;= (11 \times 2 + 0) \times 2 + 1 \newline
-&amp;= ((5 \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
-&amp;= (((2 \times 2 + 1) \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
-&amp;= ((((1 \times 2 + 0) \times 2 + 1) \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
-&amp;= (((((0 \times 2 + 1) \times 2 + 0) \times 2 + 1) \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
-&amp;= 1 \times 2^5 + 0 \times 2^4 + 1 \times 2^3 + 1 \times 2^2 + 0 \times 2^1 + 1 \newline
-&amp;= 101101_2
-\end{aligned}\]
-
-<h4 id="converting-binary-to-decimal">Converting Binary to Decimal</h4>
-<p>Binary numbers can be converted to decimal using positional notation:</p>
-
-\[\begin{aligned}
-101_2 &amp;= 1 \times 2^2 + 0 \times 2^1 + 1 \times 2^0  \newline
-&amp;= 1 \times 4 + 0 \times 2 + 1 \times 1 \newline
-&amp;= 5_{10}
-\end{aligned}\]
-
-<h4 id="using-python-for-conversion">Using Python for Conversion</h4>
-<p>Using Python’s REPL is often the simplest way to convert between binary, decimal, and hexadecimal. Note that the <code class="language-plaintext highlighter-rouge">bin</code> and <code class="language-plaintext highlighter-rouge">hex</code> functions return strings, not integers.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0b1</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0b10</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="mb">0b11</span><span class="p">)</span>
-<span class="mi">3</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="mb">0b110</span><span class="p">)</span>
-<span class="mi">6</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">hex</span><span class="p">(</span><span class="mb">0b1</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0x1</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">hex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0x1</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="mh">0xf</span><span class="p">)</span>
-<span class="mi">15</span>
-</code></pre></div></div>
-
-<h2 id="signed-binary-representation-and-python-usage">Signed Binary: Representation and Python Usage</h2>
-<p>Signed Binary represents signed integers in binary. Unlike unsigned binary, signed binary requires bit patterns to represent the sign. Although there are three methods to represent signed binary, modern computers primarily use the two’s complement method.</p>
-
-<h3 id="representation-methods">Representation Methods</h3>
-<p>The basic principle for representing negative numbers is to <strong>allocate one bit (0 or 1) for the sign</strong>:</p>
-<ul>
-  <li>0: Positive</li>
-  <li>1: Negative</li>
-</ul>
-
-<h4 id="method-1-sign-magnitude">Method 1: Sign-Magnitude</h4>
-<p>In the sign-magnitude method, the most significant bit (MSB) is used to indicate the sign.
-For example, in an 8-bit space, the binary representation of +5 and −5 is:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
--5 = 1000 0101
-</code></pre></div></div>
-<p>Here, <strong><em>0101</em></strong> represents the number <strong><em>5</em></strong>, and the MSB is set to 0 (positive) or 1 (negative).
-In an 8-bit space, the range of representable values using this method is summarized as follows:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">Binary</th>
-      <th style="text-align: center">Decimal</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0000 0000</td>
-      <td style="text-align: center">+0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0001</td>
-      <td style="text-align: center">+1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0010</td>
-      <td style="text-align: center">+2</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1111</td>
-      <td style="text-align: center">+127</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0000</td>
-      <td style="text-align: center">-0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0001</td>
-      <td style="text-align: center">-1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1111</td>
-      <td style="text-align: center">-127</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Thus, this method allows the representation of 254 unique values: <code class="language-plaintext highlighter-rouge">+0</code> to <code class="language-plaintext highlighter-rouge">+127</code> and <code class="language-plaintext highlighter-rouge">-0</code> to <code class="language-plaintext highlighter-rouge">-127</code>.</p>
-
-<h4 id="method-2-ones-complement">Method 2: One’s Complement</h4>
-<p>In one’s complement, the binary representation of an unsigned integer is inverted (0 becomes 1 and 1 becomes 0).</p>
-
-<p><strong>Bit Inversion</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0 -&gt; 1
-1 -&gt; 0
-</code></pre></div></div>
-<p><strong>Representation of <code class="language-plaintext highlighter-rouge">±5</code> in 8-bit One’s Complement</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
--5 = 1111 1010
-</code></pre></div></div>
-<p>The range of representable values in 8-bit one’s complement is summarized as:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">Binary</th>
-      <th style="text-align: center">Decimal</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0000 0000</td>
-      <td style="text-align: center">+0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0001</td>
-      <td style="text-align: center">+1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1110</td>
-      <td style="text-align: center">+126</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1111</td>
-      <td style="text-align: center">+127</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0000</td>
-      <td style="text-align: center">-127</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0001</td>
-      <td style="text-align: center">-126</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1110</td>
-      <td style="text-align: center">-1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1111</td>
-      <td style="text-align: center">-0</td>
-    </tr>
-  </tbody>
-</table>
-
-<h4 id="method-3-twos-complement">Method 3: Two’s Complement</h4>
-<p>In two’s complement, the binary representation is obtained by inverting all bits and adding 1 to the least significant bit (LSB). This method is widely used in modern computers as it addresses the shortcomings of the previous methods.</p>
-
-<p>To represent a negative number in two’s complement:</p>
-<ol>
-  <li>Compute the one’s complement of the unsigned integer.</li>
-  <li>Add 1 to the LSB.</li>
-</ol>
-
-<p><strong>Representation of ±5 in 8-bit Two’s Complement</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
--5 = 1111 1010 (One's Complement)
-   +         1
-   -----------
-   = 1111 1011
-</code></pre></div></div>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">Binary</th>
-      <th style="text-align: center">Decimal</th>
-      <th style="text-align: center">Transformation (Positive → One’s Complement → +1)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0000 0000</td>
-      <td style="text-align: center">+0</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0001</td>
-      <td style="text-align: center">+1</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0010</td>
-      <td style="text-align: center">+2</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1110</td>
-      <td style="text-align: center">+126</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1111</td>
-      <td style="text-align: center">+127</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0000</td>
-      <td style="text-align: center">-128</td>
-      <td style="text-align: center">1000 0000 → 0111 1111 → 1000 0000</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0001</td>
-      <td style="text-align: center">-127</td>
-      <td style="text-align: center">0111 1111 → 1000 0000 → 1000 0001</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0010</td>
-      <td style="text-align: center">-126</td>
-      <td style="text-align: center">0111 1110 → 1000 0001 → 1000 0010</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1101</td>
-      <td style="text-align: center">-3</td>
-      <td style="text-align: center">0000 0100 → 1111 1011 → 1111 1101</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1110</td>
-      <td style="text-align: center">-2</td>
-      <td style="text-align: center">0000 0010 → 1111 1101 → 1111 1110</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1111</td>
-      <td style="text-align: center">-1</td>
-      <td style="text-align: center">0000 0001 → 1111 1110 → 1111 1111</td>
-    </tr>
-  </tbody>
-</table>
-
-<h4 id="using-python-for-twos-complement-conversion">Using Python for Two’s Complement Conversion</h4>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="sh">"</span><span class="s">-128</span><span class="sh">"</span><span class="p">,</span> <span class="mi">10</span><span class="p">).</span><span class="nf">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="sh">"</span><span class="s">little</span><span class="sh">"</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="sa">b</span><span class="sh">'</span><span class="se">\x80</span><span class="sh">'</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="sh">"</span><span class="s">-3</span><span class="sh">"</span><span class="p">,</span> <span class="mi">10</span><span class="p">).</span><span class="nf">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="sh">"</span><span class="s">little</span><span class="sh">"</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="sa">b</span><span class="sh">'</span><span class="se">\xfd</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mh">0xfd</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0b11111101</span><span class="sh">'</span>
-</code></pre></div></div>
-
-<h2 id="signed-vs-unsigned-comparison">Signed vs Unsigned Comparison</h2>
-<p>A summary of the key differences between signed and unsigned integers is as follows:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: left">Category</th>
-      <th style="text-align: left">Signed Integer</th>
-      <th style="text-align: left">Unsigned Integer</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left">Value Range</td>
-      <td style="text-align: left">Negative, 0, Positive</td>
-      <td style="text-align: left">0, Positive</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Range (8-bit)</td>
-      <td style="text-align: left">-128 to 127</td>
-      <td style="text-align: left">0 to 255</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Use Cases</td>
-      <td style="text-align: left">Sensors, Offsets, etc.</td>
-      <td style="text-align: left">Memory Addresses, Counters/Timers</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Sign Bit</td>
-      <td style="text-align: left">Present (MSB)</td>
-      <td style="text-align: left">Absent</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>The representable range based on two’s complement for signed integers and unsigned integers can be summarized mathematically:</p>
-
-<p><strong>Unsigned Integer</strong>
-\(0 \leq Z \leq 2^{\text{bit size}} - 1\)</p>
-
-<p><strong>Signed Integer</strong>
-\(-2^{\text{bit size} - 1} \leq Z \leq 2^{\text{bit size} - 1} - 1\)</p>
-
-<h2 id="programming-considerations">Programming Considerations</h2>
-<p>As seen, the interpretation of binary data changes depending on whether it is signed or unsigned. Understanding these differences is crucial when writing programs. Let’s look at two common pitfalls in C programming.</p>
-
-<h3 id="example-1-comparing-signed-and-unsigned-integers">Example 1: Comparing Signed and Unsigned Integers</h3>
-<p>A common mistake is comparing integers of different signedness. In the example below, the signed integer <code class="language-plaintext highlighter-rouge">-1</code> is treated as an unsigned integer during comparison, resulting in unexpected behavior.</p>
-
-<p><strong>comp.c</strong></p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span>
-<span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-  <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-  <span class="kt">unsigned</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">"a is less than b</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">"a is greater than or equals to b</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<p><strong>Output</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ gcc comp.c &amp;&amp; ./a.out
-a is greater than or equals to b
-</code></pre></div></div>
-<p>Although intuitively <code class="language-plaintext highlighter-rouge">-1</code> is less than <code class="language-plaintext highlighter-rouge">1</code>, the signed integer <code class="language-plaintext highlighter-rouge">a</code> is converted to an unsigned integer, resulting in a value greater than <code class="language-plaintext highlighter-rouge">b</code>.</p>
-
-<blockquote>
-  <p><strong>Bit Pattern of <code class="language-plaintext highlighter-rouge">int a = -1</code></strong><br />
-a = -1 = 0xFFFFFFFF (Two’s complement representation of -1) = 4,294,967,295</p>
-</blockquote>
-
-<p>Use the <a href="https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare">-W compiler option</a> to prevent such issues:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-W</span> comp.c
-comp.c: In <span class="k">function</span> ‘main’:
-comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ <span class="o">[</span><span class="nt">-Wsign-compare</span><span class="o">]</span>
-    8 |   <span class="k">if</span> <span class="o">(</span>a &lt; b<span class="o">)</span> <span class="o">{</span>
-      |         ^
-</code></pre></div></div>
-
-<h3 id="example-2-type-casting">Example 2: Type Casting</h3>
-<p>Another common mistake involves type casting between signed and unsigned integers. When casting, the value’s bit pattern remains unchanged, but its interpretation changes.</p>
-
-<p><strong>main.c</strong></p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
-</span>
-<span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-  <span class="kt">int8_t</span> <span class="n">i8</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">;</span>  <span class="c1">// 1111 1011</span>
-  <span class="kt">uint8_t</span> <span class="n">u8</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>  <span class="c1">// 0000 0101</span>
-  <span class="kt">uint8_t</span> <span class="n">ui8</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">i8</span><span class="p">;</span>  <span class="c1">// 1111 1011</span>
-
-  <span class="n">printf</span><span class="p">(</span><span class="s">"UINT8_MAX: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">UINT8_MAX</span><span class="p">);</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"INT8_MAX: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">INT8_MAX</span><span class="p">);</span>
-
-  <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i8</span><span class="p">,</span> <span class="n">i8</span><span class="p">);</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">u8</span><span class="p">,</span> <span class="n">u8</span><span class="p">);</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8</span><span class="p">,</span> <span class="n">ui8</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<p><strong>Output</strong></p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.c <span class="o">&amp;&amp;</span> ./a.out
-UINT8_MAX: 255
-INT8_MAX: 127
-0xfffffffb <span class="o">[</span><span class="nt">-5</span><span class="o">]</span>     <span class="c"># (1)</span>
-0x05 <span class="o">[</span>5]            <span class="c"># (2)</span>
-0xfb <span class="o">[</span>251]          <span class="c"># (3)</span>
-</code></pre></div></div>
-
-<ul>
-  <li><strong>Sign Extension</strong>: When printing <code class="language-plaintext highlighter-rouge">i8</code>, the signed integer is promoted to <code class="language-plaintext highlighter-rouge">int</code>, causing sign extension (filling higher bits with the MSB of <code class="language-plaintext highlighter-rouge">i8</code>).</li>
-  <li><strong>Bit Pattern Interpretation</strong>: The value of <code class="language-plaintext highlighter-rouge">ui8</code> is interpreted as an unsigned integer, resulting in <code class="language-plaintext highlighter-rouge">251</code> instead of <code class="language-plaintext highlighter-rouge">-5</code>.</li>
-</ul>
-
-<h2 id="conclusion">Conclusion</h2>
-<p>This article explored the differences between <strong>Signed</strong> and <strong>Unsigned Binary</strong>, their representation methods, and programming considerations.</p>
-
-<ul>
-  <li><strong>Signed Binary</strong>: Represents both positive and negative values (e.g., sensor data, offsets).</li>
-  <li><strong>Unsigned Binary</strong>: Represents only positive values (e.g., memory addresses, timers).</li>
-</ul>
-
-<p><strong>Did this article help you? Leave your questions or feedback in the comments below!</strong></p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="signed binary" /><category term="unsigned binary" /><category term="binary representation" /><summary type="html"><![CDATA[In this article, we will explore the differences between Signed Binary and Unsigned Binary, their respective representation methods, and considerations when programming in C.]]></summary></entry></feed>
+</table>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="add" /><category term="sub" /><category term="adc" /><category term="sbc" /><category term="rsb" /><category term="rsc" /><summary type="html"><![CDATA[In this post, we’ll explore the basic arithmetic operations in ARM Assembly — addition, subtraction, and their variants that include carry (C flag).]]></summary></entry></feed>

@@ -1,4 +1,142 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-11-26T09:54:54+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">ARM 어셈블리 #14 - 복귀주소를 자동 저장하는 BL 명령어 활용</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html" rel="alternate" type="text/html" title="ARM 어셈블리 #14 - 복귀주소를 자동 저장하는 BL 명령어 활용" /><published>2025-11-26T09:30:00+00:00</published><updated>2025-11-26T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html"><![CDATA[<p><code class="language-plaintext highlighter-rouge">BL</code> 명령은 <a href="/ko/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html">이전 포스팅</a>에서 설명한 <code class="language-plaintext highlighter-rouge">B</code> 명령에 함수 호출 기능을 더한 명령어입니다.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-11-27T11:23:38+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">ARM 어셈블리 #15 - CPSR과 조건 플래그를 활용한 조건부 명령 실행</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html" rel="alternate" type="text/html" title="ARM 어셈블리 #15 - CPSR과 조건 플래그를 활용한 조건부 명령 실행" /><published>2025-11-27T11:20:00+00:00</published><updated>2025-11-27T11:20:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"><![CDATA[<p>지금까지는 명령어가 실행될 순서가 되면 무조건 실행되는 구조만 살펴봤습니다.
+하지만 ARM 아키텍처는 조금 더 특별합니다.
+<code class="language-plaintext highlighter-rouge">CPSR</code> 레지스터의 조건 플래그를 사용하면 특정 조건에서만 명령어를 실행하도록 만들 수 있습니다.</p>
+
+<p>이 기능은 ARM의 핵심 특징 중 하나이며, 모든 명령어에 조건을 붙여 분기 없이도 조건문을 구현할 수 있다는 점이 큰 장점입니다.
+또한, 불필요한 분기를 줄여 파이프라인 성능 향상에도 도움이 됩니다.</p>
+
+<h2 id="cpsr-current-program-status-register-레지스터">CPSR (Current Program Status Register) 레지스터</h2>
+<p><code class="language-plaintext highlighter-rouge">CPSR</code> 레지스터는 일반적인 범용 레지스터(<code class="language-plaintext highlighter-rouge">R0</code>~<code class="language-plaintext highlighter-rouge">R15</code>)와 달리,
+CPU의 프로그램 상태를 저장하는 특수 목적 레지스터입니다.</p>
+
+<p>CPU는 연산 결과에 따라 아래의 4가지 상태를 가질 수 있으며,
+이 값들이 <code class="language-plaintext highlighter-rouge">CPSR</code>의 상위 4비트에 각각 1비트씩 기록됩니다.</p>
+
+<ul>
+  <li>음수</li>
+  <li>0 혹은 양수</li>
+  <li>캐리</li>
+  <li>오버플로우</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>비트 위치</th>
+      <th>플래그</th>
+      <th>의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>31</td>
+      <td>N (Negative)</td>
+      <td>음수</td>
+    </tr>
+    <tr>
+      <td>30</td>
+      <td>Z (Zero)</td>
+      <td>결과가 0</td>
+    </tr>
+    <tr>
+      <td>29</td>
+      <td>C (Carry)</td>
+      <td>캐리</td>
+    </tr>
+    <tr>
+      <td>28</td>
+      <td>V (Overflow)</td>
+      <td>오버플로우</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="플래그를-업데이트하려면">플래그를 업데이트하려면?</h3>
+<p>연산 결과를 플래그에 반영하려면 명령어 뒤에 s를 붙여야 합니다.<br />
+예: <code class="language-plaintext highlighter-rouge">adds</code>, <code class="language-plaintext highlighter-rouge">subs</code>, <code class="language-plaintext highlighter-rouge">movs</code> 등,
+이 내용은 <a href="/ko/arm/assembly/tutorial/2025/09/09/arm-logical-shift.html">이전 포스팅</a>에서 다뤘습니다.</p>
+
+<h2 id="조건-플래그-condition-flags">조건 플래그 (Condition Flags)</h2>
+<p>ARM의 거의 모든 명령어는 <code class="language-plaintext highlighter-rouge">CPSR</code> 플래그 값을 기준으로 명령어를 실행하거나 건너뛸 수 있습니다.
+이를 위해 명령어 뒤에 두 자리 조건 코드(<code class="language-plaintext highlighter-rouge">EQ</code>, <code class="language-plaintext highlighter-rouge">NE</code>, <code class="language-plaintext highlighter-rouge">MI</code>, <code class="language-plaintext highlighter-rouge">PL</code> 등)를 붙여 사용합니다.</p>
+
+<figure style="text-align: center;"> 
+  <img src="/assets/img/condition-code-table-in-arm-document.png" alt="ARM condition code table" style="display: block; margin: auto;" /> 
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"> 
+  그림 1. ARM 아키텍처에서 제공하는 조건 코드 목록
+  </figcaption> 
+</figure>
+
+<blockquote>
+  <p>ARM은 총 15개의 조건 코드를 제공합니다.<br />
+지금까지 사용한 명령어들은 모두 기본값인 <code class="language-plaintext highlighter-rouge">AL</code>(Always) 조건이 적용된 형태로, 생략된 것입니다.<br />
+<code class="language-plaintext highlighter-rouge">AL</code>은 항상 실행된다는 의미입니다.</p>
+</blockquote>
+
+<h2 id="명령어--조건">명령어 + 조건</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  {instruction}{condition}
+</code></pre></div></div>
+
+<p>예를 들어, 이전 연산 결과가 음수일 때만 <code class="language-plaintext highlighter-rouge">mov</code>를 실행하고 싶다면:</p>
+
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">movmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">MI</code>(Minus) = <code class="language-plaintext highlighter-rouge">N == 1</code></li>
+</ul>
+
+<p>즉, 결과가 음수일 때만 실행됩니다.</p>
+
+<h2 id="예제-코드">예제 코드</h2>
+<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
+  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
+<span class="nl">_start</span><span class="err">:</span>
+  <span class="nb">movs</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">1</span>
+  <span class="nb">addmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
+  <span class="nb">addpl</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>
+  <span class="nb">b</span> <span class="mf">.</span>
+</code></pre></div></div>
+
+<p>위 예제는 <code class="language-plaintext highlighter-rouge">R0</code>에 <code class="language-plaintext highlighter-rouge">-1</code>을 저장한 뒤:</p>
+
+<ul>
+  <li>음수(<code class="language-plaintext highlighter-rouge">N==1</code>)이면 <code class="language-plaintext highlighter-rouge">5</code>를 더하고</li>
+  <li>양수 또는 0(<code class="language-plaintext highlighter-rouge">N==0</code>)이면 <code class="language-plaintext highlighter-rouge">1</code>을 더하는
+동작을 수행합니다.</li>
+</ul>
+
+<blockquote>
+  <p>플래그 업데이트를 위해 <code class="language-plaintext highlighter-rouge">movs</code>를 사용했습니다.</p>
+</blockquote>
+
+<p>여기서</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">MI</code>: <code class="language-plaintext highlighter-rouge">N == 1</code> → 음수일 때 실행</li>
+  <li><code class="language-plaintext highlighter-rouge">PL</code>: <code class="language-plaintext highlighter-rouge">N == 0</code> → 양수 또는 0일 때 실행</li>
+</ul>
+
+<p>따라서 C 코드로 표현하면 다음과 같습니다.</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kt">int</span> <span class="n">r0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="n">r0</span> <span class="o">+=</span> <span class="p">(</span><span class="n">r0</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="mi">5</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="디버깅">디버깅</h2>
+<p>GDB에서 <code class="language-plaintext highlighter-rouge">CPSR</code> 전체를 확인하려면:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> p/x <span class="nv">$cpsr</span>
+</code></pre></div></div>
+<p>각 플래그는 다음과 같이 추출할 수 있습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 31<span class="o">)</span> &amp; 1   <span class="c"># N flag</span>
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 30<span class="o">)</span> &amp; 1   <span class="c"># Z flag</span>
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1   <span class="c"># C flag</span>
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 28<span class="o">)</span> &amp; 1   <span class="c"># V flag</span>
+</code></pre></div></div>
+
+<h2 id="마무리">마무리</h2>
+<p>이번 글에서는 <code class="language-plaintext highlighter-rouge">CPSR</code> 플래그와 조건 코드를 이용한 조건부 명령 실행을 살펴봤습니다.
+다음 글에서는 비교 연산자(<code class="language-plaintext highlighter-rouge">CMP</code>, <code class="language-plaintext highlighter-rouge">CMN</code> 등)를 이용한 실제 조건 분기를 다루고,
+조건부 실행과 조건 분기를 어떻게 선택해야 하는지도 함께 설명드리겠습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="condition flags" /><category term="arm cpsr" /><summary type="html"><![CDATA[지금까지는 명령어가 실행될 순서가 되면 무조건 실행되는 구조만 살펴봤습니다. 하지만 ARM 아키텍처는 조금 더 특별합니다. CPSR 레지스터의 조건 플래그를 사용하면 특정 조건에서만 명령어를 실행하도록 만들 수 있습니다.]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #14 - 복귀주소를 자동 저장하는 BL 명령어 활용</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html" rel="alternate" type="text/html" title="ARM 어셈블리 #14 - 복귀주소를 자동 저장하는 BL 명령어 활용" /><published>2025-11-26T09:30:00+00:00</published><updated>2025-11-26T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html"><![CDATA[<p><code class="language-plaintext highlighter-rouge">BL</code> 명령은 <a href="/ko/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html">이전 포스팅</a>에서 설명한 <code class="language-plaintext highlighter-rouge">B</code> 명령에 함수 호출 기능을 더한 명령어입니다.
 <code class="language-plaintext highlighter-rouge">B</code> 명령이 단순히 특정 레이블로 점프하는 역할이었다면, <code class="language-plaintext highlighter-rouge">BL</code> 명령은 점프 이후 복귀해야 하는 주소를 <code class="language-plaintext highlighter-rouge">LR</code>(Register <code class="language-plaintext highlighter-rouge">R14</code>)에 자동으로 저장합니다.
 따라서 <code class="language-plaintext highlighter-rouge">BL</code>은 ARM에서 함수 호출을 구현하는 핵심 매커니즘이며, 스택, 함수 호출 규약, 프레임 포인터 등 이후에 배우게 될 개념들의 기반이 됩니다.</p>
 
@@ -1889,626 +2027,4 @@ r2             0x4      4
       <td style="text-align: center">순서를 뒤집은 뺄셈</td>
     </tr>
   </tbody>
-</table>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="add" /><category term="sub" /><category term="adc" /><category term="sbc" /><category term="rsb" /><category term="rsc" /><summary type="html"><![CDATA[이번 포스팅에서는 ARM의 기본 산술 연산(Arithmetic Operations) 명령어들을 다뤄보겠습니다. 특히 덧셈과 뺄셈, 그리고 Carry(캐리)를 포함하는 연산까지 함께 살펴봅니다. 지금까지는 레지스터에 값을 저장하고 시프트(shift)하는 방법을 배웠다면, 오늘은 그 값을 연산하는 단계로 나아가 보겠습니다.]]></summary></entry><entry xml:lang="ko"><title type="html">Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기</title><link href="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html" rel="alternate" type="text/html" title="Signed vs Unsigned Binary: 이진수 표현의 차이점과 이해하기" /><published>2025-09-27T13:20:00+00:00</published><updated>2025-09-27T13:20:00+00:00</updated><id>https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary</id><content type="html" xml:base="https://seojuncha.github.io/2025/09/27/signed-and-unsigned-binary.html"><![CDATA[<p>이 글에서는 <strong>Signed Binary와 Unsigned Binary의 차이점</strong>, <strong>각각의 표현법</strong>, 그리고 <strong>C언어 프로그래밍 시의 주의사항</strong>을 알아보겠습니다.</p>
-
-<p>사용자 관점에서 컴퓨터가 다루는 데이터 유형은 크게 문자(Character) 혹은 숫자(Number), 2가지로 생각할 수 있습니다. 하지만, 컴퓨터 관점에서는 문자 또한 결국 숫자로 처리되므로 오늘은 숫자 데이터 유형, 그 중에서도 정수형을 컴퓨터에서 다루는 방법을 살펴볼 예정입니다.</p>
-
-<figure>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/ASCII-Table.png" style="display: block; margin: auto;" alt="wiki-ascii-table" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-문자를 숫자로 표현하기 위한 ASCII 테이블이 존재
-  </figcaption>
-</figure>
-
-<h2 id="정수의-개념">정수의 개념</h2>
-<p>컴퓨터에서 다루는 숫자는 크게 정수(Integer)와 실수(Real Number)로 나누어 볼 수 있습니다. 수학의 실수체계에서는 각각의 특성에 따라 아래와 같이 분류하고 있습니다.</p>
-
-<h3 id="정수와-실수">정수와 실수</h3>
-<figure>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Classification_of_Numbers.jpg" style="display: block; margin: auto;" alt="classification-of-real-number" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-실수범위에 포함되는 정수의 정의. 양수,음수 그리고 0이 될 수 있다.
-  </figcaption>
-</figure>
-
-<h3 id="컴퓨터에서-정수의-의미">컴퓨터에서 정수의 의미</h3>
-<p>모든 데이터는 2진수(Binary)형태로 컴퓨터 기억공간에 저장됩니다. 다시 말해, <strong>정수 데이터가 컴퓨터 메모리에 저장된다는 것은 메모리의 특정 공간을 차지한다는 것</strong> 입니다. 우리가 일상적으로 사용하는 정수는 10진수 표현법으로 하나의 자릿수(예: 10의 자리, 100의 자리 등)에 0부터 9까지, 총 10개의 숫자를 표현할 수 있습니다. (그래서 10진수입니다.)</p>
-
-<blockquote>
-  <p><strong>기억공간?</strong><br />
-기억공간이라는 용어를 사용한 이유는 꼭 데이터가 메모리(Memory)에만 저장되지는 않기 때문 입니다. 가령 CPU 레지스터(Register)에도 데이터가 저장됩니다.<br />
-편의를 위해 본 포스팅에서는 메모리라는 용어와 혼용하여 사용합니다.</p>
-</blockquote>
-
-<p>컴퓨터는 모두가 알다시피 0과 1로 이루어진 데이터를 처리합니다. 따라서, 숫자를 포함한 모든 데이터는 0과 1로 표현되어야 하기 때문에 2진수 표현법이 필요합니다.
-하지만 이는, 표현방법의 차이일 뿐, 의미가 변하는 것은 아닙니다. 예를 들어 ‘5’라는 숫자는 10진수 표현이 5일 뿐, 2진수 표현으로는 ‘101’입니다.</p>
-
-<p>앞선 정수의 개념에서, 정수는 양수와 음수, 그리고 0으로 구성된다고 정의했습니다. 컴퓨터에서는 양수와 음수를 나타내기 위한 방법으로 <strong>부호 있는 정수(Signed Integer)</strong> 와 <strong>부호 없는 정수(Unsigned Integer)</strong> 로 나누어 표현합니다.</p>
-
-<p>부호 있는 정수라는 것은 +기호와 -기호를 포함하여 컴퓨터 메모리에 저장한다는 의미이고, 부호 없는 정수라는 것은 항상 양의 방향(+)을 가정하고 정수의 크기만을 컴퓨터 메모리에 저장한다는 의미입니다. 이것은 컴퓨터 시스템에서 매우 중요한 의미를 가지는데, 동일한 2진 데이터라고 하더라도 해당 데이터가 <strong>어떤 표현법을 나타내는냐에 따라 실제로 의미하는 값이 다르기 때문</strong>입니다.</p>
-
-<h2 id="unsigned-binary-개념과-변환-방법">Unsigned Binary: 개념과 변환 방법</h2>
-<p>Unsigned Binary는 부호 없는 정수를 2진수로 표현한 데이터 입니다. 부호가 없는 경우, 부호를 나타낼 별도의 비트가 필요하지 않기 때문에 수학적인 2진수 $\leftrightarrow$ 10진수 변환을 그대로 적용할 수 있습니다.</p>
-
-<p><strong>자연수(Natural Number)</strong></p>
-<blockquote>
-  <p>부호 없는 정수는 자연수와 동일합니다.</p>
-</blockquote>
-
-<h3 id="개념">개념</h3>
-
-<p>예를 들어, 4비트 공간에서 부호 없는 정수의 2진수/10진수/16진수 표현은 아래와 같습니다.</p>
-
-<p><strong>4비트 unsigned binary</strong></p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">2진수(bin)</th>
-      <th style="text-align: center">10진수(dec)</th>
-      <th style="text-align: center">16진수(hex)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0000</td>
-      <td style="text-align: center">0</td>
-      <td style="text-align: center">0x0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0001</td>
-      <td style="text-align: center">1</td>
-      <td style="text-align: center">0x1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0010</td>
-      <td style="text-align: center">2</td>
-      <td style="text-align: center">0x2</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0011</td>
-      <td style="text-align: center">3</td>
-      <td style="text-align: center">0x3</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0100</td>
-      <td style="text-align: center">4</td>
-      <td style="text-align: center">0x4</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0101</td>
-      <td style="text-align: center">5</td>
-      <td style="text-align: center">0x5</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0110</td>
-      <td style="text-align: center">6</td>
-      <td style="text-align: center">0x6</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111</td>
-      <td style="text-align: center">7</td>
-      <td style="text-align: center">0x7</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000</td>
-      <td style="text-align: center">8</td>
-      <td style="text-align: center">0x8</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1001</td>
-      <td style="text-align: center">9</td>
-      <td style="text-align: center">0x9</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1010</td>
-      <td style="text-align: center">10</td>
-      <td style="text-align: center">0xA</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1011</td>
-      <td style="text-align: center">11</td>
-      <td style="text-align: center">0xB</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1100</td>
-      <td style="text-align: center">12</td>
-      <td style="text-align: center">0xC</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1101</td>
-      <td style="text-align: center">13</td>
-      <td style="text-align: center">0xD</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1110</td>
-      <td style="text-align: center">14</td>
-      <td style="text-align: center">0xE</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111</td>
-      <td style="text-align: center">15</td>
-      <td style="text-align: center">0xF</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>즉, 4비트 공간에서 부호 없는 정수의 10진수 정수의 표현 범위는 $0 \leqq \Z \leqq 2^4-1$ 이고, 16진수로는 <code class="language-plaintext highlighter-rouge">0x0</code>부터 <code class="language-plaintext highlighter-rouge">0xF</code>까지 입니다.</p>
-
-<blockquote>
-  <p><strong>비트 크기 별 16진수 표현</strong></p>
-
-  <p>컴퓨터 시스템에서 숫자를 표현하기 위해 16진수 또한 굉장히 많이 사용됩니다. 따라서 비트 공간의 크기에 따라 최대 표현 가능한 16진수를 알고 있어야 합니다.<br />
-4비트  = 0xF<br />
-8비트  = 0xFF<br />
-16비트 = 0xFFFF<br />
-32비트 = 0xFFFF_FFFF</p>
-</blockquote>
-
-<h3 id="변환">변환</h3>
-<h4 id="10진수를-2진수로-변환">10진수를 2진수로 변환</h4>
-
-<p>2진수로 변환하기 위해서는 숫자가 구성되는 원리에 의해 나누기 연산(/)과 나머지 연산(%)을 사용할 수 있습니다.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">나누기(/)</th>
-      <th style="text-align: center">나머지(%)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">45 / 2 = 22</td>
-      <td style="text-align: center">45 % 2 = 1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">22 / 2 = 11</td>
-      <td style="text-align: center">22 % 2 = 0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">11 / 2 = 5</td>
-      <td style="text-align: center">11 % 2 = 1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">5 / 2 = 2</td>
-      <td style="text-align: center">5 % 2 = 1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">2 / 2 = 1</td>
-      <td style="text-align: center">2 % 2 = 0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1 / 2 = 0</td>
-      <td style="text-align: center">1 % 2 = 1</td>
-    </tr>
-  </tbody>
-</table>
-
-\[\begin{aligned}
-45_{10} &amp;= 22 \times 2 + 1 \newline
-&amp;= (11 \times 2 + 0) \times 2 + 1 \newline
-&amp;= ((5 \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
-&amp;= (((2 \times 2 + 1) \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
-&amp;= ((((1 \times 2 + 0) \times 2 + 1) \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
-&amp;= (((((0 \times 2 + 1) \times 2 + 0) \times 2 + 1) \times 2 + 1) \times 2 + 0) \times 2 + 1 \newline
-&amp;= 1 \times 2^5 + 0 \times 2^4 + 1 \times 2^3 + 1 \times 2^2 + 0 \times 2^1 + 1 \newline
-&amp;= 101101_2
-\end{aligned}\]
-
-<h4 id="2진수를-10진수로-변환">2진수를 10진수로 변환</h4>
-<p>2진수 역시도 10진수의 표현원리와 동일하게 각 자릿수를 2의 거듭제곱으로 표현합니다.</p>
-
-\[\begin{aligned}
-101_2 &amp;= 1 \times 2^2 + 0 \times 2^1 + 1 \times 2^0  \newline
-&amp;= 1 \times 4 + 0 \times 2 + 1 \times 1 \newline
-&amp;= 5_{10}
-\end{aligned}\]
-
-<h4 id="파이썬을-활용한-변환">파이썬을 활용한 변환</h4>
-<p>사실 가장 간단한 방법은 일일히 계산하는 것보다 파이썬 REPL을 사용하는 것 입니다.<br />
-단, 유의할 점은 <em>bin</em>이나 <em>hex</em>를 사용할 경우 반환값은 정수가 아닌 문자열입니다.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0b1</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0b10</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="mb">0b11</span><span class="p">)</span>
-<span class="mi">3</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="mb">0b110</span><span class="p">)</span>
-<span class="mi">6</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">hex</span><span class="p">(</span><span class="mb">0b1</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0x1</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">hex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0x1</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="mh">0xf</span><span class="p">)</span>
-<span class="mi">15</span>
-</code></pre></div></div>
-
-<h2 id="signed-binary-표현-방법과-파이썬-활용">Signed Binary: 표현 방법과 파이썬 활용</h2>
-<p>Signed Binary는 부호 있는 정수를 2진수로 표현한 데이터 입니다. Unsigned Binary와 다르게 부호를 나타내기 위한 비트 패턴이 필요합니다. 아래에 3가지 방법을 소개하겠지만, <strong>현대 컴퓨터에서는 주로 2의 보수 표현을 사용합니다</strong>.</p>
-
-<h3 id="표현-방법">표현 방법</h3>
-<p>기본적인 음수 표현의 원리는 <strong>부호를 나타내기 위한 1비트(0 혹은 1)를 할당</strong>하는 것 입니다.</p>
-<ul>
-  <li>0 : 양수 (Positive)</li>
-  <li>1 : 음수 (Negative)</li>
-</ul>
-
-<h4 id="방법1-부호-크기-sign-magnitude">방법1: 부호-크기 (Sign-Magnitude)</h4>
-<p>부호-크기 방법에서는 단순히 최상위 비트(MSB: Most Significant Bit)에 부호 비트를 추가합니다.</p>
-
-<p>예를 들어, 8비트 공간에서 양의 부호를 가진 정수 5와 음의 부호를 가진 정수 -5를 2진수로 표현하면 아래와 같습니다.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
--5 = 1000 0101
-</code></pre></div></div>
-<p><strong><em>0101</em></strong>이 숫자 <strong><em>5</em></strong>를 나타내고, 최상위 비트에 각각 0(양의 부호, +)과 1(음의 부호, -)을 사용했습니다.<br />
-동일한 방식으로, 8비트 공간에서 부호 비트를 추가하는 방법을 사용할 때 나타낼 수 있는 수는 아래와 같이 정리할 수 있습니다.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">2진수</th>
-      <th style="text-align: center">10진수</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0000 0000</td>
-      <td style="text-align: center">+0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0001</td>
-      <td style="text-align: center">+1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0010</td>
-      <td style="text-align: center">+2</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1111</td>
-      <td style="text-align: center">+127</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0000</td>
-      <td style="text-align: center">-0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0001</td>
-      <td style="text-align: center">-1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1111</td>
-      <td style="text-align: center">-127</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>따라서 표현할 수 있는 숫자는, +0부터 +127까지 127개와 -0부터 -127까지 127개, 총 254개의 숫자를 표현할 수 있습니다.</p>
-
-<h4 id="방법2-1의-보수-ones-complement">방법2: 1의 보수 (One’s Complement)</h4>
-<p>1의 보수법은 부호 없는 정수의 2진 데이터 형태를 모든 거꾸로 뒤집는 것 입니다. 2진수는 0 혹은 1이라는 두개의 값만 가질 수 있고 거꾸로 뒤집는 다는 것은 0 은 1로, 1은 0으로 바꾸는 것 입니다.</p>
-
-<p><strong>비트 뒤집기</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0 -&gt; 1
-1 -&gt; 0
-</code></pre></div></div>
-<p><strong>1의 보수 표현에 의한 8비트 $\pm$ 5</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
--5 = 1111 1010
-</code></pre></div></div>
-<p>1의 보수 표현법에서 8비트 정수는 아래와 같이 정리할 수 있습니다.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">2진수</th>
-      <th style="text-align: center">10진수</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0000 0000</td>
-      <td style="text-align: center">+0</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0001</td>
-      <td style="text-align: center">+1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1110</td>
-      <td style="text-align: center">+126</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1111</td>
-      <td style="text-align: center">+127</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0000</td>
-      <td style="text-align: center">-127</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0001</td>
-      <td style="text-align: center">-126</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1101</td>
-      <td style="text-align: center">-2</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1110</td>
-      <td style="text-align: center">-1</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1111</td>
-      <td style="text-align: center">-0</td>
-    </tr>
-  </tbody>
-</table>
-
-<h4 id="방법3-2의-보수-tows-complement">방법3: 2의 보수 (Tow’s Complement)</h4>
-<p>2의 보수법은 1의 보수법과 같이 모든 비트를 거꾸로 만들고 1비트의 1을 더하는 방식으로 표현됩니다. 앞선 2가지 방법의 단점을 보완하기 때문에 현재 대부분의 컴퓨터에서 음수를 표현하기 위한 방법입니다.</p>
-
-<p>음의 정수를 2의 보수법에 의한 2진수로 표현하기 위해서는 다음의 순서를 따릅니다.</p>
-
-<ol>
-  <li>부호 없는 정수의 1의 보수를 구한다.</li>
-  <li>LSB에 1을 더한다.</li>
-</ol>
-
-<p><strong>2의 보수 표현에 의한 8비트 $\pm$ 5</strong></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+5 = 0000 0101
--5 = 1111 1010 (1의 보수 표현)
-   +         1
-   -----------
-   = 1111 1011
-</code></pre></div></div>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">2진수</th>
-      <th style="text-align: center">10진수</th>
-      <th style="text-align: center">변환(양수 표현 &gt; 1의 보수 &gt; +1)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0000 0000</td>
-      <td style="text-align: center">+0</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0001</td>
-      <td style="text-align: center">+1</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0000 0010</td>
-      <td style="text-align: center">+2</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1110</td>
-      <td style="text-align: center">+126</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">0111 1111</td>
-      <td style="text-align: center">+127</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0000</td>
-      <td style="text-align: center">-128</td>
-      <td style="text-align: center">1000 0000 &gt; 0111 1111 &gt; 1000 0000</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0001</td>
-      <td style="text-align: center">-127</td>
-      <td style="text-align: center">0111 1111 &gt; 1000 0000 &gt; 1000 0001</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1000 0010</td>
-      <td style="text-align: center">-126</td>
-      <td style="text-align: center">0111 1110 &gt; 1000 0001 &gt; 1000 0010</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center">…</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1101</td>
-      <td style="text-align: center">-3</td>
-      <td style="text-align: center">0000 0100 &gt; 1111 1011 &gt; 1111 1101</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1110</td>
-      <td style="text-align: center">-2</td>
-      <td style="text-align: center">0000 0010 &gt; 1111 1101 &gt; 1111 1110</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1111 1111</td>
-      <td style="text-align: center">-1</td>
-      <td style="text-align: center">0000 0001 &gt; 1111 1110 &gt; 1111 1111</td>
-    </tr>
-  </tbody>
-</table>
-
-<h4 id="파이썬을-활용한-2의-보수---10진수-변환">파이썬을 활용한 2의 보수 &lt;-&gt; 10진수 변환</h4>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="sh">"</span><span class="s">-128</span><span class="sh">"</span><span class="p">,</span> <span class="mi">10</span><span class="p">).</span><span class="nf">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="sh">"</span><span class="s">little</span><span class="sh">"</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="sa">b</span><span class="sh">'</span><span class="se">\x80</span><span class="sh">'</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">int</span><span class="p">(</span><span class="sh">"</span><span class="s">-3</span><span class="sh">"</span><span class="p">,</span> <span class="mi">10</span><span class="p">).</span><span class="nf">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="sh">"</span><span class="s">little</span><span class="sh">"</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="sa">b</span><span class="sh">'</span><span class="se">\xfd</span><span class="sh">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nf">bin</span><span class="p">(</span><span class="mh">0xfd</span><span class="p">)</span>
-<span class="sh">'</span><span class="s">0b11111101</span><span class="sh">'</span>
-</code></pre></div></div>
-
-<h2 id="signed-vs-unsigned-비교">Signed vs Unsigned 비교</h2>
-<p>지금까지 설명드린 부호 있는 정수와 부호 없는 정수를 비교 정리하면 아래와 같습니다.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>구분</th>
-      <th>부호 있음(Signed)</th>
-      <th>부호 없음(Unsigned)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>값의 범위</td>
-      <td>음수,0,양수</td>
-      <td>0,양수</td>
-    </tr>
-    <tr>
-      <td>범위(8비트)</td>
-      <td>-128 ~ 127</td>
-      <td>0~255</td>
-    </tr>
-    <tr>
-      <td>사용사례</td>
-      <td>센서,오프셋 등</td>
-      <td>메모리 주소, 카운터/타이머 등</td>
-    </tr>
-    <tr>
-      <td>부호비트</td>
-      <td>존재(MSB)</td>
-      <td>없음</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>2의 보수 표현에 따른 부호 있는 정수와 부호 없는 정수의 표현 가능한 범위는 아래와 같이 수식으로 정리할 수 있습니다.</p>
-
-<p><strong>부호 없는 정수(Unsigned Integer)</strong>
-\(0 \leqq \Z \leqq 2^{비트수}-1\)</p>
-
-<p><strong>부호 있는 정수(Signed Integer)</strong>
-\(-2^{비트수-1} \leqq \Z \leqq 2^{비트수-1} - 1\)</p>
-
-<h2 id="프로그래밍-주의사항">프로그래밍 주의사항</h2>
-<p>지금까지 살펴본 것 처럼  부호의 여부에 따라 컴퓨터가 해석하는 방법이 달라지기 때문에, 그 특성을 이해하고 프로그램을 작성할 때도 이점을 유의해야 합니다.
-주로 사용하는 C언어에서 2가지 예제를 살펴보면서 조심해야할 부분을 확인해보겠습니다.</p>
-
-<h3 id="예제1-signed-int-와-unsigned-int의-비교">예제1: signed int 와 unsigned int의 비교</h3>
-<p>실수하기 쉬운 첫번째는 서로 다른 부호 유형간의 비교입니다. 아래의 예제에서는 signed형 정수인 <code class="language-plaintext highlighter-rouge">-1</code>이 unsigned형으로 변환 해석 되어 <code class="language-plaintext highlighter-rouge">1</code>보다 큰 값으로 처리됩니다.</p>
-
-<p><strong>comp.c</strong></p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span>
-<span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-  <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-  <span class="kt">unsigned</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">"a is less than b</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">"a is greater than or equals to b</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<p><strong>실행 결과</strong></p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc comp.c <span class="o">&amp;&amp;</span> ./a.out
-a is greater than or equals to b
-</code></pre></div></div>
-
-<p>우리가 직관적으로 생각하기에는 <code class="language-plaintext highlighter-rouge">-1</code>은 <code class="language-plaintext highlighter-rouge">1</code>보다 작으므로 “a is less than b”가 출력되야할 것으로 보입니다.<br />
-하지만 비교연산을 할 때, <strong><em>부호 있는 정수인 **</em>a</strong><em>가 부호 없는 정수(unsigned)로 변환되기 때문에 b보다 큰 값으로 해석</em>**됩니다.</p>
-
-<blockquote>
-  <p><strong>int a = -1의 비트패턴</strong><br />
-a = -1 = 0xFFFFFFFF (-1의 2의 보수 표현) = 4,294,967,295</p>
-</blockquote>
-
-<blockquote>
-  <p>위와 같은 예제는 컴파일 시에 -W 옵션을 사용해서 예방할 수 있습니다.</p>
-</blockquote>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-W</span> comp.c
-comp.c: In <span class="k">function</span> ‘main’:
-comp.c:8:9: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ <span class="o">[</span><span class="nt">-Wsign-compare</span><span class="o">]</span>
-    8 |   <span class="k">if</span> <span class="o">(</span>a &lt; b<span class="o">)</span> <span class="o">{</span>
-      |         ^
-</code></pre></div></div>
-
-<h3 id="예제2-형-변환-type-casting">예제2: 형 변환 (Type Casting)</h3>
-<p>다른 예제는 흔히 사용하는 형 변환 실수입니다. int형과 unsigned int형과의 상호 형 변환시에는 해당 변수가 나타내는 수의 의미가 달라지는 것을 알고 있어야 합니다.</p>
-
-<p><strong>main.c</strong></p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
-</span>
-<span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-  <span class="kt">int8_t</span> <span class="n">i8</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">;</span>  <span class="c1">// 1111 1011</span>
-  <span class="kt">uint8_t</span> <span class="n">u8</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>  <span class="c1">// 0000 0101</span>
-  <span class="kt">uint8_t</span> <span class="n">ui8</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">i8</span><span class="p">;</span>  <span class="c1">// 1111 1011</span>
-
-  <span class="n">printf</span><span class="p">(</span><span class="s">"UINT8_MAX: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">UINT8_MAX</span><span class="p">);</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"INT8_MAX: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">INT8_MAX</span><span class="p">);</span>
-
-  <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i8</span><span class="p">,</span> <span class="n">i8</span><span class="p">);</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">u8</span><span class="p">,</span> <span class="n">u8</span><span class="p">);</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">"0x%02x [%d]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ui8</span><span class="p">,</span> <span class="n">ui8</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<p><strong>실행 결과</strong></p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.c <span class="o">&amp;&amp;</span> ./a.out
-UINT8_MAX: 255
-INT8_MAX: 127
-0xfffffffb <span class="o">[</span><span class="nt">-5</span><span class="o">]</span>     <span class="c"># (1)</span>
-0x05 <span class="o">[</span>5]            <span class="c"># (2)</span>
-0xfb <span class="o">[</span>251]          <span class="c"># (3)</span>
-</code></pre></div></div>
-
-<p>첫번째, <code class="language-plaintext highlighter-rouge">int8_t</code>형은 메모리 공간에서 8비트를 차지하는 변수입니다. 하지만 실제 변수가 가진 값이 <code class="language-plaintext highlighter-rouge">int</code>형보다 작은 메모리 공간을 차지하는 경우, <strong><em><code class="language-plaintext highlighter-rouge">printf</code>문에서 포맷팅을 할때는 <code class="language-plaintext highlighter-rouge">int</code>형으로 승격되기 때문</em></strong>에 (1)의 결과는 <code class="language-plaintext highlighter-rouge">0xFB</code>가 아닌 <code class="language-plaintext highlighter-rouge">0xFFFFFFFB</code>가 되는 것 입니다.</p>
-
-<blockquote>
-  <p>부호 있는 정수 -5는 2진수로 표현하면 $11111011_2$ 이고 16진수로는 <code class="language-plaintext highlighter-rouge">0xFB</code>입니다.</p>
-</blockquote>
-
-<blockquote>
-  <p><strong>부호 확장(Sign Extension)</strong><br />
-8비트 정수를 32비트 정수로 승격할 때, 부호 확장이란 것이 발생합니다.<br />
-부호 확장은 말 그대로 정수의 부호 비트를 확장된 메모리 크기에 맞도록 확장시키는 것 입니다.<br />
-위의 예시의 경우, 부호 비트가 음수를 나타내는 1이므로 최상위 비트(MSB)의 1을 나머지 상위비트에 채웁니다.</p>
-</blockquote>
-
-<p>두번째, 변수 ui8은 부호 있는 정수형 변수 i8을 부호 없는 정수형으로 형변환을 하여 할당했습니다. 하지만, 출력 결과 (3)에서 볼 수 있듯이 실제 메모리 패턴(<code class="language-plaintext highlighter-rouge">0xFB</code>)는 변하지 않고, <code class="language-plaintext highlighter-rouge">0xFB</code>의 부호 없는 정수값, <code class="language-plaintext highlighter-rouge">251</code>을 출력합니다.</p>
-
-<p>C언어의 형변환은 컴퓨터에 <strong><em>실제 저장되는 값을 변경하는 것이 아니라, 컴퓨터가 어떻게 해석할지를 알려주는 것</em></strong> 입니다.(형변환 뿐 아니라 타입시스템 자체가 그렇다고 봐야합니다.)</p>
-
-<h2 id="결론-conclusion">결론 (Conclusion)</h2>
-<p>이번 글에서는 <strong>Signed와 Unsigned Binary의 차이점</strong>, <strong>표현 방식</strong>, <strong>프로그래밍 주의사항</strong>을 살펴보았습니다.</p>
-
-<ul>
-  <li><strong>Signed Binary:</strong> 음수와 양수를 모두 표현 (예: 센서 데이터, 오프셋)</li>
-  <li><strong>Unsigned Binary:</strong> 양수만 표현 (예: 메모리 주소, 타이머)</li>
-</ul>
-
-<p>이번 글이 도움이 되었나요? 궁금한 점이나 더 알고 싶은 부분이 있다면 댓글로 남겨주세요!</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="signed binary" /><category term="unsigned binary" /><category term="binary representation" /><summary type="html"><![CDATA[이 글에서는 Signed Binary와 Unsigned Binary의 차이점, 각각의 표현법, 그리고 C언어 프로그래밍 시의 주의사항을 알아보겠습니다.]]></summary></entry></feed>
+</table>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="add" /><category term="sub" /><category term="adc" /><category term="sbc" /><category term="rsb" /><category term="rsc" /><summary type="html"><![CDATA[이번 포스팅에서는 ARM의 기본 산술 연산(Arithmetic Operations) 명령어들을 다뤄보겠습니다. 특히 덧셈과 뺄셈, 그리고 Carry(캐리)를 포함하는 연산까지 함께 살펴봅니다. 지금까지는 레지스터에 값을 저장하고 시프트(shift)하는 방법을 배웠다면, 오늘은 그 값을 연산하는 단계로 나아가 보겠습니다.]]></summary></entry></feed>
