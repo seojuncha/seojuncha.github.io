@@ -39,6 +39,10 @@ This blog is my personal lab notebook. It's where I:
   A step-by-step ARMv4 assembly tutorial designed for low-level programmers.  
   Covers instruction encoding, memory access, stack, branching, condition flags, and more — with hands-on examples and detailed explanations.
 
+- [**mini-strace**](https://github.com/seojuncha/mini-strace)  
+  A minimal Linux syscall tracer built with pure C.  
+  Focused on understanding how ptrace intercepts syscalls, manages parent/child sync, and forms the core of tools like `strace`.
+
 ---
 
 <h2 id="services"> ​ Services </h2>
