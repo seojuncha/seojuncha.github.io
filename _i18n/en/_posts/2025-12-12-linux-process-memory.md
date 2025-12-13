@@ -258,17 +258,7 @@ A more detailed experiment comparing `brk` and `mmap` will be covered in a futur
 
 
 ## References
-- Linux Kernel Documentation – Memory Management  
-  https://docs.kernel.org/mm/index.html
-
-- Linux man-pages: proc(5)  
-  https://man7.org/linux/man-pages/man5/proc.5.html
-
-- GNU C Library Manual – Memory Allocation  
-  https://www.gnu.org/software/libc/manual/html_node/Memory-Allocation.html
-
-- System V ABI – ELF Specification  
-  https://refspecs.linuxfoundation.org/elf/elf.pdf
-
-- GNU Binutils Documentation  
-  https://sourceware.org/binutils/docs/
+- [Linux Kernel Documentation – Memory Management](https://docs.kernel.org/admin-guide/mm/concepts.html)
+- [Linux man-pages: proc(5)](https://man7.org/linux/man-pages/man5/proc.5.html)
+- [GNU C Library Manual – Memory Allocation](https://www.gnu.org/software/libc/manual/html_node/Memory-Allocation.html)
+- [System V ABI – ELF Specification](https://refspecs.linuxbase.org/LSB_3.1.0/LSB-Core-generic/LSB-Core-generic/elf-generic.html)

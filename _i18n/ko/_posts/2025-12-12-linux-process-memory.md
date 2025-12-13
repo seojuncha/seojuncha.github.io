@@ -256,17 +256,7 @@ $ gcc main.c & ./a.out
 > 일반적으로 작은 크기는 `brk` 기반 힙 확장으로 처리되는 경우가 많지만, 일정 크기 이상은 `mmap`으로 별도의 매핑 영역을 할당하기도 합니다.
 
 ## 참고
-- Linux Kernel Documentation – Memory Management  
-  https://docs.kernel.org/mm/index.html
-
-- Linux man-pages: proc(5)  
-  https://man7.org/linux/man-pages/man5/proc.5.html
-
-- GNU C Library Manual – Memory Allocation  
-  https://www.gnu.org/software/libc/manual/html_node/Memory-Allocation.html
-
-- System V ABI – ELF Specification  
-  https://refspecs.linuxfoundation.org/elf/elf.pdf
-
-- GNU Binutils Documentation  
-  https://sourceware.org/binutils/docs/
+- [Linux Kernel Documentation – Memory Management](https://docs.kernel.org/admin-guide/mm/concepts.html)
+- [Linux man-pages: proc(5)](https://man7.org/linux/man-pages/man5/proc.5.html)
+- [GNU C Library Manual – Memory Allocation](https://www.gnu.org/software/libc/manual/html_node/Memory-Allocation.html)
+- [System V ABI – ELF Specification](https://refspecs.linuxbase.org/LSB_3.1.0/LSB-Core-generic/LSB-Core-generic/elf-generic.html)
