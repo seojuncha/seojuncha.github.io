@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Basics of Process Memory Layout and Virtual Addressing | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Basics of Process Memory Layout and Virtual Addressing" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Every program running on Linux exists in the form of a process. A process is an execution unit whose runtime context is managed by the kernel through internal data structures. Here, “execution context” includes everything required to resume execution, such as CPU register state, the program counter (PC), and memory state (stack/heap/global variables). Each process has its own execution context, and Linux uses it to perform context switching and scheduling." />
+<meta property="og:description" content="Every program running on Linux exists in the form of a process. A process is an execution unit whose runtime context is managed by the kernel through internal data structures. Here, “execution context” includes everything required to resume execution, such as CPU register state, the program counter (PC), and memory state (stack/heap/global variables). Each process has its own execution context, and Linux uses it to perform context switching and scheduling." />
+<link rel="canonical" href="https://seojuncha.github.io/linux/2025/12/17/linux-process-memory.html" />
+<meta property="og:url" content="https://seojuncha.github.io/linux/2025/12/17/linux-process-memory.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-12-17T07:50:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Basics of Process Memory Layout and Virtual Addressing" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-12-17T07:50:00+00:00","datePublished":"2025-12-17T07:50:00+00:00","description":"Every program running on Linux exists in the form of a process. A process is an execution unit whose runtime context is managed by the kernel through internal data structures. Here, “execution context” includes everything required to resume execution, such as CPU register state, the program counter (PC), and memory state (stack/heap/global variables). Each process has its own execution context, and Linux uses it to perform context switching and scheduling.","headline":"Basics of Process Memory Layout and Virtual Addressing","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/linux/2025/12/17/linux-process-memory.html"},"url":"https://seojuncha.github.io/linux/2025/12/17/linux-process-memory.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      Basics of Process Memory Layout and Virtual Addressing
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2025-12-17T07:50:00+00:00"
+        itemprop="datePublished"
+      >
+        Dec 17, 2025
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/linux/2025/12/17/linux-process-memory.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>Every program running on Linux exists in the form of a process.
+A process is an execution unit whose runtime context is managed by the kernel through internal data structures.
+Here, “execution context” includes everything required to resume execution, such as CPU register state, the program counter (PC), and memory state (stack/heap/global variables).
+Each process has its own execution context, and Linux uses it to perform context switching and scheduling.</p>
+
+<p>In this post, we will analyze the <strong>virtual address space</strong> that holds a process’s execution context, using practical examples.</p>
+
+<p>This post is based on Linux, and the test environment is as follows.</p>
+
+<ul>
+  <li>OS: Ubuntu 24.04</li>
+  <li>Kernel: 6.8.0</li>
+  <li>GCC: 13.3.0</li>
+</ul>
+
+<blockquote>
+  <p>This post is an experiment-driven record analyzing a Linux process’s virtual address space.
+It explains the fundamentals, but also covers verification steps and limitations, so it targets readers interested in systems programming rather than absolute beginners.</p>
+</blockquote>
+
+<h2 id="virtual-address-vs-physical-address">Virtual Address vs. Physical Address</h2>
+<p>To understand Linux processes and address spaces, we should first distinguish virtual addresses from physical addresses.
+In modern computers, programs are tightly coupled with the CPU and memory.
+That is because the CPU ultimately operates by reading data from memory, computing, and writing results back.
+The execution context we mentioned earlier is also stored in memory.
+<strong>Linux separates virtual and physical addresses for efficiency, safety, and flexibility in memory management</strong>.</p>
+
+<h3 id="physical-address-pa">Physical Address (PA)</h3>
+<p>A physical address refers to an <strong>address that can access real hardware memory</strong>.
+At the hardware level, RAM is physical memory, and physical addresses are used to access it.
+For example, in a 32-bit system, addresses are represented with 32 bits, so in theory the addressable range is from <code class="language-plaintext highlighter-rouge">0x0000_0000</code> to <code class="language-plaintext highlighter-rouge">0xFFFF_FFFF</code>.
+In an OS environment, user programs generally do not access physical memory directly due to security and safety concerns.
+This is why the concept of virtual memory and virtual addresses exists.</p>
+
+<h3 id="virtual-address-va">Virtual Address (VA)</h3>
+<p>A virtual address is a <strong>memory address that appears independent for each process</strong>.
+When a process is created, it receives a virtual address space and operates only within that range.
+Because each process has its own virtual address space, different processes may have the same virtual address values.
+This can be observed more easily when <strong>ASLR</strong> (Address Space Layout Randomization) is disabled or under certain conditions.</p>
+
+<p><strong>The key point is that even if virtual addresses look identical, they may map to different physical addresses</strong>.</p>
+
+<p>For example, the address of variable <code class="language-plaintext highlighter-rouge">a</code> in process A and the address of variable <code class="language-plaintext highlighter-rouge">b</code> in process B may print the same value.
+Even in that case, it does <strong>not</strong> mean the two variables point to the same location in physical memory.</p>
+
+<p><strong>process_A.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%p"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><strong>process_B.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">b</span><span class="p">;</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%p"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h4 id="note-addresses-printed-in-gdb-are-virtual-addresses">Note: Addresses Printed in GDB Are Virtual Addresses</h4>
+<p>All addresses printed by a process running in user space are virtual addresses.
+The same applies to addresses printed in GDB.
+For example, in a GDB session, when you print the address of a variable</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> p/32x &amp;local_var
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">&amp;local_var</code> is an address within the process’s virtual address space (a virtual address).</p>
+
+<h2 id="process-memory-layout">Process Memory Layout</h2>
+<p>Every Linux process loads its code and data into a virtual address space provided by the OS.
+This virtual address space is typically described as several well-known regions (segments/areas).
+In general, each process has an isolated virtual address space, but some parts (such as <code class="language-plaintext highlighter-rouge">text</code> segments or shared libraries) may share physical memory.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Segment</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>text</td>
+      <td>Stores compiled executable code</td>
+    </tr>
+    <tr>
+      <td>data</td>
+      <td>Stores initialized global and static variables</td>
+    </tr>
+    <tr>
+      <td>bss</td>
+      <td>Stores uninitialized global and static variables</td>
+    </tr>
+    <tr>
+      <td>stack</td>
+      <td>Stores LIFO data such as local variables and function arguments</td>
+    </tr>
+    <tr>
+      <td>heap</td>
+      <td>Dynamic memory allocation region (e.g., via <code class="language-plaintext highlighter-rouge">malloc()</code>)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>When a program is compiled, the compiler and linker generate a binary that includes layout and size information for code and data.
+On Linux, this binary is typically generated in the ELF (Executable and Linkable Format).</p>
+
+<blockquote>
+  <p>In a future post, we will examine the ELF format in detail and verify how its sections/segments map into the process’s virtual address space.</p>
+</blockquote>
+
+<h2 id="inspecting-a-processs-virtual-address-space">Inspecting a Process’s Virtual Address Space</h2>
+<p>When a process is created, the Linux kernel assigns it a unique identifier called a PID (Process ID).</p>
+
+<p>The file <code class="language-plaintext highlighter-rouge">/proc/[pid]/maps</code> contains the virtual memory mappings of the process.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat</span> /proc/[pid]/maps
+</code></pre></div></div>
+
+<p>The goal of this post is <strong>not to explain the full syntax of the maps file</strong>, but to <strong>observe and verify how real code is placed in the virtual address space</strong>.
+Still, we will briefly cover three key points required for this post.</p>
+
+<p>The command below prints the memory maps for the <code class="language-plaintext highlighter-rouge">cat</code> process running in the current shell context.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat</span> /proc/self/maps
+</code></pre></div></div>
+
+<h3 id="virtual-address-range-start--end">Virtual Address Range (Start ~ End)</h3>
+<figure style="text-align: center;">
+  <img src="/assets/img/first-column-of-stack-area-in-maps.png" alt="The first column of /proc/self/maps showing the virtual address range of the stack region" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    Figure 1. The stack region is shown as a range from a start address to an end address.
+    </figcaption>
+</figure>
+
+<p>The first column in the maps file shows the virtual address range in the form start-end.</p>
+
+<h3 id="permissions">Permissions</h3>
+<figure style="text-align: center;">
+  <img src="/assets/img/second-column-of-stack-area-in-maps.png" alt="The permissions column of /proc/self/maps showing `rw-p` for the stack region" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    Figure 2. The stack region has `rw-p` permissions: readable/writable and privately mapped.
+    </figcaption>
+</figure>
+
+<p>Each virtual memory region has its own access permissions.
+Permissions are typically shown as <code class="language-plaintext highlighter-rouge">rwxp</code>, meaning read, write, execute, and private.
+For example, <code class="language-plaintext highlighter-rouge">r--p</code> indicates a read-only region, where data such as string literals may reside.</p>
+
+<h3 id="mapped-file-path--region-type">Mapped File Path / Region Type</h3>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/last-column-of-exec-binary-in-maps.png" alt="The last column of /proc/self/maps showing mapped file paths such as /usr/bin/cat and shared libraries" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    Figure 3. Mappings for the executable and shared libraries are shown as file paths in the last column.
+    </figcaption>
+</figure>
+
+<p>The last column shows the mapped file path, shared library paths, or region types such as <code class="language-plaintext highlighter-rouge">[heap]</code> and <code class="language-plaintext highlighter-rouge">[stack]</code>.</p>
+
+<hr />
+<p>For more details on <code class="language-plaintext highlighter-rouge">/proc</code> and how to read the maps file, refer to the manual page.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>man 5 proc
+</code></pre></div></div>
+
+<figure style="text-align: center;">
+  <img src="/assets/img/part-of-linux-man-page-for-proc.png" alt="A snippet from `man 5 proc` describing that /proc provides process-related information beyond maps" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    Figure 4. `/proc` provides process-related information and includes many files beyond `maps`.
+    </figcaption>
+</figure>
+
+<h2 id="experiment">Experiment</h2>
+<p>In this experiment, we will directly check where common program elements are placed in the virtual address space.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span>
+<span class="kt">char</span> <span class="n">global_var</span><span class="p">;</span>
+<span class="kt">char</span> <span class="n">init_global_var</span> <span class="o">=</span> <span class="sc">'A'</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">print_maps</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">FILE</span> <span class="o">*</span><span class="n">f</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+
+  <span class="n">f</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">"/proc/self/maps"</span><span class="p">,</span> <span class="s">"r"</span><span class="p">);</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">fgets</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="n">f</span><span class="p">))</span>
+      <span class="n">fputs</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">stdout</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">char</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"[%p] address of the parameter in function</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">local_var</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="o">*</span><span class="n">malloc_var</span><span class="p">;</span>
+
+  <span class="n">print_maps</span><span class="p">();</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"[%p] address of the local variable</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">local_var</span><span class="p">);</span>
+
+  <span class="n">malloc_var</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"[%p] address of the variable allocated by malloc()</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">malloc_var</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"[%p] address of the function</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">foo</span><span class="p">);</span>
+  <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"[%p] address of the uninitialized global variable</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">global_var</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"[%p] address of the initialized global variable</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">init_global_var</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>Compile &amp; run:</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.c &amp; ./a.out
+</code></pre></div></div>
+
+<p><strong>Output:</strong></p>
+<figure style="text-align: center;">
+  <img src="/assets/img/output-of-code-sample-to-print-the-various-address.png" alt="Terminal output showing /proc/self/maps followed by addresses of a local variable, malloc allocation, function, and globals" style="display: block; margin: auto;" />
+    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+    Figure 5. It prints `/proc/self/maps` first, then prints various addresses from inside the program.
+    </figcaption>
+</figure>
+
+<h2 id="result-analysis">Result Analysis</h2>
+<p>The sample prints addresses for the following items.</p>
+
+<ul>
+  <li>Address of a local variable in <code class="language-plaintext highlighter-rouge">main()</code></li>
+  <li>Address of memory allocated by <code class="language-plaintext highlighter-rouge">malloc()</code></li>
+  <li>Address of a function</li>
+  <li>Address of an uninitialized global variable</li>
+  <li>Address of an initialized global variable</li>
+</ul>
+
+<p>By comparing printed addresses with the ranges in <code class="language-plaintext highlighter-rouge">/proc/[pid]/maps</code>, we can summarize them roughly as follows.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Symbol/Address</th>
+      <th>Estimated Region</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Local variable</td>
+      <td><code class="language-plaintext highlighter-rouge">local_var</code></td>
+      <td>stack</td>
+    </tr>
+    <tr>
+      <td>malloc allocation</td>
+      <td><code class="language-plaintext highlighter-rouge">malloc_var</code></td>
+      <td>heap</td>
+    </tr>
+    <tr>
+      <td>Function address</td>
+      <td><code class="language-plaintext highlighter-rouge">foo</code></td>
+      <td>text</td>
+    </tr>
+    <tr>
+      <td>Function parameter</td>
+      <td><code class="language-plaintext highlighter-rouge">a</code></td>
+      <td>stack</td>
+    </tr>
+    <tr>
+      <td>Uninitialized global</td>
+      <td><code class="language-plaintext highlighter-rouge">global_var</code></td>
+      <td>bss (estimated)</td>
+    </tr>
+    <tr>
+      <td>Initialized global</td>
+      <td><code class="language-plaintext highlighter-rouge">init_global_var</code></td>
+      <td>data (estimated)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>However, <code class="language-plaintext highlighter-rouge">/proc/[pid]/maps</code> alone cannot directly distinguish whether a global variable belongs to <code class="language-plaintext highlighter-rouge">.bss</code> or <code class="language-plaintext highlighter-rouge">.data</code>.
+We can observe that the address belongs to the executable-mapped region, but proving it at the section level requires ELF analysis.</p>
+
+<p>This will be refined in a follow-up post focused on ELF analysis.
+Also, depending on the compiler and ABI, function arguments may be passed via registers and then spilled onto the stack.</p>
+
+<blockquote>
+  <p>Typically, small allocations often come from the brk-based heap, while larger allocations may use <code class="language-plaintext highlighter-rouge">mmap()</code> to create separate mappings.
+A more detailed experiment comparing <code class="language-plaintext highlighter-rouge">brk</code> and <code class="language-plaintext highlighter-rouge">mmap</code> will be covered in a future post.</p>
+</blockquote>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://docs.kernel.org/admin-guide/mm/concepts.html">Linux Kernel Documentation – Memory Management</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man5/proc.5.html">Linux man-pages: proc(5)</a></li>
+  <li><a href="https://www.gnu.org/software/libc/manual/html_node/Memory-Allocation.html">GNU C Library Manual – Memory Allocation</a></li>
+  <li><a href="https://refspecs.linuxbase.org/LSB_3.1.0/LSB-Core-generic/LSB-Core-generic/elf-generic.html">System V ABI – ELF Specification</a></li>
+</ul>
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/linux/2025/12/17/linux-process-memory.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
