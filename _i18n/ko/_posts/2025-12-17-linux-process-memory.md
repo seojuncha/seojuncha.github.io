@@ -3,10 +3,9 @@ layout: post
 lang: ko
 ref: "linux-process-memory"
 title: "프로세스 메모리 구조와 가상주소의 기본"
-date: 2025-12-12 20:20:00 +0900
+date: 2025-12-17 16:50:00 +0900
 categories: ["linux"]
 tags: ["process", "virtual address", "maps"]
-published: false
 ---
 
 리눅스에서 동작하는 모든 프로그램은 프로세스의 형태로 존재합니다.
@@ -111,7 +110,7 @@ $ cat /proc/self/maps
 
 ### 가상 주소 범위 (시작 주소 ~ 끝 주소)
 <figure style="text-align: center;">
-  <img src="/assets/img/first-column-of-stack-area-in-maps-.png"
+  <img src="/assets/img/first-column-of-stack-area-in-maps.png"
     alt="스택 영역의 가상 주소 범위가 표시된 /proc/self/maps의 첫 번째 열"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">

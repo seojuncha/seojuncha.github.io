@@ -3,10 +3,9 @@ layout: post
 lang: en
 ref: "linux-process-memory"
 title: "Basics of Process Memory Layout and Virtual Addressing"
-date: 2025-12-12 20:20:00 +0900
+date: 2025-12-17 16:50:00 +0900
 categories: ["linux"]
 tags: ["process", "virtual address", "maps"]
-published: false
 ---
 
 Every program running on Linux exists in the form of a process.
@@ -112,11 +111,11 @@ $ cat /proc/self/maps
 
 ### Virtual Address Range (Start ~ End)
 <figure style="text-align: center;">
-  <img src="/assets/img/first-column-of-stack-area-in-maps-.png"
+  <img src="/assets/img/first-column-of-stack-area-in-maps.png"
     alt="The first column of /proc/self/maps showing the virtual address range of the stack region"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    The stack region is shown as a range from a start address to an end address.
+    Figure 1. The stack region is shown as a range from a start address to an end address.
     </figcaption>
 </figure>
 
@@ -128,7 +127,7 @@ The first column in the maps file shows the virtual address range in the form st
     alt="The permissions column of /proc/self/maps showing `rw-p` for the stack region"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    The stack region has `rw-p` permissions: readable/writable and privately mapped.
+    Figure 2. The stack region has `rw-p` permissions: readable/writable and privately mapped.
     </figcaption>
 </figure>
 
@@ -144,7 +143,7 @@ For example, `r--p` indicates a read-only region, where data such as string lite
     alt="The last column of /proc/self/maps showing mapped file paths such as /usr/bin/cat and shared libraries"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    Mappings for the executable and shared libraries are shown as file paths in the last column.
+    Figure 3. Mappings for the executable and shared libraries are shown as file paths in the last column.
     </figcaption>
 </figure>
 
@@ -161,7 +160,7 @@ $ man 5 proc
     alt="A snippet from `man 5 proc` describing that /proc provides process-related information beyond maps"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    `/proc` provides process-related information and includes many files beyond `maps`.
+    Figure 4. `/proc` provides process-related information and includes many files beyond `maps`.
     </figcaption>
 </figure>
 
@@ -223,7 +222,7 @@ $ gcc main.c & ./a.out
     alt="Terminal output showing /proc/self/maps followed by addresses of a local variable, malloc allocation, function, and globals"
     style="display: block; margin: auto;" />
     <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    It prints `/proc/self/maps` first, then prints various addresses from inside the program.
+    Figure 5. It prints `/proc/self/maps` first, then prints various addresses from inside the program.
     </figcaption>
 </figure>
 
