@@ -127,7 +127,30 @@ tracer와 tracee는 부모–자식 프로세스 관계이며, 이들 사이의 
 <code class="language-plaintext highlighter-rouge">fork</code>로 생성된 자식 프로세스(tracee)는 <code class="language-plaintext highlighter-rouge">ptrace</code>를 호출하여 관측 대상으로 설정된다.
 부모 프로세스(tracer)는 자식의 시그널 상태 변화를 감지하기 위해 <code class="language-plaintext highlighter-rouge">waitpid</code>로 대기한다.</p>
 
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;sys/ptrace.h&gt; </span><span class="cm">/* ptrace()  */</span>
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="code"><pre><span class="cp">#include &lt;sys/ptrace.h&gt; </span><span class="cm">/* ptrace()  */</span>
 <span class="cp">#include &lt;sys/wait.h&gt;   </span><span class="cm">/* waitpid() */</span>
 <span class="cp">#include &lt;unistd.h&gt;</span>
 <span class="cp">#include &lt;stdio.h&gt;</span>
@@ -149,7 +172,9 @@ tracer와 tracee는 부모–자식 프로세스 관계이며, 이들 사이의 
   <span class="p">}</span>
 
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
+<span class="p">}</span>
+
+</pre></td></tr></tbody></table></code></pre></figure>
 
 <h2 id="아직-시스템-콜은-관측되지-않는다">아직 시스템 콜은 관측되지 않는다</h2>
 <p>실행 결과는 다음과 같다.</p>
