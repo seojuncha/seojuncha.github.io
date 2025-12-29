@@ -1,6 +1,22 @@
 // Placeholder to allow defining custom styles that override everything else.
 // (Use `_sass/minima/custom-variables.scss` to override variable defaults)
 
+// /* C keywords: int, return, if */
+// .highlight .k {
+//   color: #ff7b72;
+//   font-weight: 600;
+// }
+
+// /* Types: int, pid_t, size_t */
+// .highlight .kt {
+//   color: #79c0ff;
+// }
+
+// /* Function names */
+// .highlight .nf {
+//   color: #d2a8ff;
+// }
+
 .highlight {
   pre {
     margin: 0; // 줄 번호와 코드의 줄 간격을 맞춤

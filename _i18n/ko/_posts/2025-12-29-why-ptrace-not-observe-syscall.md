@@ -6,7 +6,6 @@ title: "ptrace에서 TRACER가 시스템 콜을 관측하지 못하는 이유"
 date: 2025-12-29 21:10:00 +0900
 categories: ["linux"]
 tags: ["ptrace", "syscall"]
-published: false
 ---
 
 `ptrace`를 사용한 시스템 콜 관측에서 가장 먼저 해결해야 할 문제는 tracer가 **“언제, 그리고 어떻게 시스템 콜을 인지하는가”**이다.
