@@ -31,7 +31,7 @@ ptrace(PTRACE_TRACEME, pid, 0);
 `fork`로 생성된 자식 프로세스(tracee)는 `ptrace`를 호출하여 관측 대상으로 설정된다.
 부모 프로세스(tracer)는 자식의 시그널 상태 변화를 감지하기 위해 `waitpid`로 대기한다.
 
-{% highlight c mark_lines="10 14 18" %}
+{% highlight c linenos mark_lines="10 14 18" %}
 #include <sys/ptrace.h> /* ptrace()  */
 #include <sys/wait.h>   /* waitpid() */
 #include <unistd.h>
