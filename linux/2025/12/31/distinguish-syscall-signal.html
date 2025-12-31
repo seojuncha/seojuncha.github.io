@@ -236,26 +236,7 @@ The tracer sets <code class="language-plaintext highlighter-rouge">PTRACE_O_TRAC
 <h2 id="sigtrap-alone-is-not-sufficient-to-identify-event-causes">SIGTRAP Alone Is Not Sufficient to Identify Event Causes</h2>
 <p>The execution result is shown below.</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-</pre></td><td class="code"><pre>I'm TRACER: 14580
+<figure class="highlight"><pre><code class="language-text" data-lang="text">I'm TRACER: 14580
 I'm TRACEE: 14581
 [14581] stopped, 19
 [14581] sigstop
@@ -273,9 +254,7 @@ Hello, World
 [14581] stopped, 5
 <span class="hll">[14581] traced stop
 </span>
-TRACER has terminated
-
-</pre></td></tr></tbody></table></code></pre></figure>
+TRACER has terminated</code></pre></figure>
 
 <p>As shown above, most stop events—including those around <code class="language-plaintext highlighter-rouge">Hello, World</code>—appear as <code class="language-plaintext highlighter-rouge">SIGTRAP</code>.
 In this state, it is impossible to determine whether a <code class="language-plaintext highlighter-rouge">SIGTRAP</code> was caused by a system call or by another <code class="language-plaintext highlighter-rouge">ptrace</code>-related event.</p>
@@ -321,26 +300,7 @@ This extra bit is a kernel-level marker used to distinguish system call stops fr
 
 <p><strong>Execution Result:</strong></p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-</pre></td><td class="code"><pre>I'm TRACER: 14608
+<figure class="highlight"><pre><code class="language-text" data-lang="text">I'm TRACER: 14608
 I'm TRACEE: 14609
 [14609] stopped, 19
 [14609] sigstop
@@ -358,9 +318,7 @@ Hello, World
 [14609] stopped, 5
 [14609] traced stop
 
-TRACER has terminated
-
-</pre></td></tr></tbody></table></code></pre></figure>
+TRACER has terminated</code></pre></figure>
 
 <p>Compared to the previous run, after the initial <code class="language-plaintext highlighter-rouge">SIGSTOP</code>,
 we observe three system call stops (<code class="language-plaintext highlighter-rouge">SIGTRAP | 0x80</code>) and one ordinary <code class="language-plaintext highlighter-rouge">SIGTRAP</code>.</p>

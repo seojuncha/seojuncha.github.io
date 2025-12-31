@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-12-31T07:13:04+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">시스템콜 시그널은 일반 시그널과 어떻게 구분할까?</title><link href="https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html" rel="alternate" type="text/html" title="시스템콜 시그널은 일반 시그널과 어떻게 구분할까?" /><published>2025-12-31T07:10:00+00:00</published><updated>2025-12-31T07:10:00+00:00</updated><id>https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal</id><content type="html" xml:base="https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html"><![CDATA[<p><code class="language-plaintext highlighter-rouge">ptrace</code>를 활용해 시스템콜을 검출할 때, 시스템콜의 진입과 복귀는 <code class="language-plaintext highlighter-rouge">SIGTRAP</code> 시그널 형태로 tracer에 전달된다.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2025-12-31T08:06:49+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">시스템콜 시그널은 일반 시그널과 어떻게 구분할까?</title><link href="https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html" rel="alternate" type="text/html" title="시스템콜 시그널은 일반 시그널과 어떻게 구분할까?" /><published>2025-12-31T07:10:00+00:00</published><updated>2025-12-31T07:10:00+00:00</updated><id>https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal</id><content type="html" xml:base="https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html"><![CDATA[<p><code class="language-plaintext highlighter-rouge">ptrace</code>를 활용해 시스템콜을 검출할 때, 시스템콜의 진입과 복귀는 <code class="language-plaintext highlighter-rouge">SIGTRAP</code> 시그널 형태로 tracer에 전달된다.
 tracer는 tracee로부터 <code class="language-plaintext highlighter-rouge">SIGTRAP</code> 시그널을 받으면 시스템콜이 발생했음을 추측할 수 있다.
 하지만 <code class="language-plaintext highlighter-rouge">SIGTRAP</code> 시그널은 시스템콜 호출 시에만 발생하는 것은 아니다.
 그렇기 때문에 tracer가 <code class="language-plaintext highlighter-rouge">SIGTRAP</code> 시그널만을 기준으로 이벤트를 처리할 경우, 어떤 원인으로 발생한 시그널인지 구분하기 어려운 상황이 발생한다.</p>
@@ -129,26 +129,7 @@ tracer는 <code class="language-plaintext highlighter-rouge">SIGSTOP</code>을 �
 <h2 id="sigtrap-하나로는-이벤트-원인을-구분할-수-없다">SIGTRAP 하나로는 이벤트 원인을 구분할 수 없다</h2>
 <p>실행 결과는 다음과 같다.</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-</pre></td><td class="code"><pre>I'm TRACER: 14580
+<figure class="highlight"><pre><code class="language-text" data-lang="text">I'm TRACER: 14580
 I'm TRACEE: 14581
 [14581] stopped, 19
 [14581] sigstop
@@ -166,9 +147,7 @@ Hello, World
 [14581] stopped, 5
 <span class="hll">[14581] traced stop
 </span>
-TRACER has terminated
-
-</pre></td></tr></tbody></table></code></pre></figure>
+TRACER has terminated</code></pre></figure>
 
 <p>출력 결과를 보면 <code class="language-plaintext highlighter-rouge">Hello, World</code> 출력 전후를 포함해 대부분의 stop 이벤트가 모두 <code class="language-plaintext highlighter-rouge">SIGTRAP</code>으로 관측된다.
 이 상태에서는 해당 <code class="language-plaintext highlighter-rouge">SIGTRAP</code>이 시스템콜로 인해 발생한 것인지, 아니면 다른 <code class="language-plaintext highlighter-rouge">ptrace</code> 이벤트로 인한 것인지 구분할 수 없다.</p>
@@ -214,26 +193,7 @@ TRACER has terminated
 
 <p><strong>실행 결과:</strong></p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-</pre></td><td class="code"><pre>I'm TRACER: 14608
+<figure class="highlight"><pre><code class="language-text" data-lang="text">I'm TRACER: 14608
 I'm TRACEE: 14609
 [14609] stopped, 19
 [14609] sigstop
@@ -251,9 +211,7 @@ Hello, World
 [14609] stopped, 5
 [14609] traced stop
 
-TRACER has terminated
-
-</pre></td></tr></tbody></table></code></pre></figure>
+TRACER has terminated</code></pre></figure>
 
 <p>이전 결과와 비교하면, 첫 번째 <code class="language-plaintext highlighter-rouge">SIGSTOP</code> 이후 3번의 시스템콜 stop(<code class="language-plaintext highlighter-rouge">SIGTRAP | 0x80</code>)과 1번의 일반 <code class="language-plaintext highlighter-rouge">SIGTRAP</code> stop이 발생한 것을 확인할 수 있다.</p>
 
