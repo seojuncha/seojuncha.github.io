@@ -94,7 +94,7 @@ tracer는 `SIGSTOP`을 수신한 뒤 `PTRACE_O_TRACEEXIT` 옵션을 설정하고
 ## SIGTRAP 하나로는 이벤트 원인을 구분할 수 없다
 실행 결과는 다음과 같다.
 
-{% highlight text linenos mark_lines="7 11 14 17" %}
+{% highlight text mark_lines="7 11 14 17" %}
 I'm TRACER: 14580
 I'm TRACEE: 14581
 [14581] stopped, 19
@@ -147,7 +147,7 @@ switch (WSTOPSIG(ws)) {
 
 
 **실행 결과:**
-{% highlight text linenos mark_lines="7 11 14" %}
+{% highlight text mark_lines="7 11 14" %}
 I'm TRACER: 14608
 I'm TRACEE: 14609
 [14609] stopped, 19

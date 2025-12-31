@@ -93,7 +93,7 @@ The tracer sets `PTRACE_O_TRACEEXIT` upon receiving `SIGSTOP`, then uses `PTRACE
 ## SIGTRAP Alone Is Not Sufficient to Identify Event Causes
 The execution result is shown below.
 
-{% highlight text linenos mark_lines="7 11 14 17" %}
+{% highlight text mark_lines="7 11 14 17" %}
 I'm TRACER: 14580
 I'm TRACEE: 14581
 [14581] stopped, 19
@@ -145,7 +145,7 @@ switch (WSTOPSIG(ws)) {
 {% endhighlight %}
 
 **Execution Result:**
-{% highlight text linenos mark_lines="7 11 14" %}
+{% highlight text mark_lines="7 11 14" %}
 I'm TRACER: 14608
 I'm TRACEE: 14609
 [14609] stopped, 19
