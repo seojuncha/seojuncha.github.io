@@ -1,4 +1,216 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-12-31T08:06:48+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">How Can We Distinguish System Call Signals from Ordinary Signals?</title><link href="https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html" rel="alternate" type="text/html" title="How Can We Distinguish System Call Signals from Ordinary Signals?" /><published>2025-12-31T07:10:00+00:00</published><updated>2025-12-31T07:10:00+00:00</updated><id>https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal</id><content type="html" xml:base="https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html"><![CDATA[<p>When detecting system calls using <code class="language-plaintext highlighter-rouge">ptrace</code>, system call entry and exit events are delivered to the tracer in the form of a <code class="language-plaintext highlighter-rouge">SIGTRAP</code> signal.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-01-06T13:31:46+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">Distinguishing System Call Entry and Exit: Extracting Arguments and Return Values</title><link href="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html" rel="alternate" type="text/html" title="Distinguishing System Call Entry and Exit: Extracting Arguments and Return Values" /><published>2026-01-06T13:20:00+00:00</published><updated>2026-01-06T13:20:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html"><![CDATA[<p>When a tracer uses <code class="language-plaintext highlighter-rouge">PTRACE_SYSCALL</code> to trace system calls,
+the tracer receives two signals per system call: one before execution and one after.
+This happens at the transition points between user mode and kernel mode, which are fundamental to system call execution.
+<strong>The tracer must distinguish these two signals as system call entry and system call exit, and read the appropriate register values at each point</strong>.
+For example, if the tracer reads the return-value register at system call entry,
+it will observe a kernel-initialized placeholder rather than the actual result, leading to incorrect behavior.</p>
+
+<p>This post explains how to distinguish system call entry and exit,
+briefly analyzes how this mechanism is implemented in strace,
+and demonstrates how to extract system call arguments and return values from registers.</p>
+
+<h2 id="concept-of-system-call-entry-and-exit">Concept of System Call Entry and Exit</h2>
+<p>A system call can be divided into two distinct phases.</p>
+
+<p><strong>Syscall Entry</strong></p>
+<ul>
+  <li>User mode → Kernel mode</li>
+  <li>System call arguments are passed</li>
+</ul>
+
+<p><strong>Syscall Exit</strong></p>
+<ul>
+  <li>Kernel mode → User mode</li>
+  <li>Return value is delivered</li>
+</ul>
+
+<p>This is the fundamental execution model of a system call.
+Under <code class="language-plaintext highlighter-rouge">PTRACE_SYSCALL</code>, two stops are observed per system call, the first corresponding to entry and the second to exit.
+From the tracer’s perspective, the first observed signal for each system call can be treated as the system call entry point.</p>
+
+<h3 id="implementing-entryexit-distinction">Implementing Entry/Exit Distinction</h3>
+<p>Based on this behavior, the simplest and most efficient way to distinguish entry and exit is to use a <strong>toggle-style flag</strong>.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">in_syscall</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="k">case</span> <span class="n">SIGTRAP</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">:</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">in_syscall</span><span class="p">)</span> <span class="p">{</span>      <span class="cm">/* system call exit */</span>
+    <span class="n">in_syscall</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>               <span class="cm">/* system call entry */</span>
+    <span class="n">in_syscall</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span></code></pre></figure>
+
+<p>The <code class="language-plaintext highlighter-rouge">in_syscall</code> flag represents whether the tracee is currently inside a system call.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">0</code>: system call entry</li>
+  <li><code class="language-plaintext highlighter-rouge">1</code>: system call exit</li>
+</ul>
+
+<p>The initial value is set to <code class="language-plaintext highlighter-rouge">0</code>.
+It is toggled to <code class="language-plaintext highlighter-rouge">1</code> at entry, and reset to <code class="language-plaintext highlighter-rouge">0</code> after handling the exit stop.</p>
+
+<blockquote>
+  <p>The <code class="language-plaintext highlighter-rouge">SIGTRAP | 0x80</code> signal is generated only when <code class="language-plaintext highlighter-rouge">PTRACE_O_TRACESYSGOOD</code> is enabled.</p>
+</blockquote>
+
+<h3 id="reference-how-strace-implements-this">Reference: How strace Implements This</h3>
+<p><code class="language-plaintext highlighter-rouge">strace</code> uses the same conceptual approach to distinguish system call entry and exit.</p>
+
+<p><strong>defs.h</strong></p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define TCB_INSYSCALL      0x04
+#define entering(tcp)      (!((tcp)-&gt;flags &amp; TCB_INSYSCALL))
+#define exiting(tcp)       ((tcp)-&gt;flags &amp; TCB_INSYSCALL)</span></code></pre></figure>
+
+<p><strong>syscall.c</strong></p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">syscall_entering_finish</span><span class="p">(</span><span class="k">struct</span> <span class="n">tcb</span> <span class="o">*</span><span class="n">tcp</span><span class="p">,</span> <span class="kt">int</span> <span class="n">res</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">tcp</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">|=</span> <span class="n">TCB_INSYSCALL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">syscall_exiting_finish</span><span class="p">(</span><span class="k">struct</span> <span class="n">tcb</span> <span class="o">*</span><span class="n">tcp</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">tcp</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">TCB_INSYSCALL</span> <span class="o">|</span>
+                  <span class="n">TCB_TAMPERED</span> <span class="o">|</span>
+                  <span class="n">TCB_INJECT_DELAY_EXIT</span> <span class="o">|</span>
+                  <span class="n">TCB_INJECT_POKE_EXIT</span> <span class="o">|</span>
+                  <span class="n">TCB_TAMPERED_DELAYED</span> <span class="o">|</span>
+                  <span class="n">TCB_TAMPERED_POKED</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><strong>strace.c</strong></p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">trace_syscall</span><span class="p">(</span><span class="k">struct</span> <span class="n">tcb</span> <span class="o">*</span><span class="n">tcp</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">sig</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="hll">  <span class="k">if</span> <span class="p">(</span><span class="n">entering</span><span class="p">(</span><span class="n">tcp</span><span class="p">))</span> <span class="p">{</span>
+</span>    <span class="kt">int</span> <span class="n">res</span> <span class="o">=</span> <span class="n">syscall_entering_decode</span><span class="p">(</span><span class="n">tcp</span><span class="p">);</span>
+<span class="hll">    <span class="n">syscall_entering_finish</span><span class="p">(</span><span class="n">tcp</span><span class="p">,</span> <span class="n">res</span><span class="p">);</span>
+</span>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">res</span> <span class="o">=</span> <span class="n">syscall_exiting_decode</span><span class="p">(</span><span class="n">tcp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ts</span><span class="p">);</span>
+<span class="hll">    <span class="n">syscall_exiting_finish</span><span class="p">(</span><span class="n">tcp</span><span class="p">);</span>
+</span>  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The <code class="language-plaintext highlighter-rouge">TCB_INSYSCALL</code> flag indicates whether the thread is currently inside a system call.
+It is maintained per <code class="language-plaintext highlighter-rouge">tcb</code> (<em>Trace Control Block</em>).
+This is necessary because a tracer may follow multiple tracees and threads,
+and must track the system call state of each independently.</p>
+
+<h2 id="extracting-system-call-arguments-and-return-values">Extracting System Call Arguments and Return Values</h2>
+<p>System call arguments and return values are obtained by reading registers via <code class="language-plaintext highlighter-rouge">PTRACE_GETREGS</code>.
+By understanding how system calls work, it becomes clear which registers to read at which point.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">case</span> <span class="n">SIGTRAP</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">:</span>
+  <span class="kt">long</span> <span class="kt">long</span> <span class="n">ret</span><span class="p">;</span>
+  <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_GETREGS</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">regs</span><span class="p">);</span>
+
+  <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="kt">long</span> <span class="kt">long</span><span class="p">)</span> <span class="n">regs</span><span class="p">.</span><span class="n">rax</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">in_syscall</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* system call exit */</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"[%d] syscall exit stop: nr=%llu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">orig_rax</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"[%d] arg1: %llu, arg2: 0x%0llx, arg3: %llu, ret: %lld</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+           <span class="n">pid</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rdi</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rsi</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rdx</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+    <span class="n">in_syscall</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="cm">/* system call entry */</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"[%d] syscall entry stop: nr=%llu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">orig_rax</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"[%d] arg1: %llu, arg2: 0x%0llx, arg3: %llu, ret: %lld (%s)</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+           <span class="n">pid</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rdi</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rsi</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rdx</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">abs</span><span class="p">(</span><span class="n">ret</span><span class="p">)));</span>
+    <span class="n">in_syscall</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">break</span><span class="p">;</span></code></pre></figure>
+
+<blockquote>
+  <p>The full code template is available in the <a href="/linux/2025/12/31/distinguish-syscall-signal.html">previous post</a>.</p>
+</blockquote>
+
+<h3 id="example-output-analysis">Example Output Analysis</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">I'm TRACER: 39539
+I'm TRACEE: 39540
+[39540] stopped, 19
+[39540] sigstop
+ 
+[39540] stopped, 133
+[39540] syscall entry stop: nr=1
+<span class="hll">[39540] arg1: 1, arg2: 0x5ea9fa4e9018, arg3: 13, ret: -38(Function not implemented)
+</span> 
+Hello, World
+[39540] stopped, 133
+[39540] syscall exit stop: nr=1
+<span class="hll">[39540] arg1: 1, arg2: 0x5ea9fa4e9018, arg3: 13 ,ret: 13
+</span> 
+[39540] stopped, 133
+[39540] syscall entry stop: nr=231
+[39540] arg1: 0, arg2: 0xe7, arg3: 60, ret: -38(Function not implemented)
+ 
+[39540] stopped, 5
+[39540] traced stop
+ 
+TRACER has terminated</code></pre></figure>
+
+<p>The <code class="language-plaintext highlighter-rouge">write</code> system call has the following signature.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">ssize_t</span> <span class="nf">write</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span></code></pre></figure>
+
+<p>As shown in the output, the <code class="language-plaintext highlighter-rouge">rax</code> value at entry is not the actual return value.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>System Call</th>
+      <th>Arguments</th>
+      <th>Register</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Entry</td>
+      <td><code class="language-plaintext highlighter-rouge">int fd</code></td>
+      <td><code class="language-plaintext highlighter-rouge">rdi</code></td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td><code class="language-plaintext highlighter-rouge">const void *buf</code></td>
+      <td><code class="language-plaintext highlighter-rouge">rsi</code></td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td><code class="language-plaintext highlighter-rouge">size_t count</code></td>
+      <td><code class="language-plaintext highlighter-rouge">rdx</code></td>
+    </tr>
+    <tr>
+      <td>Exit</td>
+      <td>Return value</td>
+      <td><code class="language-plaintext highlighter-rouge">rax</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="why-is-the-return-value--enosys-at-system-call-entry">Why Is the Return Value -ENOSYS at System Call Entry?</h2>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">SYM_CODE_START(entry_SYSCALL_64)
+<span class="hll">  PUSH_AND_CLEAR_REGS rax=$-ENOSYS
+</span>SYM_CODE_END(entry_SYSCALL_64)</code></pre></figure>
+
+<p>On x86-64, the kernel initializes <code class="language-plaintext highlighter-rouge">rax</code> to <code class="language-plaintext highlighter-rouge">-ENOSYS</code> on system call entry.
+This serves as a default failure value in case the system call handler is missing or dispatch fails.
+Therefore, the <code class="language-plaintext highlighter-rouge">rax</code> value at entry is not meaningful, and tracers must only process the value at system call exit.</p>
+
+<h2 id="limitation-of-pointer-arguments">Limitation of Pointer Arguments</h2>
+<p>The second argument of <code class="language-plaintext highlighter-rouge">write</code>, <code class="language-plaintext highlighter-rouge">buf</code>, is a pointer.
+Since registers hold only the address, not the data itself, reading register values alone is insufficient.
+For this purpose, <code class="language-plaintext highlighter-rouge">ptrace</code> provides the <code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code> interface <strong>to read tracee memory</strong>.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://github.com/torvalds/linux/blob/master/arch/x86/entry/entry_64.S">Linux Kernel System Call Entry</a></li>
+  <li>man 2 ptrace</li>
+  <li><a href="https://github.com/strace/strace">GitHub strace</a></li>
+</ul>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="linux" /><category term="ptrace" /><category term="syscall" /><summary type="html"><![CDATA[When a tracer uses PTRACE_SYSCALL to trace system calls, the tracer receives two signals per system call: one before execution and one after. This happens at the transition points between user mode and kernel mode, which are fundamental to system call execution. The tracer must distinguish these two signals as system call entry and system call exit, and read the appropriate register values at each point. For example, if the tracer reads the return-value register at system call entry, it will observe a kernel-initialized placeholder rather than the actual result, leading to incorrect behavior.]]></summary></entry><entry xml:lang="en"><title type="html">How Can We Distinguish System Call Signals from Ordinary Signals?</title><link href="https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html" rel="alternate" type="text/html" title="How Can We Distinguish System Call Signals from Ordinary Signals?" /><published>2025-12-31T07:10:00+00:00</published><updated>2025-12-31T07:10:00+00:00</updated><id>https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal</id><content type="html" xml:base="https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html"><![CDATA[<p>When detecting system calls using <code class="language-plaintext highlighter-rouge">ptrace</code>, system call entry and exit events are delivered to the tracer in the form of a <code class="language-plaintext highlighter-rouge">SIGTRAP</code> signal.
 When the tracer receives a <code class="language-plaintext highlighter-rouge">SIGTRAP</code> signal from the tracee, it may infer that a system call has occurred.
 However, <strong><code class="language-plaintext highlighter-rouge">SIGTRAP</code> is not generated exclusively by system call events</strong>.
 Therefore, if the tracer relies solely on <code class="language-plaintext highlighter-rouge">SIGTRAP</code> to classify events, it becomes difficult to determine the actual cause of each stop.</p>
@@ -1912,194 +2124,4 @@ The only difference is that <code class="language-plaintext highlighter-rouge">S
 
 <p>Addressing modes make much more sense when explained together with stack memory, so in the next post, we’ll go through them in detail while exploring how the stack works in ARM.</p>
 
-<p>See you in the next post, where we’ll walk through the stack and its addressing modes together.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="memory block" /><category term="arm ldm" /><category term="arm stm" /><summary type="html"><![CDATA[In this post, we’ll look at the ARM instructions LDM and STM, which allow reading or writing multiple words at once from memory. In the previous post, we learned that LDR and STR can only handle a single word at a time. However, when working with contiguous memory areas such as arrays or structures, repeatedly using LDR or STR becomes inefficient. To solve this problem, ARM provides LDM (Load Multiple) and STM (Store Multiple), which can operate on memory blocks.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #10 - Understanding Stack Memory in ARM</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html" rel="alternate" type="text/html" title="ARM Assembly #10 - Understanding Stack Memory in ARM" /><published>2025-11-07T07:00:00+00:00</published><updated>2025-11-07T07:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/07/arm-stack-memory.html"><![CDATA[<p>Today, we’ll learn about <strong>stack memory</strong>, which the CPU uses to handle temporary data.
-Building on what we learned about memory access instructions in previous posts, we’ll prepare for the next topic — block memory access using <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code>.</p>
-
-<p><strong>Previous Posts:</strong></p>
-<ul>
-  <li><a href="/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html">Accessing memory using LDR and STR</a></li>
-  <li><a href="/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html">Applying offset addressing</a></li>
-  <li><a href="/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html">Pre-index and Post-index addressing</a></li>
-</ul>
-
-<h2 id="what-is-temporary-data">What Is Temporary Data?</h2>
-<p>Temporary data refers to information that is created and destroyed during program execution.
-Typical examples include <strong>local variables</strong>, <strong>function parameters</strong>, and <strong>return addresses</strong> used in function calls.
-Because these values exist only temporarily, they don’t need to occupy memory for the entire program runtime.</p>
-
-<h2 id="arm-memory-layout">ARM Memory Layout</h2>
-<p>Even temporary data must be stored in memory before the CPU can process it.
-Memory is typically divided into several regions based on purpose:</p>
-<ul>
-  <li><strong>Code Segment:</strong> where executable instructions are stored.</li>
-  <li><strong>Data Segment:</strong> where global and static variables are stored.</li>
-  <li><strong>Heap Segment:</strong> where dynamically allocated data is stored.</li>
-  <li><strong>Stack Segment:</strong> where function calls and local variables are stored.</li>
-</ul>
-
-<p>Among these, the <strong>code</strong> and <strong>stack</strong> segments are essential; in this post, we’ll focus on the stack.</p>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/aapcs32-memory-categories.png" alt="[AAPCS32] Memory Categories" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Figure 1. Memory regions according to AAPCS32 6.2</figcaption>
-</figure>
-
-<h2 id="what-is-a-stack">What Is a Stack?</h2>
-<p>A stack is literally a structure that “stacks” data.
-It’s a type of data structure widely used across many areas of computer science.</p>
-
-<h3 id="basic-stack-operations-push--pop">Basic Stack Operations: PUSH &amp; POP</h3>
-<p>A stack <a href="https://www.w3schools.com/dsa/dsa_data_stacks.php">supports two key operations</a> — <strong>PUSH</strong>, which adds data, and <strong>POP</strong>, which removes it.
-PUSH places data onto the top of the stack, and POP retrieves the most recently added item.</p>
-
-<h3 id="stack-vs-queue">Stack vs Queue</h3>
-<p>A stack can be imagined as a pile, whereas a queue can be imagined as a waiting line.
-Both are linear data structures, but they differ in their input/output order.</p>
-
-<ul>
-  <li><strong><a href="https://www.geeksforgeeks.org/dsa/lifo-principle-in-stack/">Stack (LIFO)</a></strong> — The last element added is the first one removed.</li>
-  <li><strong><a href="https://www.geeksforgeeks.org/dsa/introduction-to-queue-data-structure-and-algorithm-tutorials/">Queue (FIFO)</a></strong> — The first element added is the first one removed.</li>
-</ul>
-
-<p>The key point of a stack is that it processes <strong>the most recent data first</strong>.
-This property makes it especially useful for managing function calls and local variables.</p>
-
-<h2 id="arm-stack-memory">ARM Stack Memory</h2>
-<p>Stack memory refers to the memory area that behaves like a stack data structure.
-In ARM, it’s a continuous region used to store temporary data such as local variables and function parameters.</p>
-
-<h3 id="structure-of-arm-stack-memory">Structure of ARM Stack Memory</h3>
-<p>The ARM architecture uses a <strong>Full Descending (FD)</strong> stack model.
-This means the stack grows <strong>downward in memory</strong>, and the Stack Pointer (SP) points to the last stored value.</p>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/fd-stack-memory.png" alt="Full Descending Stack Memory Model" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Figure 2. Stack growth in FD (Full Descending) model</figcaption>
-</figure>
-
-<blockquote>
-  <p><strong>Note: Four stack model types</strong></p>
-  <ul>
-    <li><strong>Full Stack:</strong> SP points to the last stored item.</li>
-    <li><strong>Empty Stack:</strong> SP points to the next empty space.</li>
-    <li><strong>Descending Stack:</strong> Stack grows toward lower memory addresses.</li>
-    <li><strong>Ascending Stack:</strong> Stack grows toward higher memory addresses.</li>
-  </ul>
-
-  <p>Therefore, an FD stack grows downward (descending) while SP always points to the topmost (full) item.</p>
-</blockquote>
-
-<h3 id="stack-pointer-sp">Stack Pointer (SP)</h3>
-<p>Stack memory is still just memory, so it must be accessed through addresses.
-In the FD model, we must keep track of the most recently pushed data, so a dedicated register is used for that purpose.
-This register is called the <strong>Stack Pointer (SP)</strong>.</p>
-
-<blockquote>
-  <p>In <strong>ARMv4</strong>, register <strong>R13</strong> is used as the stack pointer.</p>
-</blockquote>
-
-<h3 id="implementing-push--pop-using-ldr-and-str">Implementing PUSH &amp; POP Using LDR and STR</h3>
-
-<h4 id="push-using-str">PUSH using STR</h4>
-<p>The PUSH operation adds data to the stack in two steps:</p>
-
-<ol>
-  <li>Decrease SP by 4.</li>
-  <li>Store the value at the new SP location.</li>
-</ol>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x80000</span>
-  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
-</code></pre></div></div>
-
-<p>Since the stack grows downward, SP must be decreased.
-Because the ARM stack uses 4-byte words, the SP is decreased by 4 for each push.</p>
-
-<h4 id="pop-using-ldr">POP using LDR</h4>
-<p>POP removes data from the top of the stack in two steps:</p>
-
-<ol>
-  <li>Load the value at the address pointed by SP.</li>
-  <li>Increase SP by 4.</li>
-</ol>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x80000</span>
-  <span class="nb">ldr</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
-</code></pre></div></div>
-
-<p>Because SP points to the most recent value in the FD model, we first read it, then increment SP to move to the next item.</p>
-
-<h4 id="example-and-debugging">Example and Debugging</h4>
-<p><strong>stack-push-pop.s</strong></p>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x80000</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
-  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
-  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
-  
-  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
-  <span class="nb">str</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
-  <span class="nb">str</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
-  
-  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
-  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
-  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>
-  
-  <span class="nb">b</span> <span class="mf">.</span>
-</code></pre></div></div>
-<blockquote>
-  <p>In this example, we manually set the stack base address to <code class="language-plaintext highlighter-rouge">0x80000</code>.
-In a real system, the stack pointer is initialized by the <a href="https://wiki.osdev.org/Linker_Scripts">linker script</a> or the kernel during process setup.</p>
-</blockquote>
-
-<p><strong>Build and Run in QEMU</strong></p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="nt">-nostdlib</span> <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="nt">-o</span> stack-push-pop.elf stack-push-pop.s
-<span class="nv">$ </span>qemu-system-arm <span class="nt">-nographic</span> <span class="nt">-machine</span> versatilepb <span class="nt">-S</span> <span class="nt">-s</span> <span class="nt">-kernel</span> stack-push-pop.elf
-</code></pre></div></div>
-
-<p><strong>Debugging with GDB</strong></p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb-multiarch stack-push-pop.elf
-
-<span class="o">(</span>gdb<span class="o">)</span> target remote :1234    <span class="c"># connect to GDB server</span>
-
-<span class="c"># Check pushed values</span>
-<span class="o">(</span>gdb<span class="o">)</span> x/3w <span class="nv">$sp</span>
-<span class="o">(</span>gdb<span class="o">)</span> i r r1 r2 r3
-<span class="o">(</span>gdb<span class="o">)</span> i r sp                 <span class="c"># SP after STR</span>
-
-<span class="c"># Check popped values</span>
-<span class="o">(</span>gdb<span class="o">)</span> i r r0
-<span class="o">(</span>gdb<span class="o">)</span> x/3w <span class="nv">$sp</span>
-<span class="o">(</span>gdb<span class="o">)</span> i r sp                 <span class="c"># SP after LDR</span>
-</code></pre></div></div>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/stack-push-pop-gdb.png" alt="STR and LDR instructions shown as PUSH and POP in GDB disassembly" style="display: block; margin: auto;" /> 
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  Figure 3. <code>str</code> and <code>ldr</code> instructions automatically shown as <code>push</code> and <code>pop</code> in GDB
-  </figcaption>
-</figure>
-
-<h2 id="conclusion">Conclusion</h2>
-<p>In this post, we examined both t<strong>he concept of the stack and how it works in ARM architecture</strong>.
-The stack plays a crucial role in managing function calls and local variables.</p>
-
-<p>However, when saving or restoring multiple registers, using only <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> becomes inefficient, as shown below:</p>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
-  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
-  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
-  
-  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
-  <span class="nb">str</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
-  <span class="nb">str</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">[</span><span class="nv">sp</span><span class="o">,</span> <span class="o">#-</span><span class="mi">4</span><span class="o">]!</span>
-
-  <span class="err">@</span> <span class="nv">You</span> <span class="nv">must</span> <span class="nv">repeat</span> <span class="nv">STR</span> <span class="nv">for</span> <span class="nv">each</span> <span class="nv">register</span> <span class="nv">you</span> <span class="nv">want</span> <span class="nv">to</span> <span class="nv">store</span><span class="mf">.</span>
-</code></pre></div></div>
-
-<p>As the number of instructions increases, CPU pipeline efficiency decreases.
-To solve this problem, ARM provides the <code class="language-plaintext highlighter-rouge">LDM</code> (Load Multiple) and <code class="language-plaintext highlighter-rouge">STM</code> (Store Multiple) instructions.
-In the next post, we’ll explore <strong>how to use them for efficient block memory access on the stack</strong>.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm stack memory" /><category term="ldm" /><category term="stm" /><summary type="html"><![CDATA[Today, we’ll learn about stack memory, which the CPU uses to handle temporary data. Building on what we learned about memory access instructions in previous posts, we’ll prepare for the next topic — block memory access using LDM and STM.]]></summary></entry></feed>
+<p>See you in the next post, where we’ll walk through the stack and its addressing modes together.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="memory block" /><category term="arm ldm" /><category term="arm stm" /><summary type="html"><![CDATA[In this post, we’ll look at the ARM instructions LDM and STM, which allow reading or writing multiple words at once from memory. In the previous post, we learned that LDR and STR can only handle a single word at a time. However, when working with contiguous memory areas such as arrays or structures, repeatedly using LDR or STR becomes inefficient. To solve this problem, ARM provides LDM (Load Multiple) and STM (Store Multiple), which can operate on memory blocks.]]></summary></entry></feed>
