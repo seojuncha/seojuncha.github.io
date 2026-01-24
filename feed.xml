@@ -1,4 +1,215 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-01-06T13:31:46+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">Distinguishing System Call Entry and Exit: Extracting Arguments and Return Values</title><link href="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html" rel="alternate" type="text/html" title="Distinguishing System Call Entry and Exit: Extracting Arguments and Return Values" /><published>2026-01-06T13:20:00+00:00</published><updated>2026-01-06T13:20:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html"><![CDATA[<p>When a tracer uses <code class="language-plaintext highlighter-rouge">PTRACE_SYSCALL</code> to trace system calls,
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-01-24T10:03:22+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">Extracting Memory Data with ptrace(PTRACE_PEEKDATA)</title><link href="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html" rel="alternate" type="text/html" title="Extracting Memory Data with ptrace(PTRACE_PEEKDATA)" /><published>2026-01-24T10:00:00+00:00</published><updated>2026-01-24T10:00:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"><![CDATA[<p>Using <code class="language-plaintext highlighter-rouge">PTRACE_GETREGS</code>, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call.
+However, some system calls take pointers to memory addresses rather than simple integer values as arguments.
+In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space.
+Therefore, we <strong>must explicitly read the memory contents pointed to by that address</strong>.
+A representative example is the <code class="language-plaintext highlighter-rouge">write</code> system call.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">ssize_t</span> <span class="nf">write</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span></code></pre></figure>
+
+<p>The second argument <code class="language-plaintext highlighter-rouge">buf</code> is a memory address pointing to the data to be written,
+and the register stores only that address, not the string itself.</p>
+
+<p>In this article, we will use <code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code> to demonstrate <strong>how to extract data from the tracee process’s virtual memory</strong>.</p>
+
+<h2 id="overview-of-ptrace_peekdata">Overview of PTRACE_PEEKDATA</h2>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">long</span> <span class="nf">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code> reads from the tracee process’s virtual memory,
+returning <code class="language-plaintext highlighter-rouge">sizeof(long)</code> bytes (i.e., one machine word) starting at the given address(<code class="language-plaintext highlighter-rouge">addr</code>).</p>
+
+<blockquote>
+  <p>PTRACE_PEEKTEXT, PTRACE_PEEKDATA<br />
+Read a word at the address <code class="language-plaintext highlighter-rouge">addr</code> in the tracee’s memory, returning the word as the result of the <code class="language-plaintext highlighter-rouge">ptrace()</code> call.<br />
+ — man 2 ptrace</p>
+</blockquote>
+
+<p>The important points to note are:</p>
+<ul>
+  <li>The return unit is a word, not a single byte (<code class="language-plaintext highlighter-rouge">sizeof(long)</code>)</li>
+  <li>On x86_64 systems, <code class="language-plaintext highlighter-rouge">sizeof(long) == 8</code></li>
+  <li>The returned value must be interpreted in little-endian format</li>
+</ul>
+
+<h2 id="inspecting-writebuf-with-ptrace_peekdata">Inspecting write(buf) with PTRACE_PEEKDATA</h2>
+<p>Below is a simple example that inspects the <code class="language-plaintext highlighter-rouge">buf</code> argument of a <code class="language-plaintext highlighter-rouge">write</code> system call printing <code class="language-plaintext highlighter-rouge">"Hello, World\n"</code>,
+at the system call entry point.</p>
+
+<blockquote>
+  <p>In this example, <code class="language-plaintext highlighter-rouge">PTRACE_O_TRACESYSGOOD</code> is enabled,
+so system call stops are delivered as <code class="language-plaintext highlighter-rouge">SIGTRAP | 0x80</code>.</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_word</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="hll">    <span class="kt">long</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span>    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s">"PTRACE_PEEKDATA"</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"peekdata: 0x%lx</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">case</span> <span class="n">SIGTRAP</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">in_syscall</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* syscall entry */</span>
+<span class="hll">        <span class="n">peek_word</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rsi</span><span class="p">);</span> <span class="cm">/* write(fd, buf, count) */</span>
+</span>    <span class="p">}</span>
+    <span class="k">break</span><span class="p">;</span></code></pre></figure>
+
+<p><strong>Output:</strong></p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">peekdata: 0x57202c6f6c6c6548</code></pre></figure>
+
+<p>Since the word size on x86_64 is 8 bytes,
+8 bytes are returned at once from the memory pointed to by <code class="language-plaintext highlighter-rouge">buf</code>.</p>
+
+<h3 id="little-endian-interpretation">Little-Endian Interpretation</h3>
+<p>Breaking down the returned value <code class="language-plaintext highlighter-rouge">0x57202c6f6c6c6548</code> byte by byte yields:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Memory Address</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>addr + 0</td>
+      <td>0x48 (<code class="language-plaintext highlighter-rouge">H</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 1</td>
+      <td>0x65 (<code class="language-plaintext highlighter-rouge">e</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 2</td>
+      <td>0x6c (<code class="language-plaintext highlighter-rouge">l</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 3</td>
+      <td>0x6c (<code class="language-plaintext highlighter-rouge">l</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 4</td>
+      <td>0x6f (<code class="language-plaintext highlighter-rouge">o</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 5</td>
+      <td>0x2c (<code class="language-plaintext highlighter-rouge">,</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 6</td>
+      <td>0x20 (<code class="language-plaintext highlighter-rouge">SPACE</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 7</td>
+      <td>0x57 (<code class="language-plaintext highlighter-rouge">W</code>)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In other words, the returned word corresponds to the first 8 bytes of <code class="language-plaintext highlighter-rouge">"Hello, W"</code>.</p>
+
+<h2 id="the-simplest-way-to-read-the-entire-string-not-recommended">The Simplest Way to Read the Entire String (Not Recommended)</h2>
+<p>The following approach is for demonstration purposes only and is not recommended due to performance and alignment concerns.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_bytewise</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">sz</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sz</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">long</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">perror</span><span class="p">(</span><span class="s">"PTRACE_PEEKDATA"</span><span class="p">);</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">putchar</span><span class="p">(</span><span class="n">ret</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<ul>
+  <li>Calls <code class="language-plaintext highlighter-rouge">ptrace()</code> once per byte</li>
+  <li>Inefficient for a syscall tracer</li>
+  <li>Implicitly assumes safe unaligned access</li>
+</ul>
+
+<h2 id="recommended-approach-read-by-words-and-copy-to-a-buffer">Recommended Approach: Read by Words and Copy to a Buffer</h2>
+<p>By using the byte count and the word size, we can minimize the number of <code class="language-plaintext highlighter-rouge">ptrace</code> calls.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define WORD_BYTES (sizeof(long))
+</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_buffer</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span>
+                        <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span>
+                        <span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">off</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">off</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">off</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">;</span> <span class="n">off</span> <span class="o">+=</span> <span class="n">WORD_BYTES</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">long</span> <span class="n">word</span> <span class="o">=</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span> <span class="o">+</span> <span class="n">off</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">word</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">perror</span><span class="p">(</span><span class="s">"PTRACE_PEEKDATA"</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kt">size_t</span> <span class="n">n</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="n">off</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&gt;</span> <span class="n">WORD_BYTES</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">WORD_BYTES</span><span class="p">;</span>
+
+        <span class="n">memcpy</span><span class="p">(</span><span class="n">buf</span> <span class="o">+</span> <span class="n">off</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">word</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">fwrite</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">stdout</span><span class="p">);</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This approach has the following characteristics:</p>
+<ul>
+  <li>Number of ptrace calls is <code class="language-plaintext highlighter-rouge">ceil(size / WORD_BYTES)</code></li>
+  <li>Does not rely on memory alignment</li>
+  <li>Safe for arbitrary binary buffers, not just strings</li>
+</ul>
+
+<h2 id="important-note-write-is-not-a-string-system-call">Important Note: write Is Not a String System Call</h2>
+<p>The <code class="language-plaintext highlighter-rouge">write</code> system call is not a string-output API.</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">write()</code> writes up to count bytes from the buffer starting at <code class="language-plaintext highlighter-rouge">buf</code><br />
+   — man 2 write</p>
+</blockquote>
+
+<p>This means:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">buf</code> is not guaranteed to be NULL-terminated</li>
+  <li>It may contain binary data</li>
+  <li>Using <code class="language-plaintext highlighter-rouge">printf("%s", buf)</code> is logically incorrect</li>
+</ul>
+
+<p>Only a limited set of system calls can safely assume string arguments.</p>
+
+<h2 id="general-classification-of-pointer-arguments">General Classification of Pointer Arguments</h2>
+<p>In ptrace-based syscall tracers, pointer arguments typically fall into three categories:</p>
+
+<ol>
+  <li>Buffer + Length
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">read</code>, <code class="language-plaintext highlighter-rouge">write</code></li>
+      <li>Meaning depends on syscall entry vs exit</li>
+    </ul>
+  </li>
+  <li>NULL-terminated Strings
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">open</code>, <code class="language-plaintext highlighter-rouge">unlink</code>, <code class="language-plaintext highlighter-rouge">execve</code></li>
+    </ul>
+  </li>
+  <li>Structs / Arrays / Pointer Arrays
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">stat</code>, <code class="language-plaintext highlighter-rouge">uname</code>, <code class="language-plaintext highlighter-rouge">execve(argv)</code></li>
+    </ul>
+  </li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">write</code> belongs to the simplest category.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="linux" /><category term="ptrace" /><category term="syscall" /><category term="PTRACE_PEEKDATA" /><summary type="html"><![CDATA[Using PTRACE_GETREGS, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call. However, some system calls take pointers to memory addresses rather than simple integer values as arguments. In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space. Therefore, we must explicitly read the memory contents pointed to by that address. A representative example is the write system call.]]></summary></entry><entry xml:lang="en"><title type="html">Distinguishing System Call Entry and Exit: Extracting Arguments and Return Values</title><link href="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html" rel="alternate" type="text/html" title="Distinguishing System Call Entry and Exit: Extracting Arguments and Return Values" /><published>2026-01-06T13:20:00+00:00</published><updated>2026-01-06T13:20:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html"><![CDATA[<p>When a tracer uses <code class="language-plaintext highlighter-rouge">PTRACE_SYSCALL</code> to trace system calls,
 the tracer receives two signals per system call: one before execution and one after.
 This happens at the transition points between user mode and kernel mode, which are fundamental to system call execution.
 <strong>The tracer must distinguish these two signals as system call entry and system call exit, and read the appropriate register values at each point</strong>.
@@ -1982,146 +2193,4 @@ but it is also common to use general addressing modes directly, such as <code cl
 <p>Addressing modes are not just syntactic options; they are tools for precisely controlling the direction and range of memory access.
 Once you understand them, you can use <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> far more flexibly, not only for stacks but also for various memory block operations.</p>
 
-<p>In the next post, we will look at the branch instruction <code class="language-plaintext highlighter-rouge">B</code>, which controls the flow of execution.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm ldm" /><category term="arm stm" /><category term="addressing modes" /><category term="stack memory" /><summary type="html"><![CDATA[In this post, we will explore how the various addressing modes of LDM and STM are used for PUSH and POP operations on stack memory. In the previous post, we only covered how to use LDM/STM to read and write multiple words at once. In this post, we will build on that by connecting addressing modes with the stack structure.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #11 - Memory Block Access(LDM, STM)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html" rel="alternate" type="text/html" title="ARM Assembly #11 - Memory Block Access(LDM, STM)" /><published>2025-11-14T09:30:00+00:00</published><updated>2025-11-14T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html"><![CDATA[<p>In this post, we’ll look at the ARM instructions <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code>, which allow reading or writing <strong>multiple words at once</strong> from memory.
-In the previous post, we learned that <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> can only handle <strong>a single word</strong> at a time.<br />
-However, when working with <strong>contiguous memory areas</strong> such as arrays or structures, repeatedly using <code class="language-plaintext highlighter-rouge">LDR</code> or <code class="language-plaintext highlighter-rouge">STR</code> becomes inefficient.
-To solve this problem, ARM provides <code class="language-plaintext highlighter-rouge">LDM</code> (Load Multiple) and <code class="language-plaintext highlighter-rouge">STM</code> (Store Multiple), which can operate on memory blocks.</p>
-
-<h2 id="memory-block">Memory Block</h2>
-
-<p>In ARM programming, it’s very common to handle <strong>a group of contiguous data</strong> such as arrays or structures at once.<br />
-Inside memory, these data are stored consecutively in <strong>word-sized units</strong>.<br />
-This continuous region is called a <strong>memory block</strong>.</p>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/memory-block.png" alt="Memory block composed of consecutive words" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  Figure 1. A memory block consists of consecutive words, each mapped to sequential memory addresses.
-  </figcaption>
-</figure>
-
-<p>Memory is actually a <strong>linear address space</strong>, but for visualization, it’s often represented as a <strong>2D grid</strong> for clarity.<br />
-Each cell represents one word (4 bytes) of storage.</p>
-
-<p>As mentioned in the <a href="/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html">previous post</a>, we can access memory word by word using hexadecimal addresses.</p>
-
-<h3 id="inefficiency-of-using-ldrstr">Inefficiency of Using LDR/STR</h3>
-<p>Instructions like <code class="language-plaintext highlighter-rouge">STR</code> and <code class="language-plaintext highlighter-rouge">LDR</code> can only <strong>load or store one word</strong> at a time.</p>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
-  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">r0</span><span class="o">]</span>
-</code></pre></div></div>
-<figure style="text-align: center;">
-  <img src="/assets/img/ldr-str-single-access.png" alt="Single word access structure" style="display: block; margin: auto;" /> 
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  Figure 2. LDR/STR transfer data in a one-to-one relation between memory and register.
-  </figcaption>
-</figure>
-
-<p>In other words, the relationship between Mem[address] and a register is <strong>one-to-one per word</strong>.
-Although you can manipulate addresses using offsets, you still need to repeat <code class="language-plaintext highlighter-rouge">LDR</code> and <code class="language-plaintext highlighter-rouge">STR</code> to handle multiple words.
-Such repetition is inefficient when dealing with arrays or structures that occupy contiguous memory.</p>
-
-<h2 id="ldm-and-stm">LDM and STM</h2>
-<p>ARM provides <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> instructions to handle such contiguous memory blocks efficiently.</p>
-
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">LDM</code>: Loads multiple words from memory into registers.</li>
-  <li><code class="language-plaintext highlighter-rouge">STM</code>: Stores the values of multiple registers into memory.</li>
-</ul>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldm Rn, {registers}
-  stm Rn, {registers}
-</code></pre></div></div>
-
-<p>Here,<br />
-<code class="language-plaintext highlighter-rouge">Rn</code> is the base address of the memory block to access.
-<code class="language-plaintext highlighter-rouge">{registers}</code> is a list of registers, separated by commas or defined as a range using a dash (-).</p>
-
-<blockquote>
-  <p>We call <code class="language-plaintext highlighter-rouge">Rn</code> the base address, <strong>not</strong> the start address,
-because the actual start address depends on the addressing mode, which we’ll discuss later.</p>
-</blockquote>
-
-<h3 id="working-with-register-lists">Working with Register Lists</h3>
-<p>Let’s look at three examples to see how register lists are used.</p>
-
-<blockquote>
-  <p>Although only <code class="language-plaintext highlighter-rouge">LDM</code> is used here, <code class="language-plaintext highlighter-rouge">STM</code> works the same way.<br />
-The only difference is that <code class="language-plaintext highlighter-rouge">STM</code> stores register values into memory instead of loading them.</p>
-</blockquote>
-
-<h4 id="example-1-load-two-words-from-memory-0x8000-into-r1-and-r2">Example 1) Load two words from memory 0x8000 into R1 and R2</h4>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">}</span>
-</code></pre></div></div>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
-</ul>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ldm-comma-seperated-registers.png" alt="Comma-separated register list in LDM" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  Figure 3. The instruction <code>ldm r0, {r1, r2}</code> loads two consecutive words into R1 and R2.
-  </figcaption>
-</figure>
-
-<h4 id="example-2-load-four-words-from-memory-0x8000-into-r1-to-r4">Example 2) Load four words from memory 0x8000 into R1 to R4</h4>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r4</span><span class="o">}</span>
-</code></pre></div></div>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R3</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8008</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R4</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x800C</code>]</li>
-</ul>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ldm-range-registers.png" alt="Range register list in LDM" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  Figure 4. The instruction <code>ldm r0, {r1-r4}</code> reads four consecutive words and stores them sequentially in R1 to R4.
-  </figcaption>
-</figure>
-
-<h4 id="example-3-load-from-memory-0x8000-into-r1-r2-and-r7">Example 3) Load from memory 0x8000 into R1, R2, and R7</h4>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r7</span><span class="o">}</span>
-</code></pre></div></div>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R7</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8008</code>]</li>
-</ul>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ldm-mixed-registers.png" alt="Mixed register list in LDM" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  Figure 5. The instruction <code>ldm r0, {r1-r2, r7}</code> demonstrates that non-consecutive register lists can be specified.
-  </figcaption>
-</figure>
-
-<h3 id="auto-updating-the-base-address">Auto-Updating the Base Address</h3>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldm Rn!, {registers}
-  stm Rn!, {registers}
-</code></pre></div></div>
-<p>Adding <code class="language-plaintext highlighter-rouge">!</code> after the base register <code class="language-plaintext highlighter-rouge">Rn</code> automatically updates its value to the next address after the operation.</p>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
-  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
-  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
- 
-  <span class="nb">stm</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r3</span><span class="o">}</span>
-  <span class="err">@</span> <span class="nv">r0</span> <span class="o">=</span> <span class="nv">r0</span> <span class="o">+</span> <span class="o">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">4</span><span class="o">)</span> <span class="o">=</span> <span class="mh">0x8000</span> <span class="o">+</span> <span class="mh">0xC</span> <span class="o">=</span> <span class="mh">0x800C</span>
-</code></pre></div></div>
-<p>In other words, you can store multiple registers and automatically move to the next memory position in one instruction.</p>
-
-<h2 id="conclusion">Conclusion</h2>
-<p>In this post, we looked at the basic ideas behind <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> and learned how to use them. However, <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> also have a concept called <strong>addressing modes</strong>, which control how memory addresses increase or decrease, and whether the base register is included before or after the access.</p>
-
-<p>Addressing modes make much more sense when explained together with stack memory, so in the next post, we’ll go through them in detail while exploring how the stack works in ARM.</p>
-
-<p>See you in the next post, where we’ll walk through the stack and its addressing modes together.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="memory block" /><category term="arm ldm" /><category term="arm stm" /><summary type="html"><![CDATA[In this post, we’ll look at the ARM instructions LDM and STM, which allow reading or writing multiple words at once from memory. In the previous post, we learned that LDR and STR can only handle a single word at a time. However, when working with contiguous memory areas such as arrays or structures, repeatedly using LDR or STR becomes inefficient. To solve this problem, ARM provides LDM (Load Multiple) and STM (Store Multiple), which can operate on memory blocks.]]></summary></entry></feed>
+<p>In the next post, we will look at the branch instruction <code class="language-plaintext highlighter-rouge">B</code>, which controls the flow of execution.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm ldm" /><category term="arm stm" /><category term="addressing modes" /><category term="stack memory" /><summary type="html"><![CDATA[In this post, we will explore how the various addressing modes of LDM and STM are used for PUSH and POP operations on stack memory. In the previous post, we only covered how to use LDM/STM to read and write multiple words at once. In this post, we will build on that by connecting addressing modes with the stack structure.]]></summary></entry></feed>

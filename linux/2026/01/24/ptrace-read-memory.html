@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Extracting Memory Data with ptrace(PTRACE_PEEKDATA) | Hacking the System, One Bit at a Time</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Extracting Memory Data with ptrace(PTRACE_PEEKDATA)" />
+<meta name="author" content="차서준 (Cha Seojun)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Using PTRACE_GETREGS, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call. However, some system calls take pointers to memory addresses rather than simple integer values as arguments. In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space. Therefore, we must explicitly read the memory contents pointed to by that address. A representative example is the write system call." />
+<meta property="og:description" content="Using PTRACE_GETREGS, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call. However, some system calls take pointers to memory addresses rather than simple integer values as arguments. In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space. Therefore, we must explicitly read the memory contents pointed to by that address. A representative example is the write system call." />
+<link rel="canonical" href="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html" />
+<meta property="og:url" content="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html" />
+<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-01-24T10:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Extracting Memory Data with ptrace(PTRACE_PEEKDATA)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2026-01-24T10:00:00+00:00","datePublished":"2026-01-24T10:00:00+00:00","description":"Using PTRACE_GETREGS, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call. However, some system calls take pointers to memory addresses rather than simple integer values as arguments. In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space. Therefore, we must explicitly read the memory contents pointed to by that address. A representative example is the write system call.","headline":"Extracting Memory Data with ptrace(PTRACE_PEEKDATA)","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"},"url":"https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link
+    id="main-stylesheet"
+    rel="stylesheet"
+    href="/assets/css/style.css"
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+<!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  ></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        throwOnError: false,
+      });
+    });
+  </script>
+</head>
+<body><header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/"
+      >Hacking the System, One Bit at a Time</a
+    >
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon"></span>
+      </label>
+
+      <div class="nav-items">
+  <a class="nav-item" href="/about/"
+    >About</a
+  >
+</div>
+
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article
+  class="post h-entry"
+  itemscope
+  itemtype="http://schema.org/BlogPosting"
+>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">
+      Extracting Memory Data with ptrace(PTRACE_PEEKDATA)
+    </h1>
+    <div class="post-meta">
+      <time
+        class="dt-published"
+        datetime="2026-01-24T10:00:00+00:00"
+        itemprop="datePublished"
+      >
+        Jan 24, 2026
+      </time>
+    </div><nav class="lang-switch" aria-label="Language switcher">
+      <span class="lang-pill is-current">EN</span>
+      <a class="lang-pill" href="/ko/linux/2026/01/24/ptrace-read-memory.html"
+        >한국어</a
+      >
+    </nav>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody"><p>Using <code class="language-plaintext highlighter-rouge">PTRACE_GETREGS</code>, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call.
+However, some system calls take pointers to memory addresses rather than simple integer values as arguments.
+In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space.
+Therefore, we <strong>must explicitly read the memory contents pointed to by that address</strong>.
+A representative example is the <code class="language-plaintext highlighter-rouge">write</code> system call.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">ssize_t</span> <span class="nf">write</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span></code></pre></figure>
+
+<p>The second argument <code class="language-plaintext highlighter-rouge">buf</code> is a memory address pointing to the data to be written,
+and the register stores only that address, not the string itself.</p>
+
+<p>In this article, we will use <code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code> to demonstrate <strong>how to extract data from the tracee process’s virtual memory</strong>.</p>
+
+<h2 id="overview-of-ptrace_peekdata">Overview of PTRACE_PEEKDATA</h2>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">long</span> <span class="nf">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code> reads from the tracee process’s virtual memory,
+returning <code class="language-plaintext highlighter-rouge">sizeof(long)</code> bytes (i.e., one machine word) starting at the given address(<code class="language-plaintext highlighter-rouge">addr</code>).</p>
+
+<blockquote>
+  <p>PTRACE_PEEKTEXT, PTRACE_PEEKDATA<br />
+Read a word at the address <code class="language-plaintext highlighter-rouge">addr</code> in the tracee’s memory, returning the word as the result of the <code class="language-plaintext highlighter-rouge">ptrace()</code> call.<br />
+ — man 2 ptrace</p>
+</blockquote>
+
+<p>The important points to note are:</p>
+<ul>
+  <li>The return unit is a word, not a single byte (<code class="language-plaintext highlighter-rouge">sizeof(long)</code>)</li>
+  <li>On x86_64 systems, <code class="language-plaintext highlighter-rouge">sizeof(long) == 8</code></li>
+  <li>The returned value must be interpreted in little-endian format</li>
+</ul>
+
+<h2 id="inspecting-writebuf-with-ptrace_peekdata">Inspecting write(buf) with PTRACE_PEEKDATA</h2>
+<p>Below is a simple example that inspects the <code class="language-plaintext highlighter-rouge">buf</code> argument of a <code class="language-plaintext highlighter-rouge">write</code> system call printing <code class="language-plaintext highlighter-rouge">"Hello, World\n"</code>,
+at the system call entry point.</p>
+
+<blockquote>
+  <p>In this example, <code class="language-plaintext highlighter-rouge">PTRACE_O_TRACESYSGOOD</code> is enabled,
+so system call stops are delivered as <code class="language-plaintext highlighter-rouge">SIGTRAP | 0x80</code>.</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_word</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="hll">    <span class="kt">long</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span>    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s">"PTRACE_PEEKDATA"</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"peekdata: 0x%lx</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">case</span> <span class="n">SIGTRAP</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">in_syscall</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* syscall entry */</span>
+<span class="hll">        <span class="n">peek_word</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rsi</span><span class="p">);</span> <span class="cm">/* write(fd, buf, count) */</span>
+</span>    <span class="p">}</span>
+    <span class="k">break</span><span class="p">;</span></code></pre></figure>
+
+<p><strong>Output:</strong></p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">peekdata: 0x57202c6f6c6c6548</code></pre></figure>
+
+<p>Since the word size on x86_64 is 8 bytes,
+8 bytes are returned at once from the memory pointed to by <code class="language-plaintext highlighter-rouge">buf</code>.</p>
+
+<h3 id="little-endian-interpretation">Little-Endian Interpretation</h3>
+<p>Breaking down the returned value <code class="language-plaintext highlighter-rouge">0x57202c6f6c6c6548</code> byte by byte yields:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Memory Address</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>addr + 0</td>
+      <td>0x48 (<code class="language-plaintext highlighter-rouge">H</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 1</td>
+      <td>0x65 (<code class="language-plaintext highlighter-rouge">e</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 2</td>
+      <td>0x6c (<code class="language-plaintext highlighter-rouge">l</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 3</td>
+      <td>0x6c (<code class="language-plaintext highlighter-rouge">l</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 4</td>
+      <td>0x6f (<code class="language-plaintext highlighter-rouge">o</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 5</td>
+      <td>0x2c (<code class="language-plaintext highlighter-rouge">,</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 6</td>
+      <td>0x20 (<code class="language-plaintext highlighter-rouge">SPACE</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 7</td>
+      <td>0x57 (<code class="language-plaintext highlighter-rouge">W</code>)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In other words, the returned word corresponds to the first 8 bytes of <code class="language-plaintext highlighter-rouge">"Hello, W"</code>.</p>
+
+<h2 id="the-simplest-way-to-read-the-entire-string-not-recommended">The Simplest Way to Read the Entire String (Not Recommended)</h2>
+<p>The following approach is for demonstration purposes only and is not recommended due to performance and alignment concerns.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_bytewise</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">sz</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sz</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">long</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">perror</span><span class="p">(</span><span class="s">"PTRACE_PEEKDATA"</span><span class="p">);</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">putchar</span><span class="p">(</span><span class="n">ret</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<ul>
+  <li>Calls <code class="language-plaintext highlighter-rouge">ptrace()</code> once per byte</li>
+  <li>Inefficient for a syscall tracer</li>
+  <li>Implicitly assumes safe unaligned access</li>
+</ul>
+
+<h2 id="recommended-approach-read-by-words-and-copy-to-a-buffer">Recommended Approach: Read by Words and Copy to a Buffer</h2>
+<p>By using the byte count and the word size, we can minimize the number of <code class="language-plaintext highlighter-rouge">ptrace</code> calls.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define WORD_BYTES (sizeof(long))
+</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_buffer</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span>
+                        <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span>
+                        <span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">off</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">off</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">off</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">;</span> <span class="n">off</span> <span class="o">+=</span> <span class="n">WORD_BYTES</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">long</span> <span class="n">word</span> <span class="o">=</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span> <span class="o">+</span> <span class="n">off</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">word</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">perror</span><span class="p">(</span><span class="s">"PTRACE_PEEKDATA"</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kt">size_t</span> <span class="n">n</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="n">off</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&gt;</span> <span class="n">WORD_BYTES</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">WORD_BYTES</span><span class="p">;</span>
+
+        <span class="n">memcpy</span><span class="p">(</span><span class="n">buf</span> <span class="o">+</span> <span class="n">off</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">word</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">fwrite</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">stdout</span><span class="p">);</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This approach has the following characteristics:</p>
+<ul>
+  <li>Number of ptrace calls is <code class="language-plaintext highlighter-rouge">ceil(size / WORD_BYTES)</code></li>
+  <li>Does not rely on memory alignment</li>
+  <li>Safe for arbitrary binary buffers, not just strings</li>
+</ul>
+
+<h2 id="important-note-write-is-not-a-string-system-call">Important Note: write Is Not a String System Call</h2>
+<p>The <code class="language-plaintext highlighter-rouge">write</code> system call is not a string-output API.</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">write()</code> writes up to count bytes from the buffer starting at <code class="language-plaintext highlighter-rouge">buf</code><br />
+   — man 2 write</p>
+</blockquote>
+
+<p>This means:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">buf</code> is not guaranteed to be NULL-terminated</li>
+  <li>It may contain binary data</li>
+  <li>Using <code class="language-plaintext highlighter-rouge">printf("%s", buf)</code> is logically incorrect</li>
+</ul>
+
+<p>Only a limited set of system calls can safely assume string arguments.</p>
+
+<h2 id="general-classification-of-pointer-arguments">General Classification of Pointer Arguments</h2>
+<p>In ptrace-based syscall tracers, pointer arguments typically fall into three categories:</p>
+
+<ol>
+  <li>Buffer + Length
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">read</code>, <code class="language-plaintext highlighter-rouge">write</code></li>
+      <li>Meaning depends on syscall entry vs exit</li>
+    </ul>
+  </li>
+  <li>NULL-terminated Strings
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">open</code>, <code class="language-plaintext highlighter-rouge">unlink</code>, <code class="language-plaintext highlighter-rouge">execve</code></li>
+    </ul>
+  </li>
+  <li>Structs / Arrays / Pointer Arrays
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">stat</code>, <code class="language-plaintext highlighter-rouge">uname</code>, <code class="language-plaintext highlighter-rouge">execve(argv)</code></li>
+    </ul>
+  </li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">write</code> belongs to the simplest category.</p>
+
+</div><!-- _includes/utterances.html -->
+<script
+  src="https://utteranc.es/client.js"
+  repo="seojuncha/seojuncha.github.io"
+  issue-term="pathname"
+  label="blog-comment"
+  theme="github-dark"
+  crossorigin="anonymous"
+  async
+></script>
+<a class="u-url" href="/linux/2026/01/24/ptrace-read-memory.html" hidden></a>
+</article>
+
+      </div>
+    </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+
+<footer class="site-footer h-card">
+  <data class="u-url" value="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <ul class="contact-list">
+          <li class="p-name">차서준 (Cha Seojun)</li>
+          <li><a class="u-email" href="mailto:sjcha36@gmail.com">sjcha36@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li>
+    <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
+      <span class="grey fa-brands fa-github fa-lg"></span>
+    </a>
+  </li><li>
+    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
+      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
+    </a>
+  </li>
+  <li>
+    <a href="https://seojuncha.github.io/feed.xml" target="_blank" title="Subscribe to syndication feed">
+      <svg class="svg-icon grey" viewbox="0 0 16 16">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+          11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+          13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+          16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+        />
+      </svg>
+    </a>
+  </li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+
+</body>
+
+</html>
