@@ -2,7 +2,7 @@
 layout: post
 lang: ko 
 ref: "ptrace-read-memory"
-title: "ptrace(PTRACE_PEEKDATA)로 메모리 데이터 추출하기"
+title: "PTRACE_PEEKDATA로 메모리 데이터 추출하기"
 date: 2026-01-24 19:20:00 +0900
 categories: ["linux"]
 tags: ["ptrace", "syscall", "PTRACE_PEEKDATA"]

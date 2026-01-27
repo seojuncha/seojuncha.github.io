@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "ptrace-read-memory"
-title: "Extracting Memory Data with ptrace(PTRACE_PEEKDATA)"
+title: "Extracting Memory Data with PTRACE_PEEKDATA"
 date: 2026-01-24 19:00:00 +0900
 categories: ["linux"]
 tags: ["ptrace", "syscall", "PTRACE_PEEKDATA"]
