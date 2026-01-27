@@ -1,4 +1,211 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2026-01-24T10:03:23+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">시스템콜 진입과 복귀 구분하기: 인자와 반환값 추출 방법</title><link href="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html" rel="alternate" type="text/html" title="시스템콜 진입과 복귀 구분하기: 인자와 반환값 추출 방법" /><published>2026-01-06T13:20:00+00:00</published><updated>2026-01-06T13:20:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html"><![CDATA[<p>tracer가 <code class="language-plaintext highlighter-rouge">PTRACE_SYSCALL</code>을 사용하여 시스템콜을 추적하는 경우, tracee가 시스템콜을 호출할 때 tracer는 호출 전후로 총 두 번의 시그널을 받는다.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2026-01-27T12:14:38+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">PTRACE_PEEKDATA로 메모리 데이터 추출하기</title><link href="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html" rel="alternate" type="text/html" title="PTRACE_PEEKDATA로 메모리 데이터 추출하기" /><published>2026-01-24T10:20:00+00:00</published><updated>2026-01-24T10:20:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"><![CDATA[<p><code class="language-plaintext highlighter-rouge">PTRACE_GETREGS</code>를 사용하면 시스템콜 호출 시 레지스터에 저장된 시스템콜 번호, 인자, 반환값을 확인할 수 있다.
+하지만 일부 시스템콜은 단순한 정수형 값이 아니라 메모리 주소를 가리키는 포인터를 인자로 사용한다.
+이 경우, 레지스터에 저장된 값은 “의미 있는 데이터”가 아니라 tracee 가상 메모리 공간의 주소일 뿐이다.
+따라서 해당 주소가 가리키는 실제 메모리 내용을 추가로 읽어야 한다.
+대표적인 예가 <code class="language-plaintext highlighter-rouge">write</code> 시스템콜이다.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">ssize_t</span> <span class="nf">write</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">write</code>의 두 번째 인자인 <code class="language-plaintext highlighter-rouge">buf</code>는 출력할 데이터를 저장한 메모리 주소이며, 레지스터에는 문자열 자체가 아니라 그 주소값만 저장된다.</p>
+
+<p>이번 글에서는 <code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code>를 사용하여 tracee 프로세스의 가상 메모리로부터 데이터를 추출하는 방법을 정리한다.</p>
+
+<h2 id="ptrace_peekdata-개요">PTRACE_PEEKDATA 개요</h2>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">long</span> <span class="nf">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code>는 tracee 프로세스의 가상 메모리에서 <code class="language-plaintext highlighter-rouge">addr</code>가 가리키는 주소로부터 <code class="language-plaintext highlighter-rouge">sizeof(long)</code> 바이트(= word 크기) 를 읽어 반환한다.</p>
+
+<blockquote>
+  <p>PTRACE_PEEKTEXT, PTRACE_PEEKDATA<br />
+Read a word at the address <code class="language-plaintext highlighter-rouge">addr</code> in the tracee’s memory, returning the word as the result of the <code class="language-plaintext highlighter-rouge">ptrace()</code> call.<br />
+ — man 2 ptrace</p>
+</blockquote>
+
+<p>여기서 중요한 점은 다음과 같다.</p>
+<ul>
+  <li>반환 단위는 바이트가 아니라 word <code class="language-plaintext highlighter-rouge">(sizeof(long))</code></li>
+  <li>x86_64 환경에서는 <code class="language-plaintext highlighter-rouge">sizeof(long) == 8</code></li>
+  <li>반환값은 리틀 엔디안(Little Endian) 형식으로 해석</li>
+</ul>
+
+<h2 id="writebuf-인자를-ptrace_peekdata로-확인하기">write(buf) 인자를 PTRACE_PEEKDATA로 확인하기</h2>
+<p>다음은 <code class="language-plaintext highlighter-rouge">"Hello, World\n"</code>를 출력하는 <code class="language-plaintext highlighter-rouge">write</code> 시스템콜의 <code class="language-plaintext highlighter-rouge">buf</code> 인자를 시스템콜 진입 시점에서 읽는 예제이다.</p>
+
+<blockquote>
+  <p>본 예제에서는 <code class="language-plaintext highlighter-rouge">PTRACE_O_TRACESYSGOOD</code> 옵션을 설정했기 때문에
+시스템콜 stop은 <code class="language-plaintext highlighter-rouge">SIGTRAP | 0x80</code> 형태로 들어온다고 가정한다.</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_word</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="hll">    <span class="kt">long</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span>    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s">"PTRACE_PEEKDATA"</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"peekdata: 0x%lx</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">case</span> <span class="n">SIGTRAP</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">in_syscall</span><span class="p">)</span> <span class="p">{</span>                <span class="cm">/* syscall entry */</span>
+<span class="hll">        <span class="n">peek_word</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rsi</span><span class="p">);</span>     <span class="cm">/* write(fd, buf, count) */</span>
+</span>    <span class="p">}</span>
+    <span class="k">break</span><span class="p">;</span></code></pre></figure>
+
+<p><strong>실행 결과:</strong></p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">peekdata: 0x57202c6f6c6c6548</code></pre></figure>
+
+<p>x86_64 아키텍처에서 word 크기는 8바이트이므로, <code class="language-plaintext highlighter-rouge">buf</code>가 가리키는 메모리로부터 8바이트가 한 번에 반환된다.</p>
+
+<h3 id="리틀-엔디안-해석">리틀 엔디안 해석</h3>
+<p>반환된 값 <code class="language-plaintext highlighter-rouge">0x57202c6f6c6c6548</code>을 바이트 단위로 풀어보면 다음과 같다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>메모리 주소</th>
+      <th>값</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>addr + 0</td>
+      <td>0x48 (<code class="language-plaintext highlighter-rouge">H</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 1</td>
+      <td>0x65 (<code class="language-plaintext highlighter-rouge">e</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 2</td>
+      <td>0x6c (<code class="language-plaintext highlighter-rouge">l</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 3</td>
+      <td>0x6c (<code class="language-plaintext highlighter-rouge">l</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 4</td>
+      <td>0x6f (<code class="language-plaintext highlighter-rouge">o</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 5</td>
+      <td>0x2c (<code class="language-plaintext highlighter-rouge">,</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 6</td>
+      <td>0x20 (<code class="language-plaintext highlighter-rouge">SPACE</code>)</td>
+    </tr>
+    <tr>
+      <td>addr + 7</td>
+      <td>0x57 (<code class="language-plaintext highlighter-rouge">W</code>)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>즉, 반환된 word 값은 문자열 <code class="language-plaintext highlighter-rouge">"Hello, W"</code>의 첫 8바이트에 해당한다.</p>
+
+<h2 id="문자열-전체를-읽는-가장-단순한-방법-비권장-예제">문자열 전체를 읽는 가장 단순한 방법 (비권장 예제)</h2>
+<p>아래 방식은 개념 설명용 예제이며, 성능 및 정렬 관점에서는 권장되지 않는다.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_bytewise</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">sz</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sz</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">long</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">perror</span><span class="p">(</span><span class="s">"PTRACE_PEEKDATA"</span><span class="p">);</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">putchar</span><span class="p">(</span><span class="n">ret</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<ul>
+  <li>매 바이트마다 <code class="language-plaintext highlighter-rouge">ptrace()</code> 호출</li>
+  <li>syscall 트레이서 입장에서는 비효율적</li>
+  <li>주소 정렬(alignment)에 대한 암묵적 가정 포함</li>
+</ul>
+
+<h2 id="권장-방식-word-단위로-읽어-버퍼에-복사">권장 방식: word 단위로 읽어 버퍼에 복사</h2>
+<p>읽어야 할 바이트 수 와 word 크기를 기준으로 <code class="language-plaintext highlighter-rouge">ptrace</code> 호출 횟수를 최소화할 수 있다.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define WORD_BYTES (sizeof(long))
+</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_buffer</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span>
+                        <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span>
+                        <span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">off</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">off</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">off</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">;</span> <span class="n">off</span> <span class="o">+=</span> <span class="n">WORD_BYTES</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">long</span> <span class="n">word</span> <span class="o">=</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span> <span class="o">+</span> <span class="n">off</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">word</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">perror</span><span class="p">(</span><span class="s">"PTRACE_PEEKDATA"</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kt">size_t</span> <span class="n">n</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="n">off</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&gt;</span> <span class="n">WORD_BYTES</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">WORD_BYTES</span><span class="p">;</span>
+
+        <span class="n">memcpy</span><span class="p">(</span><span class="n">buf</span> <span class="o">+</span> <span class="n">off</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">word</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">fwrite</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">stdout</span><span class="p">);</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>이 방식의 특징은 다음과 같다.</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ptrace</code> 호출 횟수는 <code class="language-plaintext highlighter-rouge">ceil(size / WORD_BYTES)</code></li>
+  <li>메모리 정렬에 의존하지 않음</li>
+  <li>문자열이 아닌 임의의 바이너리 데이터에도 안전</li>
+</ul>
+
+<h2 id="중요한-주의사항-write는-문자열-시스템콜이-아니다">중요한 주의사항: write는 문자열 시스템콜이 아니다</h2>
+<p><code class="language-plaintext highlighter-rouge">write</code> 시스템콜은 문자열 출력용 API가 아니다.</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">write()</code> writes up to count bytes from the buffer starting at <code class="language-plaintext highlighter-rouge">buf</code><br />
+  — man 2 write</p>
+</blockquote>
+
+<p>즉,</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">buf</code>는 NULL 종료 문자열이라는 보장이 없음</li>
+  <li>바이너리 데이터일 수 있음</li>
+  <li><code class="language-plaintext highlighter-rouge">printf("%s", buf)</code> 는 논리적으로 잘못된 가정</li>
+</ul>
+
+<p>문자열이라고 단정할 수 있는 경우는 제한적이다.</p>
+
+<h2 id="포인터-인자-처리의-일반적인-분류">포인터 인자 처리의 일반적인 분류</h2>
+<p><code class="language-plaintext highlighter-rouge">ptrace</code> 기반 시스템콜 트레이서에서 포인터 인자는 보통 다음 세 가지로 나뉜다.</p>
+
+<ol>
+  <li>버퍼 + 길이
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">read</code>, <code class="language-plaintext highlighter-rouge">write</code></li>
+      <li>syscall entry / exit 시점에 따라 의미가 달라짐</li>
+    </ul>
+  </li>
+  <li>NULL-terminated 문자열
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">open</code>, <code class="language-plaintext highlighter-rouge">unlink</code>, <code class="language-plaintext highlighter-rouge">execve</code></li>
+    </ul>
+  </li>
+  <li>구조체 / 배열 / 포인터 배열
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">stat</code>, <code class="language-plaintext highlighter-rouge">uname</code>, <code class="language-plaintext highlighter-rouge">execve(argv)</code></li>
+    </ul>
+  </li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">write</code>는 이 중 가장 단순한 형태에 해당한다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="linux" /><category term="ptrace" /><category term="syscall" /><category term="PTRACE_PEEKDATA" /><summary type="html"><![CDATA[PTRACE_GETREGS를 사용하면 시스템콜 호출 시 레지스터에 저장된 시스템콜 번호, 인자, 반환값을 확인할 수 있다. 하지만 일부 시스템콜은 단순한 정수형 값이 아니라 메모리 주소를 가리키는 포인터를 인자로 사용한다. 이 경우, 레지스터에 저장된 값은 “의미 있는 데이터”가 아니라 tracee 가상 메모리 공간의 주소일 뿐이다. 따라서 해당 주소가 가리키는 실제 메모리 내용을 추가로 읽어야 한다. 대표적인 예가 write 시스템콜이다.]]></summary></entry><entry xml:lang="ko"><title type="html">시스템콜 진입과 복귀 구분하기: 인자와 반환값 추출 방법</title><link href="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html" rel="alternate" type="text/html" title="시스템콜 진입과 복귀 구분하기: 인자와 반환값 추출 방법" /><published>2026-01-06T13:20:00+00:00</published><updated>2026-01-06T13:20:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html"><![CDATA[<p>tracer가 <code class="language-plaintext highlighter-rouge">PTRACE_SYSCALL</code>을 사용하여 시스템콜을 추적하는 경우, tracee가 시스템콜을 호출할 때 tracer는 호출 전후로 총 두 번의 시그널을 받는다.
 이는 시스템콜의 핵심 동작인 유저 모드와 커널 모드 간 전환 시점에서 발생한다.
 tracer는 이 두 시그널을 각각 시스템콜 진입(entry) 과 시스템콜 복귀(exit) 로 구분하고,
 각 시점에 맞는 레지스터 값을 읽어 처리해야 한다.
@@ -2029,143 +2236,4 @@ SP는 <code class="language-plaintext highlighter-rouge">0x8000</code>에서 <co
 <p>주소 모드는 단순히 문법 옵션이 아니라, 메모리의 방향과 범위를 정밀하게 제어하기 위한 도구입니다.
 이를 이해하면, 스택뿐만 아니라 다양한 메모리 블럭 처리에서도 <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code>을 훨씬 더 유연하게 활용하실 수 있습니다.</p>
 
-<p>다음 포스팅에서는 실행 흐름을 제어하기 위한 분기 명령어 <code class="language-plaintext highlighter-rouge">B</code>를 살펴보겠습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm ldm" /><category term="arm stm" /><category term="addressing modes" /><category term="stack memory" /><summary type="html"><![CDATA[LDM과 STM의 다양한 주소 모드를 스택 메모리의 PUSH/POP 동작에서는 어떻게 활용할 수 있을지 살펴보겠습니다.]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #11 - 메모리 블럭 접근(LDM, STM)</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html" rel="alternate" type="text/html" title="ARM 어셈블리 #11 - 메모리 블럭 접근(LDM, STM)" /><published>2025-11-14T09:30:00+00:00</published><updated>2025-11-14T09:30:00+00:00</updated><id>https://seojuncha.github.io/ko/arm/assembly/tutorial/2025/11/14/arm-memory-block-access</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/14/arm-memory-block-access.html"><![CDATA[<p>이번 글에서는 메모리에 저장된 여러 개의 워드를 <strong>한 번에 읽거나 저장</strong>할 수 있는 ARM 명령어 <code class="language-plaintext highlighter-rouge">LDM</code>과 <code class="language-plaintext highlighter-rouge">STM</code>에 대해 알아보겠습니다. 이전 포스팅에서 살펴본 <code class="language-plaintext highlighter-rouge">LDR</code>과 <code class="language-plaintext highlighter-rouge">STR</code> 명령은 한 번에 하나의 워드만 다룰 수 있었습니다.</p>
-
-<p>하지만 배열이나 구조체처럼 <strong>연속된 메모리 영역</strong>을 다룰 때, 매번 <code class="language-plaintext highlighter-rouge">LDR</code>이나 <code class="language-plaintext highlighter-rouge">STR</code>을 반복해서 사용하는 것은 비효율적입니다. 이러한 문제를 해결하기 위해 ARM은 메모리 블럭 단위로 데이터를 읽고 쓸 수 있는 <code class="language-plaintext highlighter-rouge">LDM</code>(Load Multiple)과 <code class="language-plaintext highlighter-rouge">STM</code>(Store Multiple) 명령을 제공합니다.</p>
-
-<h2 id="메모리-블럭">메모리 블럭</h2>
-<p>ARM 프로그래밍에서는 배열이나 구조체처럼 <strong>연속된 데이터를 한꺼번에 다루는 상황</strong>이 자주 발생합니다.<br />
-메모리 내부에서는 이러한 데이터들이 여러 개의 워드 단위로 연속해서 저장되어 있습니다.<br />
-이런 연속된 영역을 <strong>메모리 블럭(memory block)</strong> 이라고 부릅니다.</p>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/memory-block.png" alt="연속된 워드로 구성된 메모리 블럭" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    그림 1. 메모리 블럭은 연속된 워드들로 구성되어 있으며, 각 워드는 순차적으로 증가하는 주소를 가집니다.  
-  </figcaption>
-</figure>
-
-<p>메모리는 실제로는 선형 구조이지만, 이해를 돕기 위해 2차원 배열 형태로 표현하면 좀 더 직관적으로 볼 수 있습니다.<br />
-각 칸은 1워드(4바이트) 크기의 저장공간을 의미합니다.</p>
-
-<p><a href="/ko/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html">이전 포스팅</a>에서 설명드린 것처럼, 메모리는 16진수 주소를 사용해 한 워드 단위로 접근할 수 있습니다.</p>
-
-<h3 id="ldrstr-사용-시의-비효율성">LDR/STR 사용 시의 비효율성</h3>
-<p><code class="language-plaintext highlighter-rouge">STR</code>과 <code class="language-plaintext highlighter-rouge">LDR</code> 같은 단일 주소 접근 명령은 한 번에 하나의 워드만 읽거나 쓸 수 있습니다.</p>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
-  <span class="nb">str</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">[</span><span class="nv">r0</span><span class="o">]</span>
-</code></pre></div></div>
-<figure style="text-align: center;">
-  <img src="/assets/img/ldr-str-single-access.png" alt="단일 워드 접근 구조" style="display: block; margin: auto;" /> 
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  그림 2. LDR/STR 명령은 메모리와 레지스터 간의 1:1 관계로 데이터를 전송합니다.  
-  </figcaption>
-</figure>
-
-<p>즉, Mem[address]와 Register의 관계는 워드 단위의 1:1 관계입니다.
-주소를 오프셋(offset) 방식으로 조작할 수는 있지만, 여러 워드를 다루려면 결국 <code class="language-plaintext highlighter-rouge">LDR</code>과 <code class="language-plaintext highlighter-rouge">STR</code> 명령을 반복해야 합니다.
-배열이나 구조체처럼 연속된 데이터를 다룰 때 이런 반복은 비효율적입니다.</p>
-
-<h2 id="ldm과-stm">LDM과 STM</h2>
-<p>ARM은 이러한 연속된 메모리 블럭을 효율적으로 다루기 위해 <code class="language-plaintext highlighter-rouge">LDM</code>과 <code class="language-plaintext highlighter-rouge">STM</code> 명령을 제공합니다.</p>
-
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">LDM</code>: 메모리 블럭에서 여러 레지스터로 데이터를 불러옵니다.</li>
-  <li><code class="language-plaintext highlighter-rouge">STM</code>: 여러 레지스터의 값을 메모리 블럭에 저장합니다.</li>
-</ul>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldm Rn, {registers}
-  stm Rn, {registers}
-</code></pre></div></div>
-
-<p>여기서,<br />
-<code class="language-plaintext highlighter-rouge">Rn</code>은 접근할 메모리의 <strong>베이스 주소(base address)</strong> 입니다.
-<code class="language-plaintext highlighter-rouge">{registers}</code>는 <code class="language-plaintext highlighter-rouge">,</code>로 구분된 레지스터 목록으로, 연속된 레지스터는 <code class="language-plaintext highlighter-rouge">-</code>를 사용해 표현합니다.</p>
-
-<blockquote>
-  <p><code class="language-plaintext highlighter-rouge">Rn</code>을 시작 주소(start address)가 <em>아니라</em> 베이스 주소(base address) 라고 부릅니다.
-실제 시작 주소는 이후에 설명드릴 주소 모드(addressing mode) 에 따라 달라집니다.</p>
-</blockquote>
-
-<h3 id="레지스터-목록-다루기">레지스터 목록 다루기</h3>
-<p>다음 세 가지 예시를 통해 여러 레지스터 목록을 어떻게 사용하는지 살펴보겠습니다.</p>
-
-<blockquote>
-  <p>아래 예시에서는 <code class="language-plaintext highlighter-rouge">LDM</code>만 사용했지만, <code class="language-plaintext highlighter-rouge">STM</code> 명령도 동일한 방식으로 동작합니다.<br />
-단지 <code class="language-plaintext highlighter-rouge">STM</code>은 반대 방향으로, 레지스터의 값을 메모리에 저장합니다.</p>
-</blockquote>
-
-<h4 id="예시-1-0x8000-위치의-메모리에서-2개의-워드를-r1-r2에-저장할-때">예시 1) 0x8000 위치의 메모리에서 2개의 워드를 R1, R2에 저장할 때</h4>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">}</span>
-</code></pre></div></div>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
-</ul>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ldm-comma-seperated-registers.png" alt="LDM 명령의 쉼표 구분 레지스터 목록" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  그림 3. <code>ldm r0, {r1, r2}</code> 명령은 연속된 두 워드를 각각 R1과 R2에 불러옵니다.
-  </figcaption>
-</figure>
-
-<h4 id="예시-2-0x8000-위치의-메모리에서-4개의-워드를-r1r4에-저장할-때">예시 2) 0x8000 위치의 메모리에서 4개의 워드를 R1~R4에 저장할 때</h4>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r4</span><span class="o">}</span>
-</code></pre></div></div>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R3</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8008</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R4</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x800C</code>]</li>
-</ul>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ldm-range-registers.png" alt="LDM 명령의 연속 레지스터 목록" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  그림 4. <code>ldm r0, {r1-r4}</code> 명령은 4개의 연속된 워드를 메모리에서 읽어 R1부터 R4까지 순서대로 저장합니다. 
-  </figcaption>
-</figure>
-
-<h4 id="예시-3-0x8000-위치의-메모리에서-r1-r2-r7에-저장할-때">예시 3) 0x8000 위치의 메모리에서 R1, R2, R7에 저장할 때</h4>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">ldm</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r7</span><span class="o">}</span>
-</code></pre></div></div>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">R1</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8000</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R2</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8004</code>]</li>
-  <li><code class="language-plaintext highlighter-rouge">R7</code> ← Mem[<code class="language-plaintext highlighter-rouge">0x8008</code>]</li>
-</ul>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ldm-mixed-registers.png" alt="LDM 명령의 복합 레지스터 목록" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  그림 5. <code>ldm r0, {r1-r2, r7}</code> 명령은 비연속적인 레지스터 목록을 지정해 사용할 수 있습니다. 
-  </figcaption>
-</figure>
-
-<h3 id="메모리-주소-자동-업데이트">메모리 주소 자동 업데이트</h3>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldm Rn!, {registers}
-  stm Rn!, {registers}
-</code></pre></div></div>
-<p>베이스 레지스터 <code class="language-plaintext highlighter-rouge">Rn</code> 뒤에 <code class="language-plaintext highlighter-rouge">!</code>를 붙이면, 명령 실행 후 <strong>자동으로 다음 주소로 갱신</strong>됩니다.</p>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
-  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
-  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
- 
-  <span class="nb">stm</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span> <span class="o">-</span> <span class="nv">r3</span><span class="o">}</span>
-  <span class="err">@</span> <span class="nv">r0</span> <span class="o">=</span> <span class="nv">r0</span> <span class="o">+</span> <span class="o">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">4</span><span class="o">)</span> <span class="o">=</span> <span class="mh">0x8000</span> <span class="o">+</span> <span class="mh">0xC</span> <span class="o">=</span> <span class="mh">0x800C</span>
-</code></pre></div></div>
-<p>즉, 한 번의 명령으로 여러 데이터를 저장하고 다음 메모리 위치로 자동 이동할 수 있습니다.</p>
-
-<h2 id="마무리">마무리</h2>
-<p>이번 글에서는 <code class="language-plaintext highlighter-rouge">LDM</code>과 <code class="language-plaintext highlighter-rouge">STM</code>의 기본 개념과 사용 방법을 먼저 살펴봤습니다. 다만, <code class="language-plaintext highlighter-rouge">LDM</code>과 <code class="language-plaintext highlighter-rouge">STM</code>에는 메모리 주소가 어떻게 증가하거나 감소하는지, 그리고 베이스 레지스터를 언제 포함할지 같은 동작을 제어하는 <strong>주소 모드(Addressing Mode)</strong> 라는 개념이 있습니다.</p>
-
-<p>주소 모드는 스택 메모리와 함께 이해했을 때 훨씬 자연스럽기 때문에, 다음 글에서 스택 구조와 함께 자세히 설명드리겠습니다.<br />
-그러면 다음 글에서 스택과 주소 모드를 함께 정리해보겠습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="memory block" /><category term="arm ldm" /><category term="arm stm" /><summary type="html"><![CDATA[이번 글에서는 메모리에 저장된 여러 개의 워드를 한 번에 읽거나 저장할 수 있는 ARM 명령어 LDM과 STM에 대해 알아보겠습니다. 이전 포스팅에서 살펴본 LDR과 STR 명령은 한 번에 하나의 워드만 다룰 수 있었습니다.]]></summary></entry></feed>
+<p>다음 포스팅에서는 실행 흐름을 제어하기 위한 분기 명령어 <code class="language-plaintext highlighter-rouge">B</code>를 살펴보겠습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm ldm" /><category term="arm stm" /><category term="addressing modes" /><category term="stack memory" /><summary type="html"><![CDATA[LDM과 STM의 다양한 주소 모드를 스택 메모리의 PUSH/POP 동작에서는 어떻게 활용할 수 있을지 살펴보겠습니다.]]></summary></entry></feed>

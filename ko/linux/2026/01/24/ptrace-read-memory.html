@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="ko"><head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Extracting Memory Data with PTRACE_PEEKDATA | Hacking the System, One Bit at a Time</title>
+<title>PTRACE_PEEKDATA로 메모리 데이터 추출하기 | Hacking the System, One Bit at a Time</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Extracting Memory Data with PTRACE_PEEKDATA" />
+<meta property="og:title" content="PTRACE_PEEKDATA로 메모리 데이터 추출하기" />
 <meta name="author" content="차서준 (Cha Seojun)" />
-<meta property="og:locale" content="en" />
-<meta name="description" content="Using PTRACE_GETREGS, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call. However, some system calls take pointers to memory addresses rather than simple integer values as arguments. In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space. Therefore, we must explicitly read the memory contents pointed to by that address. A representative example is the write system call." />
-<meta property="og:description" content="Using PTRACE_GETREGS, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call. However, some system calls take pointers to memory addresses rather than simple integer values as arguments. In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space. Therefore, we must explicitly read the memory contents pointed to by that address. A representative example is the write system call." />
+<meta property="og:locale" content="ko" />
+<meta name="description" content="PTRACE_GETREGS를 사용하면 시스템콜 호출 시 레지스터에 저장된 시스템콜 번호, 인자, 반환값을 확인할 수 있다. 하지만 일부 시스템콜은 단순한 정수형 값이 아니라 메모리 주소를 가리키는 포인터를 인자로 사용한다. 이 경우, 레지스터에 저장된 값은 “의미 있는 데이터”가 아니라 tracee 가상 메모리 공간의 주소일 뿐이다. 따라서 해당 주소가 가리키는 실제 메모리 내용을 추가로 읽어야 한다. 대표적인 예가 write 시스템콜이다." />
+<meta property="og:description" content="PTRACE_GETREGS를 사용하면 시스템콜 호출 시 레지스터에 저장된 시스템콜 번호, 인자, 반환값을 확인할 수 있다. 하지만 일부 시스템콜은 단순한 정수형 값이 아니라 메모리 주소를 가리키는 포인터를 인자로 사용한다. 이 경우, 레지스터에 저장된 값은 “의미 있는 데이터”가 아니라 tracee 가상 메모리 공간의 주소일 뿐이다. 따라서 해당 주소가 가리키는 실제 메모리 내용을 추가로 읽어야 한다. 대표적인 예가 write 시스템콜이다." />
 <link rel="canonical" href="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html" />
 <meta property="og:url" content="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html" />
 <meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2026-01-24T10:00:00+00:00" />
+<meta property="article:published_time" content="2026-01-24T10:20:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Extracting Memory Data with PTRACE_PEEKDATA" />
+<meta property="twitter:title" content="PTRACE_PEEKDATA로 메모리 데이터 추출하기" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2026-01-24T10:00:00+00:00","datePublished":"2026-01-24T10:00:00+00:00","description":"Using PTRACE_GETREGS, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call. However, some system calls take pointers to memory addresses rather than simple integer values as arguments. In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space. Therefore, we must explicitly read the memory contents pointed to by that address. A representative example is the write system call.","headline":"Extracting Memory Data with PTRACE_PEEKDATA","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"},"url":"https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2026-01-24T10:20:00+00:00","datePublished":"2026-01-24T10:20:00+00:00","description":"PTRACE_GETREGS를 사용하면 시스템콜 호출 시 레지스터에 저장된 시스템콜 번호, 인자, 반환값을 확인할 수 있다. 하지만 일부 시스템콜은 단순한 정수형 값이 아니라 메모리 주소를 가리키는 포인터를 인자로 사용한다. 이 경우, 레지스터에 저장된 값은 “의미 있는 데이터”가 아니라 tracee 가상 메모리 공간의 주소일 뿐이다. 따라서 해당 주소가 가리키는 실제 메모리 내용을 추가로 읽어야 한다. 대표적인 예가 write 시스템콜이다.","headline":"PTRACE_PEEKDATA로 메모리 데이터 추출하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"},"url":"https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,43 +87,41 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      Extracting Memory Data with PTRACE_PEEKDATA
+      PTRACE_PEEKDATA로 메모리 데이터 추출하기
     </h1>
     <div class="post-meta">
       <time
         class="dt-published"
-        datetime="2026-01-24T10:00:00+00:00"
+        datetime="2026-01-24T10:20:00+00:00"
         itemprop="datePublished"
       >
         Jan 24, 2026
       </time>
     </div><nav class="lang-switch" aria-label="Language switcher">
-      <span class="lang-pill is-current">EN</span>
-      <a class="lang-pill" href="/ko/linux/2026/01/24/ptrace-read-memory.html"
-        >한국어</a
+      <span class="lang-pill is-current">한국어</span>
+      <a class="lang-pill" href="/linux/2026/01/24/ptrace-read-memory.html"
+        >EN</a
       >
     </nav>
   </header>
 
-  <div class="post-content e-content" itemprop="articleBody"><p>Using <code class="language-plaintext highlighter-rouge">PTRACE_GETREGS</code>, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call.
-However, some system calls take pointers to memory addresses rather than simple integer values as arguments.
-In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space.
-Therefore, we <strong>must explicitly read the memory contents pointed to by that address</strong>.
-A representative example is the <code class="language-plaintext highlighter-rouge">write</code> system call.</p>
+  <div class="post-content e-content" itemprop="articleBody"><p><code class="language-plaintext highlighter-rouge">PTRACE_GETREGS</code>를 사용하면 시스템콜 호출 시 레지스터에 저장된 시스템콜 번호, 인자, 반환값을 확인할 수 있다.
+하지만 일부 시스템콜은 단순한 정수형 값이 아니라 메모리 주소를 가리키는 포인터를 인자로 사용한다.
+이 경우, 레지스터에 저장된 값은 “의미 있는 데이터”가 아니라 tracee 가상 메모리 공간의 주소일 뿐이다.
+따라서 해당 주소가 가리키는 실제 메모리 내용을 추가로 읽어야 한다.
+대표적인 예가 <code class="language-plaintext highlighter-rouge">write</code> 시스템콜이다.</p>
 
 <figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">ssize_t</span> <span class="nf">write</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">);</span></code></pre></figure>
 
-<p>The second argument <code class="language-plaintext highlighter-rouge">buf</code> is a memory address pointing to the data to be written,
-and the register stores only that address, not the string itself.</p>
+<p><code class="language-plaintext highlighter-rouge">write</code>의 두 번째 인자인 <code class="language-plaintext highlighter-rouge">buf</code>는 출력할 데이터를 저장한 메모리 주소이며, 레지스터에는 문자열 자체가 아니라 그 주소값만 저장된다.</p>
 
-<p>In this article, we will use <code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code> to demonstrate <strong>how to extract data from the tracee process’s virtual memory</strong>.</p>
+<p>이번 글에서는 <code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code>를 사용하여 tracee 프로세스의 가상 메모리로부터 데이터를 추출하는 방법을 정리한다.</p>
 
-<h2 id="overview-of-ptrace_peekdata">Overview of PTRACE_PEEKDATA</h2>
+<h2 id="ptrace_peekdata-개요">PTRACE_PEEKDATA 개요</h2>
 
 <figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">long</span> <span class="nf">ptrace</span><span class="p">(</span><span class="n">PTRACE_PEEKDATA</span><span class="p">,</span> <span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span></code></pre></figure>
 
-<p><code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code> reads from the tracee process’s virtual memory,
-returning <code class="language-plaintext highlighter-rouge">sizeof(long)</code> bytes (i.e., one machine word) starting at the given address(<code class="language-plaintext highlighter-rouge">addr</code>).</p>
+<p><code class="language-plaintext highlighter-rouge">PTRACE_PEEKDATA</code>는 tracee 프로세스의 가상 메모리에서 <code class="language-plaintext highlighter-rouge">addr</code>가 가리키는 주소로부터 <code class="language-plaintext highlighter-rouge">sizeof(long)</code> 바이트(= word 크기) 를 읽어 반환한다.</p>
 
 <blockquote>
   <p>PTRACE_PEEKTEXT, PTRACE_PEEKDATA<br />
@@ -131,20 +129,19 @@ Read a word at the address <code class="language-plaintext highlighter-rouge">ad
  — man 2 ptrace</p>
 </blockquote>
 
-<p>The important points to note are:</p>
+<p>여기서 중요한 점은 다음과 같다.</p>
 <ul>
-  <li>The return unit is a word, not a single byte (<code class="language-plaintext highlighter-rouge">sizeof(long)</code>)</li>
-  <li>On x86_64 systems, <code class="language-plaintext highlighter-rouge">sizeof(long) == 8</code></li>
-  <li>The returned value must be interpreted in little-endian format</li>
+  <li>반환 단위는 바이트가 아니라 word <code class="language-plaintext highlighter-rouge">(sizeof(long))</code></li>
+  <li>x86_64 환경에서는 <code class="language-plaintext highlighter-rouge">sizeof(long) == 8</code></li>
+  <li>반환값은 리틀 엔디안(Little Endian) 형식으로 해석</li>
 </ul>
 
-<h2 id="inspecting-writebuf-with-ptrace_peekdata">Inspecting write(buf) with PTRACE_PEEKDATA</h2>
-<p>Below is a simple example that inspects the <code class="language-plaintext highlighter-rouge">buf</code> argument of a <code class="language-plaintext highlighter-rouge">write</code> system call printing <code class="language-plaintext highlighter-rouge">"Hello, World\n"</code>,
-at the system call entry point.</p>
+<h2 id="writebuf-인자를-ptrace_peekdata로-확인하기">write(buf) 인자를 PTRACE_PEEKDATA로 확인하기</h2>
+<p>다음은 <code class="language-plaintext highlighter-rouge">"Hello, World\n"</code>를 출력하는 <code class="language-plaintext highlighter-rouge">write</code> 시스템콜의 <code class="language-plaintext highlighter-rouge">buf</code> 인자를 시스템콜 진입 시점에서 읽는 예제이다.</p>
 
 <blockquote>
-  <p>In this example, <code class="language-plaintext highlighter-rouge">PTRACE_O_TRACESYSGOOD</code> is enabled,
-so system call stops are delivered as <code class="language-plaintext highlighter-rouge">SIGTRAP | 0x80</code>.</p>
+  <p>본 예제에서는 <code class="language-plaintext highlighter-rouge">PTRACE_O_TRACESYSGOOD</code> 옵션을 설정했기 때문에
+시스템콜 stop은 <code class="language-plaintext highlighter-rouge">SIGTRAP | 0x80</code> 형태로 들어온다고 가정한다.</p>
 </blockquote>
 
 <figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_word</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">)</span> <span class="p">{</span>
@@ -158,26 +155,25 @@ so system call stops are delivered as <code class="language-plaintext highlighte
 <span class="p">}</span></code></pre></figure>
 
 <figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">case</span> <span class="n">SIGTRAP</span> <span class="o">|</span> <span class="mh">0x80</span><span class="p">:</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">in_syscall</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* syscall entry */</span>
-<span class="hll">        <span class="n">peek_word</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rsi</span><span class="p">);</span> <span class="cm">/* write(fd, buf, count) */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">in_syscall</span><span class="p">)</span> <span class="p">{</span>                <span class="cm">/* syscall entry */</span>
+<span class="hll">        <span class="n">peek_word</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">regs</span><span class="p">.</span><span class="n">rsi</span><span class="p">);</span>     <span class="cm">/* write(fd, buf, count) */</span>
 </span>    <span class="p">}</span>
     <span class="k">break</span><span class="p">;</span></code></pre></figure>
 
-<p><strong>Output:</strong></p>
+<p><strong>실행 결과:</strong></p>
 
 <figure class="highlight"><pre><code class="language-text" data-lang="text">peekdata: 0x57202c6f6c6c6548</code></pre></figure>
 
-<p>Since the word size on x86_64 is 8 bytes,
-8 bytes are returned at once from the memory pointed to by <code class="language-plaintext highlighter-rouge">buf</code>.</p>
+<p>x86_64 아키텍처에서 word 크기는 8바이트이므로, <code class="language-plaintext highlighter-rouge">buf</code>가 가리키는 메모리로부터 8바이트가 한 번에 반환된다.</p>
 
-<h3 id="little-endian-interpretation">Little-Endian Interpretation</h3>
-<p>Breaking down the returned value <code class="language-plaintext highlighter-rouge">0x57202c6f6c6c6548</code> byte by byte yields:</p>
+<h3 id="리틀-엔디안-해석">리틀 엔디안 해석</h3>
+<p>반환된 값 <code class="language-plaintext highlighter-rouge">0x57202c6f6c6c6548</code>을 바이트 단위로 풀어보면 다음과 같다.</p>
 
 <table>
   <thead>
     <tr>
-      <th>Memory Address</th>
-      <th>Value</th>
+      <th>메모리 주소</th>
+      <th>값</th>
     </tr>
   </thead>
   <tbody>
@@ -216,10 +212,10 @@ so system call stops are delivered as <code class="language-plaintext highlighte
   </tbody>
 </table>
 
-<p>In other words, the returned word corresponds to the first 8 bytes of <code class="language-plaintext highlighter-rouge">"Hello, W"</code>.</p>
+<p>즉, 반환된 word 값은 문자열 <code class="language-plaintext highlighter-rouge">"Hello, W"</code>의 첫 8바이트에 해당한다.</p>
 
-<h2 id="the-simplest-way-to-read-the-entire-string-not-recommended">The Simplest Way to Read the Entire String (Not Recommended)</h2>
-<p>The following approach is for demonstration purposes only and is not recommended due to performance and alignment concerns.</p>
+<h2 id="문자열-전체를-읽는-가장-단순한-방법-비권장-예제">문자열 전체를 읽는 가장 단순한 방법 (비권장 예제)</h2>
+<p>아래 방식은 개념 설명용 예제이며, 성능 및 정렬 관점에서는 권장되지 않는다.</p>
 
 <figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">peek_bytewise</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">sz</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sz</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
@@ -234,13 +230,13 @@ so system call stops are delivered as <code class="language-plaintext highlighte
 <span class="p">}</span></code></pre></figure>
 
 <ul>
-  <li>Calls <code class="language-plaintext highlighter-rouge">ptrace()</code> once per byte</li>
-  <li>Inefficient for a syscall tracer</li>
-  <li>Implicitly assumes safe unaligned access</li>
+  <li>매 바이트마다 <code class="language-plaintext highlighter-rouge">ptrace()</code> 호출</li>
+  <li>syscall 트레이서 입장에서는 비효율적</li>
+  <li>주소 정렬(alignment)에 대한 암묵적 가정 포함</li>
 </ul>
 
-<h2 id="recommended-approach-read-by-words-and-copy-to-a-buffer">Recommended Approach: Read by Words and Copy to a Buffer</h2>
-<p>By using the byte count and the word size, we can minimize the number of <code class="language-plaintext highlighter-rouge">ptrace</code> calls.</p>
+<h2 id="권장-방식-word-단위로-읽어-버퍼에-복사">권장 방식: word 단위로 읽어 버퍼에 복사</h2>
+<p>읽어야 할 바이트 수 와 word 크기를 기준으로 <code class="language-plaintext highlighter-rouge">ptrace</code> 호출 횟수를 최소화할 수 있다.</p>
 
 <figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define WORD_BYTES (sizeof(long))
 </span>
@@ -270,54 +266,53 @@ so system call stops are delivered as <code class="language-plaintext highlighte
     <span class="n">free</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
-<p>This approach has the following characteristics:</p>
+<p>이 방식의 특징은 다음과 같다.</p>
 <ul>
-  <li>Number of ptrace calls is <code class="language-plaintext highlighter-rouge">ceil(size / WORD_BYTES)</code></li>
-  <li>Does not rely on memory alignment</li>
-  <li>Safe for arbitrary binary buffers, not just strings</li>
+  <li><code class="language-plaintext highlighter-rouge">ptrace</code> 호출 횟수는 <code class="language-plaintext highlighter-rouge">ceil(size / WORD_BYTES)</code></li>
+  <li>메모리 정렬에 의존하지 않음</li>
+  <li>문자열이 아닌 임의의 바이너리 데이터에도 안전</li>
 </ul>
 
-<h2 id="important-note-write-is-not-a-string-system-call">Important Note: write Is Not a String System Call</h2>
-<p>The <code class="language-plaintext highlighter-rouge">write</code> system call is not a string-output API.</p>
+<h2 id="중요한-주의사항-write는-문자열-시스템콜이-아니다">중요한 주의사항: write는 문자열 시스템콜이 아니다</h2>
+<p><code class="language-plaintext highlighter-rouge">write</code> 시스템콜은 문자열 출력용 API가 아니다.</p>
 
 <blockquote>
   <p><code class="language-plaintext highlighter-rouge">write()</code> writes up to count bytes from the buffer starting at <code class="language-plaintext highlighter-rouge">buf</code><br />
-   — man 2 write</p>
+  — man 2 write</p>
 </blockquote>
 
-<p>This means:</p>
+<p>즉,</p>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">buf</code> is not guaranteed to be NULL-terminated</li>
-  <li>It may contain binary data</li>
-  <li>Using <code class="language-plaintext highlighter-rouge">printf("%s", buf)</code> is logically incorrect</li>
+  <li><code class="language-plaintext highlighter-rouge">buf</code>는 NULL 종료 문자열이라는 보장이 없음</li>
+  <li>바이너리 데이터일 수 있음</li>
+  <li><code class="language-plaintext highlighter-rouge">printf("%s", buf)</code> 는 논리적으로 잘못된 가정</li>
 </ul>
 
-<p>Only a limited set of system calls can safely assume string arguments.</p>
+<p>문자열이라고 단정할 수 있는 경우는 제한적이다.</p>
 
-<h2 id="general-classification-of-pointer-arguments">General Classification of Pointer Arguments</h2>
-<p>In ptrace-based syscall tracers, pointer arguments typically fall into three categories:</p>
+<h2 id="포인터-인자-처리의-일반적인-분류">포인터 인자 처리의 일반적인 분류</h2>
+<p><code class="language-plaintext highlighter-rouge">ptrace</code> 기반 시스템콜 트레이서에서 포인터 인자는 보통 다음 세 가지로 나뉜다.</p>
 
 <ol>
-  <li>Buffer + Length
+  <li>버퍼 + 길이
     <ul>
       <li><code class="language-plaintext highlighter-rouge">read</code>, <code class="language-plaintext highlighter-rouge">write</code></li>
-      <li>Meaning depends on syscall entry vs exit</li>
+      <li>syscall entry / exit 시점에 따라 의미가 달라짐</li>
     </ul>
   </li>
-  <li>NULL-terminated Strings
+  <li>NULL-terminated 문자열
     <ul>
       <li><code class="language-plaintext highlighter-rouge">open</code>, <code class="language-plaintext highlighter-rouge">unlink</code>, <code class="language-plaintext highlighter-rouge">execve</code></li>
     </ul>
   </li>
-  <li>Structs / Arrays / Pointer Arrays
+  <li>구조체 / 배열 / 포인터 배열
     <ul>
       <li><code class="language-plaintext highlighter-rouge">stat</code>, <code class="language-plaintext highlighter-rouge">uname</code>, <code class="language-plaintext highlighter-rouge">execve(argv)</code></li>
     </ul>
   </li>
 </ol>
 
-<p><code class="language-plaintext highlighter-rouge">write</code> belongs to the simplest category.</p>
-
+<p><code class="language-plaintext highlighter-rouge">write</code>는 이 중 가장 단순한 형태에 해당한다.</p>
 </div><!-- _includes/utterances.html -->
 <script
   src="https://utteranc.es/client.js"
