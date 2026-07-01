@@ -1,29 +1,29 @@
 @charset "UTF-8";
 .highlight .err {
   color: #e3d2d2;
-  background-color: #8c2121;
+  background-color: #a61717;
 }
 .highlight .c {
-  color: #8a8a8a;
-}
-.highlight .c1 {
-  color: #8a8a8a;
+  color: #9c9996;
 }
 .highlight .cm {
-  color: #8a8a8a;
+  color: #9c9996;
 }
 .highlight .cp {
-  color: #8a8a8a;
+  color: #9c9996;
+}
+.highlight .c1 {
+  color: #9c9996;
 }
 .highlight .cs {
-  color: #8a8a8a;
+  color: #9c9996;
   font-style: italic;
 }
 .highlight .gd {
-  color: #d85a5a;
+  color: #e25050;
 }
 .highlight .gd .x {
-  color: #d85a5a;
+  color: #e25050;
 }
 .highlight .ge {
   font-style: italic;
@@ -32,10 +32,10 @@
   color: #999999;
 }
 .highlight .gi {
-  color: #4ec64e;
+  color: #3f993f;
 }
 .highlight .gi .x {
-  color: #4ec64e;
+  color: #3f993f;
 }
 .highlight .go {
   color: #888888;
@@ -44,148 +44,148 @@
   color: #555555;
 }
 .highlight .gr {
-  color: #f07178;
+  color: #aa0000;
 }
 .highlight .gs {
   font-weight: bold;
 }
 .highlight .gt {
-  color: #f07178;
+  color: #aa0000;
 }
 .highlight .gu {
   color: #aaaaaa;
 }
 .highlight .k {
-  color: #d85a7b;
+  color: #cf222e;
 }
 .highlight .kc {
-  color: #d85a7b;
+  color: #cf222e;
 }
 .highlight .kd {
-  color: #d85a7b;
+  color: #cf222e;
 }
 .highlight .kp {
-  color: #d85a7b;
+  color: #cf222e;
 }
 .highlight .kr {
-  color: #d85a7b;
+  color: #cf222e;
 }
 .highlight .kt {
-  color: #ffcb6b;
+  color: #445588;
 }
 .highlight .n {
-  color: #c7d1d8;
+  color: #111111;
 }
 .highlight .na {
-  color: #11a69f;
+  color: #097e39;
 }
 .highlight .nb {
-  color: #d85a7b;
+  color: #cf222e;
 }
 .highlight .bp {
   color: #999999;
 }
 .highlight .nc {
-  color: #11a69f;
+  color: #097e39;
 }
 .highlight .ne {
   color: #990000;
 }
 .highlight .nf {
-  color: #5ab780;
+  color: #2c7d74;
 }
 .highlight .ni {
-  color: #11a69f;
+  color: #097e39;
 }
 .highlight .nn {
-  color: #11a69f;
+  color: #097e39;
 }
 .highlight .no {
-  color: #9d99e6;
+  color: #a61154;
 }
 .highlight .nt {
-  color: #de3581;
+  color: #b81e63;
 }
 .highlight .nv {
-  color: #9680b1;
+  color: #752a75;
 }
 .highlight .vc {
-  color: #9680b1;
+  color: #752a75;
 }
 .highlight .vg {
-  color: #9680b1;
+  color: #752a75;
 }
 .highlight .vi {
-  color: #9680b1;
+  color: #752a75;
 }
 .highlight .o {
-  color: #bcd890;
+  color: #0842a0;
 }
 .highlight .ow {
-  color: #bcd890;
+  color: #0842a0;
 }
 .highlight .m {
-  color: #9d99e6;
+  color: #005a99;
 }
 .highlight .mf {
-  color: #9d99e6;
+  color: #005a99;
 }
 .highlight .mh {
-  color: #9d99e6;
+  color: #005a99;
 }
 .highlight .mi {
-  color: #9d99e6;
+  color: #005a99;
 }
 .highlight .il {
-  color: #9d99e6;
+  color: #005a99;
 }
 .highlight .mo {
-  color: #9d99e6;
+  color: #005a99;
 }
 .highlight .s {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .s1 {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .s2 {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .sb {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .sc {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .sd {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .se {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .sh {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .si {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .sr {
   color: #009926;
 }
 .highlight .ss {
-  color: #3c90f5;
+  color: #0842a0;
 }
 .highlight .sx {
-  color: #baa94a;
+  color: #914d08;
 }
 .highlight .w {
-  color: #eeffff;
+  color: #bbbbbb;
 }
 .highlight .lineno, .highlight .gl {
-  color: #8a8a8a;
+  color: #9c9996;
 }
 .highlight .hll {
-  background-color: #373730;
+  background-color: #ffffcc;
 }
 
 html {
@@ -207,8 +207,8 @@ dl, dd, ol, ul, figure {
  */
 body {
   font: 400 18px/1.75 "Roboto", "Noto Sans KR", sans-serif;
-  color: rgb(148.75, 148.75, 148.75);
-  background-color: #181818;
+  color: rgb(65.25, 65.25, 65.25);
+  background-color: #fdfdfd;
   -webkit-text-size-adjust: 100%;
   -webkit-font-feature-settings: "kern" 1;
   -moz-font-feature-settings: "kern" 1;
@@ -279,7 +279,7 @@ li > ol {
  * Headings
  */
 h1, h2, h3, h4, h5, h6 {
-  color: #bbbbbb;
+  color: #111111;
   font-weight: 500;
 }
 
@@ -287,15 +287,15 @@ h1, h2, h3, h4, h5, h6 {
  * Links
  */
 a {
-  color: #5691cd;
+  color: #1e69d8;
   text-decoration: none;
 }
 a:visited {
-  color: #80bbff;
+  color: rgb(20.6707317073, 72.3475609756, 148.8292682927);
 }
 a:hover {
-  color: rgb(148.75, 148.75, 148.75);
-  text-decoration: underline #999999;
+  color: rgb(65.25, 65.25, 65.25);
+  text-decoration: underline #818181;
   text-underline-offset: 3px;
 }
 .social-media-list a:hover {
@@ -309,8 +309,8 @@ a:hover {
  * Blockquotes
  */
 blockquote {
-  color: #999999;
-  border-left: 4px solid rgb(43.35, 43.35, 43.35);
+  color: #818181;
+  border-left: 4px solid #e7e7e7;
   padding-left: 15px;
   font-size: 1.05rem;
   font-style: italic;
@@ -328,7 +328,7 @@ blockquote i, blockquote em {
 pre,
 code {
   font-family: "Fira Code", monospace;
-  background-color: #222222;
+  background-color: #f6f8fa;
 }
 @media screen and (max-width: 600px) {
   pre,
@@ -341,7 +341,7 @@ pre {
   padding: 8px 12px;
   font-size: 15px;
   line-height: 1.4;
-  color: #bbbbbb;
+  color: #111111;
   overflow-x: auto;
 }
 pre > code {
@@ -350,7 +350,7 @@ pre > code {
 }
 
 div.highlight, figure.highlight {
-  border: 1px solid rgb(43.35, 43.35, 43.35);
+  border: 1px solid #e7e7e7;
   border-radius: 3px;
 }
 div.highlight pre, figure.highlight pre {
@@ -369,7 +369,7 @@ figure.highlight table {
   margin: -8px -12px -14px;
 }
 figure.highlight td.gutter {
-  border-right: 1px solid rgb(43.35, 43.35, 43.35);
+  border-right: 1px solid #e7e7e7;
 }
 figure.highlight td.code {
   width: 100%;
@@ -378,7 +378,7 @@ figure.highlight td.code {
 code.highlighter-rouge {
   padding: 1px 5px;
   font-size: 14px;
-  border: 1px solid rgb(43.35, 43.35, 43.35);
+  border: 1px solid #e7e7e7;
   border-radius: 3px;
 }
 
@@ -386,7 +386,7 @@ code.highlighter-rouge {
  * Wrapper
  */
 .wrapper {
-  max-width: 720px;
+  max-width: 850px;
   margin: 0 auto;
   padding: 0 30px;
 }
@@ -433,22 +433,22 @@ table {
   margin-bottom: 30px;
   width: 100%;
   text-align: left;
-  color: rgb(148.75, 148.75, 148.75);
+  color: rgb(62.9, 62.9, 62.9);
   border-collapse: collapse;
-  border: 1px solid rgb(43.35, 43.35, 43.35);
+  border: 1px solid #e7e7e7;
 }
 table tr:nth-child(even) {
-  background-color: rgb(34.2, 34.2, 34.2);
+  background-color: rgb(246.3, 246.3, 246.3);
 }
 table th, table td {
   padding: 10px 15px;
 }
 table th {
-  background-color: rgb(49.5, 49.5, 49.5);
-  border: 1px solid rgb(62.25, 62.25, 62.25);
+  background-color: rgb(238.65, 238.65, 238.65);
+  border: 1px solid rgb(223.35, 223.35, 223.35);
 }
 table td {
-  border: 1px solid rgb(43.35, 43.35, 43.35);
+  border: 1px solid #e7e7e7;
 }
 @media screen and (max-width: 800px) {
   table {
@@ -467,9 +467,9 @@ table td {
   width: 100%;
   min-height: 55.95px;
   line-height: 70.875px;
-  background-color: #181818;
-  border-top: 5px solid #999999;
-  border-bottom: 1px solid rgb(43.35, 43.35, 43.35);
+  background-color: #fdfdfd;
+  border-top: 5px solid rgb(65.25, 65.25, 65.25);
+  border-bottom: 1px solid #e7e7e7;
 }
 
 .site-title {
@@ -485,7 +485,7 @@ table td {
   }
 }
 .site-title, .site-title:visited {
-  color: rgb(165.75, 165.75, 165.75);
+  color: rgb(65.25, 65.25, 65.25);
 }
 
 .site-nav {
@@ -497,7 +497,7 @@ table td {
   display: none;
 }
 .site-nav .nav-item {
-  color: rgb(148.75, 148.75, 148.75);
+  color: rgb(65.25, 65.25, 65.25);
 }
 .site-nav .nav-item:not(:last-child) {
   margin-right: 15px;
@@ -507,8 +507,8 @@ table td {
     position: absolute;
     top: 9px;
     right: 18px;
-    background-color: #181818;
-    border: 1px solid rgb(43.35, 43.35, 43.35);
+    background-color: #fdfdfd;
+    border: 1px solid #e7e7e7;
     border-radius: 5px;
     text-align: right;
   }
@@ -532,7 +532,7 @@ table td {
     font-weight: 900;
   }
   .site-nav .menu-icon > svg path {
-    fill: #999999;
+    fill: rgb(65.25, 65.25, 65.25);
   }
   .site-nav #nav-trigger ~ label[for=nav-trigger] .menu-icon::before {
     content: "\f0c9";
@@ -557,7 +557,7 @@ table td {
   .site-nav .nav-item {
     display: block;
     padding: 5px 0;
-    color: rgb(148.75, 148.75, 148.75);
+    color: rgb(65.25, 65.25, 65.25);
     line-height: 1.75;
   }
 }
@@ -566,7 +566,7 @@ table td {
  * Site footer
  */
 .site-footer {
-  border-top: 1px solid rgb(43.35, 43.35, 43.35);
+  border-top: 1px solid #e7e7e7;
   padding: 30px 0;
 }
 
@@ -588,7 +588,7 @@ table td {
 .footer-col-wrapper,
 .social-links {
   font-size: 0.9375rem;
-  color: rgb(132.6, 132.6, 132.6);
+  color: rgb(100.95, 100.95, 100.95);
 }
 
 .footer-col {
@@ -658,7 +658,7 @@ table td {
 
 .post-meta {
   font-size: 15.75px;
-  color: rgb(132.6, 132.6, 132.6);
+  color: rgb(100.95, 100.95, 100.95);
 }
 
 .post-link {
@@ -673,7 +673,7 @@ table td {
   margin-bottom: 30px;
   padding-bottom: 18px;
   text-align: center;
-  border-bottom: 1px solid rgb(43.35, 43.35, 43.35);
+  border-bottom: 1px solid #e7e7e7;
 }
 
 .post-meta .bullet-divider {
@@ -762,10 +762,10 @@ table td {
 .social-media-list li a {
   display: block;
   padding: 10px 12px;
-  border: 1px solid rgb(43.35, 43.35, 43.35);
+  border: 1px solid #e7e7e7;
 }
 .social-media-list li a:hover {
-  border-color: rgb(165.75, 165.75, 165.75);
+  border-color: rgb(218.25, 218.25, 218.25);
 }
 
 /**
@@ -786,10 +786,10 @@ table td {
 .pagination li a {
   display: block;
   text-decoration: none;
-  border: 1px solid rgb(43.35, 43.35, 43.35);
+  border: 1px solid #e7e7e7;
 }
 .pagination li a:hover {
-  border-color: rgb(165.75, 165.75, 165.75);
+  border-color: rgb(218.25, 218.25, 218.25);
 }
 .pagination li a, .pagination li div {
   min-width: 41px;
@@ -801,7 +801,7 @@ table td {
   border: 1px solid transparent;
 }
 .pagination li div.pager-edge {
-  color: rgb(43.35, 43.35, 43.35);
+  color: #e7e7e7;
   border: 1px dashed;
 }
 .pagination li div.current-page {
@@ -824,7 +824,7 @@ table td {
   margin-right: 9px;
   margin-left: -15px;
   appearance: none;
-  border: 8px solid rgb(43.35, 43.35, 43.35);
+  border: 8px solid #e7e7e7;
   vertical-align: text-top;
   z-index: -1;
 }
@@ -840,7 +840,7 @@ table td {
   transform: rotate(45deg);
 }
 .task-list-item-checkbox:checked::after {
-  border-color: #999999;
+  border-color: rgb(65.25, 65.25, 65.25);
 }
 
 /**

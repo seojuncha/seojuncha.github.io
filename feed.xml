@@ -1,4 +1,697 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-03-16T11:49:39+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Hacking the System, One Bit at a Time</title><subtitle>Cha Seojun&apos;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</subtitle><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">Extracting Memory Data with PTRACE_PEEKDATA</title><link href="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html" rel="alternate" type="text/html" title="Extracting Memory Data with PTRACE_PEEKDATA" /><published>2026-01-24T10:00:00+00:00</published><updated>2026-01-24T10:00:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"><![CDATA[<p>Using <code class="language-plaintext highlighter-rouge">PTRACE_GETREGS</code>, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-07-01T12:23:20+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Seojun’s Personal Site</title><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">The Four Stages of C Compilation</title><link href="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html" rel="alternate" type="text/html" title="The Four Stages of C Compilation" /><published>2026-07-01T12:00:00+00:00</published><updated>2026-07-01T12:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/01/c-build-step</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html"><![CDATA[<p>Using a simple sample program, we take a close look at how C code is transformed into an executable file.</p>
+
+<p>It’s not that I don’t already understand this process; the point is to grow more comfortable with the concepts and analysis methods of each stage by explaining it myself.</p>
+
+<p>The lab environment is AMD64/Linux based. Note that I mix GNU and LLVM programs throughout.
+Unless you’re using a very old toolchain, you should be able to follow along without trouble in most environments.</p>
+
+<h2 id="key-terms">Key Terms</h2>
+<p><strong>Portable</strong><br />
+Means that code can run on a different platform without modification.
+<strong>C code itself is portable</strong>. The same source code can be used on both the AMD64 and AArch64 architectures.
+However, <strong>the compiled executable is not portable</strong>. An executable compiled for AMD64 cannot run on AArch64.</p>
+
+<p><strong>Translation Unit</strong><br />
+Refers to a single source file as the compiler interprets it. Each source file has its own Translation Unit (TU).
+As the name implies, it is the <strong>unit of translation</strong> from the compiler’s point of view.</p>
+
+<p><strong>Instruction Set</strong><br />
+The set of instructions a CPU processes. <strong>A CPU interprets various arithmetic/logic operations in binary-code form to determine what work it should perform</strong>.
+For example, it’s like pre-defining that the binary code <code class="language-plaintext highlighter-rouge">1111</code> means an addition operation and <code class="language-plaintext highlighter-rouge">1100</code> means a subtraction operation.
+The catch is that this mapping differs for every kind of CPU.</p>
+
+<p><strong>Object File Format</strong><br />
+Regardless of its kind, an object file is ultimately a collection of binary-code instructions or data that the hardware can execute.
+Modern Linux uses <strong>ELF (Executable and Linkable Format)</strong> as its default object file format.</p>
+
+<h2 id="the-compilation-build-pipeline">The Compilation (Build) Pipeline</h2>
+<p>The process by which a C source file is transformed into an executable object file takes the form of a kind of pipeline.
+It can be broadly divided into four stages, and because each stage uses the previous stage’s output as its input, it can be defined as a pipeline.</p>
+
+<p><strong>The four stages of the compilation pipeline:</strong></p>
+<ul>
+  <li>Preprocessing</li>
+  <li>Compilation</li>
+  <li>Assembly</li>
+  <li>Linking</li>
+</ul>
+
+<p>Let’s use the simplified sample code below to see how the whole compilation process works.</p>
+
+<p><strong>sum.h</strong></p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre><span class="cp">#ifndef SUM_H
+#define SUM_H
+</span>
+<span class="kt">int</span> <span class="nf">sum</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+
+<span class="cp">#endif</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p><strong>sum.c</strong></p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="code"><pre><span class="cp">#include</span> <span class="cpf">"sum.h"</span><span class="cp">
+</span>
+<span class="cp">#define WORK 1
+#define PLUS +
+</span>
+<span class="k">typedef</span> <span class="kt">int</span> <span class="n">i32</span><span class="p">;</span>
+
+<span class="cm">/* block comment */</span>
+<span class="n">i32</span>       <span class="nf">sum</span><span class="p">(</span><span class="n">i32</span> <span class="n">a</span><span class="p">,</span>    <span class="n">i32</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>   <span class="c1">// line comment</span>
+<span class="cp">#if WORK
+</span>    <span class="k">return</span> <span class="n">a</span> <span class="n">PLUS</span> <span class="n">b</span><span class="p">;</span>
+<span class="cp">#else
+</span>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p><strong>main.c</strong></p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="cp">#include</span> <span class="cpf">"sum.h"</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">sum</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<h2 id="stage-1-preprocessing">Stage 1. Preprocessing</h2>
+<ul>
+  <li><strong>Input</strong>: C source file</li>
+  <li><strong>Output</strong>: Preprocessed source file</li>
+  <li><strong>Preprocessor</strong>: <code class="language-plaintext highlighter-rouge">cpp</code>, <code class="language-plaintext highlighter-rouge">clang-cpp</code></li>
+</ul>
+
+<p>The first stage is preprocessing. This is a distinctive feature of C/C++ that most other languages don’t provide.</p>
+
+<p>The preprocessing stage performs four main jobs:</p>
+<ol>
+  <li>Header file inclusion</li>
+  <li>Macro expansion</li>
+  <li>Conditional compilation</li>
+  <li>Source code cleanup</li>
+</ol>
+
+<p>When you use a tool like <code class="language-plaintext highlighter-rouge">gcc</code>, you usually don’t have to think much about this, but <code class="language-plaintext highlighter-rouge">gcc</code> is more of an integrated tool for conveniently handling each stage of the compilation pipeline; in reality a separate tool is used for each stage. Among these, the one used in the preprocessing stage is <code class="language-plaintext highlighter-rouge">cpp</code>.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gcc <span class="nt">-E</span> sum.c <span class="nt">-o</span> sum.i   <span class="c"># with gcc, the -E option lets you inspect the preprocessed result</span>
+<span class="nv">$ </span>cpp sum.c <span class="nt">-o</span> sum.i</code></pre></figure>
+
+<p>Let’s look at <code class="language-plaintext highlighter-rouge">sum.i</code>, generated as the result of preprocessing <code class="language-plaintext highlighter-rouge">sum.c</code>, and see what the preprocessing stage handled.</p>
+
+<p><strong>sum.i</strong></p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+</pre></td><td class="code"><pre><span class="cp"># 0 "sum.c"
+# 0 "&lt;built-in&gt;"
+# 0 "&lt;command-line&gt;"
+# 1 "/usr/include/stdc-predef.h" 1 3 4
+# 0 "&lt;command-line&gt;" 2
+# 1 "sum.c"
+# 1 "sum.h" 1
+</span>
+
+
+<span class="kt">int</span> <span class="nf">sum</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+<span class="cp"># 2 "sum.c" 2
+</span>
+
+
+
+<span class="k">typedef</span> <span class="kt">int</span> <span class="n">i32</span><span class="p">;</span>
+
+
+<span class="n">i32</span> <span class="nf">sum</span><span class="p">(</span><span class="n">i32</span> <span class="n">a</span><span class="p">,</span> <span class="n">i32</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+
+
+
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p><strong>Header file inclusion</strong></p>
+<ul>
+  <li>The <code class="language-plaintext highlighter-rouge">#include "sum.h"</code> statement was replaced with the contents of that header file.</li>
+</ul>
+
+<p><strong>Macro expansion</strong></p>
+<ul>
+  <li>Because of <code class="language-plaintext highlighter-rouge">#define PLUS +</code>, the statement <code class="language-plaintext highlighter-rouge">return a PLUS b;</code> was expanded to <code class="language-plaintext highlighter-rouge">return a + b;</code>.</li>
+</ul>
+
+<p><strong>Conditional compilation</strong></p>
+<ul>
+  <li>Because of <code class="language-plaintext highlighter-rouge">#define WORK 1</code> and the <code class="language-plaintext highlighter-rouge">#if WORK, #else, #endif</code> conditions, <code class="language-plaintext highlighter-rouge">return 0;</code> was removed.</li>
+</ul>
+
+<p><strong>Source code cleanup</strong></p>
+<ul>
+  <li>The unnecessary whitespace between tokens in <code class="language-plaintext highlighter-rouge">i32       sum(i32 a,    i32 b)</code> was removed.</li>
+  <li>Comments were also removed. Comments are for the programmer and have nothing to do with execution, so they are stripped out beforehand.</li>
+</ul>
+
+<p>For reference, lines such as <code class="language-plaintext highlighter-rouge"># 2 "sum.c" 2</code> are called <em>linemarkers</em>.</p>
+
+<p>A point to keep in mind: <strong>the preprocessing stage does not include C-grammar-based parsing.</strong></p>
+
+<h3 id="evidence-that-preprocessing-does-no-grammar-based-parsing">Evidence that preprocessing does no grammar-based parsing</h3>
+<p>If you examine the result of preprocessing the code below, you can see that the preprocessor doesn’t look at C grammar but does check preprocessing-directive syntax.</p>
+
+<p><strong>pp.h</strong></p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="cp">#define text 100
+</span>
+<span class="n">This</span> <span class="n">is</span> <span class="n">my</span> <span class="n">text</span><span class="p">.</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>cpp pp.h <span class="nt">-o</span> pp.i</code></pre></figure>
+
+<p>The <code class="language-plaintext highlighter-rouge">pp.h</code> header file contains an <code class="language-plaintext highlighter-rouge">#include</code> statement, a <code class="language-plaintext highlighter-rouge">#define</code>, and one ordinary sentence.
+A lone sentence like <code class="language-plaintext highlighter-rouge">This is my text.</code> is syntax that wouldn’t parse, but because the preprocessing stage doesn’t parse C grammar, it produces no particular error message.</p>
+
+<p>That said, you can confirm at the very bottom of the <code class="language-plaintext highlighter-rouge">pp.i</code> file that, per the preprocessing behavior, <code class="language-plaintext highlighter-rouge">text</code> is replaced with <code class="language-plaintext highlighter-rouge">100</code>.</p>
+
+<h2 id="stage-2-compilation">Stage 2. Compilation</h2>
+<ul>
+  <li><strong>Input</strong>: Preprocessed source file</li>
+  <li><strong>Output</strong>: Assembly file</li>
+  <li><strong>Compiler</strong>: <code class="language-plaintext highlighter-rouge">gcc</code>, <code class="language-plaintext highlighter-rouge">clang</code></li>
+</ul>
+
+<p>The compilation stage converts the preprocessed source file into an assembly file matching the host architecture.
+This means that a different assembly file is generated depending on the hardware the final executable runs on.</p>
+
+<p>Why must assembly files be separated by architecture?</p>
+
+<p>A program written in C is portable. Being portable means it can run on different architectures (e.g., AMD64, AArch64, etc.) without changing the source code.
+This portability is precisely thanks to the assembly files generated separately for each architecture.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"> C Source   ────┬─  Assembly (AMD64)    ─────   Machine Code (AMD64)
+                └─  Assembly (AArch64)  ─────   Machine Code (AArch64)</code></pre></figure>
+
+<p>Setting aside directives, an assembly instruction generally corresponds to a single CPU machine instruction.
+Each platform (architecture) has a different <strong><em>instruction set</em></strong> and provides different assembly instructions.
+Not only that, the CPU register structure and names differ as well.</p>
+
+<p>The upshot is that, for the sake of portability, different assembly code must be generated for each platform.
+The details on this are covered below in “Stage 3. Assembly.”</p>
+
+<p>To generate assembly code, you can use the <code class="language-plaintext highlighter-rouge">gcc -S</code> option.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gcc <span class="nt">-S</span> sum.i <span class="nt">-o</span> sum.s
+<span class="nv">$ </span>gcc <span class="nt">-S</span> main.i <span class="nt">-o</span> main.s</code></pre></figure>
+
+<p>To express the pipeline’s input/output connections I used the <code class="language-plaintext highlighter-rouge">.i</code> files as input, but it’s more common to pass <code class="language-plaintext highlighter-rouge">.c</code> files as arguments to generate assembly files.</p>
+
+<p>The compiler treats each preprocessed source file as an individual <strong><em>TU (Translation Unit)</em></strong>.
+You can think of a TU as the single unit the compiler processes.
+In other words, each source file the compiler compiles becomes one TU.</p>
+
+<p><strong>sum.s</strong></p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+</pre></td><td class="code"><pre>        .file	"sum.c"
+        .text
+        .globl	sum
+        .type	sum, @function
+sum:
+.LFB0:
+        .cfi_startproc
+        endbr64
+        pushq   %rbp
+        .cfi_def_cfa_offset 16
+        .cfi_offset 6, -16
+        movq    %rsp, %rbp
+        .cfi_def_cfa_register 6
+        movl    %edi, -4(%rbp)
+        movl    %esi, -8(%rbp)
+        movl    -4(%rbp), %edx
+        movl    -8(%rbp), %eax
+        addl    %edx, %eax
+        popq    %rbp
+        .cfi_def_cfa 7, 8
+        ret
+        .cfi_endproc
+.LFE0:
+        .size   sum, .-sum
+        .ident  "GCC: (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0"
+        .section        .note.GNU-stack,"",@progbits
+        .section        .note.gnu.property,"a"
+        .align 8
+        .long   1f - 0f
+        .long   4f - 1f
+        .long   5
+0:
+        .string "GNU"
+1:
+        .align 8
+        .long   0xc0000002
+        .long   3f - 2f
+2:
+        .long   0x3
+3:
+        .align 8
+4:
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>The generated assembly file describes the behavior of the <code class="language-plaintext highlighter-rouge">sum()</code> function in AMD64 assembly.</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.text</code>
+    <ul>
+      <li>Located in the text (code) section; that is, executable code rather than static data.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">.globl sum</code>
+    <ul>
+      <li>The linkable global symbol sum.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">pushq %rbp</code>, <code class="language-plaintext highlighter-rouge">popq %rbp</code>
+    <ul>
+      <li>Saving and restoring the <code class="language-plaintext highlighter-rouge">rbp</code> register for the function call and return.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">movq %rsp, %rbp</code>
+    <ul>
+      <li>Creates the stack frame.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">movl %edi, -4(%rbp)</code>, <code class="language-plaintext highlighter-rouge">movl %esi, -8(%rbp)</code>
+    <ul>
+      <li>Pushes the two function arguments held in the <code class="language-plaintext highlighter-rouge">edi</code> and <code class="language-plaintext highlighter-rouge">esi</code> registers onto the stack.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">movl -4(%rbp), %edx</code>, <code class="language-plaintext highlighter-rouge">movl -8(%rbp), %eax</code>
+    <ul>
+      <li>Reads the function arguments stored on the stack into the <code class="language-plaintext highlighter-rouge">edx</code> and <code class="language-plaintext highlighter-rouge">eax</code> registers.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">addl %edx, %eax</code>
+    <ul>
+      <li>Adds the values of the two registers.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">ret</code>
+    <ul>
+      <li>Returns to the main function.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>So how was the compiler able to convert C source code into assembly code?</p>
+
+<p>This process is the very heart of compiler theory. However, it’s beyond the scope of this post, so I’ll cover it in more detail in another post.</p>
+
+<p><strong>How does it know whether the code follows C grammar?</strong><br />
+Back when I built a <a href="https://github.com/seojuncha/ftt-c-compiler">C compiler</a>, setting aside the theoretical parts, the first thing I was curious about was how to split and classify tokens according to C grammar.</p>
+
+<p>We learn C grammar through lectures or textbooks and write C programs, but that wasn’t enough to actually build a compiler.
+The C language’s grammar is described in detail in the <a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf">ISO document</a>.</p>
+
+<h3 id="platform-dependent-assembly-code">Platform-dependent assembly code</h3>
+<p>You can confirm that even with the same C code and the same compiler, different assembly code can be generated.</p>
+
+<p>For example, look at the assembly code targeting the AArch64 architecture.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>aarch64-none-linux-gnu-gcc <span class="nt">-S</span> sum.c <span class="nt">-o</span> sum_arm64.s
+
+<span class="nv">$ </span><span class="nb">cat </span>sum_arm64.s
+
+        .arch armv8-a
+        .file   <span class="s2">"sum.c"</span>
+        .text
+        .align  2
+        .global <span class="nb">sum</span>
+        .type   <span class="nb">sum</span>, %function
+<span class="nb">sum</span>:
+.LFB0:
+        .cfi_startproc
+        sub     sp, sp, <span class="c">#16</span>
+        .cfi_def_cfa_offset 16
+        str     w0, <span class="o">[</span>sp, 12]
+        str     w1, <span class="o">[</span>sp, 8]
+        ldr     w1, <span class="o">[</span>sp, 12]
+        ldr     w0, <span class="o">[</span>sp, 8]
+        add     w0, w1, w0
+        add     sp, sp, 16
+        .cfi_def_cfa_offset 0
+        ret
+        .cfi_endproc
+.LFE0:
+        .size   <span class="nb">sum</span>, .-sum
+        .ident  <span class="s2">"GCC: (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 15.2.1 20251203"</span>
+        .section        .note.GNU-stack,<span class="s2">""</span>,@progbits</code></pre></figure>
+
+<p>Even using the same <code class="language-plaintext highlighter-rouge">sum.c</code> file, it outputs different assembly code.</p>
+
+<h2 id="stage-3-assembly">Stage 3. Assembly</h2>
+<ul>
+  <li><strong>Input</strong>: Assembly file</li>
+  <li><strong>Output</strong>: Relocatable Object File</li>
+  <li><strong>Assembler</strong>: <code class="language-plaintext highlighter-rouge">as</code>, <code class="language-plaintext highlighter-rouge">llvm-as</code></li>
+</ul>
+
+<p>The assembly file generated by the compiler backend’s CodeGen module is translated into machine code by the assembler (<code class="language-plaintext highlighter-rouge">as</code>) matching the platform.
+Machine code expresses a different instruction set for each platform.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>as sum.s <span class="nt">-o</span> sum.o
+<span class="nv">$ </span>as main.s <span class="nt">-o</span> main.o</code></pre></figure>
+
+<p>The command that can do everything up to this point — preprocessing, compilation, and assembly — in one go is <code class="language-plaintext highlighter-rouge">gcc -c</code>.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gcc <span class="nt">-c</span> sum.c <span class="nt">-o</span> sum.o
+<span class="nv">$ </span>gcc <span class="nt">-c</span> main.c <span class="nt">-o</span> main.o
+
+<span class="nv">$ </span>file main.o
+
+main.o: ELF 64-bit LSB relocatable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, not stripped</code></pre></figure>
+
+<p>The generated <strong><em>relocatable object file</em></strong> contains binary code compatible with the target architecture, per the assembly instructions.</p>
+
+<p>Let’s check the disassembly result of the <code class="language-plaintext highlighter-rouge">sum.o</code> and <code class="language-plaintext highlighter-rouge">main.o</code> object files with the <code class="language-plaintext highlighter-rouge">objdump -d</code> command.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>objdump <span class="nt">-d</span> sum.o
+
+sum.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 &lt;<span class="nb">sum</span><span class="o">&gt;</span>:
+   0:   f3 0f 1e fa             endbr64
+   4:   55                      push   %rbp
+   5:   48 89 e5                mov    %rsp,%rbp
+   8:   89 7d <span class="nb">fc                </span>mov    %edi,-0x4<span class="o">(</span>%rbp<span class="o">)</span>
+   b:   89 75 f8                mov    %esi,-0x8<span class="o">(</span>%rbp<span class="o">)</span>
+   e:   8b 55 <span class="nb">fc                </span>mov    <span class="nt">-0x4</span><span class="o">(</span>%rbp<span class="o">)</span>,%edx
+  11:   8b 45 f8                mov    <span class="nt">-0x8</span><span class="o">(</span>%rbp<span class="o">)</span>,%eax
+  14:   01 d0                   add    %edx,%eax
+  16:   5d                      pop    %rbp
+  17:   c3                      ret</code></pre></figure>
+
+<p>As shown in the table below, each assembly line maps to a single binary executable code.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Assembly</th>
+      <th>Binary Code</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">endbr64</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0xF30F1EFA</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">push %rbp</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x55</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">mov %rsp, %rbp</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x4889E5</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">mov %edi,-0x4(%rbp)</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x897DFC</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">mov %esi, -0x8(%rbp)</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x8975F8</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">mov -0x4(%rbp), %edx</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x8B55FC</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">mov -0x8(%rbp), %eax</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x8B45F8</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">add %edx, %eax</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x01D0</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">pop %rbp</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0x5D</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">ret</code></td>
+      <td><code class="language-plaintext highlighter-rouge">0xC3</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>objdump <span class="nt">-d</span> main.o
+
+main.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 &lt;main&gt;:
+   0:   f3 0f 1e fa             endbr64
+   4:   55                      push   %rbp
+   5:   48 89 e5                mov    %rsp,%rbp
+   8:   be 05 00 00 00          mov    <span class="nv">$0x5</span>,%esi
+   d:   bf 03 00 00 00          mov    <span class="nv">$0x3</span>,%edi
+  12:   e8 00 00 00 00          call   17 &lt;main+0x17&gt;
+  17:   5d                      pop    %rbp
+  18:   c3                      ret</code></pre></figure>
+
+<p>You can see that binary code for main’s assembly instructions like <code class="language-plaintext highlighter-rouge">endbr64</code> or <code class="language-plaintext highlighter-rouge">push %rbp</code> exactly matches the binary code we saw in the sum function.</p>
+
+<p>Let’s also look briefly at main’s behavior. (Parts identical to the sum function are omitted.)</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">mov    $0x5,%esi</code>
+    <ul>
+      <li>Stores the integer 5 in the <code class="language-plaintext highlighter-rouge">esi</code> register.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">mov    $0x3,%edi</code>
+    <ul>
+      <li>Stores the integer 3 in the <code class="language-plaintext highlighter-rouge">edi</code> register.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">call   17 &lt;main+0x17&gt;</code>
+    <ul>
+      <li>The <code class="language-plaintext highlighter-rouge">call</code> instruction calls the function at the address that follows, but since it hasn’t been relocated yet, it points to the address of the next instruction.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Let’s also disassemble <code class="language-plaintext highlighter-rouge">sum_arm64.o</code>, compiled for AArch64. At a glance you can see it’s different from the AMD64 object file.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>aarch64-none-linux-gnu-objdump <span class="nt">-d</span> sum_arm64.o
+
+sum_arm64.o:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+0000000000000000 &lt;<span class="nb">sum</span><span class="o">&gt;</span>:
+   0:   d10043ff        sub     sp, sp, <span class="c">#0x10</span>
+   4:   b9000fe0        str     w0, <span class="o">[</span>sp, <span class="c">#12]</span>
+   8:   b9000be1        str     w1, <span class="o">[</span>sp, <span class="c">#8]</span>
+   c:   b9400fe1        ldr     w1, <span class="o">[</span>sp, <span class="c">#12]</span>
+  10:   b9400be0        ldr     w0, <span class="o">[</span>sp, <span class="c">#8]</span>
+  14:   0b000020        add     w0, w1, w0
+  18:   910043ff        add     sp, sp, <span class="c">#0x10</span>
+  1c:   d65f03c0        ret</code></pre></figure>
+
+<p>This proves that, even for identical hardware behavior, the compatible binary executable code and assembly code differ depending on the architecture.</p>
+
+<p>For example,
+AMD64’s addition operation was <code class="language-plaintext highlighter-rouge">add %edx, %eax</code>, whereas AArch64’s addition operation takes the form <code class="language-plaintext highlighter-rouge">add w0, w1, w0</code>.
+Their respective binary executable codes likewise differ, as you can confirm from <code class="language-plaintext highlighter-rouge">0x01D0</code> versus <code class="language-plaintext highlighter-rouge">0x0B000020</code>.</p>
+
+<h2 id="stage-4-linking">Stage 4. Linking</h2>
+<ul>
+  <li><strong>Input</strong>: Relocatable object file</li>
+  <li><strong>Output</strong>: Executable Object File, Shared Object File</li>
+  <li><strong>Linker</strong>: <code class="language-plaintext highlighter-rouge">ld</code>, <code class="language-plaintext highlighter-rouge">lld</code></li>
+</ul>
+
+<p>So far the compiler has processed each source file as one TU, and the assembler has generated the respective relocatable object files.
+These object files, generated this way, cannot be executed on their own.
+These object files merely describe what machine code each source file was translated into.
+Bundling each object file into one so it can be loaded into process memory is linking, and that is the linker’s role.</p>
+
+<p>So how can data defined across multiple object files be gathered into one?</p>
+
+<p>The linker uses a kind of label called a <strong><em>symbol</em></strong>, which each object file carries, to connect the actual binary code.</p>
+
+<p>Beyond this, the linker does various things during the linking process, so directly using <code class="language-plaintext highlighter-rouge">ld</code> to link is something I’ll cover in another post.</p>
+
+<p>For now, let’s link simply using only <code class="language-plaintext highlighter-rouge">gcc</code>.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gcc main.o sum.o   <span class="c"># after linking, generates a.out</span>
+
+<span class="nv">$ </span>file a.out
+a.out: ELF 64-bit LSB pie executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>,  .. &lt;omitted&gt;
+
+<span class="nv">$ </span>./a.out <span class="o">||</span> <span class="nb">echo</span> <span class="nv">$?</span>
+8                       <span class="c"># returns 8, the result of the sum call</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>objdump <span class="nt">-d</span> a.out
+
+...&lt;omitted&gt;...
+
+0000000000001129 &lt;<span class="nb">sum</span><span class="o">&gt;</span>:
+    1129:       f3 0f 1e fa             endbr64
+    112d:       55                      push   %rbp
+    112e:       48 89 e5                mov    %rsp,%rbp
+    1131:       89 7d <span class="nb">fc                </span>mov    %edi,-0x4<span class="o">(</span>%rbp<span class="o">)</span>
+    1134:       89 75 f8                mov    %esi,-0x8<span class="o">(</span>%rbp<span class="o">)</span>
+    1137:       8b 55 <span class="nb">fc                </span>mov    <span class="nt">-0x4</span><span class="o">(</span>%rbp<span class="o">)</span>,%edx
+    113a:       8b 45 f8                mov    <span class="nt">-0x8</span><span class="o">(</span>%rbp<span class="o">)</span>,%eax
+    113d:       01 d0                   add    %edx,%eax
+    113f:       5d                      pop    %rbp
+    1140:       c3                      ret
+
+0000000000001141 &lt;main&gt;:
+    1141:       f3 0f 1e fa             endbr64
+    1145:       55                      push   %rbp
+    1146:       48 89 e5                mov    %rsp,%rbp
+    1149:       be 05 00 00 00          mov    <span class="nv">$0x5</span>,%esi
+    114e:       bf 03 00 00 00          mov    <span class="nv">$0x3</span>,%edi
+    1153:       e8 d1 ff ff ff          call   1129 &lt;<span class="nb">sum</span><span class="o">&gt;</span>
+    1158:       5d                      pop    %rbp
+    1159:       c3                      ret</code></pre></figure>
+
+<p>You can see that the binary executable code defined in both <code class="language-plaintext highlighter-rouge">sum</code> and <code class="language-plaintext highlighter-rouge">main</code> has all been inserted into a single <code class="language-plaintext highlighter-rouge">a.out</code> file.</p>
+
+<h3 id="object-file-symbols">Object file symbols</h3>
+<p>Let’s check the symbols defined in the relocatable object files (<code class="language-plaintext highlighter-rouge">sum.o</code>, <code class="language-plaintext highlighter-rouge">main.o</code>) generated before linking, using the <code class="language-plaintext highlighter-rouge">nm</code> command.</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">nm</code> is a GNU utility program that shows the symbols defined in an object file. For the meaning of the letter to the left of each function name below, see <code class="language-plaintext highlighter-rouge">man nm</code>.</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>nm sum.o main.o
+
+sum.o:
+0000000000000000 T <span class="nb">sum
+
+</span>main.o:
+0000000000000000 T main
+                 U <span class="nb">sum</span></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">main.o</code> (the object file compiled from <code class="language-plaintext highlighter-rouge">main.c</code>) has two symbols, <code class="language-plaintext highlighter-rouge">main</code> and <code class="language-plaintext highlighter-rouge">sum</code>.
+However, the <code class="language-plaintext highlighter-rouge">sum</code> symbol is <code class="language-plaintext highlighter-rouge">U</code>, meaning it’s in an <em>Undefined</em> state. It means the symbol is not defined.</p>
+
+<p>This is because the binary executable code labeled (symbolized) with the name <strong>sum</strong> — that is, the function’s definition — is defined in the <code class="language-plaintext highlighter-rouge">sum.o</code> file, not in the <code class="language-plaintext highlighter-rouge">main.o</code> file.</p>
+
+<p>So the linker has to gather the symbol information in order to merge binary executable code located in different places.
+Let’s check the symbols again in the final generated executable object file.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>nm a.out
+
+0000000000001141 T main
+0000000000001129 T <span class="nb">sum</span></code></pre></figure>
+
+<p>The <code class="language-plaintext highlighter-rouge">sum</code> symbol has changed to <code class="language-plaintext highlighter-rouge">T</code> (executable code in the <code class="language-plaintext highlighter-rouge">.text</code> section).</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="programming" /><category term="c compile" /><category term="c programming" /><category term="c build" /><summary type="html"><![CDATA[Using a simple sample program, we take a close look at how C code is transformed into an executable file.]]></summary></entry><entry xml:lang="en"><title type="html">Extracting Memory Data with PTRACE_PEEKDATA</title><link href="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html" rel="alternate" type="text/html" title="Extracting Memory Data with PTRACE_PEEKDATA" /><published>2026-01-24T10:00:00+00:00</published><updated>2026-01-24T10:00:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"><![CDATA[<p>Using <code class="language-plaintext highlighter-rouge">PTRACE_GETREGS</code>, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call.
 However, some system calls take pointers to memory addresses rather than simple integer values as arguments.
 In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space.
 Therefore, we <strong>must explicitly read the memory contents pointed to by that address</strong>.
@@ -1780,417 +2473,4 @@ You can clearly see the PC jump directly to the label when executing <code class
 <h2 id="conclusion">Conclusion</h2>
 <p>In this post, we explored the basic unconditional branch instruction <code class="language-plaintext highlighter-rouge">B</code> in ARMv4.
 In the next post, we will look at <code class="language-plaintext highlighter-rouge">BL</code>, the instruction used for function calls.
-BL automatically stores the return address in the Link Register (<code class="language-plaintext highlighter-rouge">LR</code>), making it essential for implementing function calls.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm b" /><category term="arm branch instruction" /><summary type="html"><![CDATA[In this post, we will explore how the B instruction is used for branching, along with practical examples. The B instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #12 - Stack Memory and Addressing Modes</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html" rel="alternate" type="text/html" title="ARM Assembly #12 - Stack Memory and Addressing Modes" /><published>2025-11-18T13:00:00+00:00</published><updated>2025-11-18T13:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/18/arm-stack-address-modes.html"><![CDATA[<p>In this post, we will explore how the various addressing modes of <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> are used for PUSH and POP operations on stack memory.
-In the previous post, we only covered how to use <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> to read and write multiple words at once.<br />
-In this post, we will build on that by connecting addressing modes with the stack structure.</p>
-
-<h2 id="what-are-addressing-modes">What Are Addressing Modes?</h2>
-<p>In the previous post, all examples assumed that memory addresses moved <strong>upwards (increasing)</strong> during <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> execution.<br />
-However, in practice, memory addresses may <strong>increase or decrease</strong>, depending on the situation. You can also control whether the memory block starts <strong>at the address pointed to by the base register (<code class="language-plaintext highlighter-rouge">Rn</code>)</strong> or <strong>at the next address</strong>.</p>
-
-<p>These two aspects—direction and starting position—are defined by ARM’s <strong>addressing modes</strong>.</p>
-<h2 id="the-four-addressing-modes-ia-ib-da-db">The Four Addressing Modes: IA, IB, DA, DB</h2>
-<p>ARM’s LDM/STM instructions provide the following four addressing modes.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Address Mode</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>IA</td>
-      <td>Increment After</td>
-    </tr>
-    <tr>
-      <td>IB</td>
-      <td>Increment Before</td>
-    </tr>
-    <tr>
-      <td>DA</td>
-      <td>Decrement After</td>
-    </tr>
-    <tr>
-      <td>DB</td>
-      <td>Decrement Before</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><strong>Increment / Decrement</strong> describe whether addresses move <strong>upwards or downwards</strong>.<br />
-<strong>Before / After</strong> determine whether the address in the base register (<code class="language-plaintext highlighter-rouge">Rn</code>) is <strong>included in or excluded from</strong> the accessed memory block.</p>
-
-<h2 id="ia-increment-after-default">IA (Increment After, Default)</h2>
-<ul>
-  <li><strong>Increment</strong>: moves from a lower address to a higher address.</li>
-  <li><strong>After</strong>: includes the base address (<code class="language-plaintext highlighter-rouge">Rn</code>) as the starting address.</li>
-</ul>
-
-<h4 id="address-computation">Address Computation</h4>
-<ul>
-  <li>start address = <code class="language-plaintext highlighter-rouge">Rn</code></li>
-  <li>end adderss = <code class="language-plaintext highlighter-rouge">Rn + (count of registers × 4) − 4</code></li>
-  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn + (count of registers × 4)</code></li>
-</ul>
-
-<p>For example, if the register list contains 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1008  : end address
-0x1004
-0x1000  : start address
-
-Rn = 0x100C
-</code></pre></div></div>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ia-addr-mode-in-memory.png" alt="Memory layout of IA addressing mode" style="display: block; margin: auto;" /> 
-    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    Figure 1. In IA mode, the memory block starts at the base register and progresses upward through consecutive words.
-    </figcaption>
-</figure>
-
-<h2 id="ib-increment-before">IB (Increment Before)</h2>
-<ul>
-  <li><strong>Increment</strong>: moves from a lower address to a higher address.</li>
-  <li><strong>Before</strong>: starts from the address immediately after <code class="language-plaintext highlighter-rouge">Rn</code>.</li>
-</ul>
-
-<h4 id="address-computation-1">Address Computation</h4>
-<ul>
-  <li>start address = <code class="language-plaintext highlighter-rouge">Rn + 4</code></li>
-  <li>end address = <code class="language-plaintext highlighter-rouge">Rn + (count of registers × 4)</code></li>
-  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn + (count of registers × 4)</code></li>
-</ul>
-
-<p>For example, if there are 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x100C  : end address
-0x1008
-0x1004  : start address
-0x1000
-
-Rn = 0x100C
-</code></pre></div></div>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/ib-addr-mode-in-memory.png" alt="Memory layout of IB addressing mode" style="display: block; margin: auto;" />
-    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"> 
-    Figure 2. In IB mode, the memory block starts just after the base address and moves upward through memory.
-    </figcaption>
-</figure>
-
-<h2 id="da-decrement-after">DA (Decrement After)</h2>
-<ul>
-  <li><strong>Decrement</strong>: moves from a higher address to a lower address.</li>
-  <li><strong>After</strong>: includes the base address (<code class="language-plaintext highlighter-rouge">Rn</code>) as the top of the block.</li>
-</ul>
-
-<h4 id="address-computation-2">Address Computation</h4>
-<ul>
-  <li>start address = <code class="language-plaintext highlighter-rouge">Rn − (count of registers × 4) + 4</code></li>
-  <li>end address = <code class="language-plaintext highlighter-rouge">Rn</code></li>
-  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn − (count of registers × 4)</code></li>
-</ul>
-
-<p>For example, if there are 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1000  : end address
-0x0FFC
-0x0FF8  : start address
-0x0FF4
-0x0FF0
-
-Rn = 0x0FF4
-</code></pre></div></div>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/da-addr-mode-in-memory.png" alt="Memory layout of DA addressing mode" style="display: block; margin: auto;" />
-    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    Figure 3. In DA mode, the memory block includes the base address at the top and moves downward through consecutive words.
-    </figcaption>
-</figure>
-
-<h2 id="db-decrement-before">DB (Decrement Before)</h2>
-<ul>
-  <li><strong>Decrement</strong>: moves from a higher address to a lower address.</li>
-  <li><strong>Before</strong>: starts below the base address (<code class="language-plaintext highlighter-rouge">Rn</code>).</li>
-</ul>
-
-<h4 id="address-computation-3">Address Computation</h4>
-<ul>
-  <li>start addreess = <code class="language-plaintext highlighter-rouge">Rn − (count of registers × 4)</code></li>
-  <li>end address = <code class="language-plaintext highlighter-rouge">Rn − 4</code></li>
-  <li>After execution, <code class="language-plaintext highlighter-rouge">Rn = Rn − (count of registers × 4)</code></li>
-</ul>
-
-<p>For example, if there are 3 registers and <code class="language-plaintext highlighter-rouge">Rn = 0x1000</code>, it works as follows.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x1000
-0x0FFC  : end address
-0x0FF8
-0x0FF4  : start address
-
-Rn = 0x0FF4
-</code></pre></div></div>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/db-addr-mode-in-memory.png" alt="Memory layout of DB addressing mode" style="display: block; margin: auto;" />
-    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    Figure 4. In DB mode, the memory block starts below the base address and is often used for descending stack-like layouts.
-    </figcaption>
-</figure>
-
-<h2 id="how-addressing-modes-are-written-in-actual-arm-syntax">How Addressing Modes Are Written in Actual ARM Syntax</h2>
-<p>It’s important to understand addressing modes conceptually, but in actual ARM assembly, addressing modes are applied as suffixes attached to the instruction.</p>
-
-<p>For example, IA, IB, DA, and DB are written like this:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">ldmia</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
-  <span class="nb">ldmdb</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
-  <span class="nb">stmia</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
-  <span class="nb">stmdb</span> <span class="nv">r0</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
-</code></pre></div></div>
-<ul>
-  <li>The two-letter mode (IA/IB/DA/DB) comes immediately after LDM/STM.</li>
-</ul>
-
-<p>In other words, there is no space or dot — the instruction literally becomes LDMIA, LDMDB, etc.</p>
-
-<blockquote>
-  <p>The <code class="language-plaintext highlighter-rouge">!</code> for write-back is separate from the addressing mode
-In this example:</p>
-  <div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldmia</span> <span class="nb">r0</span><span class="err">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
-</code></pre></div>  </div>
-  <ul>
-    <li><strong>IA</strong> is the addressing mode (how memory is accessed),</li>
-    <li><strong>!</strong> means the base register(<code class="language-plaintext highlighter-rouge">R0</code>) is automatically updated.</li>
-  </ul>
-</blockquote>
-
-<h2 id="stm-and-ldm-with-the-same-addressing-mode">STM and LDM with the Same Addressing Mode</h2>
-<p>Now let’s see how data moves between memory and registers when <code class="language-plaintext highlighter-rouge">STM</code> and <code class="language-plaintext highlighter-rouge">LDM</code> use the same addressing mode.</p>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
-  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
-  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
-
-  <span class="nb">stmia</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
-
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
-  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
-  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mi">0</span>
-
-  <span class="nb">ldmia</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
-</code></pre></div></div>
-
-<p>In this case, since both <code class="language-plaintext highlighter-rouge">STMIA</code> and <code class="language-plaintext highlighter-rouge">LDMIA</code> use the same addressing mode,
-they store data into a memory block and then read back from the exact same addresses.</p>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/memory-access-with-same-address-mode.png" alt="STM and LDM memory access with same addressing mode" style="display: block; margin: auto;" />
-    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    Figure 5. When using the same addressing mode, STM and LDM access the same memory region for both storing and loading.
-    </figcaption>
-</figure>
-
-<p>However, stack memory does not operate this way.
-In a stack, PUSH and POP proceed <strong>in opposite directions</strong>, so you <em>cannot</em> simply use the same addressing mode.</p>
-
-<h2 id="stack-specific-addressing-modes-fd-fa-ed-ea">Stack-Specific Addressing Modes: FD, FA, ED, EA</h2>
-<p>ARM introduces stack-specific names—FD, FA, ED, EA—for handling stack operations.
-These are not new behaviors, but aliases of IA/IB/DA/DB, renamed from a stack perspective.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Stack Mode</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>FD</td>
-      <td>Full Descending</td>
-    </tr>
-    <tr>
-      <td>FA</td>
-      <td>Full Ascending</td>
-    </tr>
-    <tr>
-      <td>ED</td>
-      <td>Empty Descending</td>
-    </tr>
-    <tr>
-      <td>EA</td>
-      <td>Empty Ascending</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><strong>Full / Empty</strong> indicate whether the stack pointer (<code class="language-plaintext highlighter-rouge">SP</code>) points to a full location (last stored data) or an empty slot after PUSH/POP. <br />
-<strong>Ascending / Descending</strong> describe whether the stack grows toward higher addresses (Ascending) or toward lower addresses (Descending) when pushing.</p>
-
-<h3 id="example-push-on-an-fd-stack">Example: PUSH on an FD Stack</h3>
-<p>The most common stack structure in ARM is the Full Descending (FD) stack.
-PUSH on an FD stack can be implemented as follows.</p>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">sp</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x8000</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
-  <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x2</span>
-  <span class="nb">mov</span> <span class="nv">r3</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
-
-  <span class="nb">stmdb</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
-  <span class="err">@</span> <span class="nv">R1</span> <span class="o">-&gt;</span> <span class="o">[</span><span class="mh">0x7FF4</span><span class="o">],</span> <span class="nv">R2</span> <span class="o">-&gt;</span> <span class="o">[</span><span class="mh">0x7FF8</span><span class="o">],</span> <span class="nv">R3</span> <span class="o">-&gt;</span> <span class="o">[</span><span class="mh">0x7FFC</span><span class="o">]</span>
-  <span class="err">@</span> <span class="nv">sp</span> <span class="o">=</span> <span class="mh">0x7FF4</span>
-</code></pre></div></div>
-
-<p>Here, <code class="language-plaintext highlighter-rouge">stmdb sp!, {r1-r3}</code> behaves the same as <code class="language-plaintext highlighter-rouge">stmfd sp!, {r1-r3}</code> in terms of stack mode naming.
-The <code class="language-plaintext highlighter-rouge">SP</code> moves from <code class="language-plaintext highlighter-rouge">0x8000</code> to 0<code class="language-plaintext highlighter-rouge">x7FF4</code>.
-The actual memory locations used are as follows.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Address</th>
-      <th>Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">0x7FF4</code></td>
-      <td><code class="language-plaintext highlighter-rouge">0x1</code>(<code class="language-plaintext highlighter-rouge">R1</code>)</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">0x7FF8</code></td>
-      <td><code class="language-plaintext highlighter-rouge">0x2</code>(<code class="language-plaintext highlighter-rouge">R2</code>)</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">0x7FFC</code></td>
-      <td><code class="language-plaintext highlighter-rouge">0x3</code>(<code class="language-plaintext highlighter-rouge">R3</code>)</td>
-    </tr>
-  </tbody>
-</table>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/push-address-mode-in-fd-stack.png" alt="PUSH memory layout with STMDB in an FD stack" style="display: block; margin: auto;" />
-    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    Figure 6. In an FD stack, STMDB (STMFD) moves the SP downward, storing new data at lower addresses.
-    </figcaption>
-</figure>
-
-<h3 id="example-pop-on-an-fd-stack">Example: POP on an FD Stack</h3>
-<p>Now let’s see how to restore values from an FD stack using POP.</p>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">@</span> <span class="nv">Assume</span> <span class="nv">STMDB</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span> <span class="nv">has</span> <span class="nv">already</span> <span class="nv">been</span> <span class="nv">executed</span><span class="mf">.</span>
-
-  <span class="nb">ldmia</span> <span class="nv">sp</span><span class="o">!,</span> <span class="o">{</span><span class="nv">r1</span><span class="o">-</span><span class="nv">r3</span><span class="o">}</span>
-</code></pre></div></div>
-
-<p>On an FD stack, POP is implemented as <code class="language-plaintext highlighter-rouge">ldmia sp!</code> in general addressing mode terms, or <code class="language-plaintext highlighter-rouge">ldmfd sp!</code> in stack mode naming.
-The load order is as follows.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Address</th>
-      <th>Register</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">0x7FF4</code></td>
-      <td><code class="language-plaintext highlighter-rouge">R1</code></td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">0x7FF8</code></td>
-      <td><code class="language-plaintext highlighter-rouge">R2</code></td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">0x7FFC</code></td>
-      <td><code class="language-plaintext highlighter-rouge">R3</code></td>
-    </tr>
-  </tbody>
-</table>
-
-<p>After the POP, the <code class="language-plaintext highlighter-rouge">SP</code> returns to <code class="language-plaintext highlighter-rouge">0x8000</code>.</p>
-
-<figure style="text-align: center;">
-  <img src="/assets/img/pop-address-mode-in-fd-stack.png" alt="POP memory layout with LDMIA in an FD stack" style="display: block; margin: auto;" />
-    <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-    Figure 7. In an FD stack, LDMIA (LDMFD) loads values from the lowest address upward and moves the SP back upward.
-    </figcaption>
-</figure>
-
-<p>Thus, in an FD stack, using <code class="language-plaintext highlighter-rouge">STMDB</code> for PUSH and <code class="language-plaintext highlighter-rouge">LDMIA</code> for POP ensures that both operations work correctly on the same stack memory block.</p>
-
-<h2 id="comparison-normal-address-modes-vs-stack-address-modes">Comparison: Normal Address Modes vs Stack Address Modes</h2>
-<p>As we have seen, stack address modes are essentially aliases attached to IA/IB/DA/DB.</p>
-
-<h3 id="for-stm-push">For STM (PUSH)</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>Non-stack Address Mode</th>
-      <th>Stack Address Mode</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>IA</td>
-      <td>EA</td>
-    </tr>
-    <tr>
-      <td>IB</td>
-      <td>FA</td>
-    </tr>
-    <tr>
-      <td>DA</td>
-      <td>ED</td>
-    </tr>
-    <tr>
-      <td>DB</td>
-      <td>FD</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="for-ldm-pop">For LDM (POP)</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>Non-stack Address Mode</th>
-      <th>Stack Address Mode</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>IA</td>
-      <td>FD</td>
-    </tr>
-    <tr>
-      <td>IB</td>
-      <td>ED</td>
-    </tr>
-    <tr>
-      <td>DA</td>
-      <td>FA</td>
-    </tr>
-    <tr>
-      <td>DB</td>
-      <td>EA</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>In real ARM code, you will often see stack modes like <code class="language-plaintext highlighter-rouge">STMFD</code>, <code class="language-plaintext highlighter-rouge">LDMFD</code>,
-but it is also common to use general addressing modes directly, such as <code class="language-plaintext highlighter-rouge">STMDB sp!</code> and <code class="language-plaintext highlighter-rouge">LDMIA sp!</code>.</p>
-
-<p>Whichever syntax you choose, the behavior is the same, so at the tutorial stage it is more important to become comfortable with the general addressing modes.</p>
-
-<h2 id="summary">Summary</h2>
-<p>In this post, we explored what addressing modes in <code class="language-plaintext highlighter-rouge">LDM</code> and <code class="language-plaintext highlighter-rouge">STM</code> mean and how they are related to stack PUSH and POP operations.</p>
-
-<p>Addressing modes are not just syntactic options; they are tools for precisely controlling the direction and range of memory access.
-Once you understand them, you can use <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> far more flexibly, not only for stacks but also for various memory block operations.</p>
-
-<p>In the next post, we will look at the branch instruction <code class="language-plaintext highlighter-rouge">B</code>, which controls the flow of execution.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm ldm" /><category term="arm stm" /><category term="addressing modes" /><category term="stack memory" /><summary type="html"><![CDATA[In this post, we will explore how the various addressing modes of LDM and STM are used for PUSH and POP operations on stack memory. In the previous post, we only covered how to use LDM/STM to read and write multiple words at once. In this post, we will build on that by connecting addressing modes with the stack structure.]]></summary></entry></feed>
+BL automatically stores the return address in the Link Register (<code class="language-plaintext highlighter-rouge">LR</code>), making it essential for implementing function calls.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm b" /><category term="arm branch instruction" /><summary type="html"><![CDATA[In this post, we will explore how the B instruction is used for branching, along with practical examples. The B instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.]]></summary></entry></feed>

@@ -3,7 +3,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기 | Hacking the System, One Bit at a Time</title>
+<title>ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기 | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
 <meta property="og:title" content="ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기" />
 <meta name="author" content="차서준 (Cha Seojun)" />
@@ -12,7 +12,7 @@
 <meta property="og:description" content="ARM 어셈블리에서 메모리에 접근할 때, 단순히 [R1] 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 배열이나 버퍼처럼 연속된 데이터를 다룰 때, 매번 ADD 명령으로 주소를 갱신하는 것은 비효율적이기 때문입니다. 이 문제를 해결하기 위해 ARM은 pre-index와 post-index라는 자동 주소 계산 기능을 제공합니다. 이 글에서는 두 방식의 차이와 동작 원리를 이해하기 쉽게 설명하고, 마지막에는 실제 예제 코드와 함께 CPU 내부에서 주소가 어떻게 계산되는지도 알아보겠습니다." />
 <link rel="canonical" href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html" />
 <meta property="og:url" content="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html" />
-<meta property="og:site_name" content="Hacking the System, One Bit at a Time" />
+<meta property="og:site_name" content="Seojun’s Personal Site" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-11-05T13:35:00+00:00" />
 <meta name="twitter:card" content="summary" />
@@ -24,7 +24,7 @@
     id="main-stylesheet"
     rel="stylesheet"
     href="/assets/css/style.css"
-  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Hacking the System, One Bit at a Time" />
+  /><link type="application/atom+xml" rel="alternate" href="https://seojuncha.github.io/feed.xml" title="Seojun&apos;s Personal Site" />
 <!-- Google Fonts: Roboto, Noto Sans KR, Fira Code -->
   <link
     href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+KR&family=Roboto:wght@400;500;700&display=swap"
@@ -61,7 +61,7 @@
 <body><header class="site-header">
   <div class="wrapper">
     <a class="site-title" rel="author" href="/"
-      >Hacking the System, One Bit at a Time</a
+      >Seojun&#39;s Personal Site</a
     >
     <nav class="site-nav">
       <input type="checkbox" id="nav-trigger" />
@@ -258,17 +258,7 @@ post-index는 “현재 주소를 먼저 사용해야 할 때” 적합합니다
 post-index는 현재 데이터를 읽고 다음으로 넘어갈 때 유용합니다.</p>
 
 <p>다음 포스팅에서는 이 개념을 확장하여, 스택(Stack) 구조와 <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> 명령어를 통해 한 번에 여러 값을 푸시/팝하는 방법을 살펴보겠습니다.</p>
-</div><!-- _includes/utterances.html -->
-<script
-  src="https://utteranc.es/client.js"
-  repo="seojuncha/seojuncha.github.io"
-  issue-term="pathname"
-  label="blog-comment"
-  theme="github-dark"
-  crossorigin="anonymous"
-  async
-></script>
-<a class="u-url" href="/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html" hidden></a>
+</div><a class="u-url" href="/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html" hidden></a>
 </article>
 
       </div>
@@ -287,17 +277,13 @@ post-index는 현재 데이터를 읽고 다음으로 넘어갈 때 유용합니
         </ul>
       </div>
       <div class="footer-col">
-        <p>Cha Seojun&#39;s journey into the heart of computers—from transistor to terminal. Writing compilers, emulating hardware, and uncovering how machines truly work. A blog for hackers, builders, and curious minds.</p>
+        <p></p>
       </div>
     </div>
 
     <div class="social-links"><ul class="social-media-list"><li>
     <a rel="me" href="https://github.com/seojuncha" target="_blank" title="Github Repository">
       <span class="grey fa-brands fa-github fa-lg"></span>
-    </a>
-  </li><li>
-    <a rel="me" href="https://x.com/seojun_codes" target="_blank" title="Twitter">
-      <span class="grey fa-brands fa-x-twitter fa-lg"></span>
     </a>
   </li>
   <li>
