@@ -18,15 +18,15 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Hacking the System, One Bit at a Time
+title: Seojun's Personal Site
 author:
   name: 차서준 (Cha Seojun)
   email: sjcha36@gmail.com
 
-description: >- # this means to ignore newlines until "baseurl:"
-  Cha Seojun's journey into the heart of computers—from transistor to terminal.
-  Writing compilers, emulating hardware, and uncovering how machines truly work.
-  A blog for hackers, builders, and curious minds.
+# description: >- # this means to ignore newlines until "baseurl:"
+#   Cha Seojun's journey into the heart of computers—from transistor to terminal.
+#   Writing compilers, emulating hardware, and uncovering how machines truly work.
+#   A blog for hackers, builders, and curious minds.
 
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://seojuncha.github.io" # the base hostname & protocol for your site, e.g. http://example.com
@@ -50,7 +50,7 @@ defaults:
       path: ""
       type: "posts"
     values:
-      comments: true
+      comments: false
 
 highlighter: rouge
 markdown: kramdown
@@ -66,7 +66,7 @@ sass:
   silence_deprecations: [import]
 
 minima:
-  skin: dark
+  skin: classic
   nav_pages:
     - about.md
   # show_excerpts: true
@@ -74,6 +74,6 @@ minima:
     - title: Github Repository
       icon: github
       url: "https://github.com/seojuncha"
-    - title: Twitter
-      icon: x-twitter
-      url: "https://x.com/seojun_codes"
+    # - title: Twitter
+    #   icon: x-twitter
+    #   url: "https://x.com/seojun_codes"

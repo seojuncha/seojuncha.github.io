@@ -45,34 +45,6 @@ This blog is my personal lab notebook. It's where I:
 
 ---
 
-<h2 id="services"> ​ Services </h2>
-
-I offer freelance development and consulting in the following areas:
-
--  **Low-Level & Embedded Programming** — ARM assembly, memory-mapped I/O, embedded C
-- **System Internals & Analysis** — Linux kernel, syscall tracing, ELF reverse engineering
-- **Compiler & Toolchain Engineering** — parsing, code generation, optimization
--  **Reverse Engineering & Refactoring** — legacy code analysis, modernization, debugging support
-
-> Although all my technical content is written in English for global reach and sharing,
-> **my freelance services are currently limited to Korean-speaking clients only**.
-> This is to ensure clear and effective communication for project success.
-
-Interested in working together? Please fill out the following form so I can understand your needs:
-
-**[Request a Service](https://docs.google.com/forms/d/e/1FAIpQLSfl_QFtoOdxvNmO3InvkFkAigUcM03InjUet-bF_EJZb0HCgQ/viewform?usp=header)**
-
-I will review your submission and get back to you promptly.
-
----
-
-## Vision
-
-I’m building toward becoming a world-class independent hacker and technical creator —  
-someone like George Hotz, but in my own way, in Korean and global hacker culture.
-
----
-
 ## Contact
 
 - GitHub: [seojuncha](https://github.com/seojuncha)  
