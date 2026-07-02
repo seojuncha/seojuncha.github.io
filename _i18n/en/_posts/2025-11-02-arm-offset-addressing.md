@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-offset-addressing"
-title: "ARM Assembly #8 - Calculating Memory Addresses with Offsets"
+title: "[ARM32] Calculating Memory Addresses with Offsets"
 date: 2025-11-02 13:40:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ldr", "str", "offset", "addressing"]
@@ -16,14 +16,14 @@ In assembly, a simple instruction like `ldr r0, [r1]` always accesses the same m
 But when working with arrays or structures **stored in contiguous memory**, we’d have to use extra `add` instructions each time to move to the next element.
 
 For example:
-```armasm
+```
 ldr r0, [r1]       @ Read first data
 add r1, r1, #4     @ Move to next element
 ldr r2, [r1]       @ Read second data
 ```
 That works, but it’s repetitive and inefficient.
 Instead, ARM lets us **combine address calculation and memory access**:
-```armasm
+```
 ldr r0, [r1, #4]   @ Reads directly from r1 + 4
 ```
 This reduces instruction count and CPU cycles, improving performance.
@@ -38,6 +38,7 @@ This reduces instruction count and CPU cycles, improving performance.
 ## How Offset Address Calculation Works
 An offset represents the distance from a base register address.
 ARM calculates the final memory address by adding or subtracting this offset from the base:
+
 ```
 Address = Base Register + Offset
 ```
@@ -47,7 +48,7 @@ Offsets can be:
 - Register – the value of another register
 
 Example:
-```armasm
+```
 ldr r0, [r1, #8]    @ address = r1 + 8
 ldr r0, [r1, r2]    @ address = r1 + r2
 ```
@@ -69,7 +70,7 @@ ARM provides three main ways to express an offset:
 ```
 Example:
 
-```armasm
+```
 ldr r0, [r1, #12]     @ Load data from (r1 + 12)
 ```
 
@@ -78,7 +79,7 @@ ldr r0, [r1, #12]     @ Load data from (r1 + 12)
 [Rn, Rm]
 ```
 Example:
-```armasm
+```
 ldr r0, [r1, r2]      @ Load data from (r1 + r2)
 ```
 
@@ -88,7 +89,7 @@ ldr r0, [r1, r2]      @ Load data from (r1 + r2)
 ```
 
 Example:
-```armasm
+```
 ldr r0, [r1, r2, lsl #2]  @ address = r1 + (r2 << 2)
 ```
 
@@ -97,7 +98,7 @@ Since each int element is 4 bytes, this perfectly aligns with array indexing.
 
 ## Example Code
 Here’s how offset-based address calculation works in assembly:
-```armasm
+```
 ldr r1, =0x1000            @ Base address (start of the array)
 ldr r2, =3                 @ Index i = 3
 ldr r0, [r1, r2, lsl #2]   @ address = 0x1000 + (3 << 2) = 0x100C
@@ -123,13 +124,13 @@ int x = arr[2];
 ```
 
 The compiler might generate:
-```armasm
+```
 ldr r1, =arr                 @ r1 = &arr[0]
 ldr r0, [r1, #8]             @ arr[2] → base + (2 * 4) = +8
 ```
 
 If the index is stored in a variable:
-```armasm
+```
 ldr r1, =arr
 mov r2, r0                   @ r2 = i
 ldr r0, [r1, r2, lsl #2]     @ arr[i] = *(base + i*4)

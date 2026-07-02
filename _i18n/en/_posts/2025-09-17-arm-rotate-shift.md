@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-rotate-shift"
-title: "ARM Assembly #4 - How to Rotate Bits with ROR and RRX"
+title: "[ARM32] How to Rotate Bits with ROR and RRX"
 date: 2025-09-17 22:40:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ror", "rrx", "arm", "assembly", "rotate shift"]
@@ -30,7 +30,7 @@ The `ror` instruction shifts all bits to the right, and the bits shifted out fro
 In other words, it's a **bit-preserving, circular move**.
 
 **ror.s**
-```armasm
+```text
   .text
   .global _start
 _start:
@@ -53,7 +53,7 @@ After:    0b0110_0000_0000_0000_0000_0000_0000_1001 = 0x60000009
 - The current Carry flag value is shifted into the **MSB**
 
 **rrx.s**
-```armasm
+```text
   .text
   .global _start
 _start:
@@ -102,23 +102,20 @@ r2             0x8000001a       -2147483622
 {% endhighlight %}
 
 ## Why is there no Rotate Left (ROL)?
-ARM does not include a ROL instruction. Why?
-Because you can easily **simulate rotate-left** using a combination of `lsl` and `ror`.
+ARMv4T provides ROR (rotate right) but not ROL (rotate left), for two reasons.
 
-### Simulated ROL using LSL and ROR
-```armasm
-  @ ROL r1, r0, #n
-  lsl r2, r0, #n           @ Logical sfhit left
-  ror r3, r0, #(32 - n)    @ Rotate right the remaining bits
-  orr r1, r2, r3           @ Combine both halves
+First, in a 32-bit rotation, rotating left and rotating right are equivalent.
+Rotating left by `n` bits produces exactly the same result as rotating right by `32 - n` bits.
+A single ROR can therefore express left rotation as well, leaving no reason for a separate ROL.
+
+Second, ARM does not treat shifts as standalone instructions.
+They are folded into the second operand of data-processing instructions via the barrel shifter,
+and the field that selects the shift type is only 2 bits wide—enough for just four options (LSL, LSR, ASR, ROR).
+The left direction is already taken by LSL, and since rotation is direction-agnostic, ROR alone is chosen to keep the limited encoding space orthogonal.
+
+```text
+ror r0, r0, #27   @ equivalent to rotating left by 5 (32 - 5 = 27)
 ```
-
-For example, if `r0 = 0x80000001` and `n=1`:
-- LSL → `0x00000002`
-- ROR(31) → `0x40000000`
-- ORR → `0x40000002` (Valid rotate-left result)
-
-> `orr` performs bitwise OR between the two shifted values.
 
 ## Summary
 In this post, we’ve covered ARM’s rotate shift instructions:

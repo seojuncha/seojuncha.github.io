@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: arm-logical-shift
-title: "ARM Assembly #2 - Understanding Logical Shifts (LSL, LSR)"
+title: "[ARM32] Understanding Logical Shifts (LSL, LSR)"
 date: 2025-09-10 00:13:00 +0900
 categories: [arm,assembly,tutorial]
 tags: [Assembly, Embedded, low-level programming, ARM, QEMU, GDB]
@@ -58,7 +58,7 @@ The amount of shift can be specified either by an immediate value or by a regist
 ### Example Code: Logical Shift in Action
 
 **logical-shift.s**
-{% highlight armasm mark_lines="5 6" %}
+```text
   .text
   .global _start
 _start:
@@ -66,11 +66,11 @@ _start:
   mov r1, r0, lsl r0
   mov r2, r1, lsr #1
   b .
-{% endhighlight %}
+```
 
 - `mov r0, #3` stores 3 in `R0`
--	`mov r1, r0, lsl r0` shifts `R0` left by 3 bits and stores in `R1`
--	`mov r2, r1, lsr #1` shifts `R1` right by 1 bit and stores in `R2`
+- `mov r1, r0, lsl r0` shifts `R0` left by 3 bits and stores in `R1`
+- `mov r2, r1, lsr #1` shifts `R1` right by 1 bit and stores in `R2`
 
 > For an introduction to the `mov` instruction, please refer to [the previous post]({% post_url 2025-09-08-arm-mov-instruction %})
 
@@ -98,21 +98,21 @@ $ qemu-system-arm \
     -kernel logical-shift.elf
 ```
 #### 2. Connect with GDB
-```gdb
+```bash
 $ gdb-multiarch logical-shift.elf
 (gdb) target remote localhost:1234
 ```
 #### 3. Check instructions
-```gdb
+```bash
 (gdb) x/10i 0x10000
 ```
 #### 4. Check registers 
-```gdb
+```bash
 (gdb) info registers
 (gdb) i r r0 r1 r2
 ```
 #### 5. Step Through
-```gdb
+```bash
 (gdb) stepi
 ```
 After each step, check register values again to confirm the effect.
@@ -131,7 +131,7 @@ To update it, use the `s` suffix: `movs`, `adds`, `subs`, etc.
 
 ### Example Code: Checking the Carry Flag 
 **logical-right-shift-carry.s**
-{% highlight armasm mark_lines="5 6" %}
+```
   .text
   .global _start
 _start:
@@ -139,14 +139,14 @@ _start:
   mov r1, r0, lsr #1
   movs r2, r0, lsr #1
   b .
-{% endhighlight %}
+```
 
--	`mov` does **not** affect the Carry flag
--	`movs` updates the CPSR flags including Carry
+- `mov` does **not** affect the Carry flag
+- `movs` updates the CPSR flags including Carry
 
 To check the carry flag in GDB:
 
-```gdb
+```bash
 (gdb) target remote localhost:1234
 (gdb) info registers cpsr
 (gdb) p ($cpsr >> 29) & 1
@@ -163,7 +163,7 @@ Logical shift always fills in `0`s. This works well for **unsigned integers**,
 but can cause issues with **signed values** where the highest bit represents the sign.
 
 Example:
-```armasm
+```
   mov r0, #-4
   mov r1, r0, lsr #1
 ```

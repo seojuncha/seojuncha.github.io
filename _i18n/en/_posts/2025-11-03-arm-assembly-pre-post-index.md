@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-assembly-pre-post-index"
-title: "ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index"
+title: "[ARM32] Memory Access with Automatic Address Calculation using pre-index and post-index"
 date: 2025-11-05 22:35:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ldr", "str", "pre-index", "post-index", "addressing mode"]
@@ -50,7 +50,7 @@ The **pre-index** mode means that the CPU updates the base register ***before ac
 In the form `[Rn, #offset]!`, the CPU calculates `Rn + offset`, writes it back to `Rn`, and then uses that address to access memory.
 
 For example:
-```armasm
+```
 ldr r0, [r1, #4]!   @ add 4 to R1, then load from the new address
 ```
 
@@ -63,7 +63,7 @@ The **post-index** mode performs the memory access ***before updating the base r
 In `[Rn], #offset`, the CPU first accesses memory using `Rn`, then adds the offset afterward.
 
 For example:
-```armasm
+```
 ldr r0, [r1], #4    @ load from R1, then increment R1 by 4
 ```
 
@@ -75,7 +75,7 @@ Execution steps:
 Although both modes ultimately change Rn by adding the same offset,
 their behavior differs depending on when the update occurs.
 
-```armasm
+```
 ldr r0, [r1, #4]!   @ pre-index: update R1 before accessing memory
 ldr r0, [r1], #4    @ post-index: access memory first, then update R1
 ```
@@ -95,7 +95,7 @@ Here’s a minimal example comparing both modes.
 You can build and debug it using GCC, QEMU, and GDB as follows.
 
 **pre-post.s**
-```armasm
+```
   .text
   .global _start
 _start:

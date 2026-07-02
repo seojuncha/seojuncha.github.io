@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-ldr-str-basic"
-title: "ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR"
+title: "[ARM32] The Simplest Way to Access Memory with LDR and STR"
 date: 2025-10-31 20:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ldr", "str", "memory-access", "armv4"]
@@ -243,7 +243,7 @@ You can verify the results using **QEMU (versatilepb)** with `gdb-multiarch`.
 
 > For compiling, running on QEMU, and setting up GDB, refer to [this post]({% post_url 2025-09-08-arm-mov-instruction %}).
 
-```armasm
+```
   .text
   .global _start
 _start:
@@ -257,7 +257,7 @@ Here, the CPU interprets the value in `r1` (`0x1000`) as a memory address
 and stores the value of `r0` (`3`) into that memory location.
 
 Next, we can load the value back from memory:
-```armasm
+```
   .text
   .global _start
 _start:

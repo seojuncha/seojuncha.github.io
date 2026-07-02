@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: hello-arm-assembly
-title: "ARM Assembly #0 - Build Environment and First Code"
+title: "[ARM32] Build Environment and First Code"
 date: 2025-09-03 23:24:00 +0900
 categories: [arm,assembly,tutorial]
 tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
@@ -34,7 +34,7 @@ Later, I realized that knowing assembly helps with:
 Let's start with the simplest possible ARM assembly code.
 
 **only-main.s**
-```armasm
+```text
   .text
   .global _start
 _start:
@@ -53,9 +53,9 @@ I use **Debian Linux** for this tutorial.
 It will also work on **Ubuntu** and other Linux systems.
 
 We need **3 tools**:
--	**arm-none-eabi-gcc** (cross-compiler for ARM)
--	**qemu-system-arm** (virtual ARM board)
--	**gdb-multiarch** (debugger that supports ARM)
+- **arm-none-eabi-gcc** (cross-compiler for ARM)
+- **qemu-system-arm** (virtual ARM board)
+- **gdb-multiarch** (debugger that supports ARM)
 
 ### 1. Install ARM GCC
 Most desktop PCs are x86, not ARM.
@@ -107,19 +107,19 @@ Now, let’s compile our `.s` file to a binary (ELF format):
 
 ```bash
 $ arm-none-eabi-gcc \
-	-O0 \
-	-nostdlib \
-	-march=armv4 \
-	-Ttext=0x10000 \
-	only-main.s \
-	-o only-main.elf
+        -O0 \
+        -nostdlib \
+        -march=armv4 \
+        -Ttext=0x10000 \
+        only-main.s \
+        -o only-main.elf
 ```
 
 Options explained:
--	`-O0`: no optimization
--	`-nostdlib`: no standard C library
--	`-march=armv4`: target architecture
--	`-Ttext=0x10000`: start .text at address 0x10000
+- `-O0`: no optimization
+- `-nostdlib`: no standard C library
+- `-march=armv4`: target architecture
+- `-Ttext=0x10000`: start .text at address 0x10000
 
 Check the output:
 ```bash
@@ -131,7 +131,7 @@ only-main.elf: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), staticall
 Let’s understand the 4 lines of our code.
 
 ### .text → Code section
-```armasm
+```text
 .text
 ```
 This means ***“put the following instructions in the code section.”***
@@ -145,7 +145,7 @@ This is where the CPU fetches instructions.
 </figure>
 
 ### .global _start → Make the label visible
-```armasm
+```text
 .global _start
 ```
 This tells the linker:
@@ -154,14 +154,14 @@ This tells the linker:
 In C, we use `main()` — in assembly, we use `_start`.
 
 ### _start: → Label definition
-```armasm
+```text
 _start:
 ```
 This defines a **label**.
 It marks a location in the code so other instructions can jump to it.
 
 ### b . → Infinite loop
-```armasm
+```text
 b .
 ```
 `b` means ***branch*** (jump).  

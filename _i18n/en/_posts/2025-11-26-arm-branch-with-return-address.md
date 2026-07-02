@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-branch-with-return-address"
-title: "ARM Assembly #14 - Using the BL Instruction That Automatically Saves the Return Address" 
+title: "[ARM32] Using the BL Instruction That Automatically Saves the Return Address" 
 date: 2025-11-26 18:30:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm bl", "arm branch instruction", "link register", "arm lr"]
@@ -11,17 +11,6 @@ tags: ["arm bl", "arm branch instruction", "link register", "arm lr"]
 The `BL` instruction is an extended version of the `B` instruction described in the [previous post]({% post_url 2025-11-23-arm-basic-branch %}), adding function-call capability.
 While the `B` instruction simply jumps to a target label, the `BL` instruction **automatically stores the return address in the `LR`** (Register `R14`) so execution can return after the branch.
 For this reason, `BL` is a core mechanism for implementing function calls in ARM and forms the foundation for concepts like the stack, calling conventions, and frame pointers.
-
-<figure style="text-align: center;">
-  <a href="https://youtu.be/cMMjuVVKaS0" target="_blank">
-  <img src="/assets/img/ARM Assembly - bl instruction.png"
-    alt="Youtube Video to explain ARM BL instruction"
-    style="display: block; margin: auto;" /> 
-  </a>
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
-  </figcaption>
-</figure>
 
 [**GitHub Sample Code**](https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch-with-link.s)
 
@@ -63,7 +52,7 @@ When the subroutine finishes, execution must return using the value stored in `L
 > Starting from ARMv5, `bx lr` became the standard return instruction.
 
 ## Example Code
-```armasm
+```
   .text
   .global _start
 _start:

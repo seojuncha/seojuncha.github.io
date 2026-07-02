@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-cpsr-condition-flags"
-title: "ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags"
+title: "[ARM32] Conditional Execution Using CPSR and Condition Flags"
 date: 2025-11-27 20:20:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["condition flags", "arm cpsr"]
@@ -44,13 +44,13 @@ By appending a two-letter condition code (e.g., `EQ`, `NE`, `MI`), the instructi
 ```
 
 To execute an instruction only **when the previous result is negative**:
-```armasm
+```armsm
   movmi r0, r1
 ```
 `MI`(Minus) executes only when the `N` flag is `1`, meaning the previous result was negative.
 
 ## Example Code
-```armasm
+```text
   .text
   .global _start
 _start:

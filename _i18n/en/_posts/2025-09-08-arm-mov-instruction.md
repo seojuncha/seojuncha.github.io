@@ -2,15 +2,15 @@
 layout: post
 lang: en
 ref: "arm-mov-instruction"
-title: "ARM Assembly #1 - Storing Values in Registers (MOV)"
+title: "[ARM32] Storing Values in Registers (MOV)"
 date: 2025-09-08 22:24:00 +0900
 categories: [arm,assembly,tutorial]
 tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
 ---
-Computers are machines designed to perform *calculations*.  
+Computers are machines designed to perform **calculations**.  
 These calculations are ultimately performed by the **CPU**, and a typical operation requires two things:
-**operands** and an **operator**.  
-Operands are usually stored in **registers**, which are small, fast storage locations inside the CPU.
+***operands*** and an ***operator***.  
+Operands are usually stored in ***registers***, which are small, fast storage locations inside the CPU.
 
 Assembly language gives us direct access to CPU registers. In this post, we’ll explore how to store values in these registers using the fundamental `mov` instruction.
 
@@ -21,7 +21,7 @@ Assembly language gives us direct access to CPU registers. In this post, we’ll
 ### Storing Immediate Values
 
 **store-imm-to-reg.s**
-{% highlight armasm linenos mark_lines="4" %}
+{% highlight text mark_lines="4" %}
   .text
   .global _start
 _start:
@@ -29,7 +29,7 @@ _start:
   b .
 {% endhighlight %}
 
-`mov r0, #2`: stores the number 3 in register R0.
+`mov r0, #2`: stores the number `3` in register `R0`.
 
 The `mov` instruction follows a simple syntax:
 ```
@@ -82,7 +82,7 @@ $ gdb-multiarch store-imm-to-reg.elf
 </figure>
 
 Inside GDB, connect to QEMU’s GDB server:
-```gdb
+```bash
 (gdb) target retmote localhost:1234
 ```
 
@@ -101,7 +101,7 @@ x/{N}{format} {address}
 - `{address}`: memory address to inspect
 
 For example, to disassemble 10 instructions starting at address `0x10000`, use:
-```gdb
+```bash
 (gdb) x/10i 0x10000
 ```
 This helps you verify that the machine code was loaded properly and matches what you wrote in your assembly source file.
@@ -113,7 +113,7 @@ This helps you verify that the machine code was loaded properly and matches what
 
 To check the current register values:
 
-```gdb
+```bash
 (gdb) info registers   # or shorthand: i r 
 (gdb) i r pc r0        # check just PC and R0
 ```
@@ -126,11 +126,11 @@ At this point, PC (program counter) should be pointing at `0x10000`, which is ou
 
 #### Execute Step-by-Step
 To execute a single instruction:
-```gdb
+```bash
 (gdb) stepi   # or shorthand: si
 ```
 Then check the register values again:
-```gdb
+```bash
 (gdb) i r pc r0
 ```
 <figure style="text-align: center;">
@@ -140,10 +140,10 @@ Then check the register values again:
 
 
 You’ll see:
--	PC has moved from `0x10000` to `0x10004`
--	R0 now contains `2`
+- `PC` has moved from `0x10000` to `0x10004`
+- `R0` now contains `2`
 
-Run `stepi` one more time to execute `b .`, which creates an infinite loop by jumping to the current PC.
+Run `stepi` one more time to execute `b .`, which creates an infinite loop by jumping to the current `PC`.
 
 <figure style="text-align: center;">
   <img src="/assets/img/next-step-to-branch.png" alt="PC value remains the same after executing a self-branching instruction" style="display: block; margin: auto;" />
@@ -153,7 +153,7 @@ Run `stepi` one more time to execute `b .`, which creates an infinite loop by ju
 ### Copying Between Registers
 Let’s now copy a value from one register to another.
 
-{% highlight armasm linenos mark_lines="5" %}
+{% highlight text mark_lines="5" %}
   .text
   .global _start
 _start:
@@ -162,12 +162,12 @@ _start:
   b .
 {% endhighlight %}
 
-Here, `mov r1, r0` copies the value of R0 into R1.
+Here, `mov r1, r0` copies the value of `R0` into `R1`.
 
 > You can repeat the GDB steps from above to verify the register contents after each instruction.
 
 ## What’s the Difference Between mov and mvn?
-The `mvn` instruction is similar to `mov`, but it stores the bitwise NOT ([1’s complement](https://en.wikipedia.org/wiki/Ones%27_complement)) of the value.
+The `mvn` instruction is similar to `mov`, but it stores the *bitwise NOT* ([1’s complement](https://en.wikipedia.org/wiki/Ones%27_complement)) of the value.
 
 |mvn|mov|
 |:--|:--|

@@ -1,48 +1,6 @@
 // Placeholder to allow defining custom styles that override everything else.
 // (Use `_sass/minima/custom-variables.scss` to override variable defaults)
 
-.highlight {
-  pre {
-    margin: 0; // 줄 번호와 코드의 줄 간격을 맞춤
-    line-height: 1.4; // Rouge의 기본 라인 높이에 맞춤
-    font-family: "Fira Code", monospace;
-  }
-
-  table {
-    border-spacing: 0;
-  }
-
-  td {
-    padding: 0;
-    vertical-align: top;
-  }
-
-  .lineno {
-    color: #888;
-    padding-right: 1em;
-    user-select: none;
-    text-align: right;
-  }
-
-  .hll {
-    // background-color: #ffffcc; // 하이라이트된 줄 배경
-    display: block;
-    width: 100%;
-  }
-
-  .err {
-    background-color: transparent;
-    color: inherit;
-    border: none;
-  }
-}
-
-figure.highlight > pre {
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  max-height: none !important;
-}
-
 .lang-switch{display:flex;gap:.5rem;margin:.5rem 0 1rem;flex-wrap:wrap; justify-content: center;}
 .lang-pill{display:inline-block;padding:.2rem .6rem;border-radius:999px;font-size:.85rem;line-height:1.6;border:1px solid currentColor;text-decoration:none;opacity:.85}
 .lang-pill:hover{opacity:1}

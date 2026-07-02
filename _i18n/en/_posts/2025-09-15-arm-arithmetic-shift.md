@@ -2,7 +2,7 @@
 layout: post
 lang: en 
 ref: "arm-arithmetic-shift"
-title: "ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation"
+title: "[ARM32] Arithmetic Shift (ASR) and Sign Preservation"
 date: 2025-09-15 21:53:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: [Assembly, ASR, ARM, QEMU, GDB]
@@ -63,14 +63,14 @@ After (32-bit):
 ### ASR Instruction Example
 
 **asr.s**
-{% highlight armasm mark_lines="4 5" %}
+```text
   .text
   .global _start
 _start:
   mov r0, #-32         @ -32 = 0xffffffe0
   mov r1, r0, asr #1   @ R1 = 0xfffffff0 = -16
   b .
-{% endhighlight %}
+```
 
 `-32` is represented as `0xffffffe0` in hexadecimal.
 
@@ -86,14 +86,14 @@ There is no left arithmetic shift because **left shifting changes the MSB**, and
 In other words, it doesn't make sense to “preserve the sign” when you're introducing new bits into the sign position.
 
 **left-shift-for-negative.s**
-{% highlight armasm mark_lines="4 5" %}
+```text
   .text
   .global _start
 _start:
   mov r0, #0x40000000
   movs r1, r0, lsl #1
   b .
-{% endhighlight %}
+```
 
 Shifting `0x40000000` left by 1 gives `0x80000000`. Here’s the breakdown:
 

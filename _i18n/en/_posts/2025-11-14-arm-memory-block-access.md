@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-memory-block-access"
-title: "ARM Assembly #11 - Memory Block Access(LDM, STM)"
+title: "[ARM32] Memory Block Access(LDM, STM)"
 date: 2025-11-14 18:30:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["memory block", "arm ldm", "arm stm"]
@@ -132,7 +132,7 @@ Let’s look at three examples to see how register lists are used.
 ```
 Adding `!` after the base register `Rn` automatically updates its value to the next address after the operation.
 
-```armasm
+```
   mov r0, #0x8000
   mov r1, #0x1
   mov r2, #0x2

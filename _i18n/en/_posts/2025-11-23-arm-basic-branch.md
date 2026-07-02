@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-basic-branch"
-title: "ARM Assembly #13 - Branching Execution Flow with the B Instruction"
+title: "[ARM32] Branching Execution Flow with the B Instruction"
 date: 2025-11-23 10:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm b", "arm branch instruction"]
@@ -10,19 +10,7 @@ tags: ["arm b", "arm branch instruction"]
 In this post, we will explore how the `B` instruction is used for branching, along with practical examples.
 The `B` instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.
 
-
-<figure style="text-align: center;">
-  <a href="https://youtu.be/BZamp0G0viA" target="_blank">
-  <img src="/assets/img/ARM Assembly - Basic Branch Instruction.png"
-    alt="Youtube Video to explain ARM B instruction"
-    style="display: block; margin: auto;" /> 
-  </a>
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
-  </figcaption>
-</figure>
-
-- [Sample Code in GitHub](https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s)
+[Sample Code in GitHub](https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s)
 
 ## Why Do We Use the B Instruction?
 The `B` instruction simply moves the execution flow to another position.
@@ -52,7 +40,7 @@ Internally, this is equivalent to updating the PC with the label's address.
 ## Understanding Labels
 A label gives a name to a specific instruction address.
 
-```armasm
+```
   label:
     instructions
 ```
@@ -61,7 +49,7 @@ A colon (:) must be placed after the label name.
 The label’s address is the address of the first instruction below it.
 
 Example:
-```armasm
+```text
   foo:
     mov r0, #1   @ address = 0x10000
     mov r0, #2   @ address = 0x10004
@@ -69,7 +57,7 @@ Example:
 Here, the address of foo is `0x10000`.
 
 ## Example Code
-```armasm
+```text
   .text
   .global _start
 _start:

@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-stack-memory"
-title: "ARM Assembly #10 - Understanding Stack Memory in ARM"
+title: "[ARM32] Understanding Stack Memory in ARM"
 date: 2025-11-07 16:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm stack memory", "ldm", "stm"]
@@ -119,7 +119,7 @@ Because SP points to the most recent value in the FD model, we first read it, th
 #### Example and Debugging
 **stack-push-pop.s**
 
-```armasm
+```
   .text
   .global _start
 _start:
@@ -179,7 +179,7 @@ The stack plays a crucial role in managing function calls and local variables.
 
 However, when saving or restoring multiple registers, using only `LDR` and `STR` becomes inefficient, as shown below:
 
-```armasm
+```
   mov r1, #0x1
   mov r2, #0x2
   mov r3, #0x3

@@ -2,16 +2,16 @@
 layout: post
 lang: en
 ref: "arm-arithmetic-operations"
-title: "ARM Assembly #6 - Arithmetic Operations"
+title: "[ARM32] Arithmetic Operations"
 date: 2025-10-27 20:20:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["add", "sub", "adc", "sbc", "rsb", "rsc"]
 ---
 
-In this post, we’ll explore the **basic arithmetic operations** in ARM Assembly —  
+In this post, we’ll explore the **basic arithmetic operations** in ARM Assembly — 
 addition, subtraction, and their variants that include **carry (C flag)**.
 
-So far, we’ve learned how to move values into registers and how to shift them.  
+So far, we’ve learned how to move values into registers and how to shift them. 
 Now it’s time to perform actual **arithmetic operations** with those values.
 
 ## Addition and Subtraction in ARMv4
@@ -61,17 +61,17 @@ ARM assembly requires the **first operand (`<Rn>`) to be a register**,
 so the order **cannot be swapped**.
 
 **Valid**
-```armasm
+```
 add r0, r1, #2
 ```
 **Invalid**
-```armasm
+```
 add r0, #2, r1   @ The first operand must be a register.
 ```
 
 ### Example: ADD
 **add.s**
-{% highlight armasm mark_lines="5" %}
+{% highlight text mark_lines="5" %}
   .text
   .global _start:
 _start:
@@ -110,7 +110,7 @@ Methemetical form: C = A - B
 
 ### Example: SUB
 **sub.s**
-{% highlight armasm mark_lines="5" %}
+{% highlight text mark_lines="5" %}
   .text
   .global _start:
 _start:
@@ -142,7 +142,7 @@ RSB stands for *Reverse Subtract*.
 
 ### Example: RSB
 **rsb.s**
-{% highlight armasm mark_lines="6" %}
+{% highlight text mark_lines="6" %}
   .text
   .global _start:
 _start:
@@ -179,7 +179,7 @@ ARM provides separate instructions for these cases:
 
 ### Example: ADC (Add with Carry)
 **adc.s**
-```armasm
+```text
   .text
   .global _start
 _start:
@@ -206,7 +206,7 @@ Explanation:
   - `R2 = 4`
  
 #### GDB Debugging Output
-```
+```bash
 (gdb) x/5i 0x10000
 => 0x10000 <_start>:    mov     r0, #3
    0x10004 <_start+4>:  lsrs    r0, r0, #1

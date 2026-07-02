@@ -2,7 +2,7 @@
 layout: post
 lang: en
 ref: "arm-shifter-operand"
-title: "ARM Assembly #5 - A Complete Guide to Shifter Operands"
+title: "[ARM32] A Complete Guide to Shifter Operands"
 date: 2025-09-25 23:10:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["shifter-operand"]
@@ -84,7 +84,7 @@ Example:
 
 ### Valid and Invalid Syntax Examples
 
-```armasm
+```text
 mov r0, r1           @ Valid (<Rd> = r0, <Rm> = r1)
 mov r0, #0xff        @ Valid (<Rd> = r0, <Shifter Operand> = 0xff)
 mov r0, r0, lsl #2   @ Valid (<Rd> = r0, <Sfhiter Operand> = r0, lsl #2)
@@ -96,7 +96,7 @@ When using an immediate (#<immediate>) as a shifter operand, there’s an import
 You can’t represent all 32-bit values—even though ARM is a 32-bit architecture.
 
 Example:
-```armasm
+```text
   .text
   .global _start
 _start:
@@ -129,7 +129,7 @@ That means **you can only represent values that can be formed by rotating an 8-b
 > - Effective rotation = 2 * rotate_imm
 
 ### Example: Valid Immediate
-```armasm
+```text
 mov r0, #0x104
 ```
 - `0x104` = `0b0000_0000_0000_0000_0000_0001_0000_0100`
@@ -138,7 +138,7 @@ mov r0, #0x104
 - Therefore, `imm8=0x41`, `rotate_imm=15` → valid encoding
 
 ### Example: Invalid Immediate
-```armasm
+```text
 mov r0, #0x101
 ```
 - `0x101`=`0b0000_0000_0000_0000_0000_0001_0000_0001`
@@ -148,7 +148,7 @@ mov r0, #0x101
 Use a **literal pool**.
 
 **literal-pool.s**
-```armasm
+```text
   .text
   .global _start
 _start:
@@ -187,7 +187,7 @@ $ arm-none-eabi-gcc -fomit-frame-pointer -nostdlib -S invalid-imm.c
 ```
 
 Assembly output:
-```armasm
+```text
 main:
   sub sp, sp, #8
   ldr r3, .L3
