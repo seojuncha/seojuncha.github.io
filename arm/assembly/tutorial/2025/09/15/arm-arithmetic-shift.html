@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation | Seojun’s Personal Site</title>
+<title>[ARM32] Arithmetic Shift (ASR) and Sign Preservation | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation" />
+<meta property="og:title" content="[ARM32] Arithmetic Shift (ASR) and Sign Preservation" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-09-15T12:53:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation" />
+<meta property="twitter:title" content="[ARM32] Arithmetic Shift (ASR) and Sign Preservation" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-15T12:53:00+00:00","datePublished":"2025-09-15T12:53:00+00:00","description":"One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations.","headline":"ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-15T12:53:00+00:00","datePublished":"2025-09-15T12:53:00+00:00","description":"One of the key components of the CPU is the ALU — the Arithmetic Logic Unit. As the name suggests, it handles both logical and arithmetic operations.","headline":"[ARM32] Arithmetic Shift (ASR) and Sign Preservation","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/15/arm-arithmetic-shift.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM Assembly #3 - Arithmetic Shift (ASR) and Sign Preservation
+      [ARM32] Arithmetic Shift (ASR) and Sign Preservation
     </h1>
     <div class="post-meta">
       <time
@@ -174,13 +174,13 @@ After (32-bit):
 <h3 id="asr-instruction-example">ASR Instruction Example</h3>
 
 <p><strong>asr.s</strong></p>
-
-<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">32</span>         <span class="no">@</span> <span class="o">-</span><span class="mi">32</span> <span class="o">=</span> <span class="mh">0xffffffe0</span>
-</span><span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">asr</span> <span class="o">#</span><span class="mi">1</span>   <span class="no">@</span> <span class="nv">R1</span> <span class="o">=</span> <span class="mh">0xfffffff0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">16</span>
-</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #-32         @ -32 = 0xffffffe0
+  mov r1, r0, asr #1   @ R1 = 0xfffffff0 = -16
+  b .
+</code></pre></div></div>
 
 <p><code class="language-plaintext highlighter-rouge">-32</code> is represented as <code class="language-plaintext highlighter-rouge">0xffffffe0</code> in hexadecimal.</p>
 
@@ -195,13 +195,13 @@ After (32-bit):
 In other words, it doesn’t make sense to “preserve the sign” when you’re introducing new bits into the sign position.</p>
 
 <p><strong>left-shift-for-negative.s</strong></p>
-
-<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x40000000</span>
-</span><span class="hll">  <span class="nb">movs</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">1</span>
-</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #0x40000000
+  movs r1, r0, lsl #1
+  b .
+</code></pre></div></div>
 
 <p>Shifting <code class="language-plaintext highlighter-rouge">0x40000000</code> left by 1 gives <code class="language-plaintext highlighter-rouge">0x80000000</code>. Here’s the breakdown:</p>
 

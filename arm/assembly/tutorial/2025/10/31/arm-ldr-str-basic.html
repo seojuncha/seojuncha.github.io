@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR | Seojun’s Personal Site</title>
+<title>[ARM32] The Simplest Way to Access Memory with LDR and STR | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR" />
+<meta property="og:title" content="[ARM32] The Simplest Way to Access Memory with LDR and STR" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="This post is an introductory tutorial on memory access for beginners learning ARM assembly. Using the ARMv4 architecture as a reference, we’ll explore how the CPU uses the ldr (load) and str (store) instructions to read and write data to memory." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-10-31T11:00:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR" />
+<meta property="twitter:title" content="[ARM32] The Simplest Way to Access Memory with LDR and STR" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-10-31T11:00:00+00:00","datePublished":"2025-10-31T11:00:00+00:00","description":"This post is an introductory tutorial on memory access for beginners learning ARM assembly. Using the ARMv4 architecture as a reference, we’ll explore how the CPU uses the ldr (load) and str (store) instructions to read and write data to memory.","headline":"ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-10-31T11:00:00+00:00","datePublished":"2025-10-31T11:00:00+00:00","description":"This post is an introductory tutorial on memory access for beginners learning ARM assembly. Using the ARMv4 architecture as a reference, we’ll explore how the CPU uses the ldr (load) and str (store) instructions to read and write data to memory.","headline":"[ARM32] The Simplest Way to Access Memory with LDR and STR","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/31/arm-ldr-str-basic.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM Assembly #7 - The Simplest Way to Access Memory with LDR and STR
+      [ARM32] The Simplest Way to Access Memory with LDR and STR
     </h1>
     <div class="post-meta">
       <time
@@ -344,25 +344,25 @@ You can verify the results using <strong>QEMU (versatilepb)</strong> with <code 
   <p>For compiling, running on QEMU, and setting up GDB, refer to <a href="/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html">this post</a>.</p>
 </blockquote>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>       <span class="no">@</span> <span class="nv">store</span> <span class="nv">decimal</span> <span class="mi">3</span> <span class="nv">into</span> <span class="nv">r0</span>
-  <span class="nb">ldr</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">=</span><span class="mh">0x1000</span>    <span class="no">@</span> <span class="nv">store</span> <span class="nv">address</span> <span class="mh">0x1000</span> <span class="nv">into</span> <span class="nv">r1</span>
-  <span class="nb">str</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">]</span>       <span class="no">@</span> <span class="o">[</span><span class="mh">0x1000</span><span class="o">]</span> <span class="o">=</span> <span class="mi">3</span>
-  <span class="nb">b</span> <span class="mf">.</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #0x3       @ store decimal 3 into r0
+  ldr r1, =0x1000    @ store address 0x1000 into r1
+  str r0, [r1]       @ [0x1000] = 3
+  b .
 </code></pre></div></div>
 
 <p>Here, the CPU interprets the value in <code class="language-plaintext highlighter-rouge">r1</code> (<code class="language-plaintext highlighter-rouge">0x1000</code>) as a memory address
 and stores the value of <code class="language-plaintext highlighter-rouge">r0</code> (<code class="language-plaintext highlighter-rouge">3</code>) into that memory location.</p>
 
 <p>Next, we can load the value back from memory:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">ldr</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">=</span><span class="mh">0x1000</span>    <span class="no">@</span> <span class="nv">store</span> <span class="nv">address</span> <span class="mh">0x1000</span> <span class="nv">into</span> <span class="nv">r1</span>
-  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">]</span>       <span class="no">@</span> <span class="nv">load</span> <span class="nv">value</span> <span class="nv">from</span> <span class="o">[</span><span class="mh">0x1000</span><span class="o">]</span> <span class="nv">into</span> <span class="nv">r0</span>
-  <span class="nb">b</span> <span class="mf">.</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  ldr r1, =0x1000    @ store address 0x1000 into r1
+  ldr r0, [r1]       @ load value from [0x1000] into r0
+  b .
 </code></pre></div></div>
 
 <p>If memory address <code class="language-plaintext highlighter-rouge">0x1000</code> previously held <code class="language-plaintext highlighter-rouge">3</code>,

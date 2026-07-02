@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM Assembly #1 - Storing Values in Registers (MOV) | Seojun’s Personal Site</title>
+<title>[ARM32] Storing Values in Registers (MOV) | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM Assembly #1 - Storing Values in Registers (MOV)" />
+<meta property="og:title" content="[ARM32] Storing Values in Registers (MOV)" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="Computers are machines designed to perform calculations. These calculations are ultimately performed by the CPU, and a typical operation requires two things: operands and an operator. Operands are usually stored in registers, which are small, fast storage locations inside the CPU." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-09-08T13:24:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM Assembly #1 - Storing Values in Registers (MOV)" />
+<meta property="twitter:title" content="[ARM32] Storing Values in Registers (MOV)" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-08T13:24:00+00:00","datePublished":"2025-09-08T13:24:00+00:00","description":"Computers are machines designed to perform calculations. These calculations are ultimately performed by the CPU, and a typical operation requires two things: operands and an operator. Operands are usually stored in registers, which are small, fast storage locations inside the CPU.","headline":"ARM Assembly #1 - Storing Values in Registers (MOV)","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-08T13:24:00+00:00","datePublished":"2025-09-08T13:24:00+00:00","description":"Computers are machines designed to perform calculations. These calculations are ultimately performed by the CPU, and a typical operation requires two things: operands and an operator. Operands are usually stored in registers, which are small, fast storage locations inside the CPU.","headline":"[ARM32] Storing Values in Registers (MOV)","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/08/arm-mov-instruction.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM Assembly #1 - Storing Values in Registers (MOV)
+      [ARM32] Storing Values in Registers (MOV)
     </h1>
     <div class="post-meta">
       <time
@@ -105,10 +105,10 @@
     </nav>
   </header>
 
-  <div class="post-content e-content" itemprop="articleBody"><p>Computers are machines designed to perform <em>calculations</em>.<br />
+  <div class="post-content e-content" itemprop="articleBody"><p>Computers are machines designed to perform <strong>calculations</strong>.<br />
 These calculations are ultimately performed by the <strong>CPU</strong>, and a typical operation requires two things:
-<strong>operands</strong> and an <strong>operator</strong>.<br />
-Operands are usually stored in <strong>registers</strong>, which are small, fast storage locations inside the CPU.</p>
+<strong><em>operands</em></strong> and an <strong><em>operator</em></strong>.<br />
+Operands are usually stored in <strong><em>registers</em></strong>, which are small, fast storage locations inside the CPU.</p>
 
 <p>Assembly language gives us direct access to CPU registers. In this post, we’ll explore how to store values in these registers using the fundamental <code class="language-plaintext highlighter-rouge">mov</code> instruction.</p>
 
@@ -122,20 +122,13 @@ Operands are usually stored in <strong>registers</strong>, which are small, fast
 
 <p><strong>store-imm-to-reg.s</strong></p>
 
-<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-</pre></td><td class="code"><pre>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-<span class="hll">  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
-</span>  <span class="nb">b</span> <span class="mf">.</span>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  .text
+  .global _start
+_start:
+<span class="hll">  mov r0, #2
+</span>  b .</code></pre></figure>
 
-</pre></td></tr></tbody></table></code></pre></figure>
-
-<p><code class="language-plaintext highlighter-rouge">mov r0, #2</code>: stores the number 3 in register R0.</p>
+<p><code class="language-plaintext highlighter-rouge">mov r0, #2</code>: stores the number <code class="language-plaintext highlighter-rouge">3</code> in register <code class="language-plaintext highlighter-rouge">R0</code>.</p>
 
 <p>The <code class="language-plaintext highlighter-rouge">mov</code> instruction follows a simple syntax:</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mov destination_register, value
@@ -211,8 +204,8 @@ You can also use hexadecimal notation: e.g., <code class="language-plaintext hig
 </figure>
 
 <p>Inside GDB, connect to QEMU’s GDB server:</p>
-<pre><code class="language-gdb">(gdb) target retmote localhost:1234
-</code></pre>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> target retmote localhost:1234
+</code></pre></div></div>
 
 <figure style="text-align: center;">
   <img src="/assets/img/connect-gdb-server.png" alt="Connecting GDB to QEMU's GDB server on port 1234" style="display: block; margin: auto;" />
@@ -230,8 +223,8 @@ To check the contents at a specific memory address, GDB uses the following comma
 </ul>
 
 <p>For example, to disassemble 10 instructions starting at address <code class="language-plaintext highlighter-rouge">0x10000</code>, use:</p>
-<pre><code class="language-gdb">(gdb) x/10i 0x10000
-</code></pre>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> x/10i 0x10000
+</code></pre></div></div>
 <p>This helps you verify that the machine code was loaded properly and matches what you wrote in your assembly source file.</p>
 
 <figure style="text-align: center;">
@@ -241,9 +234,9 @@ To check the contents at a specific memory address, GDB uses the following comma
 
 <p>To check the current register values:</p>
 
-<pre><code class="language-gdb">(gdb) info registers   # or shorthand: i r 
-(gdb) i r pc r0        # check just PC and R0
-</code></pre>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> info registers   <span class="c"># or shorthand: i r </span>
+<span class="o">(</span>gdb<span class="o">)</span> i r pc r0        <span class="c"># check just PC and R0</span>
+</code></pre></div></div>
 <figure style="text-align: center;">
   <img src="/assets/img/print-pc-and-r0.png" alt="Printing the values of PC and R0 registers in GDB" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">Checking the values of PC and R0 in GDB</figcaption>
@@ -253,11 +246,11 @@ To check the contents at a specific memory address, GDB uses the following comma
 
 <h4 id="execute-step-by-step">Execute Step-by-Step</h4>
 <p>To execute a single instruction:</p>
-<pre><code class="language-gdb">(gdb) stepi   # or shorthand: si
-</code></pre>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> stepi   <span class="c"># or shorthand: si</span>
+</code></pre></div></div>
 <p>Then check the register values again:</p>
-<pre><code class="language-gdb">(gdb) i r pc r0
-</code></pre>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> i r pc r0
+</code></pre></div></div>
 <figure style="text-align: center;">
   <img src="/assets/img/next-step-pc-and-r0.png" alt="Stepping through one instruction and inspecting updated PC and R0" style="display: block; margin: auto;" />
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">PC moves forward, and R0 is now updated after executing `mov`</figcaption>
@@ -265,11 +258,11 @@ To check the contents at a specific memory address, GDB uses the following comma
 
 <p>You’ll see:</p>
 <ul>
-  <li>PC has moved from <code class="language-plaintext highlighter-rouge">0x10000</code> to <code class="language-plaintext highlighter-rouge">0x10004</code></li>
-  <li>R0 now contains <code class="language-plaintext highlighter-rouge">2</code></li>
+  <li><code class="language-plaintext highlighter-rouge">PC</code> has moved from <code class="language-plaintext highlighter-rouge">0x10000</code> to <code class="language-plaintext highlighter-rouge">0x10004</code></li>
+  <li><code class="language-plaintext highlighter-rouge">R0</code> now contains <code class="language-plaintext highlighter-rouge">2</code></li>
 </ul>
 
-<p>Run <code class="language-plaintext highlighter-rouge">stepi</code> one more time to execute <code class="language-plaintext highlighter-rouge">b .</code>, which creates an infinite loop by jumping to the current PC.</p>
+<p>Run <code class="language-plaintext highlighter-rouge">stepi</code> one more time to execute <code class="language-plaintext highlighter-rouge">b .</code>, which creates an infinite loop by jumping to the current <code class="language-plaintext highlighter-rouge">PC</code>.</p>
 
 <figure style="text-align: center;">
   <img src="/assets/img/next-step-to-branch.png" alt="PC value remains the same after executing a self-branching instruction" style="display: block; margin: auto;" />
@@ -279,29 +272,21 @@ To check the contents at a specific memory address, GDB uses the following comma
 <h3 id="copying-between-registers">Copying Between Registers</h3>
 <p>Let’s now copy a value from one register to another.</p>
 
-<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-</pre></td><td class="code"><pre>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
-<span class="hll">  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
-</span>  <span class="nb">b</span> <span class="mf">.</span>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  .text
+  .global _start
+_start:
+  mov r0, #2
+<span class="hll">  mov r1, r0
+</span>  b .</code></pre></figure>
 
-</pre></td></tr></tbody></table></code></pre></figure>
-
-<p>Here, <code class="language-plaintext highlighter-rouge">mov r1, r0</code> copies the value of R0 into R1.</p>
+<p>Here, <code class="language-plaintext highlighter-rouge">mov r1, r0</code> copies the value of <code class="language-plaintext highlighter-rouge">R0</code> into <code class="language-plaintext highlighter-rouge">R1</code>.</p>
 
 <blockquote>
   <p>You can repeat the GDB steps from above to verify the register contents after each instruction.</p>
 </blockquote>
 
 <h2 id="whats-the-difference-between-mov-and-mvn">What’s the Difference Between mov and mvn?</h2>
-<p>The <code class="language-plaintext highlighter-rouge">mvn</code> instruction is similar to <code class="language-plaintext highlighter-rouge">mov</code>, but it stores the bitwise NOT (<a href="https://en.wikipedia.org/wiki/Ones%27_complement">1’s complement</a>) of the value.</p>
+<p>The <code class="language-plaintext highlighter-rouge">mvn</code> instruction is similar to <code class="language-plaintext highlighter-rouge">mov</code>, but it stores the <em>bitwise NOT</em> (<a href="https://en.wikipedia.org/wiki/Ones%27_complement">1’s complement</a>) of the value.</p>
 
 <table>
   <thead>

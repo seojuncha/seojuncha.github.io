@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index | Seojun’s Personal Site</title>
+<title>[ARM32] Memory Access with Automatic Address Calculation using pre-index and post-index | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index" />
+<meta property="og:title" content="[ARM32] Memory Access with Automatic Address Calculation using pre-index and post-index" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="When accessing memory in ARM assembly, simply using [R1] as an address is often not enough. When dealing with arrays or buffers stored in consecutive memory, repeatedly updating the base register using ADD can be inefficient." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-11-05T13:35:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index" />
+<meta property="twitter:title" content="[ARM32] Memory Access with Automatic Address Calculation using pre-index and post-index" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-05T13:35:00+00:00","datePublished":"2025-11-05T13:35:00+00:00","description":"When accessing memory in ARM assembly, simply using [R1] as an address is often not enough. When dealing with arrays or buffers stored in consecutive memory, repeatedly updating the base register using ADD can be inefficient.","headline":"ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-05T13:35:00+00:00","datePublished":"2025-11-05T13:35:00+00:00","description":"When accessing memory in ARM assembly, simply using [R1] as an address is often not enough. When dealing with arrays or buffers stored in consecutive memory, repeatedly updating the base register using ADD can be inefficient.","headline":"[ARM32] Memory Access with Automatic Address Calculation using pre-index and post-index","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM Assembly #9 - Memory Access with Automatic Address Calculation using pre-index and post-index
+      [ARM32] Memory Access with Automatic Address Calculation using pre-index and post-index
     </h1>
     <div class="post-meta">
       <time
@@ -145,7 +145,7 @@ There are two main modes for this: <strong>pre-indexing</strong> and <strong>pos
 In the form <code class="language-plaintext highlighter-rouge">[Rn, #offset]!</code>, the CPU calculates <code class="language-plaintext highlighter-rouge">Rn + offset</code>, writes it back to <code class="language-plaintext highlighter-rouge">Rn</code>, and then uses that address to access memory.</p>
 
 <p>For example:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]!</span>   <span class="no">@</span> <span class="nv">add</span> <span class="mi">4</span> <span class="nv">to</span> <span class="nv">R1</span><span class="o">,</span> <span class="nv">then</span> <span class="nv">load</span> <span class="nv">from</span> <span class="nv">the</span> <span class="nv">new</span> <span class="nv">address</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, #4]!   @ add 4 to R1, then load from the new address
 </code></pre></div></div>
 
 <p>Execution steps:</p>
@@ -159,7 +159,7 @@ In the form <code class="language-plaintext highlighter-rouge">[Rn, #offset]!</c
 In <code class="language-plaintext highlighter-rouge">[Rn], #offset</code>, the CPU first accesses memory using <code class="language-plaintext highlighter-rouge">Rn</code>, then adds the offset afterward.</p>
 
 <p>For example:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>    <span class="no">@</span> <span class="nv">load</span> <span class="nv">from</span> <span class="nv">R1</span><span class="o">,</span> <span class="nv">then</span> <span class="nv">increment</span> <span class="nv">R1</span> <span class="nv">by</span> <span class="mi">4</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1], #4    @ load from R1, then increment R1 by 4
 </code></pre></div></div>
 
 <p>Execution steps:</p>
@@ -172,8 +172,8 @@ In <code class="language-plaintext highlighter-rouge">[Rn], #offset</code>, the 
 <p>Although both modes ultimately change Rn by adding the same offset,
 their behavior differs depending on when the update occurs.</p>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]!</span>   <span class="no">@</span> <span class="nv">pre</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">update</span> <span class="nv">R1</span> <span class="nv">before</span> <span class="nv">accessing</span> <span class="nv">memory</span>
-<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>    <span class="no">@</span> <span class="nv">post</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">access</span> <span class="nv">memory</span> <span class="nv">first</span><span class="o">,</span> <span class="nv">then</span> <span class="nv">update</span> <span class="nv">R1</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, #4]!   @ pre-index: update R1 before accessing memory
+ldr r0, [r1], #4    @ post-index: access memory first, then update R1
 </code></pre></div></div>
 <ul>
   <li>In <strong>pre-index</strong>, <code class="language-plaintext highlighter-rouge">R1</code> is updated before memory access.</li>
@@ -193,18 +193,18 @@ while post-indexing is useful when you need to access the <strong>current</stron
 You can build and debug it using GCC, QEMU, and GDB as follows.</p>
 
 <p><strong>pre-post.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">ldr</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">=</span><span class="nv">array</span>
-  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]!</span>   <span class="no">@</span> <span class="nv">pre</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">R1</span> <span class="err">←</span> <span class="nv">R1</span><span class="o">+</span><span class="mi">4</span> <span class="nv">then</span><span class="o">,</span> <span class="nv">load</span>
-  <span class="nb">ldr</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>    <span class="no">@</span> <span class="nv">post</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">R2</span> <span class="err">←</span> <span class="nv">Mem</span><span class="o">[</span><span class="nv">R1</span><span class="o">],</span> <span class="nv">then</span> <span class="nv">R1</span> <span class="err">←</span> <span class="nv">R1</span><span class="o">+</span><span class="mi">4</span>
-  <span class="nb">b</span> <span class="mf">.</span>
-<span class="nl">array</span><span class="err">:</span>
-  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x11111111</span>
-  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x22222222</span>
-  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x33333333</span>
-  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x44444444</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  ldr r1, =array
+  ldr r0, [r1, #4]!   @ pre-index: R1 ← R1+4 then, load
+  ldr r2, [r1], #4    @ post-index: R2 ← Mem[R1], then R1 ← R1+4
+  b .
+array:
+  .word 0x11111111
+  .word 0x22222222
+  .word 0x33333333
+  .word 0x44444444
 </code></pre></div></div>
 
 <p><strong>Build &amp; Run QEMU</strong></p>

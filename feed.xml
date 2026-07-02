@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-07-01T12:23:20+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Seojun’s Personal Site</title><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">The Four Stages of C Compilation</title><link href="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html" rel="alternate" type="text/html" title="The Four Stages of C Compilation" /><published>2026-07-01T12:00:00+00:00</published><updated>2026-07-01T12:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/01/c-build-step</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html"><![CDATA[<p>Using a simple sample program, we take a close look at how C code is transformed into an executable file.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-07-02T12:40:13+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Seojun’s Personal Site</title><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">The Four Stages of C Compilation</title><link href="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html" rel="alternate" type="text/html" title="The Four Stages of C Compilation" /><published>2026-07-01T12:00:00+00:00</published><updated>2026-07-01T12:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/01/c-build-step</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html"><![CDATA[<p>Using a simple sample program, we take a close look at how C code is transformed into an executable file.</p>
 
 <p>It’s not that I don’t already understand this process; the point is to grow more comfortable with the concepts and analysis methods of each stage by explaining it myself.</p>
 
@@ -39,39 +39,16 @@ It can be broadly divided into four stages, and because each stage uses the prev
 <p>Let’s use the simplified sample code below to see how the whole compilation process works.</p>
 
 <p><strong>sum.h</strong></p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-</pre></td><td class="code"><pre><span class="cp">#ifndef SUM_H
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#ifndef SUM_H
 #define SUM_H
 </span>
 <span class="kt">int</span> <span class="nf">sum</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
 
-<span class="cp">#endif</span>
-</pre></td></tr></tbody></table></code></pre></figure>
+<span class="cp">#endif
+</span></code></pre></div></div>
 
 <p><strong>sum.c</strong></p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-</pre></td><td class="code"><pre><span class="cp">#include</span> <span class="cpf">"sum.h"</span><span class="cp">
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"sum.h"</span><span class="cp">
 </span>
 <span class="cp">#define WORK 1
 #define PLUS +
@@ -86,21 +63,15 @@ It can be broadly divided into four stages, and because each stage uses the prev
 </span>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="cp">#endif
 </span><span class="p">}</span>
-</pre></td></tr></tbody></table></code></pre></figure>
+</code></pre></div></div>
 
 <p><strong>main.c</strong></p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-</pre></td><td class="code"><pre><span class="cp">#include</span> <span class="cpf">"sum.h"</span><span class="cp">
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"sum.h"</span><span class="cp">
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="n">sum</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></td></tr></tbody></table></code></pre></figure>
+</code></pre></div></div>
 
 <h2 id="stage-1-preprocessing">Stage 1. Preprocessing</h2>
 <ul>
@@ -121,40 +92,14 @@ It can be broadly divided into four stages, and because each stage uses the prev
 
 <p>When you use a tool like <code class="language-plaintext highlighter-rouge">gcc</code>, you usually don’t have to think much about this, but <code class="language-plaintext highlighter-rouge">gcc</code> is more of an integrated tool for conveniently handling each stage of the compilation pipeline; in reality a separate tool is used for each stage. Among these, the one used in the preprocessing stage is <code class="language-plaintext highlighter-rouge">cpp</code>.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gcc <span class="nt">-E</span> sum.c <span class="nt">-o</span> sum.i   <span class="c"># with gcc, the -E option lets you inspect the preprocessed result</span>
-<span class="nv">$ </span>cpp sum.c <span class="nt">-o</span> sum.i</code></pre></figure>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-E</span> sum.c <span class="nt">-o</span> sum.i   <span class="c"># with gcc, the -E option lets you inspect the preprocessed result</span>
+<span class="nv">$ </span>cpp sum.c <span class="nt">-o</span> sum.i
+</code></pre></div></div>
 
 <p>Let’s look at <code class="language-plaintext highlighter-rouge">sum.i</code>, generated as the result of preprocessing <code class="language-plaintext highlighter-rouge">sum.c</code>, and see what the preprocessing stage handled.</p>
 
 <p><strong>sum.i</strong></p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-</pre></td><td class="code"><pre><span class="cp"># 0 "sum.c"
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp"># 0 "sum.c"
 # 0 "&lt;built-in&gt;"
 # 0 "&lt;command-line&gt;"
 # 1 "/usr/include/stdc-predef.h" 1 3 4
@@ -180,7 +125,7 @@ It can be broadly divided into four stages, and because each stage uses the prev
 
 
 <span class="p">}</span>
-</pre></td></tr></tbody></table></code></pre></figure>
+</code></pre></div></div>
 
 <p><strong>Header file inclusion</strong></p>
 <ul>
@@ -211,20 +156,16 @@ It can be broadly divided into four stages, and because each stage uses the prev
 <p>If you examine the result of preprocessing the code below, you can see that the preprocessor doesn’t look at C grammar but does check preprocessing-directive syntax.</p>
 
 <p><strong>pp.h</strong></p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-</pre></td><td class="code"><pre><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span>
 <span class="cp">#define text 100
 </span>
 <span class="n">This</span> <span class="n">is</span> <span class="n">my</span> <span class="n">text</span><span class="p">.</span>
-</pre></td></tr></tbody></table></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>cpp pp.h <span class="nt">-o</span> pp.i</code></pre></figure>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>cpp pp.h <span class="nt">-o</span> pp.i
+</code></pre></div></div>
 
 <p>The <code class="language-plaintext highlighter-rouge">pp.h</code> header file contains an <code class="language-plaintext highlighter-rouge">#include</code> statement, a <code class="language-plaintext highlighter-rouge">#define</code>, and one ordinary sentence.
 A lone sentence like <code class="language-plaintext highlighter-rouge">This is my text.</code> is syntax that wouldn’t parse, but because the preprocessing stage doesn’t parse C grammar, it produces no particular error message.</p>
@@ -246,8 +187,9 @@ This means that a different assembly file is generated depending on the hardware
 <p>A program written in C is portable. Being portable means it can run on different architectures (e.g., AMD64, AArch64, etc.) without changing the source code.
 This portability is precisely thanks to the assembly files generated separately for each architecture.</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text"> C Source   ────┬─  Assembly (AMD64)    ─────   Machine Code (AMD64)
-                └─  Assembly (AArch64)  ─────   Machine Code (AArch64)</code></pre></figure>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> C Source   ────┬─  Assembly (AMD64)    ─────   Machine Code (AMD64)
+                └─  Assembly (AArch64)  ─────   Machine Code (AArch64)
+</code></pre></div></div>
 
 <p>Setting aside directives, an assembly instruction generally corresponds to a single CPU machine instruction.
 Each platform (architecture) has a different <strong><em>instruction set</em></strong> and provides different assembly instructions.
@@ -258,8 +200,9 @@ The details on this are covered below in “Stage 3. Assembly.”</p>
 
 <p>To generate assembly code, you can use the <code class="language-plaintext highlighter-rouge">gcc -S</code> option.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gcc <span class="nt">-S</span> sum.i <span class="nt">-o</span> sum.s
-<span class="nv">$ </span>gcc <span class="nt">-S</span> main.i <span class="nt">-o</span> main.s</code></pre></figure>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-S</span> sum.i <span class="nt">-o</span> sum.s
+<span class="nv">$ </span>gcc <span class="nt">-S</span> main.i <span class="nt">-o</span> main.s
+</code></pre></div></div>
 
 <p>To express the pipeline’s input/output connections I used the <code class="language-plaintext highlighter-rouge">.i</code> files as input, but it’s more common to pass <code class="language-plaintext highlighter-rouge">.c</code> files as arguments to generate assembly files.</p>
 
@@ -268,50 +211,7 @@ You can think of a TU as the single unit the compiler processes.
 In other words, each source file the compiler compiles becomes one TU.</p>
 
 <p><strong>sum.s</strong></p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-</pre></td><td class="code"><pre>        .file	"sum.c"
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        .file	"sum.c"
         .text
         .globl	sum
         .type	sum, @function
@@ -353,7 +253,8 @@ sum:
 3:
         .align 8
 4:
-</pre></td></tr></tbody></table></code></pre></figure>
+
+</code></pre></div></div>
 
 <p>The generated assembly file describes the behavior of the <code class="language-plaintext highlighter-rouge">sum()</code> function in AMD64 assembly.</p>
 <ul>
@@ -414,7 +315,7 @@ The C language’s grammar is described in detail in the <a href="https://www.op
 
 <p>For example, look at the assembly code targeting the AArch64 architecture.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>aarch64-none-linux-gnu-gcc <span class="nt">-S</span> sum.c <span class="nt">-o</span> sum_arm64.s
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>aarch64-none-linux-gnu-gcc <span class="nt">-S</span> sum.c <span class="nt">-o</span> sum_arm64.s
 
 <span class="nv">$ </span><span class="nb">cat </span>sum_arm64.s
 
@@ -441,7 +342,8 @@ The C language’s grammar is described in detail in the <a href="https://www.op
 .LFE0:
         .size   <span class="nb">sum</span>, .-sum
         .ident  <span class="s2">"GCC: (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 15.2.1 20251203"</span>
-        .section        .note.GNU-stack,<span class="s2">""</span>,@progbits</code></pre></figure>
+        .section        .note.GNU-stack,<span class="s2">""</span>,@progbits
+</code></pre></div></div>
 
 <p>Even using the same <code class="language-plaintext highlighter-rouge">sum.c</code> file, it outputs different assembly code.</p>
 
@@ -455,23 +357,24 @@ The C language’s grammar is described in detail in the <a href="https://www.op
 <p>The assembly file generated by the compiler backend’s CodeGen module is translated into machine code by the assembler (<code class="language-plaintext highlighter-rouge">as</code>) matching the platform.
 Machine code expresses a different instruction set for each platform.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>as sum.s <span class="nt">-o</span> sum.o
-<span class="nv">$ </span>as main.s <span class="nt">-o</span> main.o</code></pre></figure>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>as sum.s <span class="nt">-o</span> sum.o
+<span class="nv">$ </span>as main.s <span class="nt">-o</span> main.o
+</code></pre></div></div>
 
 <p>The command that can do everything up to this point — preprocessing, compilation, and assembly — in one go is <code class="language-plaintext highlighter-rouge">gcc -c</code>.</p>
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gcc <span class="nt">-c</span> sum.c <span class="nt">-o</span> sum.o
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-c</span> sum.c <span class="nt">-o</span> sum.o
 <span class="nv">$ </span>gcc <span class="nt">-c</span> main.c <span class="nt">-o</span> main.o
 
 <span class="nv">$ </span>file main.o
 
-main.o: ELF 64-bit LSB relocatable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, not stripped</code></pre></figure>
+main.o: ELF 64-bit LSB relocatable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, not stripped
+</code></pre></div></div>
 
 <p>The generated <strong><em>relocatable object file</em></strong> contains binary code compatible with the target architecture, per the assembly instructions.</p>
 
 <p>Let’s check the disassembly result of the <code class="language-plaintext highlighter-rouge">sum.o</code> and <code class="language-plaintext highlighter-rouge">main.o</code> object files with the <code class="language-plaintext highlighter-rouge">objdump -d</code> command.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>objdump <span class="nt">-d</span> sum.o
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>objdump <span class="nt">-d</span> sum.o
 
 sum.o:     file format elf64-x86-64
 
@@ -488,7 +391,8 @@ Disassembly of section .text:
   11:   8b 45 f8                mov    <span class="nt">-0x8</span><span class="o">(</span>%rbp<span class="o">)</span>,%eax
   14:   01 d0                   add    %edx,%eax
   16:   5d                      pop    %rbp
-  17:   c3                      ret</code></pre></figure>
+  17:   c3                      ret
+</code></pre></div></div>
 
 <p>As shown in the table below, each assembly line maps to a single binary executable code.</p>
 
@@ -543,7 +447,7 @@ Disassembly of section .text:
   </tbody>
 </table>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>objdump <span class="nt">-d</span> main.o
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>objdump <span class="nt">-d</span> main.o
 
 main.o:     file format elf64-x86-64
 
@@ -558,7 +462,8 @@ Disassembly of section .text:
    d:   bf 03 00 00 00          mov    <span class="nv">$0x3</span>,%edi
   12:   e8 00 00 00 00          call   17 &lt;main+0x17&gt;
   17:   5d                      pop    %rbp
-  18:   c3                      ret</code></pre></figure>
+  18:   c3                      ret
+</code></pre></div></div>
 
 <p>You can see that binary code for main’s assembly instructions like <code class="language-plaintext highlighter-rouge">endbr64</code> or <code class="language-plaintext highlighter-rouge">push %rbp</code> exactly matches the binary code we saw in the sum function.</p>
 
@@ -583,7 +488,7 @@ Disassembly of section .text:
 
 <p>Let’s also disassemble <code class="language-plaintext highlighter-rouge">sum_arm64.o</code>, compiled for AArch64. At a glance you can see it’s different from the AMD64 object file.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>aarch64-none-linux-gnu-objdump <span class="nt">-d</span> sum_arm64.o
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>aarch64-none-linux-gnu-objdump <span class="nt">-d</span> sum_arm64.o
 
 sum_arm64.o:     file format elf64-littleaarch64
 
@@ -598,7 +503,8 @@ Disassembly of section .text:
   10:   b9400be0        ldr     w0, <span class="o">[</span>sp, <span class="c">#8]</span>
   14:   0b000020        add     w0, w1, w0
   18:   910043ff        add     sp, sp, <span class="c">#0x10</span>
-  1c:   d65f03c0        ret</code></pre></figure>
+  1c:   d65f03c0        ret
+</code></pre></div></div>
 
 <p>This proves that, even for identical hardware behavior, the compatible binary executable code and assembly code differ depending on the architecture.</p>
 
@@ -626,15 +532,16 @@ Bundling each object file into one so it can be loaded into process memory is li
 
 <p>For now, let’s link simply using only <code class="language-plaintext highlighter-rouge">gcc</code>.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gcc main.o sum.o   <span class="c"># after linking, generates a.out</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o sum.o   <span class="c"># after linking, generates a.out</span>
 
 <span class="nv">$ </span>file a.out
 a.out: ELF 64-bit LSB pie executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>,  .. &lt;omitted&gt;
 
 <span class="nv">$ </span>./a.out <span class="o">||</span> <span class="nb">echo</span> <span class="nv">$?</span>
-8                       <span class="c"># returns 8, the result of the sum call</span></code></pre></figure>
+8                       <span class="c"># returns 8, the result of the sum call</span>
+</code></pre></div></div>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>objdump <span class="nt">-d</span> a.out
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>objdump <span class="nt">-d</span> a.out
 
 ...&lt;omitted&gt;...
 
@@ -658,7 +565,8 @@ a.out: ELF 64-bit LSB pie executable, x86-64, version 1 <span class="o">(</span>
     114e:       bf 03 00 00 00          mov    <span class="nv">$0x3</span>,%edi
     1153:       e8 d1 ff ff ff          call   1129 &lt;<span class="nb">sum</span><span class="o">&gt;</span>
     1158:       5d                      pop    %rbp
-    1159:       c3                      ret</code></pre></figure>
+    1159:       c3                      ret
+</code></pre></div></div>
 
 <p>You can see that the binary executable code defined in both <code class="language-plaintext highlighter-rouge">sum</code> and <code class="language-plaintext highlighter-rouge">main</code> has all been inserted into a single <code class="language-plaintext highlighter-rouge">a.out</code> file.</p>
 
@@ -669,14 +577,15 @@ a.out: ELF 64-bit LSB pie executable, x86-64, version 1 <span class="o">(</span>
   <p><code class="language-plaintext highlighter-rouge">nm</code> is a GNU utility program that shows the symbols defined in an object file. For the meaning of the letter to the left of each function name below, see <code class="language-plaintext highlighter-rouge">man nm</code>.</p>
 </blockquote>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>nm sum.o main.o
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nm sum.o main.o
 
 sum.o:
 0000000000000000 T <span class="nb">sum
 
 </span>main.o:
 0000000000000000 T main
-                 U <span class="nb">sum</span></code></pre></figure>
+                 U <span class="nb">sum</span>
+</code></pre></div></div>
 
 <p><code class="language-plaintext highlighter-rouge">main.o</code> (the object file compiled from <code class="language-plaintext highlighter-rouge">main.c</code>) has two symbols, <code class="language-plaintext highlighter-rouge">main</code> and <code class="language-plaintext highlighter-rouge">sum</code>.
 However, the <code class="language-plaintext highlighter-rouge">sum</code> symbol is <code class="language-plaintext highlighter-rouge">U</code>, meaning it’s in an <em>Undefined</em> state. It means the symbol is not defined.</p>
@@ -686,10 +595,11 @@ However, the <code class="language-plaintext highlighter-rouge">sum</code> symbo
 <p>So the linker has to gather the symbol information in order to merge binary executable code located in different places.
 Let’s check the symbols again in the final generated executable object file.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>nm a.out
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nm a.out
 
 0000000000001141 T main
-0000000000001129 T <span class="nb">sum</span></code></pre></figure>
+0000000000001129 T <span class="nb">sum</span>
+</code></pre></div></div>
 
 <p>The <code class="language-plaintext highlighter-rouge">sum</code> symbol has changed to <code class="language-plaintext highlighter-rouge">T</code> (executable code in the <code class="language-plaintext highlighter-rouge">.text</code> section).</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="programming" /><category term="c compile" /><category term="c programming" /><category term="c build" /><summary type="html"><![CDATA[Using a simple sample program, we take a close look at how C code is transformed into an executable file.]]></summary></entry><entry xml:lang="en"><title type="html">Extracting Memory Data with PTRACE_PEEKDATA</title><link href="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html" rel="alternate" type="text/html" title="Extracting Memory Data with PTRACE_PEEKDATA" /><published>2026-01-24T10:00:00+00:00</published><updated>2026-01-24T10:00:00+00:00</updated><id>https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory</id><content type="html" xml:base="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"><![CDATA[<p>Using <code class="language-plaintext highlighter-rouge">PTRACE_GETREGS</code>, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call.
 However, some system calls take pointers to memory addresses rather than simple integer values as arguments.
@@ -2190,7 +2100,7 @@ Although GDB prints all 32 bits, we are mainly interested in the upper four bits
   <li><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/doc/arm-architecture-reference-manual_DDI0100.pdf">ARM Architecture Reference Manual</a></li>
   <li><a href="https://docs.python.org/3/tutorial/inputoutput.html">Python3 Input and Output</a></li>
   <li><a href="https://docs.python.org/3/library/string.html#formatspec">Python3 Format Specification</a></li>
-</ul>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="arm cmp" /><category term="arm cpsr" /><summary type="html"><![CDATA[The CMP instruction in ARM is used to compare two values. Comparison is performed by subtracting one value from the other and checking the resulting condition flags. For example, 5 - 3 = 2 is positive, which means 5 is greater than 3. 3 - 5 = -2 is negative, so 3 is less than 5. And 5 - 5 = 0 tells us the two values are equal.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html" rel="alternate" type="text/html" title="ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags" /><published>2025-11-27T11:20:00+00:00</published><updated>2025-11-27T11:20:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"><![CDATA[<p>Until now, every instruction we examined executed unconditionally once its turn came.
+</ul>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="arm cmp" /><category term="arm cpsr" /><summary type="html"><![CDATA[The CMP instruction in ARM is used to compare two values. Comparison is performed by subtracting one value from the other and checking the resulting condition flags. For example, 5 - 3 = 2 is positive, which means 5 is greater than 3. 3 - 5 = -2 is negative, so 3 is less than 5. And 5 - 5 = 0 tells us the two values are equal.]]></summary></entry><entry xml:lang="en"><title type="html">[ARM32] Conditional Execution Using CPSR and Condition Flags</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html" rel="alternate" type="text/html" title="[ARM32] Conditional Execution Using CPSR and Condition Flags" /><published>2025-11-27T11:20:00+00:00</published><updated>2025-11-27T11:20:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"><![CDATA[<p>Until now, every instruction we examined executed unconditionally once its turn came.
 However, the ARM architecture provides a unique feature: it can <strong>execute an instruction only when a specific condition is met</strong>, using the <strong>condition flags</strong> stored in the <code class="language-plaintext highlighter-rouge">CPSR</code> register.</p>
 
 <p>This allows ARM to implement conditional logic without using branch instructions, which is one of the architecture’s defining characteristics.
@@ -2249,18 +2159,18 @@ By appending a two-letter condition code (e.g., <code class="language-plaintext 
 </code></pre></div></div>
 
 <p>To execute an instruction only <strong>when the previous result is negative</strong>:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">movmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
-</code></pre></div></div>
+<pre><code class="language-armsm">  movmi r0, r1
+</code></pre>
 <p><code class="language-plaintext highlighter-rouge">MI</code>(Minus) executes only when the <code class="language-plaintext highlighter-rouge">N</code> flag is <code class="language-plaintext highlighter-rouge">1</code>, meaning the previous result was negative.</p>
 
 <h2 id="example-code">Example Code</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">movs</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">1</span>
-  <span class="nb">addmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
-  <span class="nb">addpl</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>
-  <span class="nb">b</span> <span class="mf">.</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  movs r0, #-1
+  addmi r0, r0, #5
+  addpl r0, r0, #1
+  b .
 </code></pre></div></div>
 
 <p>This code performs:</p>
@@ -2289,18 +2199,9 @@ p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;
 
 <h2 id="conclusion">Conclusion</h2>
 <p>In this post, we explored conditional execution using <code class="language-plaintext highlighter-rouge">CPSR</code> flags and condition codes.
-In the next article, we will cover conditional branches using <code class="language-plaintext highlighter-rouge">CMP</code>/<code class="language-plaintext highlighter-rouge">CMN</code> and discuss how to choose between conditional execution and branching.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="condition flags" /><category term="arm cpsr" /><summary type="html"><![CDATA[Until now, every instruction we examined executed unconditionally once its turn came. However, the ARM architecture provides a unique feature: it can execute an instruction only when a specific condition is met, using the condition flags stored in the CPSR register.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #14 - Using the BL Instruction That Automatically Saves the Return Address</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html" rel="alternate" type="text/html" title="ARM Assembly #14 - Using the BL Instruction That Automatically Saves the Return Address" /><published>2025-11-26T09:30:00+00:00</published><updated>2025-11-26T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html"><![CDATA[<p>The <code class="language-plaintext highlighter-rouge">BL</code> instruction is an extended version of the <code class="language-plaintext highlighter-rouge">B</code> instruction described in the <a href="/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html">previous post</a>, adding function-call capability.
+In the next article, we will cover conditional branches using <code class="language-plaintext highlighter-rouge">CMP</code>/<code class="language-plaintext highlighter-rouge">CMN</code> and discuss how to choose between conditional execution and branching.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="condition flags" /><category term="arm cpsr" /><summary type="html"><![CDATA[Until now, every instruction we examined executed unconditionally once its turn came. However, the ARM architecture provides a unique feature: it can execute an instruction only when a specific condition is met, using the condition flags stored in the CPSR register.]]></summary></entry><entry xml:lang="en"><title type="html">[ARM32] Using the BL Instruction That Automatically Saves the Return Address</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html" rel="alternate" type="text/html" title="[ARM32] Using the BL Instruction That Automatically Saves the Return Address" /><published>2025-11-26T09:30:00+00:00</published><updated>2025-11-26T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html"><![CDATA[<p>The <code class="language-plaintext highlighter-rouge">BL</code> instruction is an extended version of the <code class="language-plaintext highlighter-rouge">B</code> instruction described in the <a href="/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html">previous post</a>, adding function-call capability.
 While the <code class="language-plaintext highlighter-rouge">B</code> instruction simply jumps to a target label, the <code class="language-plaintext highlighter-rouge">BL</code> instruction <strong>automatically stores the return address in the <code class="language-plaintext highlighter-rouge">LR</code></strong> (Register <code class="language-plaintext highlighter-rouge">R14</code>) so execution can return after the branch.
 For this reason, <code class="language-plaintext highlighter-rouge">BL</code> is a core mechanism for implementing function calls in ARM and forms the foundation for concepts like the stack, calling conventions, and frame pointers.</p>
-
-<figure style="text-align: center;">
-  <a href="https://youtu.be/cMMjuVVKaS0" target="_blank">
-  <img src="/assets/img/ARM Assembly - bl instruction.png" alt="Youtube Video to explain ARM BL instruction" style="display: block; margin: auto;" /> 
-  </a>
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
-  </figcaption>
-</figure>
 
 <p><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch-with-link.s"><strong>GitHub Sample Code</strong></a></p>
 
@@ -2339,16 +2240,16 @@ Starting from ARMv5, <code class="language-plaintext highlighter-rouge">bx lr</c
 </blockquote>
 
 <h2 id="example-code">Example Code</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
-  <span class="nb">bl</span> <span class="nv">foo</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
-  <span class="nb">b</span> <span class="mf">.</span>
-<span class="nl">foo</span><span class="err">:</span>
-  <span class="nb">add</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
-  <span class="nb">mov</span> <span class="nv">pc</span><span class="o">,</span> <span class="nv">lr</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #2
+  bl foo
+  mov r1, r0
+  b .
+foo:
+  add r0, r0, #3
+  mov pc, lr
 </code></pre></div></div>
 
 <h3 id="execution-flow">Execution Flow</h3>
@@ -2374,21 +2275,10 @@ In particular, if <code class="language-plaintext highlighter-rouge">LR</code> m
 
 <h2 id="conclusion">Conclusion</h2>
 <p>In the next post, we’ll examine condition codes for conditional execution.
-Until now, every instruction executed unconditionally, but ARM allows adding two-letter condition codes so instructions run only under specific conditions.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm bl" /><category term="arm branch instruction" /><category term="link register" /><category term="arm lr" /><summary type="html"><![CDATA[The BL instruction is an extended version of the B instruction described in the previous post, adding function-call capability. While the B instruction simply jumps to a target label, the BL instruction automatically stores the return address in the LR (Register R14) so execution can return after the branch. For this reason, BL is a core mechanism for implementing function calls in ARM and forms the foundation for concepts like the stack, calling conventions, and frame pointers.]]></summary></entry><entry xml:lang="en"><title type="html">ARM Assembly #13 - Branching Execution Flow with the B Instruction</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" rel="alternate" type="text/html" title="ARM Assembly #13 - Branching Execution Flow with the B Instruction" /><published>2025-11-23T01:00:00+00:00</published><updated>2025-11-23T01:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"><![CDATA[<p>In this post, we will explore how the <code class="language-plaintext highlighter-rouge">B</code> instruction is used for branching, along with practical examples.
+Until now, every instruction executed unconditionally, but ARM allows adding two-letter condition codes so instructions run only under specific conditions.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm bl" /><category term="arm branch instruction" /><category term="link register" /><category term="arm lr" /><summary type="html"><![CDATA[The BL instruction is an extended version of the B instruction described in the previous post, adding function-call capability. While the B instruction simply jumps to a target label, the BL instruction automatically stores the return address in the LR (Register R14) so execution can return after the branch. For this reason, BL is a core mechanism for implementing function calls in ARM and forms the foundation for concepts like the stack, calling conventions, and frame pointers.]]></summary></entry><entry xml:lang="en"><title type="html">[ARM32] Branching Execution Flow with the B Instruction</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" rel="alternate" type="text/html" title="[ARM32] Branching Execution Flow with the B Instruction" /><published>2025-11-23T01:00:00+00:00</published><updated>2025-11-23T01:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"><![CDATA[<p>In this post, we will explore how the <code class="language-plaintext highlighter-rouge">B</code> instruction is used for branching, along with practical examples.
 The <code class="language-plaintext highlighter-rouge">B</code> instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.</p>
 
-<figure style="text-align: center;">
-  <a href="https://youtu.be/BZamp0G0viA" target="_blank">
-  <img src="/assets/img/ARM Assembly - Basic Branch Instruction.png" alt="Youtube Video to explain ARM B instruction" style="display: block; margin: auto;" /> 
-  </a>
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
-  </figcaption>
-</figure>
-
-<ul>
-  <li><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">Sample Code in GitHub</a></li>
-</ul>
+<p><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">Sample Code in GitHub</a></p>
 
 <h2 id="why-do-we-use-the-b-instruction">Why Do We Use the B Instruction?</h2>
 <p>The <code class="language-plaintext highlighter-rouge">B</code> instruction simply moves the execution flow to another position.
@@ -2421,30 +2311,30 @@ Internally, this is equivalent to updating the PC with the label’s address.</p
 <h2 id="understanding-labels">Understanding Labels</h2>
 <p>A label gives a name to a specific instruction address.</p>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">label</span><span class="err">:</span>
-    <span class="nb">instructions</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  label:
+    instructions
 </code></pre></div></div>
 
 <p>A colon (:) must be placed after the label name.
 The label’s address is the address of the first instruction below it.</p>
 
 <p>Example:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">foo</span><span class="err">:</span>
-    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10000</span>
-    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10004</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  foo:
+    mov r0, #1   @ address = 0x10000
+    mov r0, #2   @ address = 0x10004
 </code></pre></div></div>
 <p>Here, the address of foo is <code class="language-plaintext highlighter-rouge">0x10000</code>.</p>
 
 <h2 id="example-code">Example Code</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
-  <span class="nb">b</span>   <span class="nv">foo</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>     <span class="no">@</span> <span class="nv">never</span> <span class="nv">executed</span>
-<span class="nl">foo</span><span class="err">:</span>
-  <span class="nb">add</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
-  <span class="nb">b</span>   <span class="nv">_start</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #2
+  b   foo
+  mov r1, r0     @ never executed
+foo:
+  add r0, r0, #3
+  b   _start
 </code></pre></div></div>
 
 <p><strong>Execution Flow</strong></p>

@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags | Seojun’s Personal Site</title>
+<title>[ARM32] Conditional Execution Using CPSR and Condition Flags | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags" />
+<meta property="og:title" content="[ARM32] Conditional Execution Using CPSR and Condition Flags" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="Until now, every instruction we examined executed unconditionally once its turn came. However, the ARM architecture provides a unique feature: it can execute an instruction only when a specific condition is met, using the condition flags stored in the CPSR register." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-11-27T11:20:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags" />
+<meta property="twitter:title" content="[ARM32] Conditional Execution Using CPSR and Condition Flags" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-27T11:20:00+00:00","datePublished":"2025-11-27T11:20:00+00:00","description":"Until now, every instruction we examined executed unconditionally once its turn came. However, the ARM architecture provides a unique feature: it can execute an instruction only when a specific condition is met, using the condition flags stored in the CPSR register.","headline":"ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-27T11:20:00+00:00","datePublished":"2025-11-27T11:20:00+00:00","description":"Until now, every instruction we examined executed unconditionally once its turn came. However, the ARM architecture provides a unique feature: it can execute an instruction only when a specific condition is met, using the condition flags stored in the CPSR register.","headline":"[ARM32] Conditional Execution Using CPSR and Condition Flags","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM Assembly #15 - Conditional Execution Using CPSR and Condition Flags
+      [ARM32] Conditional Execution Using CPSR and Condition Flags
     </h1>
     <div class="post-meta">
       <time
@@ -164,18 +164,18 @@ By appending a two-letter condition code (e.g., <code class="language-plaintext 
 </code></pre></div></div>
 
 <p>To execute an instruction only <strong>when the previous result is negative</strong>:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">movmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
-</code></pre></div></div>
+<pre><code class="language-armsm">  movmi r0, r1
+</code></pre>
 <p><code class="language-plaintext highlighter-rouge">MI</code>(Minus) executes only when the <code class="language-plaintext highlighter-rouge">N</code> flag is <code class="language-plaintext highlighter-rouge">1</code>, meaning the previous result was negative.</p>
 
 <h2 id="example-code">Example Code</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">movs</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">1</span>
-  <span class="nb">addmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
-  <span class="nb">addpl</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>
-  <span class="nb">b</span> <span class="mf">.</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  movs r0, #-1
+  addmi r0, r0, #5
+  addpl r0, r0, #1
+  b .
 </code></pre></div></div>
 
 <p>This code performs:</p>

@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM Assembly #8 - Calculating Memory Addresses with Offsets | Seojun’s Personal Site</title>
+<title>[ARM32] Calculating Memory Addresses with Offsets | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM Assembly #8 - Calculating Memory Addresses with Offsets" />
+<meta property="og:title" content="[ARM32] Calculating Memory Addresses with Offsets" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="In this post, we’ll explore how offset-based addressing works in ARM assembly. You’ll learn how to calculate memory addresses efficiently using LDR and STR without needing separate ADD instructions each time." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-11-02T04:40:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM Assembly #8 - Calculating Memory Addresses with Offsets" />
+<meta property="twitter:title" content="[ARM32] Calculating Memory Addresses with Offsets" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-02T04:40:00+00:00","datePublished":"2025-11-02T04:40:00+00:00","description":"In this post, we’ll explore how offset-based addressing works in ARM assembly. You’ll learn how to calculate memory addresses efficiently using LDR and STR without needing separate ADD instructions each time.","headline":"ARM Assembly #8 - Calculating Memory Addresses with Offsets","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-02T04:40:00+00:00","datePublished":"2025-11-02T04:40:00+00:00","description":"In this post, we’ll explore how offset-based addressing works in ARM assembly. You’ll learn how to calculate memory addresses efficiently using LDR and STR without needing separate ADD instructions each time.","headline":"[ARM32] Calculating Memory Addresses with Offsets","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM Assembly #8 - Calculating Memory Addresses with Offsets
+      [ARM32] Calculating Memory Addresses with Offsets
     </h1>
     <div class="post-meta">
       <time
@@ -113,13 +113,13 @@ You’ll learn how to calculate memory addresses efficiently <a href="/arm/assem
 But when working with arrays or structures <strong>stored in contiguous memory</strong>, we’d have to use extra <code class="language-plaintext highlighter-rouge">add</code> instructions each time to move to the next element.</p>
 
 <p>For example:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">]</span>       <span class="no">@</span> <span class="nv">Read</span> <span class="nv">first</span> <span class="nv">data</span>
-<span class="nl">add</span> <span class="nb">r1</span><span class="err">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span>     <span class="no">@</span> <span class="nv">Move</span> <span class="nv">to</span> <span class="nv">next</span> <span class="nv">element</span>
-<span class="nl">ldr</span> <span class="nb">r2</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">]</span>       <span class="no">@</span> <span class="nv">Read</span> <span class="nv">second</span> <span class="nv">data</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1]       @ Read first data
+add r1, r1, #4     @ Move to next element
+ldr r2, [r1]       @ Read second data
 </code></pre></div></div>
 <p>That works, but it’s repetitive and inefficient.
 Instead, ARM lets us <strong>combine address calculation and memory access</strong>:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]</span>   <span class="no">@</span> <span class="nv">Reads</span> <span class="nv">directly</span> <span class="nv">from</span> <span class="nv">r1</span> <span class="o">+</span> <span class="mi">4</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, #4]   @ Reads directly from r1 + 4
 </code></pre></div></div>
 <p>This reduces instruction count and CPU cycles, improving performance.</p>
 
@@ -131,6 +131,7 @@ Instead, ARM lets us <strong>combine address calculation and memory access</stro
 <h2 id="how-offset-address-calculation-works">How Offset Address Calculation Works</h2>
 <p>An offset represents the distance from a base register address.
 ARM calculates the final memory address by adding or subtracting this offset from the base:</p>
+
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Address = Base Register + Offset
 </code></pre></div></div>
 
@@ -141,8 +142,8 @@ ARM calculates the final memory address by adding or subtracting this offset fro
 </ul>
 
 <p>Example:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">8</span><span class="o">]</span>    <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="nv">r1</span> <span class="o">+</span> <span class="mi">8</span>
-<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">]</span>    <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="nv">r1</span> <span class="o">+</span> <span class="nv">r2</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, #8]    @ address = r1 + 8
+ldr r0, [r1, r2]    @ address = r1 + r2
 </code></pre></div></div>
 <p>Both addition (+) and subtraction (–) are supported,
 and immediate offsets are limited to 12-bit unsigned values (<code class="language-plaintext highlighter-rouge">0</code>–<code class="language-plaintext highlighter-rouge">4095</code>).</p>
@@ -161,14 +162,14 @@ and immediate offsets are limited to 12-bit unsigned values (<code class="langua
 </code></pre></div></div>
 <p>Example:</p>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">12</span><span class="o">]</span>     <span class="no">@</span> <span class="nv">Load</span> <span class="nv">data</span> <span class="nv">from</span> <span class="o">(</span><span class="nv">r1</span> <span class="o">+</span> <span class="mi">12</span><span class="o">)</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, #12]     @ Load data from (r1 + 12)
 </code></pre></div></div>
 
 <h3 id="2-register-offset--add-the-value-of-another-register">2. Register Offset – Add the value of another register.</h3>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Rn, Rm]
 </code></pre></div></div>
 <p>Example:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">]</span>      <span class="no">@</span> <span class="nv">Load</span> <span class="nv">data</span> <span class="nv">from</span> <span class="o">(</span><span class="nv">r1</span> <span class="o">+</span> <span class="nv">r2</span><span class="o">)</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, r2]      @ Load data from (r1 + r2)
 </code></pre></div></div>
 
 <h3 id="3-shifted-register-offset--add-a-shifted-version-of-another-register">3. Shifted Register Offset – Add a shifted version of another register.</h3>
@@ -176,7 +177,7 @@ and immediate offsets are limited to 12-bit unsigned values (<code class="langua
 </code></pre></div></div>
 
 <p>Example:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">]</span>  <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="nv">r1</span> <span class="o">+</span> <span class="o">(</span><span class="nv">r2</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="o">)</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, r2, lsl #2]  @ address = r1 + (r2 &lt;&lt; 2)
 </code></pre></div></div>
 
 <p>Here, <code class="language-plaintext highlighter-rouge">lsl #2</code> means “×4”.
@@ -184,10 +185,10 @@ Since each int element is 4 bytes, this perfectly aligns with array indexing.</p
 
 <h2 id="example-code">Example Code</h2>
 <p>Here’s how offset-based address calculation works in assembly:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r1</span><span class="err">,</span> <span class="o">=</span><span class="mh">0x1000</span>            <span class="no">@</span> <span class="nv">Base</span> <span class="nv">address</span> <span class="o">(</span><span class="nv">start</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">array</span><span class="o">)</span>
-<span class="nl">ldr</span> <span class="nb">r2</span><span class="err">,</span> <span class="o">=</span><span class="mi">3</span>                 <span class="no">@</span> <span class="nv">Index</span> <span class="nv">i</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">]</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x1000</span> <span class="o">+</span> <span class="o">(</span><span class="mi">3</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">=</span> <span class="mh">0x100C</span>
-                           <span class="err">@</span> <span class="nv">r0</span> <span class="o">=</span> <span class="nv">value</span> <span class="nv">of</span> <span class="nv">arr</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r1, =0x1000            @ Base address (start of the array)
+ldr r2, =3                 @ Index i = 3
+ldr r0, [r1, r2, lsl #2]   @ address = 0x1000 + (3 &lt;&lt; 2) = 0x100C
+                           @ r0 = value of arr[3]
 </code></pre></div></div>
 
 <p>This is equivalent to accessing <code class="language-plaintext highlighter-rouge">arr[i]</code> in C.
@@ -207,14 +208,14 @@ The <code class="language-plaintext highlighter-rouge">lsl #2</code> part repres
 </code></pre></div></div>
 
 <p>The compiler might generate:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r1</span><span class="err">,</span> <span class="o">=</span><span class="nv">arr</span>                 <span class="no">@</span> <span class="nv">r1</span> <span class="o">=</span> <span class="mh">&amp;a</span><span class="nv">rr</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
-<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">8</span><span class="o">]</span>             <span class="no">@</span> <span class="nv">arr</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="err">→</span> <span class="nv">base</span> <span class="o">+</span> <span class="o">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">4</span><span class="o">)</span> <span class="o">=</span> <span class="o">+</span><span class="mi">8</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r1, =arr                 @ r1 = &amp;arr[0]
+ldr r0, [r1, #8]             @ arr[2] → base + (2 * 4) = +8
 </code></pre></div></div>
 
 <p>If the index is stored in a variable:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r1</span><span class="err">,</span> <span class="o">=</span><span class="nv">arr</span>
-<span class="nl">mov</span> <span class="nb">r2</span><span class="err">,</span> <span class="nv">r0</span>                   <span class="no">@</span> <span class="nv">r2</span> <span class="o">=</span> <span class="nv">i</span>
-<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">]</span>     <span class="no">@</span> <span class="nv">arr</span><span class="o">[</span><span class="nv">i</span><span class="o">]</span> <span class="o">=</span> <span class="o">*(</span><span class="nv">base</span> <span class="o">+</span> <span class="nv">i</span><span class="o">*</span><span class="mi">4</span><span class="o">)</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r1, =arr
+mov r2, r0                   @ r2 = i
+ldr r0, [r1, r2, lsl #2]     @ arr[i] = *(base + i*4)
 </code></pre></div></div>
 
 <p>In short:</p>

@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM Assembly #4 - How to Rotate Bits with ROR and RRX | Seojun’s Personal Site</title>
+<title>[ARM32] How to Rotate Bits with ROR and RRX | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM Assembly #4 - How to Rotate Bits with ROR and RRX" />
+<meta property="og:title" content="[ARM32] How to Rotate Bits with ROR and RRX" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="In this post, we’ll explore the final topic in ARM’s shift operations — Rotate Shift. The ARMv4 architecture provides two rotate instructions: ror (Rotate Right) and rrx (Rotate Right with eXtend)." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-09-17T13:40:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM Assembly #4 - How to Rotate Bits with ROR and RRX" />
+<meta property="twitter:title" content="[ARM32] How to Rotate Bits with ROR and RRX" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-17T13:40:00+00:00","datePublished":"2025-09-17T13:40:00+00:00","description":"In this post, we’ll explore the final topic in ARM’s shift operations — Rotate Shift. The ARMv4 architecture provides two rotate instructions: ror (Rotate Right) and rrx (Rotate Right with eXtend).","headline":"ARM Assembly #4 - How to Rotate Bits with ROR and RRX","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-17T13:40:00+00:00","datePublished":"2025-09-17T13:40:00+00:00","description":"In this post, we’ll explore the final topic in ARM’s shift operations — Rotate Shift. The ARMv4 architecture provides two rotate instructions: ror (Rotate Right) and rrx (Rotate Right with eXtend).","headline":"[ARM32] How to Rotate Bits with ROR and RRX","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/17/arm-rotate-shift.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM Assembly #4 - How to Rotate Bits with ROR and RRX
+      [ARM32] How to Rotate Bits with ROR and RRX
     </h1>
     <div class="post-meta">
       <time
@@ -144,11 +144,11 @@ The ARMv4 architecture provides two rotate instructions: <code class="language-p
 In other words, it’s a <strong>bit-preserving, circular move</strong>.</p>
 
 <p><strong>ror.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x96</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">ror</span> <span class="o">#</span><span class="mi">4</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #0x96
+  mov r1, r0, ror #4
 </code></pre></div></div>
 
 <p>Here, <code class="language-plaintext highlighter-rouge">R0 = 0x96</code> → <code class="language-plaintext highlighter-rouge">0b0000...1001_0110</code>
@@ -167,13 +167,13 @@ After:    0b0110_0000_0000_0000_0000_0000_0000_1001 = 0x60000009
 </ul>
 
 <p><strong>rrx.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x69</span>
-  <span class="nb">movs</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">rrx</span>
-  <span class="nb">movs</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="nb">rrx</span>
-  <span class="nb">b</span> <span class="mf">.</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #0x69
+  movs r1, r0, rrx
+  movs r2, r1, rrx
+  b .
 </code></pre></div></div>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Initial:   0b0000_0000_0000_0000_0000_0000_0110_1001 = 0x69
@@ -211,26 +211,19 @@ r1             0x34     52
 r2             0x8000001a       <span class="nt">-2147483622</span></code></pre></figure>
 
 <h2 id="why-is-there-no-rotate-left-rol">Why is there no Rotate Left (ROL)?</h2>
-<p>ARM does not include a ROL instruction. Why?
-Because you can easily <strong>simulate rotate-left</strong> using a combination of <code class="language-plaintext highlighter-rouge">lsl</code> and <code class="language-plaintext highlighter-rouge">ror</code>.</p>
+<p>ARMv4T provides ROR (rotate right) but not ROL (rotate left), for two reasons.</p>
 
-<h3 id="simulated-rol-using-lsl-and-ror">Simulated ROL using LSL and ROR</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">@</span> <span class="nv">ROL</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="nv">n</span>
-  <span class="nb">lsl</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="nv">n</span>           <span class="no">@</span> <span class="nv">Logical</span> <span class="nv">sfhit</span> <span class="nv">left</span>
-  <span class="nb">ror</span> <span class="nv">r3</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#(</span><span class="mi">32</span> <span class="o">-</span> <span class="nv">n</span><span class="o">)</span>    <span class="no">@</span> <span class="nv">Rotate</span> <span class="nv">right</span> <span class="nv">the</span> <span class="nv">remaining</span> <span class="nv">bits</span>
-  <span class="nb">orr</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r3</span>           <span class="no">@</span> <span class="nv">Combine</span> <span class="nv">both</span> <span class="nv">halves</span>
+<p>First, in a 32-bit rotation, rotating left and rotating right are equivalent.
+Rotating left by <code class="language-plaintext highlighter-rouge">n</code> bits produces exactly the same result as rotating right by <code class="language-plaintext highlighter-rouge">32 - n</code> bits.
+A single ROR can therefore express left rotation as well, leaving no reason for a separate ROL.</p>
+
+<p>Second, ARM does not treat shifts as standalone instructions.
+They are folded into the second operand of data-processing instructions via the barrel shifter,
+and the field that selects the shift type is only 2 bits wide—enough for just four options (LSL, LSR, ASR, ROR).
+The left direction is already taken by LSL, and since rotation is direction-agnostic, ROR alone is chosen to keep the limited encoding space orthogonal.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ror r0, r0, #27   @ equivalent to rotating left by 5 (32 - 5 = 27)
 </code></pre></div></div>
-
-<p>For example, if <code class="language-plaintext highlighter-rouge">r0 = 0x80000001</code> and <code class="language-plaintext highlighter-rouge">n=1</code>:</p>
-<ul>
-  <li>LSL → <code class="language-plaintext highlighter-rouge">0x00000002</code></li>
-  <li>ROR(31) → <code class="language-plaintext highlighter-rouge">0x40000000</code></li>
-  <li>ORR → <code class="language-plaintext highlighter-rouge">0x40000002</code> (Valid rotate-left result)</li>
-</ul>
-
-<blockquote>
-  <p><code class="language-plaintext highlighter-rouge">orr</code> performs bitwise OR between the two shifted values.</p>
-</blockquote>
 
 <h2 id="summary">Summary</h2>
 <p>In this post, we’ve covered ARM’s rotate shift instructions:</p>

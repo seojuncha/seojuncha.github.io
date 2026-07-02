@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM Assembly #0 - Build Environment and First Code | Seojun’s Personal Site</title>
+<title>[ARM32] Build Environment and First Code | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM Assembly #0 - Build Environment and First Code" />
+<meta property="og:title" content="[ARM32] Build Environment and First Code" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="In this post, I will show you how to write and run your first ARM assembly code. This is the foundation for the rest of this tutorial series. We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-09-03T14:24:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM Assembly #0 - Build Environment and First Code" />
+<meta property="twitter:title" content="[ARM32] Build Environment and First Code" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-03T14:24:00+00:00","datePublished":"2025-09-03T14:24:00+00:00","description":"In this post, I will show you how to write and run your first ARM assembly code. This is the foundation for the rest of this tutorial series. We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB.","headline":"ARM Assembly #0 - Build Environment and First Code","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-09-03T14:24:00+00:00","datePublished":"2025-09-03T14:24:00+00:00","description":"In this post, I will show you how to write and run your first ARM assembly code. This is the foundation for the rest of this tutorial series. We will write a very simple assembly program, compile it, run it in QEMU, and prepare for debugging with GDB.","headline":"[ARM32] Build Environment and First Code","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/09/03/hello-arm-assembly.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     id="main-stylesheet"
@@ -87,7 +87,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM Assembly #0 - Build Environment and First Code
+      [ARM32] Build Environment and First Code
     </h1>
     <div class="post-meta">
       <time
@@ -138,10 +138,10 @@ The main problem was:</p>
 <p>Let’s start with the simplest possible ARM assembly code.</p>
 
 <p><strong>only-main.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">b</span> <span class="mf">.</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  b .
 </code></pre></div></div>
 <p>This code does nothing useful — but it’s a great starting point.</p>
 
@@ -211,12 +211,12 @@ Install <strong><em>gdb-multiarch</em></strong>:</p>
 <p>Now, let’s compile our <code class="language-plaintext highlighter-rouge">.s</code> file to a binary (ELF format):</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>arm-none-eabi-gcc <span class="se">\</span>
-	<span class="nt">-O0</span> <span class="se">\</span>
-	<span class="nt">-nostdlib</span> <span class="se">\</span>
-	<span class="nt">-march</span><span class="o">=</span>armv4 <span class="se">\</span>
-	<span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="se">\</span>
-	only-main.s <span class="se">\</span>
-	<span class="nt">-o</span> only-main.elf
+        <span class="nt">-O0</span> <span class="se">\</span>
+        <span class="nt">-nostdlib</span> <span class="se">\</span>
+        <span class="nt">-march</span><span class="o">=</span>armv4 <span class="se">\</span>
+        <span class="nt">-Ttext</span><span class="o">=</span>0x10000 <span class="se">\</span>
+        only-main.s <span class="se">\</span>
+        <span class="nt">-o</span> only-main.elf
 </code></pre></div></div>
 
 <p>Options explained:</p>
@@ -236,7 +236,7 @@ only-main.elf: ELF 32-bit LSB executable, ARM, EABI5 version 1 <span class="o">(
 <p>Let’s understand the 4 lines of our code.</p>
 
 <h3 id="text--code-section">.text → Code section</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">.</span><span class="nl">text</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.text
 </code></pre></div></div>
 <p>This means <strong><em>“put the following instructions in the code section.”</em></strong>
 This is where the CPU fetches instructions.</p>
@@ -251,7 +251,7 @@ This is where the CPU fetches instructions.</p>
 </figure>
 
 <h3 id="global-_start--make-the-label-visible">.global _start → Make the label visible</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">.</span><span class="nl">global</span> <span class="nf">_start</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.global _start
 </code></pre></div></div>
 <p>This tells the linker:
 <strong><em>”_start is the entry point of the program.”</em></strong></p>
@@ -259,13 +259,13 @@ This is where the CPU fetches instructions.</p>
 <p>In C, we use <code class="language-plaintext highlighter-rouge">main()</code> — in assembly, we use <code class="language-plaintext highlighter-rouge">_start</code>.</p>
 
 <h3 id="_start--label-definition">_start: → Label definition</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">_start</span><span class="err">:</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_start:
 </code></pre></div></div>
 <p>This defines a <strong>label</strong>.
 It marks a location in the code so other instructions can jump to it.</p>
 
 <h3 id="b---infinite-loop">b . → Infinite loop</h3>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">b</span> <span class="err">.</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>b .
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">b</code> means <strong><em>branch</em></strong> (jump).<br />
 .(dot) means <strong><em>“this current line”</em></strong> — so the program jumps to itself forever.</p>
