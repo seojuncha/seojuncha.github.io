@@ -21,6 +21,20 @@
 {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2026-01-06T13:20:00+00:00","datePublished":"2026-01-06T13:20:00+00:00","description":"tracer가 PTRACE_SYSCALL을 사용하여 시스템콜을 추적하는 경우, tracee가 시스템콜을 호출할 때 tracer는 호출 전후로 총 두 번의 시그널을 받는다. 이는 시스템콜의 핵심 동작인 유저 모드와 커널 모드 간 전환 시점에서 발생한다. tracer는 이 두 시그널을 각각 시스템콜 진입(entry) 과 시스템콜 복귀(exit) 로 구분하고, 각 시점에 맞는 레지스터 값을 읽어 처리해야 한다. 예를 들어 시스템콜 진입 시점에 반환값 레지스터를 읽으면, 실제 처리 결과가 아닌 커널이 설정한 초기값을 사용하게 되어 의도하지 않은 결과를 만들 수 있다.","headline":"시스템콜 진입과 복귀 구분하기: 인자와 반환값 추출 방법","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html"},"url":"https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
+    rel="alternate"
+    hreflang="en"
+    href="https://seojuncha.github.io/linux/2026/01/06/syscall-entry-and-exit.html"
+  /><link
+    rel="alternate"
+    hreflang="ko"
+    href="https://seojuncha.github.io/ko/linux/2026/01/06/syscall-entry-and-exit.html"
+  /><link
+    rel="alternate"
+    hreflang="x-default"
+    href="https://seojuncha.github.io/ko/linux/2026/01/06/syscall-entry-and-exit.html"
+  />
+
+  <link
     id="main-stylesheet"
     rel="stylesheet"
     href="/assets/css/style.css"

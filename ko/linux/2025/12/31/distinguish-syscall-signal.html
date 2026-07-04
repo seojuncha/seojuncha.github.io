@@ -21,6 +21,20 @@
 {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-12-31T07:10:00+00:00","datePublished":"2025-12-31T07:10:00+00:00","description":"ptrace를 활용해 시스템콜을 검출할 때, 시스템콜의 진입과 복귀는 SIGTRAP 시그널 형태로 tracer에 전달된다. tracer는 tracee로부터 SIGTRAP 시그널을 받으면 시스템콜이 발생했음을 추측할 수 있다. 하지만 SIGTRAP 시그널은 시스템콜 호출 시에만 발생하는 것은 아니다. 그렇기 때문에 tracer가 SIGTRAP 시그널만을 기준으로 이벤트를 처리할 경우, 어떤 원인으로 발생한 시그널인지 구분하기 어려운 상황이 발생한다.","headline":"시스템콜 시그널은 일반 시그널과 어떻게 구분할까?","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html"},"url":"https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
+    rel="alternate"
+    hreflang="en"
+    href="https://seojuncha.github.io/linux/2025/12/31/distinguish-syscall-signal.html"
+  /><link
+    rel="alternate"
+    hreflang="ko"
+    href="https://seojuncha.github.io/ko/linux/2025/12/31/distinguish-syscall-signal.html"
+  /><link
+    rel="alternate"
+    hreflang="x-default"
+    href="https://seojuncha.github.io/ko/linux/2025/12/31/distinguish-syscall-signal.html"
+  />
+
+  <link
     id="main-stylesheet"
     rel="stylesheet"
     href="/assets/css/style.css"

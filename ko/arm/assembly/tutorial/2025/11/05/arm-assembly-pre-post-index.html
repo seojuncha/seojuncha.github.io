@@ -21,6 +21,20 @@
 {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-05T13:35:00+00:00","datePublished":"2025-11-05T13:35:00+00:00","description":"ARM 어셈블리에서 메모리에 접근할 때, 단순히 [R1] 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 배열이나 버퍼처럼 연속된 데이터를 다룰 때, 매번 ADD 명령으로 주소를 갱신하는 것은 비효율적이기 때문입니다. 이 문제를 해결하기 위해 ARM은 pre-index와 post-index라는 자동 주소 계산 기능을 제공합니다. 이 글에서는 두 방식의 차이와 동작 원리를 이해하기 쉽게 설명하고, 마지막에는 실제 예제 코드와 함께 CPU 내부에서 주소가 어떻게 계산되는지도 알아보겠습니다.","headline":"ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
+    rel="alternate"
+    hreflang="en"
+    href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"
+  /><link
+    rel="alternate"
+    hreflang="ko"
+    href="https://seojuncha.github.io/ko/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"
+  /><link
+    rel="alternate"
+    hreflang="x-default"
+    href="https://seojuncha.github.io/ko/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"
+  />
+
+  <link
     id="main-stylesheet"
     rel="stylesheet"
     href="/assets/css/style.css"

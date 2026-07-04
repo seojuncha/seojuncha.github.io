@@ -21,6 +21,20 @@
 {"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2026-01-24T10:00:00+00:00","datePublished":"2026-01-24T10:00:00+00:00","description":"Using PTRACE_GETREGS, we can inspect the system call number, arguments, and return value stored in registers at the time of a system call. However, some system calls take pointers to memory addresses rather than simple integer values as arguments. In such cases, the value stored in the register is not the actual data, but merely an address in the tracee’s virtual memory space. Therefore, we must explicitly read the memory contents pointed to by that address. A representative example is the write system call.","headline":"Extracting Memory Data with PTRACE_PEEKDATA","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"},"url":"https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
+    rel="alternate"
+    hreflang="en"
+    href="https://seojuncha.github.io/linux/2026/01/24/ptrace-read-memory.html"
+  /><link
+    rel="alternate"
+    hreflang="ko"
+    href="https://seojuncha.github.io/ko/linux/2026/01/24/ptrace-read-memory.html"
+  /><link
+    rel="alternate"
+    hreflang="x-default"
+    href="https://seojuncha.github.io/ko/linux/2026/01/24/ptrace-read-memory.html"
+  />
+
+  <link
     id="main-stylesheet"
     rel="stylesheet"
     href="/assets/css/style.css"
