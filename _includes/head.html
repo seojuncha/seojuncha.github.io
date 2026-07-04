@@ -2,7 +2,26 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  {%- seo -%}
+  {%- seo -%} {%- assign clean_url = page.url -%} {%- for lang in site.languages
+  -%} {%- assign prefix = lang | prepend: "/" | append: "/" -%} {%- if clean_url
+  contains prefix -%} {%- assign stripped = clean_url | remove_first: prefix -%}
+  {%- assign clean_url = stripped | prepend: "/" -%} {%- endif -%} {%- endfor
+  -%} {%- assign default_lang = site.default_lang | default: "en" -%} {%- for
+  lang in site.languages -%} {%- if lang == default_lang -%} {%- capture
+  lang_path -%}{{ clean_url }}{%- endcapture -%} {%- else -%} {%- capture
+  lang_path -%}/{{ lang }}{{ clean_url }}{%- endcapture -%} {%- endif -%}
+  <link
+    rel="alternate"
+    hreflang="{{ lang }}"
+    href="{{ site.url }}{{ lang_path }}"
+  />
+  {%- endfor -%}
+  <link
+    rel="alternate"
+    hreflang="x-default"
+    href="{{ site.url }}/ko{{ clean_url }}"
+  />
+
   <link
     id="main-stylesheet"
     rel="stylesheet"

@@ -1,6 +1,6 @@
 ---
 layout: post
-lang: ko 
+lang: ko
 ref: "c-build-step"
 title: "C 컴파일 4단계"
 date: 2026-07-01 21:00:00 +0900
