@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: hello-arm-assembly
-title: "ARM 어셈블리 #0 - 개발환경과 첫 코드"
+title: "[ARM32] ARM 어셈블리 개발환경과 첫 코드"
 date: 2025-09-03 23:24:00 +0900
 categories: [arm,assembly,tutorial]
 tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
@@ -16,7 +16,8 @@ tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
 
 <figure style="text-align: center;">
   <img src="/assets/img/ast-output-of-my-compiler.png" alt="자체 제작 컴파일러의 AST" width="70%" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">AST는 만들었는데… 도대체 여기서 어떤 어셈블리를 만들어야 하지?</figcaption>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 1. AST는 만들었는데… 도대체 여기서 어떤 어셈블리를 만들어야 하지?</figcaption>
 </figure>
 
 어셈블리를 알게 되면, 최적화된 코드 작성, 디버깅, 리버스 엔지니어링 등에서도 큰 도움이 됩니다.  
@@ -56,9 +57,9 @@ ARM 어셈블리 코드를 작성하고 실행하기 위해 필요한 도구는 
 우리가 설치할 도구는 ARM용 크로스 컴파일러이며,
 [공식 툴체인](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)에서 다운로드 가능합니다.
 
--	OS: Linux (x86_64)
--	Target: bare-metal
--	Format: arm-none-eabi-gcc.tar.gz
+- OS: Linux (x86_64)
+- Target: bare-metal
+- Format: arm-none-eabi-gcc.tar.gz
 
 <figure style="text-align: center;">
   <img src="/assets/img/arm-toolchain-download-page.png" alt="ARM툴체인 다운로드 페이지" style="display: block; margin: auto;" />

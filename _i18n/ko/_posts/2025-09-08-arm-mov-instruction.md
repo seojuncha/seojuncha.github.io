@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-mov-instruction"
-title: "ARM 어셈블리 #1 - mov 명령어로 레지스터에 값 저장하기"
+title: "[ARM32] MOV 명령어로 레지스터에 값 저장하기"
 date: 2025-09-08 22:24:00 +0900
 categories: [arm,assembly,tutorial]
 tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
@@ -11,8 +11,8 @@ tags: [assembly, embedded, low-level, ARM, QEMU, GDB]
 
 이런 연산은 결국 CPU가 수행하죠.
 CPU가 연산을 하기 위해서는 두 가지가 필요합니다:
-바로 피연산자(operand) 와 연산자(operator) 입니다.
-그리고 이 피연산자들은 대부분 레지스터(register) 에 저장된 값을 사용합니다.
+바로 ***피연산자(operand)*** 와 ***연산자(operator)*** 입니다.
+그리고 이 피연산자들은 대부분 ***레지스터(register)*** 에 저장된 값을 사용합니다.
 
 어셈블리 언어는 CPU의 레지스터를 직접 제어할 수 있는 가장 저수준의 언어 중 하나입니다.
 오늘은 이 레지스터에 값을 저장하는 기본적인 방법들을 소개합니다.
@@ -22,7 +22,7 @@ CPU가 연산을 하기 위해서는 두 가지가 필요합니다:
 ## mov명령어로 레지스터에 값 복사하기
 
 ### 즉시값(Immediate Value) 저장
-```armasm
+```
   .text
   .global _start
 _start:
@@ -50,11 +50,11 @@ $ arm-none-eabi-gcc -nostdlib -Ttext=0x10000 imm-to-reg.s -o imm-to-reg.elf
 #### QEMU 실행
 
 ```bash
-qemu-system-arm \
-  -machine versatilepb \
-  -nographic \
-  -S -s \
-  -kernel imm-to-reg.elf
+$ qemu-system-arm \
+    -machine versatilepb \
+    -nographic \
+    -S -s \
+    -kernel imm-to-reg.elf
 ```
 qemu의 공식문서를 살펴보면 굉장히 많은 옵션들을 제공하고 있는 것을 볼 수 있습니다.
 우선은 꼭 필요한 옵션들만 사용해보겠습니다.
@@ -75,55 +75,86 @@ qemu의 공식문서를 살펴보면 굉장히 많은 옵션들을 제공하고 
 ```bash
 $ gdb-multiarch imm-to-reg.elf
 ```
-![GDB실행 이후 화면]()
+
+<figure style="text-align: center;">
+  <img src="/assets/img/run-gdb.png" alt="Launching GDB with the ELF binary" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 1. <code>gdb-multiarch</code> 를 사용해서 ELF바이너리 디버깅 시작 </figcaption>
+</figure>
 
 GDB에 들어간 후 다음 명령으로 QEMU의 GDB 서버에 연결합니다.
-```gdb
+```bash
 (gdb) target retmote localhost:1234
 ```
 
-![GDB 서버 접속 이후 화면]()
+<figure style="text-align: center;">
+  <img src="/assets/img/connect-gdb-server.png" alt="Connecting GDB to QEMU's GDB server on port 1234" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 2. QEMU 내부 GDB서버의 1234 포트에 연결</figcaption>
+</figure>
 
 QEMU와 연결되었다면, 프로그램이 메모리의 코드 영역에 제대로 로드됐는지 확인해 봅니다.
 특정 메모리 주소의 값을 확인하는 명령어는 `x/{숫자}{타입}`의 포맷을 사용합니다.
 
-```gdb
+```bash
 (gdb) x/10i 0x10000
 ```
-
-![시작주소부터 명령어 10개 출력]()
+<figure style="text-align: center;">
+  <img src="/assets/img/show-10-instructions.png" alt="Disassembling 10 instructions starting at address 0x10000" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 3. 메모리 주소 0x10000 위치의 명령어 10개 디스어셈블리</figcaption>
+</figure>
 
 `info registers` 명령으로 현재 레지스터 상태를 확인할 수 있습니다.
 
-```gdb
+```bash
 (gdb) info registers   # 또는 간단히 i r
 (gdb) i r pc r0        # PC(프로그램 카운터)와 R0 값만 출력
 ```
 
-![PC와 R0 레지스터 출력 결과]()
+<figure style="text-align: center;">
+  <img src="/assets/img/print-pc-and-r0.png" alt="Printing the values of PC and R0 registers in GDB" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 4. PC와 R0레지스터 값 확인하기</figcaption>
+</figure>
 
 현재 PC는 `0x10000`을 가리키고 있으므로 다음에 실행할 명령어는 `mov r0, #3`이라는 것을 알 수 있습니다.
 PC가 가리키는 명령어를 실행하기 위해선 다음 명령어 실행을 의미하는 `stepi`를 사용합니다.
 
 #### stepi로 한 줄씩 실행
-```gdb
+```bash
 (gdb) stepi   # 혹은 간단히 s i
 ```
 다시 레지스터를 확인해 보면 다음과 같은 변화가 있습니다:
-```gdb
+```bash
 (gdb) i r pc r0
 ```
+
+<figure style="text-align: center;">
+  <img src="/assets/img/next-step-pc-and-r0.png" alt="Stepping through one instruction and inspecting updated PC and R0" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 5. <code>mov</code> 명령어 실행 후, PC 레지스터 값이 증가하고 R0 레지스터가 2로 업데이트 되었다.
+  </figcaption>
+</figure>
+
 - PC: `0x10000` -> `0x10004`
 - R0: `0` -> `3`
 
 `step`를 한 번 더 실행하면 `b .` 명령어로 돌아가며 무한 루프 상태가 됩니다.  
 `b .`은 현재 PC 위치로 계속 이동하므로 PC값은 변하지 않고, 따라서 프로그램은 무한루프 상태로 유지됩니다.
 
+<figure style="text-align: center;">
+  <img src="/assets/img/next-step-to-branch.png" alt="PC value remains the same after executing a self-branching instruction" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 6. <code>b .</code> 무한루프로 인하여 PC 레지스터 값은 변하지 않는다.
+  </figcaption>
+</figure>
+
 ### 레지스터 간 값 복사
 이전 예제에서는 `#3` 으로 표현하는 즉시값을 레지스터 `R0` 에 할당했습니다.
 이제 레지스터 내부의 값을 다른 레지스터로 복사하는 방법을 알아보겠습니다.
 
-```armasm
+```
   .text
   .global _start
 _start:
@@ -159,7 +190,12 @@ _start:
 
 이 기능은 `add`, `sub` 같은 연산에도 동일하게 사용되며, 다음 포스팅에서 자세히 다룰 예정입니다.
 
-![ARM 레퍼런스 매뉴얼의 쉬프트 피연산자들]()
+<figure style="text-align: center;">
+  <img src="/assets/img/shifter-operand-in-arm-manual.png" alt="Excerpt from ARM manual showing shifted operand encoding" style="display: block; margin: auto;" />
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 7. ARM 레퍼런스 매뉴얼: 쉬프트 피연산자들 인코딩 포맷
+  </figcaption>
+</figure>
 
 ## 마무리
 이번 포스팅에서는 `mov`, `mvn` 명령어를 중심으로 레지스터에 값을 저장하고 복사하는 기본적인 방법을 알아보았습니다.

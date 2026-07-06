@@ -25,8 +25,8 @@ ARM에서는 모든 산술 및 논리 연산의 상태가 `CPSR`에 저장됩니
 `CPSR`에 대한 자세한 내용은 [이 포스팅]({% post_url 2025-11-27-arm-cpsr-condition-flags %})을 참고해 주세요.
 
 ## CMP 명령
-```armasm
-  cmp Rn, Operand2
+```text
+    cmp Rn, Operand2
 ```
 
 여기서 `Rn`은 반드시 레지스터여야 하며, `Operand2`는 시프트 피연산자(Shifter Operand)입니다.
@@ -38,9 +38,10 @@ ARM에서는 모든 산술 및 논리 연산의 상태가 `CPSR`에 저장됩니
 > `CMP`를 비롯한 몇몇 비교 명령어는 접미사 `s` 없이도 `CPSR`을 **자동으로 갱신**하는 특별한 명령어입니다.
 
 ## 예제 코드
-```armasm
+```text
   .text
   .global _start
+
 _start:
     mov r0, #5
     mov r1, #5

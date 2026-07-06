@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-assembly-pre-post-index"
-title: "ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기"
+title: "[ARM32] pre-index와 post-index로 자동 주소 계산하기"
 date: 2025-11-05 22:35:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ldr", "str", "pre-index", "post-index", "addressing mode"]
@@ -10,7 +10,7 @@ tags: ["ldr", "str", "pre-index", "post-index", "addressing mode"]
 
 ARM 어셈블리에서 메모리에 접근할 때, 단순히 `[R1]` 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 
 배열이나 버퍼처럼 연속된 데이터를 다룰 때, 매번 `ADD` 명령으로 주소를 갱신하는 것은 비효율적이기 때문입니다. 
-이 문제를 해결하기 위해 ARM은 **pre-index**와 **post-index**라는 자동 주소 계산 기능을 제공합니다. 
+이 문제를 해결하기 위해 ARM은 ***pre-index***와 ***post-index***라는 자동 주소 계산 기능을 제공합니다. 
 이 글에서는 두 방식의 차이와 동작 원리를 이해하기 쉽게 설명하고, 마지막에는 실제 예제 코드와 함께 CPU 내부에서 주소가 어떻게 계산되는지도 알아보겠습니다.  
 
 ## pre-index / post-index가 왜 필요한가  
@@ -28,7 +28,8 @@ ARM에서 메모리에 접근할 때, CPU는 대괄호 안의 표현식을 먼�
 
 <figure style="text-align: center;">
   <img src="/assets/img/pre-post-offset.png" alt="[Offset vs Pre vs Post] Addressing modes overview" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">오프셋 / pre-index / post-index 비교 — 수동 vs 자동 주소 갱신</figcaption>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 1. 오프셋 / pre-index / post-index 비교 — 수동 vs 자동 주소 갱신</figcaption>
 </figure>
 
 ## 자동 주소 계산이란 무엇인가  
@@ -42,8 +43,8 @@ pre-index는 말 그대로 **"먼저 인덱스를 더한 뒤 접근"**하는 방
 
 예를 들어 아래 코드를 보겠습니다.
 
-```armasm
-ldr r0, [r1, #4]!   @ R1에 4를 더한 뒤 그 주소에서 값을 읽는다
+```text
+  ldr r0, [r1, #4]!   @ R1에 4를 더한 뒤 그 주소에서 값을 읽는다
 ```
 
 이 명령은 다음과 같은 순서로 실행됩니다:
@@ -59,8 +60,8 @@ post-index는 반대로 **"먼저 접근하고 나중에 인덱스를 더하는"
 그 다음에 `Rn + offset` 계산 결과를 Rn에 저장합니다.
 
 예를 들어 아래 코드처럼 동작합니다.
-```armasm
-ldr r0, [r1], #4    @ R1이 가리키는 주소에서 값을 읽은 뒤 R1에 4를 더한다
+```text
+  ldr r0, [r1], #4    @ R1이 가리키는 주소에서 값을 읽은 뒤 R1에 4를 더한다
 ```
 
 실행 순서는 다음과 같습니다:
@@ -71,7 +72,7 @@ ldr r0, [r1], #4    @ R1이 가리키는 주소에서 값을 읽은 뒤 R1에 4�
 두 방식 모두 결과적으로 `Rn`은 `Rn + offset`으로 변경되지만, 어떤 시점에 변경되느냐에 따라 동작이 달라집니다.  
 아래 두 코드를 비교해보겠습니다.
 
-```armasm
+```text
 ldr r0, [r1, #4]!   @ pre-index: R1에 4를 더한 후 그 주소로 메모리 접근
 ldr r0, [r1], #4    @ post-index: R1이 가리키는 주소에서 읽은 뒤 R1에 4를 더함
 ```
@@ -83,14 +84,15 @@ post-index는 “현재 주소를 먼저 사용해야 할 때” 적합합니다
 
 <figure style="text-align: center;">
   <img src="/assets/img/timing-pre-post.png" alt="Timing: pre-index (update→access) vs post-index (access→update)" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">pre-index는 주소 갱신 후 접근, post-index는 접근 후 주소 갱신</figcaption>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 2. pre-index는 주소 갱신 후 접근, post-index는 접근 후 주소 갱신</figcaption>
 </figure>
 
 ## 예제 코드 실행 (GCC / QEMU / GDB)
 아래 코드는 두 방식을 비교하기 위한 간단한 예제입니다.
 
 **pre-post-index.s**
-```armasm
+```text
   .text
   .global _start
 _start:
@@ -152,7 +154,6 @@ CPU 내부에서는 명령이 파이프라인 단계를 거치며 실행됩니�
 ## 마무리
 pre-index와 post-index는 모두 **주소 갱신을 자동화**해주는 기능이지만,
 그 차이는 **주소 갱신이 메모리 접근보다 앞인지, 뒤인지**입니다.
-
 pre-index는 다음 데이터를 미리 읽어야 하는 경우에,
 post-index는 현재 데이터를 읽고 다음으로 넘어갈 때 유용합니다.
 

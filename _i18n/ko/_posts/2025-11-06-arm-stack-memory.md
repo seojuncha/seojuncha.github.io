@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-stack-memory"
-title: "ARM 어셈블리 #10 - 스택 메모리(Stack Memory) 이해하기"
+title: "[ARM32] 스택 메모리(Stack Memory) 이해하기"
 date: 2025-11-07 16:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm stack memory", "ldm", "stm"]
@@ -80,7 +80,7 @@ ARM 아키텍처는 기본적으로 **FD(Full Descending)** 구조를 사용합�
 ### 스택 포인터(SP)
 스택 메모리도 결국 메모리이기 때문에 주소로 접근해야 합니다.  
 FD 구조에서는 마지막으로 PUSH된 데이터의 주소를 항상 추적해야 하므로, 이를 담당하는 전용 레지스터가 필요합니다.  
-이를 **스택 포인터(Stack Pointer, SP)** 라고 합니다.  
+이를 ***스택 포인터(Stack Pointer, SP)*** 라고 합니다.  
 
 > **ARMv4** 아키텍처에서는 **R13 레지스터**가 SP로 사용됩니다.  
 
@@ -92,7 +92,7 @@ PUSH 동작은 데이터를 스택에 추가하는 것입니다. 다음 두 단�
 1. SP 값을 4만큼 감소시킵니다.  
 2. 현재 SP 위치에 값을 저장합니다.  
 
-```armasm
+```text
   mov sp, #0x80000
   str r1, [sp, #-4]!
 ```
@@ -106,7 +106,7 @@ POP은 스택의 최상단 데이터를 꺼내는 동작입니다. 다음 두 �
 1. 현재 SP가 가리키는 값을 불러옵니다.
 2. SP 값을 4만큼 증가시킵니다.
 
-```armasm
+```text
   mov sp, #0x80000
   ldr r1, [sp], #4
 ```
@@ -115,7 +115,7 @@ FD 구조에서는 SP가 마지막 데이터의 주소를 가리키므로, 먼�
 
 #### 예제 코드와 디버깅
 **stack-push-pop.s**
-```armasm
+```text
   .text
   .global _start
 _start:
@@ -172,7 +172,7 @@ $ gdb-multiarch stack-push-pop.elf
 스택은 함수 호출과 지역 변수 관리에 핵심적인 역할을 담당합니다.
 
 하지만 여러 데이터를 한 번에 저장하거나 복원해야 할 때, `LDR`과 `STR`만 사용하면 다음과 같이 비효율적인 코드가 됩니다.
-```armasm
+```text
   mov r1, #0x1
   mov r2, #0x2
   mov r3, #0x3

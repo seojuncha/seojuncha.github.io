@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-cpsr-condition-flags"
-title: "ARM 어셈블리 #15 - CPSR과 조건 플래그를 활용한 조건부 명령 실행"
+title: "[ARM32] CPSR과 조건 플래그를 활용한 조건부 명령 실행"
 date: 2025-11-27 20:20:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["condition flags", "arm cpsr"]
@@ -64,18 +64,19 @@ ARM의 거의 모든 명령어는 `CPSR` 플래그 값을 기준으로 명령어
 
 예를 들어, 이전 연산 결과가 음수일 때만 `mov`를 실행하고 싶다면:
 
-```armasm
-  movmi r0, r1
+```text
+    movmi r0, r1
 ```
 
-- `MI`(Minus) = `N == 1`
+- `MI`(Minus) : `N == 1`
 
 즉, 결과가 음수일 때만 실행됩니다.
 
 ## 예제 코드
-```armasm
+```text
   .text
   .global _start
+
 _start:
   movs r0, #-1
   addmi r0, r0, #5

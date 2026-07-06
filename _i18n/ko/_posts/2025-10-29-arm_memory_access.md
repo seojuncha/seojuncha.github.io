@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-memory-access"
-title: "ARM 어셈블리 #7 — LDR/STR와 주소 모드(Addressing Modes)"
+title: "[ARM32] LDR/STR와 주소 모드(Addressing Modes)"
 date: 2025-10-29 20:40:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ldr", "str", "addressing-mode"]

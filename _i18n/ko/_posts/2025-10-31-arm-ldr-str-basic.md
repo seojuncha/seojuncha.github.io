@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-ldr-str-basic"
-title: "ARM 어셈블리 #7 - LDR과 STR로 메모리에 접근하는 가장 단순한 방법"
+title: "[ARM32] LDR과 STR로 메모리에 접근하는 가장 단순한 방법"
 date: 2025-10-31 20:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ldr", "str", "memory-access", "armv4"]
@@ -297,7 +297,7 @@ LDR moves data Memory → Register; STR moves data Register → Memory.
 
 > 컴파일과 실습방법은 [이전 포스팅]({% post_url 2025-09-08-arm-mov-instruction %})을 참고해주세요.
 
-```armasm
+```
   .text
   .global _start
 _start:
@@ -308,7 +308,7 @@ _start:
 이 코드를 실행하면 CPU는 `r1`에 저장된 주소(`0x1000`)를 해석하고, 그 주소의 메모리 위치에 `r0`의 값(`3`)을 저장합니다.
 
 다음은 메모리에서 값을 읽어오는 예제입니다.
-```armasm
+```
   .text
   .global _start
 _start:

@@ -2,11 +2,12 @@
 layout: post
 lang: ko
 ref: "arm-rotate-shift"
-title: "ARM 어셈블리 #4 - ROR, RRX로 비트를 회전하는 방법"
+title: "[ARM32] ROR, RRX로 비트를 회전하는 방법"
 date: 2025-09-17 22:40:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["ror", "rrx", "arm", "assembly", "rotate shift"]
 ---
+
 이번 글에서는 시프트 연산의 마지막 주제인 **회전 시프트 (Rotate Shift)** 를 다룹니다. 
 ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: `ror` (Rotate Right), `rrx` (Rotate Right with eXtend)
 
@@ -30,7 +31,7 @@ ARMv4에서는 두 가지 회전 시프트 명령어를 제공합니다: `ror` (
 즉, **모든 비트를 보존하면서 위치만 바꾸는** 연산입니다.
 
 **ror.s**
-```armasm
+```
   .text
   .global _start
 _start:
@@ -52,7 +53,7 @@ After:    0b0110_0000_0000_0000_0000_0000_0000_1001 = 0x60000009
 - 동시에 현재 캐리 플래그의 값이 MSB로 채워짐
 
 **rrx.s**
-```armasm
+```
   .text
   .global _start
 _start:
@@ -101,23 +102,14 @@ r2             0x8000001a       -2147483622
 {% endhighlight %}
 
 ## 왜 왼쪽 회전 시프트는 없을까?
-ARM에는 `ROL` (Rotate Left) 명령어가 없습니다.
-왜냐하면, 기존의 `lsl` + `ror` 조합으로 쉽게 구현할 수 있기 때문입니다.
+ARMv4T에는 ROR(우회전)만 있고 ROL(좌회전)은 없습니다. 이유는 두 가지입니다.
+첫째, 32비트 회전에서는 좌회전과 우회전이 서로 같습니다. `n`비트 좌회전은 `32 - n`비트 우회전과 결과가 완전히 같기 때문입니다.
+따라서 `ror` 하나만 있으면 좌회전도 표현할 수 있고, `rol`을 따로 둘 이유가 없습니다.
 
-예를 들어:
-```armasm
-  @ ROL r1, r0, #n  (Rotate Left)
-  lsl r2, r0, #n           @ 왼쪽으로 n비트 밀기
-  ror r3, r0, #(32 - n)    @ 오른쪽으로 (32-n)비트 밀기
-  orr r1, r2, r3           @ 합치면 ROL
-```
+둘째, ARM은 시프트를 독립 명령이 아니라 barrel shifter를 통해 데이터 처리 명령의 두 번째 오퍼랜드에 통합해 처리합니다.
+이때 시프트 종류를 지정하는 필드는 2비트뿐이라 네 가지(`lsl`, `lsr`, `asr`, `ror`)만 담을 수 있습니다.
+좌방향은 이미 `lsl`이 차지하고 있고 회전은 좌우가 동치이므로, 제한된 인코딩 공간을 효율적으로 사용하기 위해 `ror`하나만 채택했습니다.
 
-만약, `r0 = 0x80000001`, `n=1` 이라면:
-- LSL → `0x00000002`
-- ROR(31) → `0x40000000`
-- ORR → `0x40000002` (정상적인 ROL 결과)
-
-> `orr` 은 논리합(OR) 연산입니다!
 
 ## 마무리
 이번 포스팅에서는 ARM의 회전 시프트 명령어인 `ror`과 `rrx`를 살펴봤습니다.

@@ -2,7 +2,7 @@
 layout: post
 lang: ko 
 ref: "arm-stack-address-modes"
-title: "ARM Assembly #12 - 스택메모리와 주소모드"
+title: "[ARM32] 스택메모리와 주소모드"
 date: 2025-11-18 22:00:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["arm ldm", "arm stm", "addressing modes", "stack memory"]
@@ -19,7 +19,7 @@ tags: ["arm ldm", "arm stm", "addressing modes", "stack memory"]
 또한 베이스 레지스터(`Rn`)가 가리키는 주소를 **포함한 위치에서 시작할지**, 아니면 **그 다음 주소부터 시작할지**도 제어할 수 있습니다.  
 
 이렇게 메모리의 진행 방향과 시작 위치를 정의하는 것이 바로 ARM의 **주소 모드(Addressing Mode)** 입니다.  
-
+아래에서 각 주소 모드를 상세히 알아보겠습니다.
 
 ## 4개의 주소 모드: IA, IB, DA, DB  
 ARM의 `LDM`/`STM` 명령은 다음 네 가지 주소 모드를 제공합니다.  
@@ -153,7 +153,7 @@ Rn = 0x0FF4
 실제로 ARM 어셈블리를 작성할 때는 주소 모드를 명령어 뒤에 접미사(suffix) 형태로 붙여서 사용합니다.
 
 예를 들어 IA, IB, DA, DB는 다음과 같이 표기됩니다:
-```armasm
+```text
   ldmia r0!, {r1-r3}
   ldmdb r0!, {r1-r3}
   stmia r0!, {r1-r3}
@@ -174,7 +174,7 @@ Rn = 0x0FF4
 ## 동일 주소 모드에서의 STM과 LDM
 이제 일반 주소 모드에서 STM과 LDM을 같은 모드로 사용했을 때, 메모리와 레지스터 사이의 데이터 이동을 살펴보겠습니다.
 
-```armasm 
+```text
   mov r0, #0x8000
   mov r1, #0x1
   mov r2, #0x2
@@ -223,7 +223,7 @@ ARM은 스택을 다루기 위해 FD, FA, ED, EA 라는 스택 전용 주소 모
 ARM에서 가장 일반적으로 사용하는 스택 구조는 Full Descending( FD ) 스택입니다.
 FD 스택에서 PUSH는 다음과 같이 구현할 수 있습니다.
 
-```armasm
+```text
   mov sp, #0x8000
   mov r1, #0x1
   mov r2, #0x2
@@ -254,7 +254,7 @@ SP는 `0x8000`에서 `0x7FF4`로 이동합니다.
 ### 예시: FD 스택의 POP
 이번에는 FD 스택에 저장된 값을 POP으로 되돌려 받는 동작을 살펴보겠습니다.
 
-```armasm
+```text
   @ 앞에서 STMDB sp!, {r1-r3}가 실행되어 있다고 가정합니다.
 
   ldmia sp!, {r1-r3}

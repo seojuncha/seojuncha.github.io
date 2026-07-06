@@ -2,7 +2,7 @@
 layout: post
 lang: ko 
 ref: arm-logical-shift
-title: "ARM 어셈블리 #2 - 논리 시프트 이해하기(LSL, LSR)"
+title: "[ARM32] 논리 시프트 이해하기(LSL, LSR)"
 date: 2025-09-10 00:13:00 +0900
 categories: [arm,assembly,tutorial]
 tags: [Assembly, Embedded, low-level programming, ARM, QEMU, GDB]
@@ -19,8 +19,8 @@ ARM 어셈블리에서는 `mov`, `add`, `sub` 같은 명령어를 사용할 때,
 이 기능 덕분에 별도의 시프트 명령 없이도 다양한 연산을 더 간결하게 표현할 수 있습니다.
 
 예:
-```armasm
-  mov r1, r0, lsl #2    @ R0를 왼쪽으로 2비트 시프트 → R1에 저장
+```
+mov r1, r0, lsl #2    @ R0를 왼쪽으로 2비트 시프트 → R1에 저장
 ```
 이렇게 명령어 한 줄로 시프트 연산과 대입을 동시에 처리할 수 있습니다.
 
@@ -45,7 +45,7 @@ ARM에서는 다음 두 가지 논리 시프트 연산자를 제공합니다:
 
 ### 예제 코드: 논리 시프트 실습
 **logical-shift.s**
-```armasm
+```
   .text
   .global _start
 _start:
@@ -82,21 +82,21 @@ $ qemu-system-arm \
     -kernel logical-shift.elf
 ```
 #### 2. GDB 연결
-```gdb
+```bash
 $ gdb-multiarch logical-shift.elf
 (gdb) target remote localhost:1234
 ```
 #### 3. 메모리 확인
-```gdb
+```bash
 (gdb) x/10i 0x10000
 ```
 #### 4. 레지스터 확인
-```gdb
+```bash
 (gdb) info registers
 (gdb) i r r0 r1 r2
 ```
 #### 5. 명령어 한 줄 실행
-```gdb
+```bash
 (gdb) stepi
 ```
 실행 후 다시 `info registers`를 확인하면 레지스터 값이 변한 걸 확인할 수 있습니다.
@@ -110,7 +110,7 @@ $ gdb-multiarch logical-shift.elf
 ### 예제 코드: 캐리 플래그 확인
 
 **logical-right-shift-carry.s**
-```armasm
+```
   .text
   .global _start
 _start:
@@ -123,7 +123,7 @@ _start:
 -	`movs`는 결과뿐 아니라 CPSR의 캐리 플래그도 업데이트
 
 GDB에서 캐리 플래그를 확인하려면:
-```gdb
+```bash
 (gdb) target remote localhost:1234
 (gdb) info registers cpsr
 (gdb) p ($cpsr >> 29) & 1
@@ -134,12 +134,12 @@ CPSR의 하위 비트를 보면 C, Z, N 등의 상태를 확인할 수 있습니
 논리 시프트는 항상 0으로 채워지기 때문에 부호 없는 정수 처리에 적합합니다. 하지만 부호 있는 정수(예: 음수)는 부호 비트가 손상될 수 있어 주의가 필요합니다.
 
 예:
-```armasm
-  mov r0, #-4
-  mov r1, r0, lsr #1
+```
+mov r0, #-4
+mov r1, r0, lsr #1
 ```
 `mov r1, r0, lsr #1` 에서 오른쪽 시프트 결과로 부호 비트가 손실됩니다.  
-이런 이유로 부호 있는 정수에는 ASR (Arithmetic Shift Right)를 사용합니다.
+이런 이유로 부호 있는 정수에는 `ASR`(Arithmetic Shift Right)를 사용합니다.
 
 그럼에도 불구하고 논리 시프트는 다음과 같은 상황에서 매우 유용합니다:
 - 배열 인덱스 계산
@@ -151,7 +151,7 @@ CPSR의 하위 비트를 보면 C, Z, N 등의 상태를 확인할 수 있습니
 
 - `lsl`, `lsr`을 통해 비트를 이동
 - 시프트 피연산자를 사용해 명령어 안에서 시프트 적용
-- movs를 통해 캐리 플래그 확인
+- `movs`를 통해 캐리 플래그 확인
 - 부호 있는 정수 처리 시에는 주의 필요
 
 다음 글에서는 `asr`, `ror` 등 다른 시프트 유형에 대해 더 살펴보겠습니다.

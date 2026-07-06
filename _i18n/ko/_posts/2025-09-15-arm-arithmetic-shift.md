@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-arithmetic-shift"
-title: "ARM 어셈블리 #3 - 부호를 유지하는 시프트인 산술시프트 (ASR)"
+title: "[ARM32] 부호를 유지하는 시프트인 산술시프트 (ASR)"
 date: 2025-09-15 21:53:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: [Assembly, ASR, ARM, QEMU, GDB]
@@ -64,7 +64,7 @@ After (32-bit):
 ### 산술 시프트 예제
 
 **asr.s**
-{% highlight armasm mark_lines="4 5" %}
+{% highlight text mark_lines="4 5" %}
   .text
   .global _start
 _start:
@@ -83,7 +83,7 @@ _start:
 결과부터 얘기하면, 왼쪽 시프트는 최상위 비트가 바뀌더라도 그것이 의도한 산술 연산일 수 있기 때문입니다.
 
 **left-shift-for-negative.s**
-{% highlight armasm mark_lines="4 5" %}
+{% highlight text mark_lines="4 5" %}
   .text
   .global _start
 _start:
@@ -140,7 +140,7 @@ $ qemu-system-arm \
 $ gdb-multiarch left-shift-for-negative.elf
 ```
 
-{% highlight gdb mark_lines="7 9 10" %}
+{% highlight bash mark_lines="7 9 10" %}
 (gdb) target remote :1234
 0x00010000 in _start ()    
 (gdb) si                   # mov r0, #0x40000000 

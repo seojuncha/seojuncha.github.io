@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-memory-block-access"
-title: "ARM 어셈블리 #11 - 메모리 블럭 접근(LDM, STM)"
+title: "[ARM32] 메모리 블럭 접근(LDM, STM)"
 date: 2025-11-14 18:30:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["memory block", "arm ldm", "arm stm"]
@@ -33,7 +33,7 @@ ARM 프로그래밍에서는 배열이나 구조체처럼 **연속된 데이터�
 ### LDR/STR 사용 시의 비효율성
 `STR`과 `LDR` 같은 단일 주소 접근 명령은 한 번에 하나의 워드만 읽거나 쓸 수 있습니다.  
 
-```armasm
+```text
   mov r0, #0x8000
   mov r1, #0x1
   str r1, [r0]
@@ -75,7 +75,7 @@ ARM은 이러한 연속된 메모리 블럭을 효율적으로 다루기 위해 
 > 단지 `STM`은 반대 방향으로, 레지스터의 값을 메모리에 저장합니다.
 
 #### 예시 1) 0x8000 위치의 메모리에서 2개의 워드를 R1, R2에 저장할 때
-```armasm
+```text
   mov r0, #0x8000
   ldm r0, {r1, r2}
 ```
@@ -91,7 +91,7 @@ ARM은 이러한 연속된 메모리 블럭을 효율적으로 다루기 위해 
 
 
 #### 예시 2) 0x8000 위치의 메모리에서 4개의 워드를 R1~R4에 저장할 때
-```armasm
+```text
   mov r0, #0x8000
   ldm r0, {r1 - r4}
 ```
@@ -109,7 +109,7 @@ ARM은 이러한 연속된 메모리 블럭을 효율적으로 다루기 위해 
 
 
 #### 예시 3) 0x8000 위치의 메모리에서 R1, R2, R7에 저장할 때 
-```armasm
+```text
   mov r0, #0x8000
   ldm r0, {r1 - r2, r7}
 ```
@@ -131,7 +131,7 @@ ARM은 이러한 연속된 메모리 블럭을 효율적으로 다루기 위해 
 ```
 베이스 레지스터 `Rn` 뒤에 `!`를 붙이면, 명령 실행 후 **자동으로 다음 주소로 갱신**됩니다.
  
-```armasm
+```text
   mov r0, #0x8000
   mov r1, #0x1
   mov r2, #0x2

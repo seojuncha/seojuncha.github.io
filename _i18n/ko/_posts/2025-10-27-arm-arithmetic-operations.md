@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-arithmetic-operations"
-title: "ARM 어셈블리 #6 - 산술연산"
+title: "[ARM32] 산술연산"
 date: 2025-10-27 20:20:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["add", "sub", "adc", "sbc", "rsb", "rsc"]
@@ -58,21 +58,21 @@ result = first-operand op second-operand
 **어셈블리에서는 첫 번째 피연산자(`<Rn>`)의 위치가 고정**되어 있으므로 교환법칙이 성립하지 않습니다.
 
 **올바른 예시**
-```armasm
+```
 add r0, r1, #2
 ```
 - 첫번째 피연산자는 레지스터: `R1`
 - 두번째 피연산자는 시프트 피연산자의 형태중 즉시값: `#2`
 
 **잘못된 예시**
-```armasm
+```
 add r0, #2, r1
 ```
 - 첫번째 피연산자는 반드시 레지스터여야 합니다.
 
 ### ADD 예제
 **add.s**
-{% highlight armasm mark_lines="5" %}
+{% highlight text mark_lines="5" %}
   .text
   .global _start:
 _start:
@@ -112,7 +112,7 @@ _start:
 
 ### SUB 예제
 **sub.s**
-{% highlight armasm mark_lines="5" %}
+{% highlight text mark_lines="5" %}
   .text
   .global _start:
 _start:
@@ -144,7 +144,7 @@ _start:
 
 ### RSB 예제
 **rsb.s**
-{% highlight armasm mark_lines="6" %}
+{% highlight text mark_lines="6" %}
   .text
   .global _start:
 _start:
@@ -177,7 +177,7 @@ _start:
  
 ### ADC 예제
 **adc.s**
-```armasm
+```text
   .text
   .global _start
 _start:
@@ -204,7 +204,7 @@ _start:
   - `R2 = 4`
  
 디버깅:
-```
+```bash
 (gdb) x/5i 0x10000
 => 0x10000 <_start>:    mov     r0, #3
    0x10004 <_start+4>:  lsrs    r0, r0, #1

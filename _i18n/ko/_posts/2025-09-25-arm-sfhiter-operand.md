@@ -2,7 +2,7 @@
 layout: post
 lang: ko
 ref: "arm-shifter-operand"
-title: "ARM 어셈블리 #5 - 시프트 피연산자(Shifter Operand) 총정리"
+title: "[ARM32] 시프트 피연산자(Shifter Operand) 총정리"
 date: 2025-09-25 22:40:00 +0900
 categories: ["arm", "assembly", "tutorial"]
 tags: ["shifter-operand"]
@@ -83,7 +83,7 @@ tags: ["shifter-operand"]
 
 ### 문법 예제
 
-```armasm
+```
 mov r0, r1           @ 유효(<Rd> = r0, <Rm> = r1)
 mov r0, #0xff        @ 유효(<Rd> = r0, <Shifter Operand> = 0xff)
 mov r0, r0, lsl #2   @ 유효(<Rd> = r0, <Sfhiter Operand> = r0, lsl #2)
@@ -95,7 +95,7 @@ add r0, #1           @ 무효(<Rd> = r0, <Rn>이 필요)
 32비트 ARM프로세서이기 때문에 `0x0` 부터 `0xffffffff` 까지의 데이터를 다룰 수 있다고 생각하지만,
 모든 32비트 값을 시프트 피연산자의 유효한 즉시값으로 사용할 수 는 없다는 것입니다.
 
-```armasm
+```
   .text
   .global _start
 _start:
@@ -134,7 +134,7 @@ imm.s:4: Error: invalid constant (101) after fixup
 > ```
 
 ### 예제: 유효한 값
-```armasm
+```
 mov r0, #0x104
 ```
 - `0x104` = `0b0000_0000_0000_0000_0000_0001_0000_0100`
@@ -144,7 +144,7 @@ mov r0, #0x104
 - 따라서 `0x104`를 오른쪽으로는 30비트 회전시프트해야 하므로, `imm_8=0x401`이고 `rotate_imm=15`
 
 ### 예제: 유효하지 않은 값
-```armasm
+```
 mov r0, #0x101
 ```
 - `0x101`=`0b0000_0000_0000_0000_0000_0001_0000_0001`
@@ -158,7 +158,7 @@ mov r0, #0x101
 즉, 상수를 코드 근처에 저장하고 ldr 명령으로 불러옵니다.
 
 **literal-pool.s**
-```armasm
+```
   .text
   .global _start
 _start:
@@ -202,7 +202,7 @@ int main(void) {
 $ arm-none-eabi-gcc -fomit-frame-pointer -nostdlib -S invalid-imm.c
 ```
 
-```armasm
+```
 main:
   sub sp, sp, #8
   ldr r3, .L3
