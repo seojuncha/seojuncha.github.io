@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM 어셈블리 #13 - B 명령어로 실행 흐름 분기하기 | Seojun’s Personal Site</title>
+<title>[ARM32] B 명령어로 실행 흐름 분기하기 | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM 어셈블리 #13 - B 명령어로 실행 흐름 분기하기" />
+<meta property="og:title" content="[ARM32] B 명령어로 실행 흐름 분기하기" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="ko" />
 <meta name="description" content="이번 포스팅에서는 명령어 분기를 위한 B 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다. B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-11-23T01:00:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM 어셈블리 #13 - B 명령어로 실행 흐름 분기하기" />
+<meta property="twitter:title" content="[ARM32] B 명령어로 실행 흐름 분기하기" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-23T01:00:00+00:00","datePublished":"2025-11-23T01:00:00+00:00","description":"이번 포스팅에서는 명령어 분기를 위한 B 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다. B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다.","headline":"ARM 어셈블리 #13 - B 명령어로 실행 흐름 분기하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-23T01:00:00+00:00","datePublished":"2025-11-23T01:00:00+00:00","description":"이번 포스팅에서는 명령어 분기를 위한 B 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다. B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다.","headline":"[ARM32] B 명령어로 실행 흐름 분기하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     rel="alternate"
@@ -101,7 +101,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM 어셈블리 #13 - B 명령어로 실행 흐름 분기하기
+      [ARM32] B 명령어로 실행 흐름 분기하기
     </h1>
     <div class="post-meta">
       <time
@@ -119,24 +119,13 @@
     </nav>
   </header>
 
-  <div class="post-content e-content" itemprop="articleBody"><p>이번 포스팅에서는 명령어 분기를 위한 B 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다.
-B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다.</p>
+  <div class="post-content e-content" itemprop="articleBody"><p>이번 포스팅에서는 명령어 분기를 위한 <code class="language-plaintext highlighter-rouge">B</code> 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다.
+<code class="language-plaintext highlighter-rouge">B</code> 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다.</p>
 
-<figure style="text-align: center;">
-  <a href="https://youtu.be/BZamp0G0viA" target="_blank">
-  <img src="/assets/img/ARM Assembly - Basic Branch Instruction.png" alt="Youtube Video to explain ARM B instruction" style="display: block; margin: auto;" /> 
-  </a>
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
-  </figcaption>
-</figure>
-
-<ul>
-  <li><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">GitHub 예제 코드</a></li>
-</ul>
+<p><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">GitHub 예제 코드</a></p>
 
 <h2 id="왜-b-명령어를-사용할까">왜 B 명령어를 사용할까?</h2>
-<p>B 명령어는 단순히 코드의 흐름을 다른 위치로 옮기기 위한 명령어입니다.
+<p><code class="language-plaintext highlighter-rouge">B</code> 명령어는 단순히 코드의 흐름을 다른 위치로 옮기기 위한 명령어입니다.
 함수 호출처럼 되돌아오는 개념은 없으며, C 언어의 <code class="language-plaintext highlighter-rouge">goto</code>와 거의 동일한 수준의 동작을 수행합니다.</p>
 
 <p>사용 예는 다음과 같습니다:</p>
@@ -156,37 +145,37 @@ B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 �
 </blockquote>
 
 <h2 id="브랜치-명령어-b">브랜치 명령어: B</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">b</span> <span class="nv">label</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  b label
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">b label</code>은 레이블의 주소로 바로 점프하라는 의미입니다.
 이 동작은 내부적으로 PC 값을 레이블 주소로 교체하는 것과 동일합니다.</p>
 
 <h2 id="레이블label의-의미">레이블(Label)의 의미</h2>
 <p>레이블은 특정 명령어 위치에 이름을 붙인 것입니다.</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">label</span><span class="err">:</span>
-    <span class="nb">instructions</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  label:
+    instructions
 </code></pre></div></div>
 <p>레이블 이름 뒤에는 반드시 콜론(:)을 붙여야 합니다.
 <strong>레이블의 주소는 레이블 아래 첫 번째 명령어의 주소입니다.</strong></p>
 
 <p>예:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">foo</span><span class="err">:</span>
-    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10000</span>
-    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10004</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  foo:
+    mov r0, #1   @ address = 0x10000
+    mov r0, #2   @ address = 0x10004
 </code></pre></div></div>
 
 <p>여기서 foo의 주소는 <code class="language-plaintext highlighter-rouge">0x10000</code>입니다.</p>
 
 <h2 id="예제-코드">예제 코드</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
-  <span class="nb">b</span>   <span class="nv">foo</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>     <span class="no">@</span> <span class="nv">never</span> <span class="nv">executed</span>
-<span class="nl">foo</span><span class="err">:</span>
-  <span class="nb">add</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
-  <span class="nb">b</span>   <span class="nv">_start</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #2
+  b   foo
+  mov r1, r0     @ 실행 안됨
+foo:
+  add r0, r0, #3
+  b   _start
 </code></pre></div></div>
 
 <p><strong>실행 흐름</strong></p>
@@ -210,7 +199,7 @@ B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 �
 <span class="o">(</span>gdb<span class="o">)</span> si
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">display/i $pc</code>는 한 단계씩 실행할 때 PC가 어디로 이동하는지 확인하기 좋습니다.
-특히 b foo 명령어가 실행될 때, PC가 정확히 레이블의 주소로 변경되는 것을 확인할 수 있습니다.</p>
+특히 <code class="language-plaintext highlighter-rouge">b foo</code> 명령어가 실행될 때, PC가 정확히 레이블의 주소로 변경되는 것을 확인할 수 있습니다.</p>
 
 <h2 id="마무리">마무리</h2>
 <p>이번 포스팅에서는 ARMv4에서 <strong>가장 기본적인 분기 명령어</strong>인 <code class="language-plaintext highlighter-rouge">B</code>를 살펴보았습니다.

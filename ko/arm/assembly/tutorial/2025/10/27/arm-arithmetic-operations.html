@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM 어셈블리 #6 - 산술연산 | Seojun’s Personal Site</title>
+<title>[ARM32] 산술연산 | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM 어셈블리 #6 - 산술연산" />
+<meta property="og:title" content="[ARM32] 산술연산" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="ko" />
 <meta name="description" content="이번 포스팅에서는 ARM의 기본 산술 연산(Arithmetic Operations) 명령어들을 다뤄보겠습니다. 특히 덧셈과 뺄셈, 그리고 Carry(캐리)를 포함하는 연산까지 함께 살펴봅니다. 지금까지는 레지스터에 값을 저장하고 시프트(shift)하는 방법을 배웠다면, 오늘은 그 값을 연산하는 단계로 나아가 보겠습니다." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-10-27T11:20:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM 어셈블리 #6 - 산술연산" />
+<meta property="twitter:title" content="[ARM32] 산술연산" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-10-27T11:20:00+00:00","datePublished":"2025-10-27T11:20:00+00:00","description":"이번 포스팅에서는 ARM의 기본 산술 연산(Arithmetic Operations) 명령어들을 다뤄보겠습니다. 특히 덧셈과 뺄셈, 그리고 Carry(캐리)를 포함하는 연산까지 함께 살펴봅니다. 지금까지는 레지스터에 값을 저장하고 시프트(shift)하는 방법을 배웠다면, 오늘은 그 값을 연산하는 단계로 나아가 보겠습니다.","headline":"ARM 어셈블리 #6 - 산술연산","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-10-27T11:20:00+00:00","datePublished":"2025-10-27T11:20:00+00:00","description":"이번 포스팅에서는 ARM의 기본 산술 연산(Arithmetic Operations) 명령어들을 다뤄보겠습니다. 특히 덧셈과 뺄셈, 그리고 Carry(캐리)를 포함하는 연산까지 함께 살펴봅니다. 지금까지는 레지스터에 값을 저장하고 시프트(shift)하는 방법을 배웠다면, 오늘은 그 값을 연산하는 단계로 나아가 보겠습니다.","headline":"[ARM32] 산술연산","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     rel="alternate"
@@ -101,7 +101,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM 어셈블리 #6 - 산술연산
+      [ARM32] 산술연산
     </h1>
     <div class="post-meta">
       <time
@@ -217,7 +217,7 @@
 <strong>어셈블리에서는 첫 번째 피연산자(<code class="language-plaintext highlighter-rouge">&lt;Rn&gt;</code>)의 위치가 고정</strong>되어 있으므로 교환법칙이 성립하지 않습니다.</p>
 
 <p><strong>올바른 예시</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">add</span> <span class="nb">r0</span><span class="err">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>add r0, r1, #2
 </code></pre></div></div>
 <ul>
   <li>첫번째 피연산자는 레지스터: <code class="language-plaintext highlighter-rouge">R1</code></li>
@@ -225,7 +225,7 @@
 </ul>
 
 <p><strong>잘못된 예시</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">add</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">#</span><span class="mi">2</span><span class="o">,</span> <span class="nv">r1</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>add r0, #2, r1
 </code></pre></div></div>
 <ul>
   <li>첫번째 피연산자는 반드시 레지스터여야 합니다.</li>
@@ -234,13 +234,13 @@
 <h3 id="add-예제">ADD 예제</h3>
 <p><strong>add.s</strong></p>
 
-<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span><span class="err">:</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
-<span class="hll">  <span class="nb">add</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
-</span>  <span class="nb">add</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span>
-  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  .text
+  .global _start:
+_start:
+  mov r0, #3
+<span class="hll">  add r1, r0, #3
+</span>  add r2, r0, lsl #2
+  b .</code></pre></figure>
 
 <p>주요 라인 해석:</p>
 <ul>
@@ -283,12 +283,12 @@
 <h3 id="sub-예제">SUB 예제</h3>
 <p><strong>sub.s</strong></p>
 
-<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span><span class="err">:</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span>
-<span class="hll">  <span class="nb">sub</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x1</span>
-</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  .text
+  .global _start:
+_start:
+  mov r0, #4
+<span class="hll">  sub r1, r0, #0x1
+</span>  b .</code></pre></figure>
 
 <p>주요 라인 해석:</p>
 <ul>
@@ -321,13 +321,13 @@
 <h3 id="rsb-예제">RSB 예제</h3>
 <p><strong>rsb.s</strong></p>
 
-<figure class="highlight"><pre><code class="language-armasm" data-lang="armasm">  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span><span class="err">:</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
-<span class="hll">  <span class="nb">rsb</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
-</span>  <span class="nb">b</span> <span class="mf">.</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">  .text
+  .global _start:
+_start:
+  mov r0, #5
+  mov r1, #2
+<span class="hll">  rsb r2, r1, r0
+</span>  b .</code></pre></figure>
 
 <p>주요 라인 해석:</p>
 <ul>
@@ -365,14 +365,14 @@
 
 <h3 id="adc-예제">ADC 예제</h3>
 <p><strong>adc.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mh">0x3</span>
-  <span class="nb">movs</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nb">lsr</span> <span class="o">#</span><span class="mi">1</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
-  <span class="nb">adc</span> <span class="nv">r2</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
-  <span class="nb">b</span> <span class="mf">.</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #0x3
+  movs r0, r0, lsr #1
+  mov r1, #2
+  adc r2, r0, r1
+  b .
 </code></pre></div></div>
 
 <p>주요 라인 해석:</p>
@@ -405,49 +405,49 @@
 </ul>
 
 <p>디버깅:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(gdb) x/5i 0x10000
-=&gt; 0x10000 &lt;_start&gt;:    mov     r0, #3
-   0x10004 &lt;_start+4&gt;:  lsrs    r0, r0, #1
-   0x10008 &lt;_start+8&gt;:  mov     r1, #2
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> x/5i 0x10000
+<span class="o">=&gt;</span> 0x10000 &lt;_start&gt;:    mov     r0, <span class="c">#3</span>
+   0x10004 &lt;_start+4&gt;:  lsrs    r0, r0, <span class="c">#1</span>
+   0x10008 &lt;_start+8&gt;:  mov     r1, <span class="c">#2</span>
    0x1000c &lt;_start+12&gt;: adc     r2, r0, r1
    0x10010 &lt;_start+16&gt;: b       0x10010 &lt;_start+16&gt;
-(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
-$1 = 0
-(gdb) i r r0 r1 r2
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
+<span class="nv">$1</span> <span class="o">=</span> 0
+<span class="o">(</span>gdb<span class="o">)</span> i r r0 r1 r2
 r0             0x0      0
 r1             0x0      0
 r2             0x0      0
-(gdb) si
-0x00010004 in _start ()
-(gdb) i r r0 r1 r2
+<span class="o">(</span>gdb<span class="o">)</span> si
+0x00010004 <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r r0 r1 r2
 r0             0x3      3
 r1             0x0      0
 r2             0x0      0
-(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
-$2 = 0
-(gdb) si
-0x00010008 in _start ()
-(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
-$3 = 1
-(gdb) i r r0 r1 r2
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
+<span class="nv">$2</span> <span class="o">=</span> 0
+<span class="o">(</span>gdb<span class="o">)</span> si
+0x00010008 <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
+<span class="nv">$3</span> <span class="o">=</span> 1
+<span class="o">(</span>gdb<span class="o">)</span> i r r0 r1 r2
 r0             0x1      1
 r1             0x0      0
 r2             0x0      0
-(gdb) si
-0x0001000c in _start ()
-(gdb) i r r0 r1 r2
+<span class="o">(</span>gdb<span class="o">)</span> si
+0x0001000c <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> i r r0 r1 r2
 r0             0x1      1
 r1             0x2      2
 r2             0x0      0
-(gdb) si
-0x00010010 in _start ()
-(gdb) p ($cpsr &gt;&gt; 29) &amp; 1
-$4 = 1
-(gdb) i r r0 r1 r2
+<span class="o">(</span>gdb<span class="o">)</span> si
+0x00010010 <span class="k">in </span>_start <span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span><span class="nv">$cpsr</span> <span class="o">&gt;&gt;</span> 29<span class="o">)</span> &amp; 1
+<span class="nv">$4</span> <span class="o">=</span> 1
+<span class="o">(</span>gdb<span class="o">)</span> i r r0 r1 r2
 r0             0x1      1
 r1             0x2      2
 r2             0x4      4
-(gdb)
+<span class="o">(</span>gdb<span class="o">)</span>
 </code></pre></div></div>
 
 <h2 id="마무리">마무리</h2>

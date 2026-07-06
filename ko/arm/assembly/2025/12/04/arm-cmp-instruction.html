@@ -139,7 +139,7 @@
 <p><code class="language-plaintext highlighter-rouge">CPSR</code>에 대한 자세한 내용은 <a href="/ko/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html">이 포스팅</a>을 참고해 주세요.</p>
 
 <h2 id="cmp-명령">CMP 명령</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">cmp</span> <span class="nv">Rn</span><span class="o">,</span> <span class="nv">Operand2</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    cmp Rn, Operand2
 </code></pre></div></div>
 
 <p>여기서 <code class="language-plaintext highlighter-rouge">Rn</code>은 반드시 레지스터여야 하며, <code class="language-plaintext highlighter-rouge">Operand2</code>는 시프트 피연산자(Shifter Operand)입니다.
@@ -153,16 +153,17 @@
 </blockquote>
 
 <h2 id="예제-코드">예제 코드</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
-    <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
-    <span class="nb">cmp</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
-    <span class="nb">beq</span> <span class="nv">equal</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
 
-<span class="nl">equal</span><span class="err">:</span>
-    <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0xff</span>
+_start:
+    mov r0, #5
+    mov r1, #5
+    cmp r0, r1
+    beq equal
+
+equal:
+    mov r2, #0xff
 </code></pre></div></div>
 
 <p><code class="language-plaintext highlighter-rouge">cmp r0, r1</code> 실행 후 <code class="language-plaintext highlighter-rouge">CPSR</code>의 상태는 다음과 같습니다.</p>

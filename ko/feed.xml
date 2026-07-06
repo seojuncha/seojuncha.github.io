@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2026-07-04T03:07:49+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Seojun’s Personal Site</title><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">C 컴파일 4단계</title><link href="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html" rel="alternate" type="text/html" title="C 컴파일 4단계" /><published>2026-07-01T12:00:00+00:00</published><updated>2026-07-01T12:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/01/c-build-step</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html"><![CDATA[<p>간단한 샘플코드를 사용해서 C코드가 실행가능한 파일로 변환되는 과정을 자세히 살펴본다.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2026-07-06T12:23:39+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Seojun’s Personal Site</title><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">C 컴파일 4단계</title><link href="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html" rel="alternate" type="text/html" title="C 컴파일 4단계" /><published>2026-07-01T12:00:00+00:00</published><updated>2026-07-01T12:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/01/c-build-step</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html"><![CDATA[<p>간단한 샘플코드를 사용해서 C코드가 실행가능한 파일로 변환되는 과정을 자세히 살펴본다.</p>
 
 <p>사실 이 과정을 모르지 않지만, 스스로 설명하는 과정에서 각 과정의 개념과 분석방법에 더 익숙해 지기 위함이다.</p>
 
@@ -2107,7 +2107,7 @@ GDB로 디버깅할 때 출력하는 주소 또한 동일합니다.</p>
 <p><code class="language-plaintext highlighter-rouge">CPSR</code>에 대한 자세한 내용은 <a href="/ko/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html">이 포스팅</a>을 참고해 주세요.</p>
 
 <h2 id="cmp-명령">CMP 명령</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">cmp</span> <span class="nv">Rn</span><span class="o">,</span> <span class="nv">Operand2</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    cmp Rn, Operand2
 </code></pre></div></div>
 
 <p>여기서 <code class="language-plaintext highlighter-rouge">Rn</code>은 반드시 레지스터여야 하며, <code class="language-plaintext highlighter-rouge">Operand2</code>는 시프트 피연산자(Shifter Operand)입니다.
@@ -2121,16 +2121,17 @@ GDB로 디버깅할 때 출력하는 주소 또한 동일합니다.</p>
 </blockquote>
 
 <h2 id="예제-코드">예제 코드</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
-    <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
-    <span class="nb">cmp</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
-    <span class="nb">beq</span> <span class="nv">equal</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
 
-<span class="nl">equal</span><span class="err">:</span>
-    <span class="nb">mov</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">#</span><span class="mh">0xff</span>
+_start:
+    mov r0, #5
+    mov r1, #5
+    cmp r0, r1
+    beq equal
+
+equal:
+    mov r2, #0xff
 </code></pre></div></div>
 
 <p><code class="language-plaintext highlighter-rouge">cmp r0, r1</code> 실행 후 <code class="language-plaintext highlighter-rouge">CPSR</code>의 상태는 다음과 같습니다.</p>
@@ -2190,7 +2191,7 @@ GDB로 디버깅할 때 출력하는 주소 또한 동일합니다.</p>
   <li><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/doc/arm-architecture-reference-manual_DDI0100.pdf">ARM Architecture Reference Manual</a></li>
   <li><a href="https://docs.python.org/3/tutorial/inputoutput.html">Python3 Input and Output</a></li>
   <li><a href="https://docs.python.org/3/library/string.html#formatspec">Python3 Format Specification</a></li>
-</ul>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="arm cmp" /><category term="arm cpsr" /><summary type="html"><![CDATA[ARM에서 CMP 명령은 두 값을 비교하기 위해 사용되는 명령어입니다. 비교는 내부적으로 두 값을 뺄셈하여 결과의 상태를 확인하는 방식으로 이루어집니다. 예를 들어, 5 - 3 = 2는 양수이므로 5가 3보다 크다는 것을 알 수 있고, 3 - 5 = -2는 음수이므로 3이 5보다 작다는 것을 알 수 있습니다. 또한 5 - 5 = 0이므로 두 값이 동일하다는 것도 확인할 수 있습니다.]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #15 - CPSR과 조건 플래그를 활용한 조건부 명령 실행</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html" rel="alternate" type="text/html" title="ARM 어셈블리 #15 - CPSR과 조건 플래그를 활용한 조건부 명령 실행" /><published>2025-11-27T11:20:00+00:00</published><updated>2025-11-27T11:20:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"><![CDATA[<p>지금까지는 명령어가 실행될 순서가 되면 무조건 실행되는 구조만 살펴봤습니다.
+</ul>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="arm cmp" /><category term="arm cpsr" /><summary type="html"><![CDATA[ARM에서 CMP 명령은 두 값을 비교하기 위해 사용되는 명령어입니다. 비교는 내부적으로 두 값을 뺄셈하여 결과의 상태를 확인하는 방식으로 이루어집니다. 예를 들어, 5 - 3 = 2는 양수이므로 5가 3보다 크다는 것을 알 수 있고, 3 - 5 = -2는 음수이므로 3이 5보다 작다는 것을 알 수 있습니다. 또한 5 - 5 = 0이므로 두 값이 동일하다는 것도 확인할 수 있습니다.]]></summary></entry><entry xml:lang="ko"><title type="html">[ARM32] CPSR과 조건 플래그를 활용한 조건부 명령 실행</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html" rel="alternate" type="text/html" title="[ARM32] CPSR과 조건 플래그를 활용한 조건부 명령 실행" /><published>2025-11-27T11:20:00+00:00</published><updated>2025-11-27T11:20:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/27/arm-cpsr-condition-flags.html"><![CDATA[<p>지금까지는 명령어가 실행될 순서가 되면 무조건 실행되는 구조만 살펴봤습니다.
 하지만 ARM 아키텍처는 조금 더 특별합니다.
 <code class="language-plaintext highlighter-rouge">CPSR</code> 레지스터의 조건 플래그를 사용하면 특정 조건에서만 명령어를 실행하도록 만들 수 있습니다.</p>
 
@@ -2271,23 +2272,24 @@ CPU의 프로그램 상태를 저장하는 특수 목적 레지스터입니다.<
 
 <p>예를 들어, 이전 연산 결과가 음수일 때만 <code class="language-plaintext highlighter-rouge">mov</code>를 실행하고 싶다면:</p>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">movmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r1</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    movmi r0, r1
 </code></pre></div></div>
 
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">MI</code>(Minus) = <code class="language-plaintext highlighter-rouge">N == 1</code></li>
+  <li><code class="language-plaintext highlighter-rouge">MI</code>(Minus) : <code class="language-plaintext highlighter-rouge">N == 1</code></li>
 </ul>
 
 <p>즉, 결과가 음수일 때만 실행됩니다.</p>
 
 <h2 id="예제-코드">예제 코드</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">movs</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#-</span><span class="mi">1</span>
-  <span class="nb">addmi</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">5</span>
-  <span class="nb">addpl</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>
-  <span class="nb">b</span> <span class="mf">.</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+
+_start:
+  movs r0, #-1
+  addmi r0, r0, #5
+  addpl r0, r0, #1
+  b .
 </code></pre></div></div>
 
 <p>위 예제는 <code class="language-plaintext highlighter-rouge">R0</code>에 <code class="language-plaintext highlighter-rouge">-1</code>을 저장한 뒤:</p>
@@ -2328,18 +2330,9 @@ CPU의 프로그램 상태를 저장하는 특수 목적 레지스터입니다.<
 <h2 id="마무리">마무리</h2>
 <p>이번 글에서는 <code class="language-plaintext highlighter-rouge">CPSR</code> 플래그와 조건 코드를 이용한 조건부 명령 실행을 살펴봤습니다.
 다음 글에서는 비교 연산자(<code class="language-plaintext highlighter-rouge">CMP</code>, <code class="language-plaintext highlighter-rouge">CMN</code> 등)를 이용한 실제 조건 분기를 다루고,
-조건부 실행과 조건 분기를 어떻게 선택해야 하는지도 함께 설명드리겠습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="condition flags" /><category term="arm cpsr" /><summary type="html"><![CDATA[지금까지는 명령어가 실행될 순서가 되면 무조건 실행되는 구조만 살펴봤습니다. 하지만 ARM 아키텍처는 조금 더 특별합니다. CPSR 레지스터의 조건 플래그를 사용하면 특정 조건에서만 명령어를 실행하도록 만들 수 있습니다.]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #14 - 복귀주소를 자동 저장하는 BL 명령어 활용</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html" rel="alternate" type="text/html" title="ARM 어셈블리 #14 - 복귀주소를 자동 저장하는 BL 명령어 활용" /><published>2025-11-26T09:30:00+00:00</published><updated>2025-11-26T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html"><![CDATA[<p><code class="language-plaintext highlighter-rouge">BL</code> 명령은 <a href="/ko/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html">이전 포스팅</a>에서 설명한 <code class="language-plaintext highlighter-rouge">B</code> 명령에 함수 호출 기능을 더한 명령어입니다.
-<code class="language-plaintext highlighter-rouge">B</code> 명령이 단순히 특정 레이블로 점프하는 역할이었다면, <code class="language-plaintext highlighter-rouge">BL</code> 명령은 점프 이후 복귀해야 하는 주소를 <code class="language-plaintext highlighter-rouge">LR</code>(Register <code class="language-plaintext highlighter-rouge">R14</code>)에 자동으로 저장합니다.
+조건부 실행과 조건 분기를 어떻게 선택해야 하는지도 함께 설명드리겠습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="condition flags" /><category term="arm cpsr" /><summary type="html"><![CDATA[지금까지는 명령어가 실행될 순서가 되면 무조건 실행되는 구조만 살펴봤습니다. 하지만 ARM 아키텍처는 조금 더 특별합니다. CPSR 레지스터의 조건 플래그를 사용하면 특정 조건에서만 명령어를 실행하도록 만들 수 있습니다.]]></summary></entry><entry xml:lang="ko"><title type="html">[ARM32] 복귀주소를 자동 저장하는 BL 명령어 활용</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html" rel="alternate" type="text/html" title="[ARM32] 복귀주소를 자동 저장하는 BL 명령어 활용" /><published>2025-11-26T09:30:00+00:00</published><updated>2025-11-26T09:30:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/26/arm-branch-with-return-address.html"><![CDATA[<p><code class="language-plaintext highlighter-rouge">BL</code> 명령은 <a href="/ko/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html">이전 포스팅</a>에서 설명한 <code class="language-plaintext highlighter-rouge">B</code> 명령에 함수 호출 기능을 더한 명령어입니다.
+<code class="language-plaintext highlighter-rouge">B</code> 명령이 단순히 특정 레이블로 점프하는 역할이었다면, <code class="language-plaintext highlighter-rouge">BL</code> 명령은 점프 이후 복귀해야 하는 주소를 <strong><em>LR</em></strong>(링크 레지스터, R14)에 자동으로 저장합니다.
 따라서 <code class="language-plaintext highlighter-rouge">BL</code>은 ARM에서 함수 호출을 구현하는 핵심 매커니즘이며, 스택, 함수 호출 규약, 프레임 포인터 등 이후에 배우게 될 개념들의 기반이 됩니다.</p>
-
-<figure style="text-align: center;">
-  <a href="https://youtu.be/cMMjuVVKaS0" target="_blank">
-  <img src="/assets/img/ARM Assembly - bl instruction.png" alt="Youtube Video to explain ARM BL instruction" style="display: block; margin: auto;" /> 
-  </a>
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
-  </figcaption>
-</figure>
 
 <p><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch-with-link.s">GitHub 샘플코드</a></p>
 
@@ -2348,30 +2341,30 @@ CPU의 프로그램 상태를 저장하는 특수 목적 레지스터입니다.<
 이 복귀 주소를 모르면 다음에 실행해야 할 명령어가 어디인지 알 수 없기 때문에, 별도로 저장해둘 필요가 있습니다.</p>
 
 <h2 id="bl-명령">BL 명령</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">bl</span> <span class="nv">label</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    bl label
 </code></pre></div></div>
 <p>문법은 <code class="language-plaintext highlighter-rouge">b label</code>과 동일하지만 내부 동작이 다릅니다.
-<code class="language-plaintext highlighter-rouge">bl label</code>을 실행하면 label 위치로 점프하면서, <strong>해당 <code class="language-plaintext highlighter-rouge">BL</code> 다음 명령어의 주소(복귀 주소)</strong>를 <code class="language-plaintext highlighter-rouge">LR</code>에 저장합니다.
-이후 서브루틴 코드가 끝나면 <code class="language-plaintext highlighter-rouge">LR</code>에 저장된 주소를 <code class="language-plaintext highlighter-rouge">PC</code>로 로드하여 원래 실행 흐름으로 돌아갑니다.</p>
+<code class="language-plaintext highlighter-rouge">bl label</code>을 실행하면 label 위치로 점프하면서, <strong>해당 <code class="language-plaintext highlighter-rouge">BL</code> 다음 명령어의 주소(복귀 주소)</strong>를 LR에 저장합니다.
+이후 서브루틴 코드가 끝나면 LR에 저장된 주소를 PC로 로드하여 원래 실행 흐름으로 돌아갑니다.</p>
 
 <figure style="text-align: center;">
   <img src="/assets/img/bl-with-lr-and-pc.png" alt="BL 명령어 수행 시 PC와 LR의 동작 흐름 다이어그램" style="display: block; margin: auto;" /> 
   <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  그럼 1. BL 명령어가 실행되면 PC는 서브루틴으로 이동하고, LR은 복귀할 명령어의 주소를 저장합니다. 
+  그럼 1. <code>BL</code> 명령어가 실행되면 PC는 서브루틴으로 이동하고, LR은 복귀할 명령어의 주소를 저장합니다. 
   </figcaption>
 </figure>
 
 <h2 id="lrlink-register-레지스터">LR(Link Register) 레지스터</h2>
-<p>ARM은 함수 호출을 구현하기 위해 LR을 복귀 주소를 저장하는 전용 레지스터로 사용합니다.
-ARMv4에서는 <code class="language-plaintext highlighter-rouge">R14</code>가 <code class="language-plaintext highlighter-rouge">LR</code>로 사용됩니다.</p>
+<p>ARM은 함수 호출을 구현하기 위해 LR을 <strong>복귀 주소를 저장하는 전용 레지스터</strong>로 사용합니다.
+ARMv4에서는 <strong><em>R14</em></strong>가 LR로 사용됩니다.</p>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">bl</span> <span class="nv">foo</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>   <span class="no">@</span> <span class="nv">LR</span><span class="err">이</span> <span class="err">저장한</span> <span class="err">명령어</span> <span class="err">위치</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  bl foo
+  mov r0, #2   @ LR이 저장한 명령어 위치
 </code></pre></div></div>
 
-<p>서브루틴이 끝나면 <code class="language-plaintext highlighter-rouge">LR</code>에 저장된 주소로 복귀해야 하므로, <code class="language-plaintext highlighter-rouge">PC</code>를 <code class="language-plaintext highlighter-rouge">LR</code> 값으로 업데이트합니다.</p>
+<p>서브루틴이 끝나면 LR에 저장된 주소로 복귀해야 하므로, PC를 LR 값으로 업데이트합니다.</p>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mov</span> <span class="nv">pc</span><span class="o">,</span> <span class="nv">lr</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  mov pc, lr
 </code></pre></div></div>
 
 <blockquote>
@@ -2380,16 +2373,16 @@ ARMv5 이후부터는 <code class="language-plaintext highlighter-rouge">bx lr</
 </blockquote>
 
 <h2 id="예제-코드">예제 코드</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
-  <span class="nb">bl</span> <span class="nv">foo</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>
-  <span class="nb">b</span> <span class="mf">.</span>
-<span class="nl">foo</span><span class="err">:</span>
-  <span class="nb">add</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
-  <span class="nb">mov</span> <span class="nv">pc</span><span class="o">,</span> <span class="nv">lr</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #2
+  bl foo
+  mov r1, r0
+  b .
+foo:
+  add r0, r0, #3
+  mov pc, lr
 </code></pre></div></div>
 
 <h3 id="실행-흐름">실행 흐름</h3>
@@ -2416,24 +2409,13 @@ ARMv5 이후부터는 <code class="language-plaintext highlighter-rouge">bx lr</
 <h2 id="마무리">마무리</h2>
 <p>다음 포스팅에서는 조건부 명령어 실행을 위한 condition code에 대해 알아보겠습니다.
 지금까지는 모든 명령어가 항상 실행되었지만,
-ARM 명령어는 뒤에 두 글자의 조건 코드를 붙여 특정 조건에서만 실행되도록 만들 수 있습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm bl" /><category term="arm branch instruction" /><category term="link register" /><category term="arm lr" /><summary type="html"><![CDATA[BL 명령은 이전 포스팅에서 설명한 B 명령에 함수 호출 기능을 더한 명령어입니다. B 명령이 단순히 특정 레이블로 점프하는 역할이었다면, BL 명령은 점프 이후 복귀해야 하는 주소를 LR(Register R14)에 자동으로 저장합니다. 따라서 BL은 ARM에서 함수 호출을 구현하는 핵심 매커니즘이며, 스택, 함수 호출 규약, 프레임 포인터 등 이후에 배우게 될 개념들의 기반이 됩니다.]]></summary></entry><entry xml:lang="ko"><title type="html">ARM 어셈블리 #13 - B 명령어로 실행 흐름 분기하기</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" rel="alternate" type="text/html" title="ARM 어셈블리 #13 - B 명령어로 실행 흐름 분기하기" /><published>2025-11-23T01:00:00+00:00</published><updated>2025-11-23T01:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"><![CDATA[<p>이번 포스팅에서는 명령어 분기를 위한 B 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다.
-B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다.</p>
+ARM 명령어는 뒤에 두 글자의 조건 코드를 붙여 특정 조건에서만 실행되도록 만들 수 있습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm bl" /><category term="arm branch instruction" /><category term="link register" /><category term="arm lr" /><summary type="html"><![CDATA[BL 명령은 이전 포스팅에서 설명한 B 명령에 함수 호출 기능을 더한 명령어입니다. B 명령이 단순히 특정 레이블로 점프하는 역할이었다면, BL 명령은 점프 이후 복귀해야 하는 주소를 LR(링크 레지스터, R14)에 자동으로 저장합니다. 따라서 BL은 ARM에서 함수 호출을 구현하는 핵심 매커니즘이며, 스택, 함수 호출 규약, 프레임 포인터 등 이후에 배우게 될 개념들의 기반이 됩니다.]]></summary></entry><entry xml:lang="ko"><title type="html">[ARM32] B 명령어로 실행 흐름 분기하기</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" rel="alternate" type="text/html" title="[ARM32] B 명령어로 실행 흐름 분기하기" /><published>2025-11-23T01:00:00+00:00</published><updated>2025-11-23T01:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"><![CDATA[<p>이번 포스팅에서는 명령어 분기를 위한 <code class="language-plaintext highlighter-rouge">B</code> 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다.
+<code class="language-plaintext highlighter-rouge">B</code> 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다.</p>
 
-<figure style="text-align: center;">
-  <a href="https://youtu.be/BZamp0G0viA" target="_blank">
-  <img src="/assets/img/ARM Assembly - Basic Branch Instruction.png" alt="Youtube Video to explain ARM B instruction" style="display: block; margin: auto;" /> 
-  </a>
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
-  <a href="https://www.youtube.com/@seojuncha" target="_blank">youtube.com/@seojuncha</a>
-  </figcaption>
-</figure>
-
-<ul>
-  <li><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">GitHub 예제 코드</a></li>
-</ul>
+<p><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">GitHub 예제 코드</a></p>
 
 <h2 id="왜-b-명령어를-사용할까">왜 B 명령어를 사용할까?</h2>
-<p>B 명령어는 단순히 코드의 흐름을 다른 위치로 옮기기 위한 명령어입니다.
+<p><code class="language-plaintext highlighter-rouge">B</code> 명령어는 단순히 코드의 흐름을 다른 위치로 옮기기 위한 명령어입니다.
 함수 호출처럼 되돌아오는 개념은 없으며, C 언어의 <code class="language-plaintext highlighter-rouge">goto</code>와 거의 동일한 수준의 동작을 수행합니다.</p>
 
 <p>사용 예는 다음과 같습니다:</p>
@@ -2453,37 +2435,37 @@ B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 �
 </blockquote>
 
 <h2 id="브랜치-명령어-b">브랜치 명령어: B</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">b</span> <span class="nv">label</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  b label
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">b label</code>은 레이블의 주소로 바로 점프하라는 의미입니다.
 이 동작은 내부적으로 PC 값을 레이블 주소로 교체하는 것과 동일합니다.</p>
 
 <h2 id="레이블label의-의미">레이블(Label)의 의미</h2>
 <p>레이블은 특정 명령어 위치에 이름을 붙인 것입니다.</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">label</span><span class="err">:</span>
-    <span class="nb">instructions</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  label:
+    instructions
 </code></pre></div></div>
 <p>레이블 이름 뒤에는 반드시 콜론(:)을 붙여야 합니다.
 <strong>레이블의 주소는 레이블 아래 첫 번째 명령어의 주소입니다.</strong></p>
 
 <p>예:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">foo</span><span class="err">:</span>
-    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">1</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10000</span>
-    <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>   <span class="no">@</span> <span class="nv">address</span> <span class="o">=</span> <span class="mh">0x10004</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  foo:
+    mov r0, #1   @ address = 0x10000
+    mov r0, #2   @ address = 0x10004
 </code></pre></div></div>
 
 <p>여기서 foo의 주소는 <code class="language-plaintext highlighter-rouge">0x10000</code>입니다.</p>
 
 <h2 id="예제-코드">예제 코드</h2>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">mov</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">2</span>
-  <span class="nb">b</span>   <span class="nv">foo</span>
-  <span class="nb">mov</span> <span class="nv">r1</span><span class="o">,</span> <span class="nv">r0</span>     <span class="no">@</span> <span class="nv">never</span> <span class="nv">executed</span>
-<span class="nl">foo</span><span class="err">:</span>
-  <span class="nb">add</span> <span class="nv">r0</span><span class="o">,</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">#</span><span class="mi">3</span>
-  <span class="nb">b</span>   <span class="nv">_start</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  mov r0, #2
+  b   foo
+  mov r1, r0     @ 실행 안됨
+foo:
+  add r0, r0, #3
+  b   _start
 </code></pre></div></div>
 
 <p><strong>실행 흐름</strong></p>
@@ -2507,7 +2489,7 @@ B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 �
 <span class="o">(</span>gdb<span class="o">)</span> si
 </code></pre></div></div>
 <p><code class="language-plaintext highlighter-rouge">display/i $pc</code>는 한 단계씩 실행할 때 PC가 어디로 이동하는지 확인하기 좋습니다.
-특히 b foo 명령어가 실행될 때, PC가 정확히 레이블의 주소로 변경되는 것을 확인할 수 있습니다.</p>
+특히 <code class="language-plaintext highlighter-rouge">b foo</code> 명령어가 실행될 때, PC가 정확히 레이블의 주소로 변경되는 것을 확인할 수 있습니다.</p>
 
 <h2 id="마무리">마무리</h2>
 <p>이번 포스팅에서는 ARMv4에서 <strong>가장 기본적인 분기 명령어</strong>인 <code class="language-plaintext highlighter-rouge">B</code>를 살펴보았습니다.

@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기 | Seojun’s Personal Site</title>
+<title>[ARM32] 오프셋(Offset)으로 메모리 주소 계산하기 | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기" />
+<meta property="og:title" content="[ARM32] 오프셋(Offset)으로 메모리 주소 계산하기" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="ko" />
 <meta name="description" content="메모리에 저장된 여러 데이터를 효율적으로 읽고 쓰기 위해서는 매번 주소를 계산하지 않아도 되는 방법이 필요합니다. 이번 글에서는 ARM 어셈블리의 오프셋(Offset) 주소 지정 방식을 살펴보며, LDR과 STR 명령어에서 주소 계산을 단 한 줄로 처리하는 방법을 이해해보겠습니다." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-11-02T04:40:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기" />
+<meta property="twitter:title" content="[ARM32] 오프셋(Offset)으로 메모리 주소 계산하기" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-02T04:40:00+00:00","datePublished":"2025-11-02T04:40:00+00:00","description":"메모리에 저장된 여러 데이터를 효율적으로 읽고 쓰기 위해서는 매번 주소를 계산하지 않아도 되는 방법이 필요합니다. 이번 글에서는 ARM 어셈블리의 오프셋(Offset) 주소 지정 방식을 살펴보며, LDR과 STR 명령어에서 주소 계산을 단 한 줄로 처리하는 방법을 이해해보겠습니다.","headline":"ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-02T04:40:00+00:00","datePublished":"2025-11-02T04:40:00+00:00","description":"메모리에 저장된 여러 데이터를 효율적으로 읽고 쓰기 위해서는 매번 주소를 계산하지 않아도 되는 방법이 필요합니다. 이번 글에서는 ARM 어셈블리의 오프셋(Offset) 주소 지정 방식을 살펴보며, LDR과 STR 명령어에서 주소 계산을 단 한 줄로 처리하는 방법을 이해해보겠습니다.","headline":"[ARM32] 오프셋(Offset)으로 메모리 주소 계산하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/02/arm-offset-addressing.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     rel="alternate"
@@ -101,7 +101,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM 어셈블리 #8 - 오프셋(Offset)으로 메모리 주소 계산하기
+      [ARM32] 오프셋(Offset)으로 메모리 주소 계산하기
     </h1>
     <div class="post-meta">
       <time
@@ -128,24 +128,24 @@
 하지만 배열이나 구조체처럼 <strong>연속된 메모리</strong>에 접근해야 한다면, 매번 <a href="/ko/arm/assembly/tutorial/2025/10/27/arm-arithmetic-operations.html"><code class="language-plaintext highlighter-rouge">add</code> 명령</a>으로 주소를 계산해야 하죠.</p>
 
 <p>예를 들어 다음과 같은 코드가 있다고 가정해보겠습니다.</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">]</span>       <span class="no">@</span> <span class="err">첫</span> <span class="err">번째</span> <span class="err">데이터</span> <span class="err">읽기</span>
-<span class="nl">add</span> <span class="nb">r1</span><span class="err">,</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span>     <span class="no">@</span> <span class="err">다음</span> <span class="err">데이터</span> <span class="err">주소로</span> <span class="err">이동</span>
-<span class="nl">ldr</span> <span class="nb">r2</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">]</span>       <span class="no">@</span> <span class="err">두</span> <span class="err">번째</span> <span class="err">데이터</span> <span class="err">읽기</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1]       @ 첫 번째 데이터 읽기
+add r1, r1, #4     @ 다음 데이터 주소로 이동
+ldr r2, [r1]       @ 두 번째 데이터 읽기
 </code></pre></div></div>
 
 <p>이 방법은 작동하지만, 매번 <code class="language-plaintext highlighter-rouge">add</code> 명령을 써야 하므로 번거롭습니다.
 이 문제를 해결하기 위해 ARM은 오프셋(offset) 기능을 제공합니다.
 즉, 주소 계산을 <code class="language-plaintext highlighter-rouge">ldr</code>/<code class="language-plaintext highlighter-rouge">str</code> 명령 안에서 함께 수행하는 것이죠.</p>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]</span>   <span class="no">@</span> <span class="nv">r1</span> <span class="o">+</span> <span class="mi">4</span> <span class="err">주소의</span> <span class="err">데이터를</span> <span class="err">바로</span> <span class="err">읽음</span>
-
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, #4]   @ r1 + 4 주소의 데이터를 바로 읽음
 </code></pre></div></div>
 <p>이렇게 하면 <code class="language-plaintext highlighter-rouge">add</code> 없이도 다음 데이터를 바로 읽을 수 있습니다.
 명령어 수가 줄고, CPU가 계산하는 사이클도 감소하므로 성능도 개선됩니다.</p>
 
 <figure style="text-align: center;">
   <img src="/assets/img/arm-offset-memory.png" alt="바이트 주소와 int 배열 배치: base + offset" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">바이트 단위 주소에서 <code>int</code>(4바이트) 배열은 인덱스가 1 늘 때마다 주소가 4 증가합니다.</figcaption>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 1. 바이트 단위 주소에서 <code>int</code>(4바이트) 배열은 인덱스가 1 늘 때마다 주소가 4 증가합니다.</figcaption>
 </figure>
 
 <h2 id="오프셋을-활용한-주소-계산-원리">오프셋을 활용한 주소 계산 원리</h2>
@@ -162,8 +162,8 @@ ARM에서는 이 오프셋을 베이스 레지스터에 더하거나 빼서 실�
 </ul>
 
 <p>예를 들어:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">8</span><span class="o">]</span>    <span class="no">@</span> <span class="err">주소</span> <span class="o">=</span> <span class="nv">r1</span> <span class="o">+</span> <span class="mi">8</span>
-<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">]</span>    <span class="no">@</span> <span class="err">주소</span> <span class="o">=</span> <span class="nv">r1</span> <span class="o">+</span> <span class="nv">r2</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, #8]    @ 주소 = r1 + 8
+ldr r0, [r1, r2]    @ 주소 = r1 + r2
 </code></pre></div></div>
 <p>오프셋은 덧셈(+), 뺄셈(-) 모두 지원하며,
 즉시값의 경우 12비트(<code class="language-plaintext highlighter-rouge">0</code>~<code class="language-plaintext highlighter-rouge">4095</code>) 범위를 가집니다.</p>
@@ -173,7 +173,8 @@ ARM에서는 이 오프셋을 베이스 레지스터에 더하거나 빼서 실�
 
 <figure style="text-align: center;">
   <img src="/assets/img/arm-offset-forms.png" alt="오프셋 세 가지 문법: 즉시값, 레지스터, 시프트 레지스터" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">오프셋은 즉시값, 레지스터, 시프트-레지스터 세 가지로 표현할 수 있습니다.</figcaption>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 2. 오프셋은 즉시값, 레지스터, 시프트-레지스터 세 가지로 표현할 수 있습니다.</figcaption>
 </figure>
 
 <h3 id="1-즉시값-오프셋-immediate-offset">1. 즉시값 오프셋 (Immediate Offset)</h3>
@@ -181,7 +182,7 @@ ARM에서는 이 오프셋을 베이스 레지스터에 더하거나 빼서 실�
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Rn, #imm]
 </code></pre></div></div>
 <p>예시:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">12</span><span class="o">]</span>   <span class="no">@</span> <span class="nv">r1</span> <span class="o">+</span> <span class="mi">12</span> <span class="err">주소의</span> <span class="err">데이터를</span> <span class="err">로드</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, #12]   @ r1 + 12 주소의 데이터를 로드
 </code></pre></div></div>
 
 <h3 id="2-레지스터-오프셋-register-offset">2. 레지스터 오프셋 (Register Offset)</h3>
@@ -189,7 +190,7 @@ ARM에서는 이 오프셋을 베이스 레지스터에 더하거나 빼서 실�
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Rn, Rm]
 </code></pre></div></div>
 <p>예시:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">]</span>      <span class="no">@</span> <span class="nv">r1</span> <span class="o">+</span> <span class="nv">r2</span> <span class="err">주소의</span> <span class="err">데이터를</span> <span class="err">로드</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, r2]      @ r1 + r2 주소의 데이터를 로드
 </code></pre></div></div>
 
 <h3 id="3-시프트-레지스터-오프셋-shifted-register-offset">3. 시프트 레지스터 오프셋 (Shifted Register Offset)</h3>
@@ -197,7 +198,7 @@ ARM에서는 이 오프셋을 베이스 레지스터에 더하거나 빼서 실�
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Rn, Rm, Shift #n]
 </code></pre></div></div>
 <p>예시:</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">]</span>  <span class="no">@</span> <span class="err">주소</span> <span class="o">=</span> <span class="nv">r1</span> <span class="o">+</span> <span class="o">(</span><span class="nv">r2</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="o">)</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, r2, lsl #2]  @ 주소 = r1 + (r2 &lt;&lt; 2)
 </code></pre></div></div>
 <p>여기서 <code class="language-plaintext highlighter-rouge">lsl #2</code>는 <code class="language-plaintext highlighter-rouge">×4</code>와 같은 의미입니다.
 int 자료형이 4바이트라면, 배열에서 한 요소를 건너뛸 때 정확히 맞는 크기죠.</p>
@@ -205,36 +206,38 @@ int 자료형이 4바이트라면, 배열에서 한 요소를 건너뛸 때 정�
 <h2 id="예제-코드">예제 코드</h2>
 
 <p>다음 예제는 오프셋을 사용하여 메모리 주소를 계산하는 방법을 보여줍니다.</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">ldr</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">=</span><span class="mh">0x1000</span>       <span class="no">@</span> <span class="err">베이스</span> <span class="err">주소</span> <span class="o">(</span><span class="err">배열의</span> <span class="err">시작</span> <span class="err">주소라고</span> <span class="err">가정</span><span class="o">)</span>
-  <span class="nb">ldr</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">=</span><span class="mi">3</span>            <span class="no">@</span> <span class="err">인덱스</span> <span class="nv">i</span> <span class="o">=</span> <span class="mi">3</span>
-  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">]</span>  <span class="no">@</span> <span class="err">주소</span> <span class="o">=</span> <span class="mh">0x1000</span> <span class="o">+</span> <span class="o">(</span><span class="mi">3</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">=</span> <span class="mh">0x100C</span>
-                            <span class="err">@</span> <span class="nv">r0</span> <span class="o">=</span> <span class="nv">arr</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="err">의</span> <span class="err">값</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r1, =0x1000       @ 베이스 주소 (배열의 시작 주소라고 가정)
+ldr r2, =3            @ 인덱스 i = 3
+ldr r0, [r1, r2, lsl #2]  @ 주소 = 0x1000 + (3 &lt;&lt; 2) = 0x100C
+                          @ r0 = arr[3]의 값
 </code></pre></div></div>
 <p>이 예제는 배열 arr[i]의 동작과 동일합니다.
 <code class="language-plaintext highlighter-rouge">lsl #2</code>는 <code class="language-plaintext highlighter-rouge">i * 4</code>를 의미하며, 각 요소가 4바이트이기 때문에 정확히 다음 주소를 가리킵니다.</p>
 
 <figure style="text-align: center;">
   <img src="/assets/img/arm-offset-forms.png" alt="lsl #2로 i×4 스케일" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;"><code>lsl #2</code>는 인덱스 <code>i</code>를 4배로 스케일링하여 <code>int</code> 크기(4바이트)에 맞춥니다.</figcaption>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 3. <code>lsl #2</code>는 인덱스 <code>i</code>를 4배로 스케일링하여 <code>int</code> 크기(4바이트)에 맞춥니다.</figcaption>
 </figure>
 
 <h2 id="c언어--어셈블리-변환">C언어 → 어셈블리 변환</h2>
 
-<p>C 코드에서 배열의 특정 요소를 읽을 때, 주소 계산은 자동으로 이루어집니다.
-예를 들어 다음 C 코드를 보겠습니다.</p>
+<p>C 코드에서 배열의 특정 요소를 읽을 때, 주소 계산은 자동으로 이루어집니다.</p>
+
+<p>예를 들어 다음 C 코드를 보겠습니다.</p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">arr</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">};</span>
 <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 </code></pre></div></div>
 
 <p>이 코드는 컴파일 시 다음과 같은 어셈블리로 변환됩니다.</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r1</span><span class="err">,</span> <span class="o">=</span><span class="nv">arr</span>             <span class="no">@</span> <span class="nv">r1</span> <span class="o">=</span> <span class="mh">&amp;a</span><span class="nv">rr</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
-<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">8</span><span class="o">]</span>         <span class="no">@</span> <span class="nv">arr</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="err">→</span> <span class="nv">base</span> <span class="o">+</span> <span class="o">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">4</span><span class="o">)</span> <span class="o">=</span> <span class="o">+</span><span class="mi">8</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r1, =arr             @ r1 = &amp;arr[0]
+ldr r0, [r1, #8]         @ arr[2] → base + (2 * 4) = +8
 </code></pre></div></div>
 
 <p>또는 인덱스가 변수라면 다음과 같이 변환됩니다.</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r1</span><span class="err">,</span> <span class="o">=</span><span class="nv">arr</span>
-<span class="nl">mov</span> <span class="nb">r2</span><span class="err">,</span> <span class="nv">r0</span>               <span class="no">@</span> <span class="nv">r2</span> <span class="o">=</span> <span class="nv">i</span>
-<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="nv">r2</span><span class="o">,</span> <span class="nb">lsl</span> <span class="o">#</span><span class="mi">2</span><span class="o">]</span> <span class="no">@</span> <span class="nv">arr</span><span class="o">[</span><span class="nv">i</span><span class="o">]</span> <span class="o">=</span> <span class="o">*(</span><span class="nv">base</span> <span class="o">+</span> <span class="nv">i</span><span class="o">*</span><span class="mi">4</span><span class="o">)</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r1, =arr
+mov r2, r0               @ r2 = i
+ldr r0, [r1, r2, lsl #2] @ arr[i] = *(base + i*4)
 </code></pre></div></div>
 
 <p>정리하자면:</p>
@@ -245,7 +248,7 @@ int 자료형이 4바이트라면, 배열에서 한 요소를 건너뛸 때 정�
 </ul>
 
 <h2 id="마무리">마무리</h2>
-<p>이번 포스팅에서는 LDR과 STR 명령어에서 오프셋을 사용해
+<p>이번 포스팅에서는 <code class="language-plaintext highlighter-rouge">LDR</code>과 <code class="language-plaintext highlighter-rouge">STR</code> 명령어에서 오프셋을 사용해
 메모리 주소를 계산하는 방법을 배웠습니다.</p>
 
 <p>오프셋을 활용하면 단 한 줄로 주소 계산 + 메모리 접근을 처리할 수 있습니다.

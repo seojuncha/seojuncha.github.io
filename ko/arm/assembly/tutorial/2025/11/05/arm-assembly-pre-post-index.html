@@ -3,9 +3,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기 | Seojun’s Personal Site</title>
+<title>[ARM32] pre-index와 post-index로 자동 주소 계산하기 | Seojun’s Personal Site</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기" />
+<meta property="og:title" content="[ARM32] pre-index와 post-index로 자동 주소 계산하기" />
 <meta name="author" content="차서준 (Cha Seojun)" />
 <meta property="og:locale" content="ko" />
 <meta name="description" content="ARM 어셈블리에서 메모리에 접근할 때, 단순히 [R1] 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 배열이나 버퍼처럼 연속된 데이터를 다룰 때, 매번 ADD 명령으로 주소를 갱신하는 것은 비효율적이기 때문입니다. 이 문제를 해결하기 위해 ARM은 pre-index와 post-index라는 자동 주소 계산 기능을 제공합니다. 이 글에서는 두 방식의 차이와 동작 원리를 이해하기 쉽게 설명하고, 마지막에는 실제 예제 코드와 함께 CPU 내부에서 주소가 어떻게 계산되는지도 알아보겠습니다." />
@@ -16,9 +16,9 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-11-05T13:35:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기" />
+<meta property="twitter:title" content="[ARM32] pre-index와 post-index로 자동 주소 계산하기" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-05T13:35:00+00:00","datePublished":"2025-11-05T13:35:00+00:00","description":"ARM 어셈블리에서 메모리에 접근할 때, 단순히 [R1] 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 배열이나 버퍼처럼 연속된 데이터를 다룰 때, 매번 ADD 명령으로 주소를 갱신하는 것은 비효율적이기 때문입니다. 이 문제를 해결하기 위해 ARM은 pre-index와 post-index라는 자동 주소 계산 기능을 제공합니다. 이 글에서는 두 방식의 차이와 동작 원리를 이해하기 쉽게 설명하고, 마지막에는 실제 예제 코드와 함께 CPU 내부에서 주소가 어떻게 계산되는지도 알아보겠습니다.","headline":"ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"차서준 (Cha Seojun)"},"dateModified":"2025-11-05T13:35:00+00:00","datePublished":"2025-11-05T13:35:00+00:00","description":"ARM 어셈블리에서 메모리에 접근할 때, 단순히 [R1] 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 배열이나 버퍼처럼 연속된 데이터를 다룰 때, 매번 ADD 명령으로 주소를 갱신하는 것은 비효율적이기 때문입니다. 이 문제를 해결하기 위해 ARM은 pre-index와 post-index라는 자동 주소 계산 기능을 제공합니다. 이 글에서는 두 방식의 차이와 동작 원리를 이해하기 쉽게 설명하고, 마지막에는 실제 예제 코드와 함께 CPU 내부에서 주소가 어떻게 계산되는지도 알아보겠습니다.","headline":"[ARM32] pre-index와 post-index로 자동 주소 계산하기","mainEntityOfPage":{"@type":"WebPage","@id":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"},"url":"https://seojuncha.github.io/arm/assembly/tutorial/2025/11/05/arm-assembly-pre-post-index.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link
     rel="alternate"
@@ -101,7 +101,7 @@
 >
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">
-      ARM 어셈블리 #9 - pre-index와 post-index로 자동 주소 계산하기
+      [ARM32] pre-index와 post-index로 자동 주소 계산하기
     </h1>
     <div class="post-meta">
       <time
@@ -121,7 +121,7 @@
 
   <div class="post-content e-content" itemprop="articleBody"><p>ARM 어셈블리에서 메모리에 접근할 때, 단순히 <code class="language-plaintext highlighter-rouge">[R1]</code> 형식으로 주소를 지정하는 것만으로는 부족할 때가 있습니다. 
 배열이나 버퍼처럼 연속된 데이터를 다룰 때, 매번 <code class="language-plaintext highlighter-rouge">ADD</code> 명령으로 주소를 갱신하는 것은 비효율적이기 때문입니다. 
-이 문제를 해결하기 위해 ARM은 <strong>pre-index</strong>와 <strong>post-index</strong>라는 자동 주소 계산 기능을 제공합니다. 
+이 문제를 해결하기 위해 ARM은 <strong><em>pre-index</em></strong>와 <strong><em>post-index</em></strong>라는 자동 주소 계산 기능을 제공합니다. 
 이 글에서는 두 방식의 차이와 동작 원리를 이해하기 쉽게 설명하고, 마지막에는 실제 예제 코드와 함께 CPU 내부에서 주소가 어떻게 계산되는지도 알아보겠습니다.</p>
 
 <h2 id="pre-index--post-index가-왜-필요한가">pre-index / post-index가 왜 필요한가</h2>
@@ -139,7 +139,8 @@
 
 <figure style="text-align: center;">
   <img src="/assets/img/pre-post-offset.png" alt="[Offset vs Pre vs Post] Addressing modes overview" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">오프셋 / pre-index / post-index 비교 — 수동 vs 자동 주소 갱신</figcaption>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 1. 오프셋 / pre-index / post-index 비교 — 수동 vs 자동 주소 갱신</figcaption>
 </figure>
 
 <h2 id="자동-주소-계산이란-무엇인가">자동 주소 계산이란 무엇인가</h2>
@@ -153,7 +154,7 @@
 
 <p>예를 들어 아래 코드를 보겠습니다.</p>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]!</span>   <span class="no">@</span> <span class="nv">R1</span><span class="err">에</span> <span class="mi">4</span><span class="err">를</span> <span class="err">더한</span> <span class="err">뒤</span> <span class="err">그</span> <span class="err">주소에서</span> <span class="err">값을</span> <span class="err">읽는다</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldr r0, [r1, #4]!   @ R1에 4를 더한 뒤 그 주소에서 값을 읽는다
 </code></pre></div></div>
 
 <p>이 명령은 다음과 같은 순서로 실행됩니다:</p>
@@ -171,7 +172,7 @@
 그 다음에 <code class="language-plaintext highlighter-rouge">Rn + offset</code> 계산 결과를 Rn에 저장합니다.</p>
 
 <p>예를 들어 아래 코드처럼 동작합니다.</p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>    <span class="no">@</span> <span class="nv">R1</span><span class="err">이</span> <span class="err">가리키는</span> <span class="err">주소에서</span> <span class="err">값을</span> <span class="err">읽은</span> <span class="err">뒤</span> <span class="nv">R1</span><span class="err">에</span> <span class="mi">4</span><span class="err">를</span> <span class="err">더한다</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ldr r0, [r1], #4    @ R1이 가리키는 주소에서 값을 읽은 뒤 R1에 4를 더한다
 </code></pre></div></div>
 
 <p>실행 순서는 다음과 같습니다:</p>
@@ -184,8 +185,8 @@
 <p>두 방식 모두 결과적으로 <code class="language-plaintext highlighter-rouge">Rn</code>은 <code class="language-plaintext highlighter-rouge">Rn + offset</code>으로 변경되지만, 어떤 시점에 변경되느냐에 따라 동작이 달라집니다.<br />
 아래 두 코드를 비교해보겠습니다.</p>
 
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]!</span>   <span class="no">@</span> <span class="nv">pre</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">R1</span><span class="err">에</span> <span class="mi">4</span><span class="err">를</span> <span class="err">더한</span> <span class="err">후</span> <span class="err">그</span> <span class="err">주소로</span> <span class="err">메모리</span> <span class="err">접근</span>
-<span class="nl">ldr</span> <span class="nb">r0</span><span class="err">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>    <span class="no">@</span> <span class="nv">post</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">R1</span><span class="err">이</span> <span class="err">가리키는</span> <span class="err">주소에서</span> <span class="err">읽은</span> <span class="err">뒤</span> <span class="nv">R1</span><span class="err">에</span> <span class="mi">4</span><span class="err">를</span> <span class="err">더함</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldr r0, [r1, #4]!   @ pre-index: R1에 4를 더한 후 그 주소로 메모리 접근
+ldr r0, [r1], #4    @ post-index: R1이 가리키는 주소에서 읽은 뒤 R1에 4를 더함
 </code></pre></div></div>
 <ul>
   <li>첫 번째 명령은 <code class="language-plaintext highlighter-rouge">R1</code>이 먼저 갱신된 뒤 메모리에 접근합니다.</li>
@@ -197,25 +198,26 @@ post-index는 “현재 주소를 먼저 사용해야 할 때” 적합합니다
 
 <figure style="text-align: center;">
   <img src="/assets/img/timing-pre-post.png" alt="Timing: pre-index (update→access) vs post-index (access→update)" style="display: block; margin: auto;" />
-  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">pre-index는 주소 갱신 후 접근, post-index는 접근 후 주소 갱신</figcaption>
+  <figcaption style="margin-top: 0.5em; font-size: 0.9em; color: #666;">
+  그림 2. pre-index는 주소 갱신 후 접근, post-index는 접근 후 주소 갱신</figcaption>
 </figure>
 
 <h2 id="예제-코드-실행-gcc--qemu--gdb">예제 코드 실행 (GCC / QEMU / GDB)</h2>
 <p>아래 코드는 두 방식을 비교하기 위한 간단한 예제입니다.</p>
 
 <p><strong>pre-post-index.s</strong></p>
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="err">.</span><span class="nb">text</span>
-  <span class="err">.</span><span class="nb">global</span> <span class="nv">_start</span>
-<span class="nl">_start</span><span class="err">:</span>
-  <span class="nb">ldr</span> <span class="nv">r1</span><span class="o">,</span> <span class="o">=</span><span class="nv">array</span>
-  <span class="nb">ldr</span> <span class="nv">r0</span><span class="o">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">,</span> <span class="o">#</span><span class="mi">4</span><span class="o">]!</span>   <span class="no">@</span> <span class="nv">pre</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">R1</span> <span class="err">←</span> <span class="nv">R1</span><span class="o">+</span><span class="mi">4</span> <span class="err">후</span> <span class="err">로드</span>
-  <span class="nb">ldr</span> <span class="nv">r2</span><span class="o">,</span> <span class="o">[</span><span class="nv">r1</span><span class="o">],</span> <span class="o">#</span><span class="mi">4</span>    <span class="no">@</span> <span class="nv">post</span><span class="o">-</span><span class="nv">index</span><span class="err">:</span> <span class="nv">R2</span> <span class="err">←</span> <span class="nv">Mem</span><span class="o">[</span><span class="nv">R1</span><span class="o">],</span> <span class="err">그</span> <span class="err">후</span> <span class="nv">R1</span> <span class="err">←</span> <span class="nv">R1</span><span class="o">+</span><span class="mi">4</span>
-  <span class="nb">b</span> <span class="mf">.</span>
-<span class="nl">array</span><span class="err">:</span>
-  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x11111111</span>
-  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x22222222</span>
-  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x33333333</span>
-  <span class="err">.</span><span class="nb">word</span> <span class="mh">0x44444444</span>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
+  .global _start
+_start:
+  ldr r1, =array
+  ldr r0, [r1, #4]!   @ pre-index: R1 ← R1+4 후 로드
+  ldr r2, [r1], #4    @ post-index: R2 ← Mem[R1], 그 후 R1 ← R1+4
+  b .
+array:
+  .word 0x11111111
+  .word 0x22222222
+  .word 0x33333333
+  .word 0x44444444
 </code></pre></div></div>
 
 <p><strong>컴파일 &amp; QEMU실행</strong>:</p>
@@ -266,9 +268,8 @@ post-index는 “현재 주소를 먼저 사용해야 할 때” 적합합니다
 
 <h2 id="마무리">마무리</h2>
 <p>pre-index와 post-index는 모두 <strong>주소 갱신을 자동화</strong>해주는 기능이지만,
-그 차이는 <strong>주소 갱신이 메모리 접근보다 앞인지, 뒤인지</strong>입니다.</p>
-
-<p>pre-index는 다음 데이터를 미리 읽어야 하는 경우에,
+그 차이는 <strong>주소 갱신이 메모리 접근보다 앞인지, 뒤인지</strong>입니다.
+pre-index는 다음 데이터를 미리 읽어야 하는 경우에,
 post-index는 현재 데이터를 읽고 다음으로 넘어갈 때 유용합니다.</p>
 
 <p>다음 포스팅에서는 이 개념을 확장하여, 스택(Stack) 구조와 <code class="language-plaintext highlighter-rouge">LDM</code>/<code class="language-plaintext highlighter-rouge">STM</code> 명령어를 통해 한 번에 여러 값을 푸시/팝하는 방법을 살펴보겠습니다.</p>
