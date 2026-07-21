@@ -1,4 +1,223 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-07-06T12:23:38+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Seojun’s Personal Site</title><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">The Four Stages of C Compilation</title><link href="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html" rel="alternate" type="text/html" title="The Four Stages of C Compilation" /><published>2026-07-01T12:00:00+00:00</published><updated>2026-07-01T12:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/01/c-build-step</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html"><![CDATA[<p>Using a simple sample program, we take a close look at how C code is transformed into an executable file.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-07-21T13:08:51+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Seojun’s Personal Site</title><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="en"><title type="html">Creating and Using Static/Dynamic (Shared) Libraries</title><link href="https://seojuncha.github.io/programming/2026/07/21/create-and-use-c-libraries.html" rel="alternate" type="text/html" title="Creating and Using Static/Dynamic (Shared) Libraries" /><published>2026-07-21T13:00:00+00:00</published><updated>2026-07-21T13:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/21/create-and-use-c-libraries</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/21/create-and-use-c-libraries.html"><![CDATA[<p>In this post, I want to talk about libraries.
+Let’s compare <strong>how to create static and dynamic libraries in C on Linux</strong>, and look at <strong>the key differences between them</strong>.
+What a library is, and what the static/dynamic concepts even mean — there’s already plenty of material out there, so I won’t cover that here.
+Building on the basic creation and usage, I’ll focus mainly on what differs at the binary level and why those differences arise.</p>
+
+<p>The test and analysis environment is GNU/Linux-based. Terms and commands differ on other platforms, so please refer to other articles for those. For the basics of object file creation and the compilation pipeline, see <a href="/programming/2026/07/01/c-build-step.html">this post</a>.</p>
+
+<p>Here’s the simple example code we’ll use for the analysis.</p>
+
+<p><strong>my_math.h</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#ifndef MY_MATH_H
+#define MY_MATH_H
+</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdbool.h&gt;</span><span class="cp">
+</span>
+<span class="c1">// Arithmetic operations</span>
+<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">sub</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+
+<span class="c1">// Compare</span>
+<span class="n">bool</span> <span class="nf">equal</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+<span class="n">bool</span> <span class="nf">greater</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+<span class="n">bool</span> <span class="nf">less</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+
+<span class="cp">#endif
+</span></code></pre></div></div>
+
+<p><strong>my_arithmetic.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"my_math.h"</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">sub</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>my_compare.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"my_math.h"</span><span class="cp">
+</span>
+<span class="n">bool</span> <span class="nf">equal</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">bool</span> <span class="nf">greater</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">bool</span> <span class="nf">less</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>main.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"my_math.h"</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>   <span class="c1">// 4</span>
+        <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>   <span class="c1">// 2</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>        <span class="c1">// 6</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="creating-a-static-library">Creating a Static Library</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-c</span> my_arithmetic.c my_compare.c   <span class="c"># without -o, the output is auto-named {name}.o</span>
+<span class="nv">$ </span>ar crs libmymath.a my_arithmetic.o my_compare.o  
+</code></pre></div></div>
+
+<p>Just two lines and you’ve got a static library.
+The second argument to the <code class="language-plaintext highlighter-rouge">ar</code> command (<code class="language-plaintext highlighter-rouge">libmymath.a</code>) is exactly the <strong><em>static library</em></strong> we just created.</p>
+
+<p><code class="language-plaintext highlighter-rouge">ar</code> is a GNU utility for creating, modifying, and extracting archive files.
+The “archive” here just means it bundles the given files into one — nothing special happens to them.
+In particular, it does not compress the object files!</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">crs</code> options we used, one by one:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">c</code> : create a new archive if one doesn’t exist yet.</li>
+  <li><code class="language-plaintext highlighter-rouge">r</code> : insert the object files into the archive. If a member with the same name already exists, replace it.</li>
+  <li><code class="language-plaintext highlighter-rouge">s</code> : generate an index (symbol table).</li>
+</ul>
+
+<h2 id="creating-a-dynamicshared-library">Creating a Dynamic/Shared Library</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-fPIC</span> <span class="nt">-c</span> my_arithmetic.c my_compare.c
+<span class="nv">$ </span>gcc <span class="nt">-shared</span> my_arithmetic.o my_compare.o <span class="nt">-o</span> libmymath.so
+</code></pre></div></div>
+
+<p>This one also takes just two lines.
+The <strong><em>dynamic/shared library</em></strong> created with GCC is <code class="language-plaintext highlighter-rouge">libmymath.so</code>.</p>
+
+<p>But here it’s worth splitting things into two stages.
+First, the stage that creates the object files used as the raw material for the library, and second, the stage that builds the library out of those object files.</p>
+
+<hr />
+
+<p>In the first stage, on top of the usual option for producing a relocatable object file, <code class="language-plaintext highlighter-rouge">-fPIC</code> has been added.
+<strong><em>PIC</em></strong> stands for <em>Position-Independent Code</em> — literally, <strong>code that doesn’t depend on its position</strong>.</p>
+
+<p>The binary-level analysis and practical use of this option is something I’ll cover in another post, so here I’ll only explain it briefly.
+I found it easiest to understand PIC by breaking it down word by word.</p>
+
+<ul>
+  <li><strong>Position</strong> : the position — more precisely, the position in memory. In other words, a memory address.</li>
+  <li><strong>Independent</strong> : has no dependency on the Position above, i.e., the memory address.</li>
+  <li><strong>Code</strong> : the code here means the code (text) section of the object file. This section holds the machine instructions the CPU executes.</li>
+</ul>
+
+<p>So, putting those meanings together, we can read it as: <strong>“the machine-code instructions in a (relocatable) object file produced with this option don’t run at any single fixed memory address.”</strong></p>
+
+<blockquote>
+  <p>You can also use -fpic instead of -fPIC. For the difference, check the gcc man page.</p>
+</blockquote>
+
+<p>In the second stage — building the library — we used <code class="language-plaintext highlighter-rouge">-shared</code>.
+Again, nothing dramatic: it’s just the option that says “combine these relocatable object files into a dynamic/shared library.”</p>
+
+<h2 id="static-vs-dynamicshared-library-comparing-how-theyre-built">Static vs. Dynamic/Shared Library: Comparing How They’re Built</h2>
+<p>Here’s a table summarizing how each library is built, and the differences.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Extension</th>
+      <th>Object file option</th>
+      <th>Built by</th>
+      <th>Library option</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Static</td>
+      <td>.a</td>
+      <td>-c</td>
+      <td>ar</td>
+      <td>crs</td>
+    </tr>
+    <tr>
+      <td>Dynamic/Shared</td>
+      <td>.so</td>
+      <td>-c -fPIC</td>
+      <td>gcc</td>
+      <td>-shared</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Both libraries conventionally take the <em>lib</em> prefix.</p>
+
+<hr />
+<p>Now that we’ve created the libraries, let’s look at how to use them from an executable.</p>
+
+<h2 id="linking-a-static-library">Linking a Static Library</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-L</span><span class="nb">.</span> <span class="nt">-lmymath</span> <span class="nt">-o</span> math.out
+</code></pre></div></div>
+<p>When linking without libraries, we simply listed the relocatable object files. But when linking a library, we need two command-line arguments.</p>
+
+<p><strong>The <code class="language-plaintext highlighter-rouge">-L</code> option specifies the directory where the library to link lives</strong>, and <strong>the <code class="language-plaintext highlighter-rouge">-l</code> option specifies the library name</strong>.</p>
+
+<p>So <code class="language-plaintext highlighter-rouge">-L. -lmymath</code> means the linker will try to find a library named <code class="language-plaintext highlighter-rouge">libmymath.a</code> in the current directory (.).</p>
+
+<p>With those options, the linker finds the library, links it with main.o, and produces the final executable, math.out.</p>
+
+<h2 id="linking-a-dynamicshared-library">Linking a Dynamic/Shared Library</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-L</span><span class="nb">.</span> <span class="nt">-lmymath</span> <span class="nt">-o</span> math.out
+</code></pre></div></div>
+
+<p>Fundamentally, it’s exactly the same as linking a static library.
+The <code class="language-plaintext highlighter-rouge">-L. -lmymath</code> options look for <code class="language-plaintext highlighter-rouge">libmymath.so</code> in the current directory.</p>
+
+<p>Whether it’s a static library or a dynamic/shared one, from the linker’s point of view what matters first is where the library is and what it’s called.</p>
+
+<h3 id="when-a-static-and-a-dynamicshared-library-live-in-the-same-path">When a Static and a Dynamic/Shared Library Live in the Same Path</h3>
+<p>As we saw, the linking options are identical for both. So what happens when two different libraries with the same name sit in the same location?</p>
+
+<p>For example, what if both <code class="language-plaintext highlighter-rouge">libabc.a</code> and <code class="language-plaintext highlighter-rouge">libabc.so</code> are under the <code class="language-plaintext highlighter-rouge">/opt</code> directory?</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-L</span>/opt <span class="nt">-labc</span> <span class="nt">-o</span> abc.out   <span class="c"># does -labc mean libabc.a? or libabc.so?</span>
+</code></pre></div></div>
+<p>In this case, the linker looks for <code class="language-plaintext highlighter-rouge">libabc.so</code> under <code class="language-plaintext highlighter-rouge">/opt</code> — <strong>that is, it prefers the dynamic/shared library.</strong></p>
+
+<p>If you want to link the static library instead, use the <code class="language-plaintext highlighter-rouge">-static</code> option.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-static</span> <span class="nt">-L</span>/opt <span class="nt">-labc</span> <span class="nt">-o</span> abc.out   <span class="c"># links libabc.a</span>
+</code></pre></div></div>
+
+<h3 id="linking-a-library-without-the-lib-prefix">Linking a Library Without the lib Prefix</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-L</span>./libs <span class="nt">-l</span>:mmm.a <span class="nt">-o</span> try.out
+</code></pre></div></div>
+<p>After the <code class="language-plaintext highlighter-rouge">-l:</code> option you can write the library file name directly. (Might depend on your compiler version…)</p>
+
+<p>That said, if you try to link a library without the prefix, modern compilers will kindly tell you how to fix it, so don’t worry too much about it.</p>
+
+<h2 id="running-an-executable-linked-against-a-static-library">Running an Executable Linked Against a Static Library</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>./math.out <span class="o">||</span> <span class="nb">echo</span> <span class="nv">$?</span>
+6
+</code></pre></div></div>
+<p>We can check <code class="language-plaintext highlighter-rouge">math.out</code>’s exit code (its return value), <code class="language-plaintext highlighter-rouge">6</code>, by printing <code class="language-plaintext highlighter-rouge">$?</code>.</p>
+
+<p>When you link a static library, the final executable runs exactly the same as one that uses no library at all. Really — not a single difference. You just run the executable, and that’s it.</p>
+
+<h2 id="running-an-executable-linked-against-a-dynamicshared-library">Running an Executable Linked Against a Dynamic/Shared Library</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ LD_LIBRARY_PATH</span><span class="o">=</span><span class="nb">.</span> ./math.out <span class="o">||</span> <span class="nb">echo</span> <span class="nv">$?</span>
+6
+</code></pre></div></div>
+<p>The important thing here is setting the <code class="language-plaintext highlighter-rouge">LD_LIBRARY_PATH=</code> environment variable.</p>
+
+<p>This variable holds the location of the dynamic/shared library (.so) files that the dynamic loader will load at runtime.
+The key point is that <strong>when the process starts, the dynamic loader has to know where to find the libraries it needs to load into memory.</strong></p>
+
+<blockquote>
+  <p>There are actually a few more ways to use dynamic/shared libraries.
+But for now the basic usage and concepts are enough, so I’ll leave those out of this post.</p>
+</blockquote>
+
+<hr />
+
+<p>So far we’ve looked at how to build and use libraries on the surface.
+But what I really want to dig into is what’s underneath.
+When you link a static library, does the binary code actually get embedded straight into the executable object file? If so, how do a dynamic library’s symbols get written into the executable object file? How does the dynamic loader actually work? There’s still a lot I’m curious about and want to see for myself.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="programming" /><category term="c library" /><category term="static library" /><category term="shared library" /><category term="dynamic library" /><summary type="html"><![CDATA[In this post, I want to talk about libraries. Let’s compare how to create static and dynamic libraries in C on Linux, and look at the key differences between them. What a library is, and what the static/dynamic concepts even mean — there’s already plenty of material out there, so I won’t cover that here. Building on the basic creation and usage, I’ll focus mainly on what differs at the binary level and why those differences arise.]]></summary></entry><entry xml:lang="en"><title type="html">The Four Stages of C Compilation</title><link href="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html" rel="alternate" type="text/html" title="The Four Stages of C Compilation" /><published>2026-07-01T12:00:00+00:00</published><updated>2026-07-01T12:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/01/c-build-step</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html"><![CDATA[<p>Using a simple sample program, we take a close look at how C code is transformed into an executable file.</p>
 
 <p>It’s not that I don’t already understand this process; the point is to grow more comfortable with the concepts and analysis methods of each stage by explaining it myself.</p>
 
@@ -2275,92 +2494,4 @@ In particular, if <code class="language-plaintext highlighter-rouge">LR</code> m
 
 <h2 id="conclusion">Conclusion</h2>
 <p>In the next post, we’ll examine condition codes for conditional execution.
-Until now, every instruction executed unconditionally, but ARM allows adding two-letter condition codes so instructions run only under specific conditions.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm bl" /><category term="arm branch instruction" /><category term="link register" /><category term="arm lr" /><summary type="html"><![CDATA[The BL instruction is an extended version of the B instruction described in the previous post, adding function-call capability. While the B instruction simply jumps to a target label, the BL instruction automatically stores the return address in the LR (Register R14) so execution can return after the branch. For this reason, BL is a core mechanism for implementing function calls in ARM and forms the foundation for concepts like the stack, calling conventions, and frame pointers.]]></summary></entry><entry xml:lang="en"><title type="html">[ARM32] Branching Execution Flow with the B Instruction</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" rel="alternate" type="text/html" title="[ARM32] Branching Execution Flow with the B Instruction" /><published>2025-11-23T01:00:00+00:00</published><updated>2025-11-23T01:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"><![CDATA[<p>In this post, we will explore how the <code class="language-plaintext highlighter-rouge">B</code> instruction is used for branching, along with practical examples.
-The <code class="language-plaintext highlighter-rouge">B</code> instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.</p>
-
-<p><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">Sample Code in GitHub</a></p>
-
-<h2 id="why-do-we-use-the-b-instruction">Why Do We Use the B Instruction?</h2>
-<p>The <code class="language-plaintext highlighter-rouge">B</code> instruction simply moves the execution flow to another position.
-It does not return like a function call; its behavior is similar to the <code class="language-plaintext highlighter-rouge">goto</code> statement in C.</p>
-
-<p>Typical uses include:</p>
-<ul>
-  <li>Implementing loops</li>
-  <li>Skipping specific code blocks</li>
-  <li>Simple control flow switching</li>
-</ul>
-
-<h2 id="how-execution-flow-branching-works">How Execution Flow Branching Works</h2>
-<p>The CPU stores the address of the next instruction in the Program Counter (PC).
-A branch instruction changes the PC to another address, altering where the CPU fetches the next instruction.</p>
-
-<blockquote>
-  <p>Note: In ARMv4’s pipeline, the PC appears as current instruction address + 8 bytes.
-However, the assembler handles branch offset calculation, so this does not affect typical coding.</p>
-</blockquote>
-
-<h2 id="branch-instruction-b">Branch Instruction: B</h2>
-
-<div class="language-armasm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">b</span> <span class="nb">label</span>
-</code></pre></div></div>
-
-<p><code class="language-plaintext highlighter-rouge">b label</code> simply jumps to the address indicated by the label.
-Internally, this is equivalent to updating the PC with the label’s address.</p>
-
-<h2 id="understanding-labels">Understanding Labels</h2>
-<p>A label gives a name to a specific instruction address.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  label:
-    instructions
-</code></pre></div></div>
-
-<p>A colon (:) must be placed after the label name.
-The label’s address is the address of the first instruction below it.</p>
-
-<p>Example:</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  foo:
-    mov r0, #1   @ address = 0x10000
-    mov r0, #2   @ address = 0x10004
-</code></pre></div></div>
-<p>Here, the address of foo is <code class="language-plaintext highlighter-rouge">0x10000</code>.</p>
-
-<h2 id="example-code">Example Code</h2>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
-  .global _start
-_start:
-  mov r0, #2
-  b   foo
-  mov r1, r0     @ never executed
-foo:
-  add r0, r0, #3
-  b   _start
-</code></pre></div></div>
-
-<p><strong>Execution Flow</strong></p>
-<ol>
-  <li><code class="language-plaintext highlighter-rouge">mov r0, #2</code></li>
-  <li><code class="language-plaintext highlighter-rouge">b foo</code> → jumps to foo</li>
-  <li><code class="language-plaintext highlighter-rouge">add r0, r0, #3</code></li>
-  <li><code class="language-plaintext highlighter-rouge">b _start</code> → jumps back to _start</li>
-  <li>executes again</li>
-</ol>
-
-<p>Thus, the value of <code class="language-plaintext highlighter-rouge">R0</code> repeats as 2 → 5 → 2 → 5 indefinitely.
-The instruction <code class="language-plaintext highlighter-rouge">mov r1, r0</code> is never executed due to the branch.</p>
-
-<h2 id="debugging-observing-pc-changes-with-gdb">Debugging: Observing PC Changes with GDB</h2>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> target remote :1234
-<span class="o">(</span>gdb<span class="o">)</span> b _start
-<span class="o">(</span>gdb<span class="o">)</span> b foo
-<span class="o">(</span>gdb<span class="o">)</span> display/i <span class="nv">$pc</span>
-<span class="o">(</span>gdb<span class="o">)</span> c
-<span class="o">(</span>gdb<span class="o">)</span> si
-</code></pre></div></div>
-<p><code class="language-plaintext highlighter-rouge">display/i $pc</code> is useful for watching how the PC changes step-by-step.
-You can clearly see the PC jump directly to the label when executing <code class="language-plaintext highlighter-rouge">b foo</code>.</p>
-
-<h2 id="conclusion">Conclusion</h2>
-<p>In this post, we explored the basic unconditional branch instruction <code class="language-plaintext highlighter-rouge">B</code> in ARMv4.
-In the next post, we will look at <code class="language-plaintext highlighter-rouge">BL</code>, the instruction used for function calls.
-BL automatically stores the return address in the Link Register (<code class="language-plaintext highlighter-rouge">LR</code>), making it essential for implementing function calls.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm b" /><category term="arm branch instruction" /><summary type="html"><![CDATA[In this post, we will explore how the B instruction is used for branching, along with practical examples. The B instruction unconditionally moves the execution flow to a specified location, forming the foundation for conditionals, loops, and broader program structure.]]></summary></entry></feed>
+Until now, every instruction executed unconditionally, but ARM allows adding two-letter condition codes so instructions run only under specific conditions.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm bl" /><category term="arm branch instruction" /><category term="link register" /><category term="arm lr" /><summary type="html"><![CDATA[The BL instruction is an extended version of the B instruction described in the previous post, adding function-call capability. While the B instruction simply jumps to a target label, the BL instruction automatically stores the return address in the LR (Register R14) so execution can return after the branch. For this reason, BL is a core mechanism for implementing function calls in ARM and forms the foundation for concepts like the stack, calling conventions, and frame pointers.]]></summary></entry></feed>

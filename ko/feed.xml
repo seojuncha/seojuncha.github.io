@@ -1,4 +1,227 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2026-07-06T12:23:39+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Seojun’s Personal Site</title><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">C 컴파일 4단계</title><link href="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html" rel="alternate" type="text/html" title="C 컴파일 4단계" /><published>2026-07-01T12:00:00+00:00</published><updated>2026-07-01T12:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/01/c-build-step</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html"><![CDATA[<p>간단한 샘플코드를 사용해서 C코드가 실행가능한 파일로 변환되는 과정을 자세히 살펴본다.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://seojuncha.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://seojuncha.github.io/" rel="alternate" type="text/html" hreflang="ko" /><updated>2026-07-21T13:08:52+00:00</updated><id>https://seojuncha.github.io/feed.xml</id><title type="html">Seojun’s Personal Site</title><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><entry xml:lang="ko"><title type="html">정적/동적(공유) 라이브러리 생성과 사용</title><link href="https://seojuncha.github.io/programming/2026/07/21/create-and-use-c-libraries.html" rel="alternate" type="text/html" title="정적/동적(공유) 라이브러리 생성과 사용" /><published>2026-07-21T13:00:00+00:00</published><updated>2026-07-21T13:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/21/create-and-use-c-libraries</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/21/create-and-use-c-libraries.html"><![CDATA[<p>이번 포스팅에서는 라이브러리에 관해 얘기해보려한다.
+리눅스 환경에서 C언어를 사용해서 정적 라이브러리와 동적 라이브러리를 생성하는 방법을 비교해보고 핵심적인 차이점을 알아보자.
+라이브러리란 무엇인지, 정적/동적의 개념은 무엇인지는 이미 많은 정보가 있으니 여기서는 다루지 않는다.
+기본적인 생성 및 사용법에 이어서 바이너리 레벨에서 어떤 차이점이 있고 왜 이런 차이점이 생기는지를 중심으로 이야기할 예정이다.</p>
+
+<p>테스트 및 분석환경은 GNU/Linux 기반이다. 다른 플랫폼에서는 용어나 명령어등이 상이하므로 다른 글을 참고하도록 하고,
+기본적인 오브젝트 파일 생성과 컴파일 파이프라인에 대한 내용은 <a href="/ko/programming/2026/07/01/c-build-step.html">이 포스팅</a>을 참고한다.</p>
+
+<p>아래는 분석에 사용할 간단한 예제코드다.</p>
+
+<p><strong>my_math.h</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#ifndef MY_MATH_H
+#define MY_MATH_H
+</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdbool.h&gt;</span><span class="cp">
+</span>
+<span class="c1">// Arithmetic operations</span>
+<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">sub</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+
+<span class="c1">// Compare</span>
+<span class="n">bool</span> <span class="nf">equal</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+<span class="n">bool</span> <span class="nf">greater</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+<span class="n">bool</span> <span class="nf">less</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+
+<span class="cp">#endif
+</span></code></pre></div></div>
+
+<p><strong>my_arithmetic.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"my_math.h"</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">sub</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>my_compare.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"my_math.h"</span><span class="cp">
+</span>
+<span class="n">bool</span> <span class="nf">equal</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">bool</span> <span class="nf">greater</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">bool</span> <span class="nf">less</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>main.c</strong></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"my_math.h"</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>   <span class="c1">// 4</span>
+        <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>   <span class="c1">// 2</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>        <span class="c1">// 6</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="정적static-라이브러리-생성">정적(Static) 라이브러리 생성</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-c</span> my_arithmetic.c my_compare.c   <span class="c"># -o 옵션이 없을 경우 {이름}.o 로 자동할당된다.</span>
+<span class="nv">$ </span>ar crs libmymath.a my_arithmetic.o my_compare.o  
+</code></pre></div></div>
+
+<p>단 두줄이면 정적라이브러리를 만들 수 있다.
+<code class="language-plaintext highlighter-rouge">ar</code> 명령의 두번째 인자(<code class="language-plaintext highlighter-rouge">libmymath.a</code>)가 바로 우리가 생성한 <strong><em>정적 라이브러리</em></strong>다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">ar</code> 명령은 아카이브(archive)파일을 생성/수정/해제하기 위한 GNU 유틸리티다.
+여기서 말하는 아카이브는 인자로 주어진 파일들을 단순히 하나로 모아준다는 의미정도일 뿐, 특별한 변화를 주진 않는다.
+특히, 오브젝트 파일들을 압축하지 않는다!</p>
+
+<p>사용한 옵션 <code class="language-plaintext highlighter-rouge">crs</code>는 각각:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">c</code> : 아카이브 파일이 없을 경우 새로 생성한다.</li>
+  <li><code class="language-plaintext highlighter-rouge">r</code> : 오브젝트 파일을 아카이브에 추가한다. 단, 같은 이름의 멤버가 이미 있으면 교체한다.</li>
+  <li><code class="language-plaintext highlighter-rouge">s</code> : 인덱스(심볼 테이블)를 생성한다.</li>
+</ul>
+
+<h2 id="동적dynamic공유shared-라이브러리-생성">동적(Dynamic)/공유(Shared) 라이브러리 생성</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc <span class="nt">-fPIC</span> <span class="nt">-c</span> my_arithmetic.c my_compare.c
+<span class="nv">$ </span>gcc <span class="nt">-shared</span> my_arithmetic.o my_compare.o <span class="nt">-o</span> libmymath.so
+</code></pre></div></div>
+
+<p>이것도 역시 2줄이면 된다.
+GCC를 사용해 생성된 <strong><em>동적/공유 라이브러리</em></strong>가 <code class="language-plaintext highlighter-rouge">libmymath.so</code>다.</p>
+
+<p>하지만 여기서는 2단계로 나누어 볼 필요가 있다.
+첫번째는 라이브러리를 생성하기 위한 재료로 사용되는 오브젝트 파일의 생성 단계와
+두번째는 오브젝트 파일들로 라이브러리를 생성하는 단계로 보자.</p>
+
+<hr />
+
+<p>첫번째 단계에서는 일반적인 재배치 가능한 오브젝트 파일을 생성하는 옵션 외에 <code class="language-plaintext highlighter-rouge">-fPIC</code> 가 추가되었다.
+<strong><em>PIC</em></strong>는 <em>Position-Independent Code</em> 라는 의미로, 직역하면 <strong>위치에 의존하지 않는 코드</strong>라고 할 수 있다.</p>
+
+<p>이 옵션에 대한 바이너리 레벨에서의 분석과 쓸모는 다른 포스팅에서 다룰 것이므로 간단하게만 설명한다.
+PIC의 각각의 단어 단위를 나누어 이해하는 것이 편리했다.</p>
+
+<ul>
+  <li><strong>Position</strong> : 위치는 정확히는 메모리 상의 위치. 즉, 메모리 주소를 의미한다.</li>
+  <li><strong>Independent</strong> : 앞선 Position, 메모리 주소에 종속성을 가지지 않는다.</li>
+  <li><strong>Code</strong> : 여기서 말하는 코드는 오브젝트 파일의 코드(텍스트) 섹션을 의미한다. 이 섹션에는 CPU가 실행하는 기계어 명령 코드가 있다.</li>
+</ul>
+
+<p>그래서, 위 의미들을 종합해서 풀이하면, <strong>“이 옵션으로 생성된 (재배치 가능한) 오브젝트 파일의 기계어 실행 코드들은 특정 고정된 메모리 주소에서 실행되지 않는다.”</strong> 라는 의미로 볼 수 있다.</p>
+
+<blockquote>
+  <p>-fPIC 말고 -fpic 를 사용해도 된다. 차이점은 gcc 매뉴얼 페이지를 확인하자.</p>
+</blockquote>
+
+<p>두번째 단계인 라이브러리 생성 단계에서는 <code class="language-plaintext highlighter-rouge">-shared</code> 를 사용했다.
+역시나 큰 의미는 없고 재배치 가능한 오브젝트 파일들을 합성하여 동적/공유 라이브러리로 만들겠다는 옵션이다.</p>
+
+<h2 id="정적-라이브러리-vs-동적공유-라이브러리-생성-방법-비교">정적 라이브러리 vs 동적/공유 라이브러리 생성 방법 비교</h2>
+<p>각 라이브러리의 생성 방법과 차이점을 아래 표로 정리했다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>유형</th>
+      <th>확장자</th>
+      <th>오브젝트 파일 생성 옵션</th>
+      <th>라이브러리 생성 주체</th>
+      <th>라이브러리 생성 옵션</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>정적</td>
+      <td>.a</td>
+      <td>-c</td>
+      <td>ar</td>
+      <td>crs</td>
+    </tr>
+    <tr>
+      <td>동적/공유</td>
+      <td>.so</td>
+      <td>-c -fPIC</td>
+      <td>gcc</td>
+      <td>-shared</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>두 라이브러리 모두 <em>lib</em>이란 접두사를 관례적으로 붙인다.</p>
+
+<hr />
+<p>라이브러리를 생성했으니 이 라이브러리들을 실행파일에서 어떻게 사용하는지 살펴보자.</p>
+
+<h2 id="정적-라이브러리-링킹">정적 라이브러리 링킹</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-L</span><span class="nb">.</span> <span class="nt">-lmymath</span> <span class="nt">-o</span> math.out
+</code></pre></div></div>
+<p>라이브러리를 사용하지 않는 링킹에서는 재배치 가능한 오브젝트 파일(Relocatable Object File)들을 단순히 나열했었다. 하지만 라이브러리 링킹시에는 2개의 명령행 인자가 필요하다.</p>
+
+<p><strong><code class="language-plaintext highlighter-rouge">-L</code> 옵션은 링크할 라이브러리가 위치한 디렉토리</strong>를 지정하고 <strong><code class="language-plaintext highlighter-rouge">-l</code> 옵션은 라이브러리 이름</strong>을 지정한다.</p>
+
+<p>따라서, <code class="language-plaintext highlighter-rouge">-L. -lmymath</code> 은 링커가 현재 디렉토리(.)에서 <code class="language-plaintext highlighter-rouge">libmymath.a</code>라는 이름의 라이브러리를 찾으려고 한다는걸 의미한다.</p>
+
+<p>링커는 위 옵션으로 라이브러리를 찾아서 main.o파일과 링킹하고 최종 실행파일인 math.out을 생성한다.</p>
+
+<h2 id="동적공유-라이브러리-링킹">동적/공유 라이브러리 링킹</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-L</span><span class="nb">.</span> <span class="nt">-lmymath</span> <span class="nt">-o</span> math.out
+</code></pre></div></div>
+
+<p>기본적으로는 정적 라이브러리 링킹방법과 정확히 동일하다.
+<code class="language-plaintext highlighter-rouge">-L. -lmymath</code> 옵션은 현재 디렉토리에서 <code class="language-plaintext highlighter-rouge">libmymath.so</code> 파일을 찾는다.</p>
+
+<p>정적라이브러리 이던 동적/공유 라이브러리 이던 상관없이, 일단 링커 입장에서는 이 라이브러리가 어디에 있고 이름이 무엇인지가 첫번째로 중요하다.</p>
+
+<h3 id="동일한-경로에-정적-라이브러리와-동적공유-라이브러리가-동시에-존재할-때">동일한 경로에 정적 라이브러리와 동적/공유 라이브러리가 동시에 존재할 때</h3>
+<p>앞서 살펴본 것 처럼 두 라이브러리 모두 링킹 옵션이 동일하다. 그렇다면 동일한 위치에 동일한 이름의 서로 다른 라이브러리가 있는 경우는 어떻게 될까?</p>
+
+<p>예를 들어, <code class="language-plaintext highlighter-rouge">/opt</code> 디렉토리 아래에 <code class="language-plaintext highlighter-rouge">libabc.a</code> 파일과  <code class="language-plaintext highlighter-rouge">libabc.so</code> 파일이 있다면?</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-L</span>/opt <span class="nt">-labc</span> <span class="nt">-o</span> abc.out   <span class="c"># -labc 는 libabc.a? libabc.so?</span>
+</code></pre></div></div>
+<p>이 경우, 링커는 <code class="language-plaintext highlighter-rouge">/opt</code> 디렉토리 아래에서 <code class="language-plaintext highlighter-rouge">libabc.so</code> 파일을, <strong>즉, 동적/공유 라이브러리를 먼저 찾는다.</strong></p>
+
+<p>만약, 정적라이브러리를 링킹하고 싶을 경우는 <code class="language-plaintext highlighter-rouge">-static</code> 옵션을 사용하면 된다.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-static</span> <span class="nt">-L</span>/opt <span class="nt">-labc</span> <span class="nt">-o</span> abc.out   <span class="c"># libabc.a 링킹</span>
+</code></pre></div></div>
+
+<h3 id="접두사-lib-이-없는-라이브러리-링킹">접두사 lib 이 없는 라이브러리 링킹</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc main.o <span class="nt">-L</span>./libs <span class="nt">-l</span>:mmm.a <span class="nt">-o</span> try.out
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">-l:</code> 옵션 뒤에 라이브러리 파일 이름을 직접 작성할 수 있다. (컴파일러 버전에 따라 다를지도…)</p>
+
+<p>다만, 접두사가 없는 라이브러리를 링킹하려고 시도할 경우 최신 컴파일러는 어떻게 수정해야 하는지 친절히 알려주므로 너무 걱정하진 말자.</p>
+
+<h2 id="정적-라이브러리를-링크한-실행파일의-실행">정적 라이브러리를 링크한 실행파일의 실행</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>./math.out <span class="o">||</span> <span class="nb">echo</span> <span class="nv">$?</span>
+6
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">math.out</code> 의 종료코드(반환값)인 <code class="language-plaintext highlighter-rouge">6</code> 을 <code class="language-plaintext highlighter-rouge">$?</code> 를 출력해서 확인할 수 있다.</p>
+
+<p>정적 라이브러리를 링킹할 경우 최종 실행파일은 라이브러리를 사용하지 않는 경우와 동일하게 실행된다. 정말로, 단 한개의 차이점도 없다. 그냥 실행파일을 실행하면 끝이다.</p>
+
+<h2 id="동적공유-라이브러리를-링크한-실행파일의-실행">동적/공유 라이브러리를 링크한 실행파일의 실행</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ LD_LIBRARY_PATH</span><span class="o">=</span><span class="nb">.</span> ./math.out <span class="o">||</span> <span class="nb">echo</span> <span class="nv">$?</span>
+6
+</code></pre></div></div>
+<p>여기서 중요한 것은 <code class="language-plaintext highlighter-rouge">LD_LIBRARY_PATH=</code> 을 사용한 환경변수 설정이다.</p>
+
+<p>이 환경 변수는 동적 로더(Dynamic Loader)가 런타임에 로딩할 동적/공유 라이브러리(.so) 파일의 위치를 저장한다. 
+중요한 것은, <strong>프로세스를 실행 할 때 메모리에 로드할 라이브러리의 위치를 동적 로더가 알고 있어야 한다</strong>는 것이다.</p>
+
+<blockquote>
+  <p>동적/공유 라이브러리를 사용하는 방법은 사실 몇개가 더 있다.
+하지만, 지금은 기본 사용법과 개념만 알아도 충분하므로 이 포스팅에서는 생략한다.</p>
+</blockquote>
+
+<hr />
+
+<p>지금까지 표면적으로 라이브러리를 어떻게 만들고, 사용하는지 알아봤다.
+하지만 내가 정말로 다루고 싶은 내용은 그 내부다.
+정적라이브러리를 링킹하면 실제로 실행 오브젝트 파일에 바이너리 코드가 그대로 포함되는지, 
+그렇다면 동적라이브러리의 심볼은 실행 오브젝트 파일에 어떻게 작성되는지,
+동적로더는 어떻게 동작하는지 등등 궁금하고 직접 확인해보고 싶은 것들이 아직 많다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="programming" /><category term="c library" /><category term="static library" /><category term="shared library" /><category term="dynamic library" /><summary type="html"><![CDATA[이번 포스팅에서는 라이브러리에 관해 얘기해보려한다. 리눅스 환경에서 C언어를 사용해서 정적 라이브러리와 동적 라이브러리를 생성하는 방법을 비교해보고 핵심적인 차이점을 알아보자. 라이브러리란 무엇인지, 정적/동적의 개념은 무엇인지는 이미 많은 정보가 있으니 여기서는 다루지 않는다. 기본적인 생성 및 사용법에 이어서 바이너리 레벨에서 어떤 차이점이 있고 왜 이런 차이점이 생기는지를 중심으로 이야기할 예정이다.]]></summary></entry><entry xml:lang="ko"><title type="html">C 컴파일 4단계</title><link href="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html" rel="alternate" type="text/html" title="C 컴파일 4단계" /><published>2026-07-01T12:00:00+00:00</published><updated>2026-07-01T12:00:00+00:00</updated><id>https://seojuncha.github.io/programming/2026/07/01/c-build-step</id><content type="html" xml:base="https://seojuncha.github.io/programming/2026/07/01/c-build-step.html"><![CDATA[<p>간단한 샘플코드를 사용해서 C코드가 실행가능한 파일로 변환되는 과정을 자세히 살펴본다.</p>
 
 <p>사실 이 과정을 모르지 않지만, 스스로 설명하는 과정에서 각 과정의 개념과 분석방법에 더 익숙해 지기 위함이다.</p>
 
@@ -2409,89 +2632,4 @@ foo:
 <h2 id="마무리">마무리</h2>
 <p>다음 포스팅에서는 조건부 명령어 실행을 위한 condition code에 대해 알아보겠습니다.
 지금까지는 모든 명령어가 항상 실행되었지만,
-ARM 명령어는 뒤에 두 글자의 조건 코드를 붙여 특정 조건에서만 실행되도록 만들 수 있습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm bl" /><category term="arm branch instruction" /><category term="link register" /><category term="arm lr" /><summary type="html"><![CDATA[BL 명령은 이전 포스팅에서 설명한 B 명령에 함수 호출 기능을 더한 명령어입니다. B 명령이 단순히 특정 레이블로 점프하는 역할이었다면, BL 명령은 점프 이후 복귀해야 하는 주소를 LR(링크 레지스터, R14)에 자동으로 저장합니다. 따라서 BL은 ARM에서 함수 호출을 구현하는 핵심 매커니즘이며, 스택, 함수 호출 규약, 프레임 포인터 등 이후에 배우게 될 개념들의 기반이 됩니다.]]></summary></entry><entry xml:lang="ko"><title type="html">[ARM32] B 명령어로 실행 흐름 분기하기</title><link href="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html" rel="alternate" type="text/html" title="[ARM32] B 명령어로 실행 흐름 분기하기" /><published>2025-11-23T01:00:00+00:00</published><updated>2025-11-23T01:00:00+00:00</updated><id>https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch</id><content type="html" xml:base="https://seojuncha.github.io/arm/assembly/tutorial/2025/11/23/arm-basic-branch.html"><![CDATA[<p>이번 포스팅에서는 명령어 분기를 위한 <code class="language-plaintext highlighter-rouge">B</code> 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다.
-<code class="language-plaintext highlighter-rouge">B</code> 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다.</p>
-
-<p><a href="https://github.com/seojuncha/arm-assembly-tutorial/blob/main/05_branching/branch.s">GitHub 예제 코드</a></p>
-
-<h2 id="왜-b-명령어를-사용할까">왜 B 명령어를 사용할까?</h2>
-<p><code class="language-plaintext highlighter-rouge">B</code> 명령어는 단순히 코드의 흐름을 다른 위치로 옮기기 위한 명령어입니다.
-함수 호출처럼 되돌아오는 개념은 없으며, C 언어의 <code class="language-plaintext highlighter-rouge">goto</code>와 거의 동일한 수준의 동작을 수행합니다.</p>
-
-<p>사용 예는 다음과 같습니다:</p>
-<ul>
-  <li>루프 구현</li>
-  <li>특정 코드 블록 건너뛰기</li>
-  <li>단순 흐름 전환</li>
-</ul>
-
-<h2 id="실행-흐름-분기의-기본-원리">실행 흐름 분기의 기본 원리</h2>
-<p>CPU는 프로그램 카운터(PC)에 다음 실행할 명령어의 주소를 저장합니다.
-분기 명령을 실행하면 PC를 다른 주소로 변경하여, CPU가 다음 명령어를 가져오는 위치를 바꿉니다.</p>
-
-<blockquote>
-  <p>참고: ARMv4 파이프라인에서는 현재 명령어 기준 PC가 +8 오프셋으로 보입니다.
-하지만 분기 오프셋 계산은 어셈블러가 처리하므로, 코드 작성 시 신경 쓸 필요는 없습니다.</p>
-</blockquote>
-
-<h2 id="브랜치-명령어-b">브랜치 명령어: B</h2>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  b label
-</code></pre></div></div>
-<p><code class="language-plaintext highlighter-rouge">b label</code>은 레이블의 주소로 바로 점프하라는 의미입니다.
-이 동작은 내부적으로 PC 값을 레이블 주소로 교체하는 것과 동일합니다.</p>
-
-<h2 id="레이블label의-의미">레이블(Label)의 의미</h2>
-<p>레이블은 특정 명령어 위치에 이름을 붙인 것입니다.</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  label:
-    instructions
-</code></pre></div></div>
-<p>레이블 이름 뒤에는 반드시 콜론(:)을 붙여야 합니다.
-<strong>레이블의 주소는 레이블 아래 첫 번째 명령어의 주소입니다.</strong></p>
-
-<p>예:</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  foo:
-    mov r0, #1   @ address = 0x10000
-    mov r0, #2   @ address = 0x10004
-</code></pre></div></div>
-
-<p>여기서 foo의 주소는 <code class="language-plaintext highlighter-rouge">0x10000</code>입니다.</p>
-
-<h2 id="예제-코드">예제 코드</h2>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  .text
-  .global _start
-_start:
-  mov r0, #2
-  b   foo
-  mov r1, r0     @ 실행 안됨
-foo:
-  add r0, r0, #3
-  b   _start
-</code></pre></div></div>
-
-<p><strong>실행 흐름</strong></p>
-<ol>
-  <li><code class="language-plaintext highlighter-rouge">mov r0, #2</code></li>
-  <li><code class="language-plaintext highlighter-rouge">b foo</code> → foo로 이동</li>
-  <li><code class="language-plaintext highlighter-rouge">add r0, r0, #3</code></li>
-  <li><code class="language-plaintext highlighter-rouge">b _start</code> → 다시 처음 위치로 이동</li>
-  <li><code class="language-plaintext highlighter-rouge">mov r0, #2</code> 다시 실행</li>
-</ol>
-
-<p>이렇게 R0 값은 2 → 5 → 2 → 5 로 반복됩니다.
-<code class="language-plaintext highlighter-rouge">mov r1, r0</code>는 분기 때문에 절대 실행되지 않습니다.</p>
-
-<h2 id="디버깅-gdb로-pc-변화-관찰하기">디버깅: GDB로 PC 변화 관찰하기</h2>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> target remote :1234
-<span class="o">(</span>gdb<span class="o">)</span> b _start
-<span class="o">(</span>gdb<span class="o">)</span> b foo
-<span class="o">(</span>gdb<span class="o">)</span> display/i <span class="nv">$pc</span>
-<span class="o">(</span>gdb<span class="o">)</span> c
-<span class="o">(</span>gdb<span class="o">)</span> si
-</code></pre></div></div>
-<p><code class="language-plaintext highlighter-rouge">display/i $pc</code>는 한 단계씩 실행할 때 PC가 어디로 이동하는지 확인하기 좋습니다.
-특히 <code class="language-plaintext highlighter-rouge">b foo</code> 명령어가 실행될 때, PC가 정확히 레이블의 주소로 변경되는 것을 확인할 수 있습니다.</p>
-
-<h2 id="마무리">마무리</h2>
-<p>이번 포스팅에서는 ARMv4에서 <strong>가장 기본적인 분기 명령어</strong>인 <code class="language-plaintext highlighter-rouge">B</code>를 살펴보았습니다.
-다음 포스팅에서는 함수 호출에 사용되는 <code class="language-plaintext highlighter-rouge">BL</code> 명령어를 다뤄보겠습니다.
-BL은 되돌아올 주소를 자동으로 <code class="language-plaintext highlighter-rouge">LR</code> 레지스터에 저장한다는 점에서 구조적으로 중요한 차이를 가집니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm b" /><category term="arm branch instruction" /><summary type="html"><![CDATA[이번 포스팅에서는 명령어 분기를 위한 B 명령어의 사용법을 실제 예제와 함께 정리해보겠습니다. B 명령어는 조건 없이 실행 흐름을 특정 위치로 이동시키는 명령어이며, 조건문·반복문·함수 구조 같은 큰 흐름을 만드는 기본 재료입니다.]]></summary></entry></feed>
+ARM 명령어는 뒤에 두 글자의 조건 코드를 붙여 특정 조건에서만 실행되도록 만들 수 있습니다.</p>]]></content><author><name>차서준 (Cha Seojun)</name><email>sjcha36@gmail.com</email></author><category term="arm" /><category term="assembly" /><category term="tutorial" /><category term="arm bl" /><category term="arm branch instruction" /><category term="link register" /><category term="arm lr" /><summary type="html"><![CDATA[BL 명령은 이전 포스팅에서 설명한 B 명령에 함수 호출 기능을 더한 명령어입니다. B 명령이 단순히 특정 레이블로 점프하는 역할이었다면, BL 명령은 점프 이후 복귀해야 하는 주소를 LR(링크 레지스터, R14)에 자동으로 저장합니다. 따라서 BL은 ARM에서 함수 호출을 구현하는 핵심 매커니즘이며, 스택, 함수 호출 규약, 프레임 포인터 등 이후에 배우게 될 개념들의 기반이 됩니다.]]></summary></entry></feed>
